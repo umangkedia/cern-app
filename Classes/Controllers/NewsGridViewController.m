@@ -6,10 +6,11 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import "ArticleDetailViewController.h"
 #import "NewsGridViewController.h"
 #import "NewsGridViewCell.h"
-#import "ArticleDetailViewController.h"
 #import "NSString+HTML.h"
+#import "DeviceCheck.h"
 
 #define MIN_IMAGE_WIDTH 300.0
 #define MIN_IMAGE_HEIGHT 125.0
@@ -73,9 +74,16 @@
     static NSString *newsCellIdentifier = @"newsCell";
     NewsGridViewCell *cell = (NewsGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:newsCellIdentifier];
     if (cell == nil) {
-        cell = [[NewsGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 250.0) reuseIdentifier:newsCellIdentifier];
-        cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
+        //At the moment - I have this primitive check here, later I'll need another controller/view/layout for iPad version.
+        if ([DeviceCheck deviceIsiPad]) {
+            cell = [[NewsGridViewCell alloc] initWithFrame : CGRectMake(0.f, 0.f, 300.f, 250.f) reuseIdentifier : newsCellIdentifier];
+            cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
+        } else {
+            cell = [[NewsGridViewCell alloc] initWithFrame : CGRectMake(0.f, 0.f, 320.f, 125.f) reuseIdentifier : newsCellIdentifier];
+            cell.selectionStyle = AQGridViewCellSelectionStyleNone;
+        }
     }
+
     cell.titleLabel.text = [article.title stringByConvertingHTMLToPlainText];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -94,7 +102,10 @@
 
 - (CGSize) portraitGridCellSizeForGridView: (AQGridView *) aGridView
 {
-    return CGSizeMake(320.0, 270.0);
+    if ([DeviceCheck deviceIsiPad])
+        return CGSizeMake(320.f, 270.f);
+    else
+        return CGSizeMake(320.f, 127.f);
 }
 
 - (void) gridView: (AQGridView *) gridView didSelectItemAtIndex:(NSUInteger) index numFingersTouch:(NSUInteger)numFingers
