@@ -116,13 +116,17 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:imageURL];
         NSData *imageData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
         UIImage *image = [[UIImage alloc] initWithData:imageData];
+       
+        if (!image)
+            image = [UIImage imageNamed:@"image_not_found.png"];
+       
         NSNumber *articleIndex = [NSNumber numberWithInt:[self.allArticles indexOfObject:article]];
-        if (image) {
-            [self.firstImages setObject:image forKey:articleIndex];
-        } else {
+        //if (image) {
+        [self.firstImages setObject:image forKey:articleIndex];
+        /*} else {
             NSLog(@"Article thumbnail download failed, will try again.");
             [self downloadFirstImageForArticle:article];
-        }
+        }*/
         // Inform the delegate on the main thread that the image downloaded
         if (self.delegate && [self.delegate respondsToSelector:@selector(aggregator:didDownloadFirstImage:forArticle:)]) {
             [self performSelectorOnMainThread:@selector(informDelegateOfFirstImageDownloadForArticleIndex:) withObject:articleIndex waitUntilDone:NO];
