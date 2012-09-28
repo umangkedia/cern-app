@@ -1,5 +1,5 @@
 //
-//  StaticInfoViewController.h
+//  StaticInfoItemViewController.h
 //  CERN App
 //
 //  Created by Eamon Ford on 7/17/12.
