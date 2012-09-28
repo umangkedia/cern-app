@@ -1,0 +1,6 @@
+create svn structure for CERN iOS App.
+--This line, and those below, will be ignored--
+
+A    https://root.cern.ch/svn/cern-app/branches
+A    https://root.cern.ch/svn/cern-app/tags
+A    https://root.cern.ch/svn/cern-app/trunk

@@ -1,0 +1,40 @@
+//
+//  PhotoDownloader.h
+//  CERN App
+//
+//  Created by Eamon Ford on 7/4/12.
+//  Copyright (c) 2012 CERN. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "CernMediaMARCParser.h"
+
+@class PhotoDownloader;
+
+@protocol PhotoDownloaderDelegate <NSObject>
+@optional
+- (void)photoDownloaderDidFinish:(PhotoDownloader *)photoDownloader;
+- (void)photoDownloader:(PhotoDownloader *)photoDownloader didDownloadThumbnailForIndex:(int)index;
+- (void)photoDownloader:(PhotoDownloader *)photoDownloader didFailWithError:(NSError *)error;
+@end
+
+@interface PhotoDownloader : NSObject<CernMediaMarcParserDelegate>
+{
+    NSMutableArray *urls;
+    NSMutableDictionary *thumbnails;
+    id<PhotoDownloaderDelegate> delegate;
+    
+    @private
+    CernMediaMARCParser *parser;
+    NSOperationQueue *queue;
+}
+
+@property (nonatomic, strong) NSMutableArray *urls;
+@property (nonatomic, strong) NSMutableDictionary *thumbnails;
+@property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) id<PhotoDownloaderDelegate> delegate;
+@property BOOL isDownloading;
+
+- (void)parse;
+
+@end
