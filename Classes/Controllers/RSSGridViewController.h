@@ -18,3 +18,10 @@
 - (void)refresh;
 
 @end
+
+@interface RSSTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
+
+@property (nonatomic, strong) RSSAggregator *aggregator;
+- (void) refresh;
+
+@end

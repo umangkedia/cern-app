@@ -160,6 +160,8 @@
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
 		41E6189B1614DABB00BAA7D4 /* RSSArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6189A1614DABB00BAA7D4 /* RSSArticle.m */; };
 		704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.m */; };
+		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
+		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -404,6 +406,10 @@
 		41E6189A1614DABB00BAA7D4 /* RSSArticle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSArticle.m; sourceTree = "<group>"; };
 		704A8DF51615E25800AAA5B2 /* DeviceCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCheck.h; sourceTree = "<group>"; };
 		704A8DF61615E25800AAA5B2 /* DeviceCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceCheck.m; sourceTree = "<group>"; };
+		709E9825161B1DD300F225DD /* NewsTableViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewCell.mm; sourceTree = "<group>"; };
+		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
+		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewController.mm; sourceTree = "<group>"; };
+		709E9829161B1E1A00F225DD /* NewsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewController.h; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -468,6 +474,8 @@
 		41E617241614CE1700BAA7D4 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				709E9828161B1E1A00F225DD /* NewsTableViewController.mm */,
+				709E9829161B1E1A00F225DD /* NewsTableViewController.h */,
 				41E617251614CE1700BAA7D4 /* ArticleDetailViewController.h */,
 				41E617261614CE1700BAA7D4 /* ArticleDetailViewController.m */,
 				41E617271614CE1700BAA7D4 /* BulletinGridViewController.h */,
@@ -619,6 +627,8 @@
 		41E617871614CE1700BAA7D4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				709E9825161B1DD300F225DD /* NewsTableViewCell.mm */,
+				709E9826161B1DD300F225DD /* NewsTableViewCell.h */,
 				41E617881614CE1700BAA7D4 /* BulletinGridViewCell.h */,
 				41E617891614CE1700BAA7D4 /* BulletinGridViewCell.m */,
 				41E6178A1614CE1700BAA7D4 /* NewsGridViewCell.h */,
@@ -1062,6 +1072,8 @@
 				41E617C21614CE5D00BAA7D4 /* main.m in Sources */,
 				41E6189B1614DABB00BAA7D4 /* RSSArticle.m in Sources */,
 				704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */,
+				709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */,
+				709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

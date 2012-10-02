@@ -14,6 +14,7 @@
 {
     NSRange _rangeOfArticlesToShow;
 }
+
 @property NSRange rangeOfArticlesToShow;
 
 @end
