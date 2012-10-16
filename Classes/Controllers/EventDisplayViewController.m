@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import <Availability.h>
+
 #import "EventDisplayViewController.h"
 
 #define SOURCE_DESCRIPTION @"Description"
@@ -43,7 +45,13 @@
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
+   
+#ifdef __IPHONE_6_0
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+#else
     titleLabel.textAlignment = UITextAlignmentCenter;
+#endif
+
     titleLabel.text = self.title;
     [titleView addSubview:titleLabel];
     
@@ -51,7 +59,13 @@
     dateLabel.backgroundColor = [UIColor clearColor];
     dateLabel.textColor = [UIColor whiteColor];
     dateLabel.font = [UIFont boldSystemFontOfSize:13.0];
+
+#ifdef __IPHONE_6_0
+    dateLabel.textAlignment = NSTextAlignmentCenter ;
+#else
     dateLabel.textAlignment = UITextAlignmentCenter;
+#endif
+
     [titleView addSubview:dateLabel];
     
     self.navigationItem.titleView = titleView;

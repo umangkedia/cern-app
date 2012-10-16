@@ -31,10 +31,17 @@
 @property (nonatomic, strong) NSArray *allArticles;
 @property (nonatomic, strong) NSMutableDictionary *firstImages;
 
-- (void)addFeed:(RSSFeed *)feed;
-- (void)addFeedForURL:(NSURL *)url;
-- (void)refreshAllFeeds;
-- (UIImage *)firstImageForArticle:(MWFeedItem *)article;
-- (RSSFeed *)feedForArticle:(MWFeedItem *)article;
+/*
+   NSArray *sortedArray = [
+                           data sortedArrayUsingComparator : ^NSComparisonResult(id a, id b) {
+                           return [((CellData *)a).date compare : ((CellData*)b).date];}
+                          ];
+*/
+
+- (void) addFeed : (RSSFeed *) feed;
+- (void) addFeedForURL : (NSURL *) url;
+- (void) refreshAllFeeds;
+- (UIImage *) firstImageForArticle : (MWFeedItem *) article;
+- (RSSFeed *) feedForArticle : (MWFeedItem *) article;
 
 @end

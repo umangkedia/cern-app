@@ -6,15 +6,13 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import "VideosGridViewController.h"
-#import "Constants.h"
-#import "NewsGridViewCell.h"
 #import <MediaPlayer/MediaPlayer.h>
+
+#import "VideosGridViewController.h"
+#import "NewsGridViewCell.h"
 #import "MBProgressHUD.h"
+#import "Constants.h"
 
-@interface VideosGridViewController ()
-
-@end
 
 @implementation VideosGridViewController
 
@@ -145,10 +143,12 @@
 
 - (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
 {
+    using namespace ROOT::CernApp;
+
     static NSString *newsCellIdentifier = @"newsCell";
     NewsGridViewCell *cell = (NewsGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:newsCellIdentifier];
     if (cell == nil) {
-        cell = [[NewsGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 250.0) reuseIdentifier:newsCellIdentifier];
+        cell = [[NewsGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 250.0) reuseIdentifier : newsCellIdentifier cellStyle : iPadStyle];
         cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
     }
     

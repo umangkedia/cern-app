@@ -6,8 +6,11 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import "BulletinGridViewCell.h"
 #import <QuartzCore/QuartzCore.h>
+#import <Availability.h>
+
+#import "BulletinGridViewCell.h"
+
 
 @implementation BulletinGridViewCell
 @synthesize titleLabel, descriptionLabel;
@@ -34,7 +37,12 @@
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
         self.titleLabel.textColor = [UIColor darkGrayColor];
+       
+#ifdef __IPHONE_6_0
+        self.titleLabel.textAlignment = NSTextAlignmentCenter;
+#else
         self.titleLabel.textAlignment = UITextAlignmentCenter;
+#endif
         self.titleLabel.shadowColor = [UIColor whiteColor];
         self.titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
         self.titleLabel.backgroundColor = [UIColor clearColor];
@@ -46,7 +54,13 @@
         self.descriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(8.0+5.0, borderMaskView.frame.origin.y+borderMaskView.frame.size.height+5.0, frame.size.width-16.0-10.0, 25.0)];
         self.descriptionLabel.font = [UIFont systemFontOfSize:13.0];
         self.descriptionLabel.textColor = [UIColor grayColor];
+
+#ifdef __IPHONE_6_0
+        self.descriptionLabel.textAlignment = NSTextAlignmentCenter;
+#else
         self.descriptionLabel.textAlignment = UITextAlignmentCenter;
+#endif
+
         self.descriptionLabel.shadowColor = [UIColor whiteColor];
         self.descriptionLabel.shadowOffset = CGSizeMake(0.0, 1.0);
         self.descriptionLabel.backgroundColor = [UIColor clearColor];

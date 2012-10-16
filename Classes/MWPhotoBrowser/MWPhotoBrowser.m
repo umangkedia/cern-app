@@ -968,8 +968,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 #pragma mark - Misc
 
-- (void)doneButtonPressed:(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
+- (void) doneButtonPressed : (id)sender {
+    [self dismissModalViewControllerAnimated : YES];
 }
 
 - (void)actionButtonPressed:(id)sender {

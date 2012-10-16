@@ -2,12 +2,12 @@
 //Developed for CERN app.
 
 //This is a code for a table view controller, which shows author, title, short content, date for
-//a news item.
+//an every news item.
 //It can be used ONLY for iPhone/iPod touch device, for iPad we'll have different approach.
 
 #import <cassert>
 
-//#import "ArticleDetailViewController.h"//FIXFIX
+#import "ArticleDetailViewController.h"
 #import "NewsTableViewController.h"
 #import "NewsTableViewCell.h"
 
@@ -27,12 +27,7 @@
 }
 
 //________________________________________________________________________________________
-- (void) awakeFromNib
-{
-}
-
-//________________________________________________________________________________________
-- (id)initWithStyle : (UITableViewStyle) style
+- (id) initWithStyle : (UITableViewStyle) style
 {
    if (self = [super initWithStyle : style]) {
       //
@@ -43,15 +38,16 @@
 
 
 //________________________________________________________________________________________
-- (void)viewDidLoad
+- (void) viewDidLoad
 {
-    [super viewDidLoad];
+   [super viewDidLoad];
+   [(UITableView *)self.view reloadData];
 }
 
 //________________________________________________________________________________________
-- (void)viewDidUnload
+- (void) viewDidUnload
 {
-    [super viewDidUnload];
+   [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
 
@@ -67,14 +63,20 @@
 //________________________________________________________________________________________
 - (void) prepareForSegue : (UIStoryboardSegue *) segue sender : (id)sender
 {
-//FIXFIXFIX.
-//    ArticleDetailViewController *viewController = (ArticleDetailViewController *)segue.destinationViewController;
-//    [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : self.gridView.indexOfSelectedItem]];
-//    [self.gridView deselectItemAtIndex : self.gridView.indexOfSelectedItem animated : YES];
+   UITableView * const tableView = (UITableView *)self.view;
+   NSIndexPath * const indexPath = [tableView indexPathForSelectedRow];
+
+   assert(indexPath != nil && "prepareForSegue:sender:, index path for selected table's row is nil");
+   ArticleDetailViewController * const viewController = (ArticleDetailViewController *)segue.destinationViewController;
+   //
+   viewController.loadOriginalLink = YES;
+   //
+   const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
+   [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : index]];
 }
 
 //________________________________________________________________________________________
-- (void)didReceiveMemoryWarning
+- (void) didReceiveMemoryWarning
 {
    [super didReceiveMemoryWarning];
    // Dispose of any resources that can be recreated.
@@ -90,7 +92,7 @@
 }
 
 //________________________________________________________________________________________
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
    // Return the number of rows in the section.
    if (self.rangeOfArticlesToShow.length)
@@ -100,7 +102,7 @@
 }
 
 //________________________________________________________________________________________
-- (UITableViewCell *) tableView : (UITableView *)tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
+- (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
    //Find feed item first.
    const NSInteger row = indexPath.row;
@@ -110,13 +112,18 @@
    assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
 
    static NSString *CellIdentifier = @"NewsCell";
-   NewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : CellIdentifier forIndexPath : indexPath];
+   
+   //Why do not I have compilation error (warning at least)? And get runtime error on non-existing selector instead?
+   //Apple always thinks different.
+   //NewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : CellIdentifier forIndexPath : indexPath];
+
+   NewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : CellIdentifier];
    if (!cell)
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
    UIImage * const image = [self.aggregator firstImageForArticle : article];
-
    [cell setCellData : article image : image imageOnTheRight : (indexPath.row % 4) == 3];
+
    return cell;
 }
 
@@ -142,54 +149,43 @@
 }
 
 //________________________________________________________________________________________
-- (void) aggregator : (RSSAggregator *) aggregator didDownloadFirstImage : (UIImage *)image forArticle : (MWFeedItem *)article
+- (void) aggregator : (RSSAggregator *) aggregator didDownloadFirstImage : (UIImage *) image forArticle : (MWFeedItem *)article
 {
-   const NSInteger index = [self.aggregator.allArticles indexOfObject : article] + self.rangeOfArticlesToShow.location;
-   NSArray *indexPaths = [NSArray arrayWithObject : [NSIndexPath indexPathWithIndex : index]];
-   [(UITableView *)self.view reloadRowsAtIndexPaths : indexPaths withRowAnimation : UITableViewRowAnimationFade];
-}
+   (void) image;
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+   const NSUInteger index = [self.aggregator.allArticles indexOfObject : article];
+   NSUInteger path[2] = {};
+   
+   if (self.rangeOfArticlesToShow.length) {
+      if (index >= self.rangeOfArticlesToShow.location && index < self.rangeOfArticlesToShow.location + self.rangeOfArticlesToShow.length)
+         path[1] = index - self.rangeOfArticlesToShow.location;
+   } else if (index < [self.aggregator.allArticles count]) {
+      path[1] = index;
+   }
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
+   NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
+   NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
+//   [(UITableView *)self.view reloadRowsAtIndexPaths : indexPaths withRowAnimation : UIT UITableViewRowAnimationFade];
+   [(UITableView *)self.view reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
 }
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//________________________________________________________________________________________
+- (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+   // Navigation logic may go here. Create and push another view controller.
+}
+
+//________________________________________________________________________________________
+- (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
+{
+   //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
+   //Many thanks to Apple's "brilliant" engineers for the fact I need this - continue to think different, guys!
+   if (!section)
+      return [[UIView alloc] init];
+
+   return nil;
 }
 
 @end

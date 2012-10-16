@@ -6,15 +6,12 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import "WebcastsGridViewController.h"
-#import "MBProgressHUD.h"
-#import "NewsGridViewCell.h"
-#import "Constants.h"
 #import <MediaPlayer/MediaPlayer.h>
 
-@interface WebcastsGridViewController ()
- 
-@end
+#import "WebcastsGridViewController.h"
+#import "NewsGridViewCell.h"
+#import "MBProgressHUD.h"
+#import "Constants.h"
 
 @implementation WebcastsGridViewController
 
@@ -76,7 +73,7 @@
 
 - (IBAction)segmentedControlTapped:(UISegmentedControl *)sender
 {
-    self.mode = sender.selectedSegmentIndex;
+    self.mode = WebcastMode(sender.selectedSegmentIndex);
     if (self.mode == WebcastModeRecent)
         self.gridView.allowsSelection = YES;
     else
@@ -146,10 +143,12 @@
 
 - (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
 {
+    using namespace ROOT::CernApp;
+
     static NSString *newsCellIdentifier = @"newsCell";
     NewsGridViewCell *cell = (NewsGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:newsCellIdentifier];
     if (cell == nil) {
-        cell = [[NewsGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 180.0, 180.0) reuseIdentifier:newsCellIdentifier];
+        cell = [[NewsGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 180.0, 180.0) reuseIdentifier:newsCellIdentifier cellStyle : iPadStyle];
         cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
         cell.titleLabel.font = [UIFont systemFontOfSize:13.0];
     }

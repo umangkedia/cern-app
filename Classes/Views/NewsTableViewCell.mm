@@ -6,7 +6,7 @@
 #import "MWFeedItem.h"
 
 //This is a code for a table view controller, which shows author, title, short content, date for
-//a news item.
+//an every news item.
 //It can be used ONLY for iPhone/iPod touch device, for iPad we'll have different approach.
 
 namespace {
@@ -16,9 +16,12 @@ const CGFloat cellInset = 10.f;
 const CGFloat bigImageSize = 130.f;
 const CGFloat defaultImageSize = 80.f;
 const CGFloat defaultHeightNoImage = 60.f;
+const CGFloat sourceLabelWidthRatio = 0.85;
+const CGFloat dateLabelWidthRatio = 0.75;
+
 
 //This is for "Author" and "Date" labels.
-const CGFloat fixedLabelSize = 20.f;
+const CGFloat fixedLabelSize = 15.f;
 
 //________________________________________________________________________________________
 CGFloat HeihgtForLinesWithFont(UIFont *font, unsigned nLines)
@@ -82,7 +85,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    UIFont * const font14 = [UIFont fontWithName : fontName size : 14.f];
    assert(font14 != nil && "PlaceText, font initializationi failed");
 
-   const CGFloat twoLineHeight14 = HeihgtForLinesWithFont(font14, 2);   
+   const CGFloat twoLineHeight14 = HeihgtForLinesWithFont(font14, 2);  
    const CGSize estimateSize14 = [text sizeWithFont : font14 constrainedToSize : CGSizeMake(fixedWidth, hugeH) lineBreakMode : NSLineBreakByWordWrapping];
    
    //Text fits one or two lines?
@@ -103,7 +106,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 
    //Text either fit into 2 lines with font size 12, or we
    //cut it.
-   return TextGeometry(2, 12.f, estimateSize12.height);
+   return TextGeometry(2, 12.f, twoLineHeight12);
 }
 
 }
@@ -145,13 +148,14 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 //________________________________________________________________________________________
 + (NSString *) titleLabelFontName
 {
-   return @"Helvetica-Bold";
+//   return @"HelveticaNeue-Bold";
+   return @"PT Sans";
 }
 
 //________________________________________________________________________________________
 + (NSString *) textLabelFontName
 {
-   return @"Arial";
+   return @"HelveticaNeue-Medium";
 }
 
 //________________________________________________________________________________________
@@ -167,6 +171,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
       imageView = [[UIImageView alloc] initWithFrame : CGRectMake(0, 0, defaultImageSize, defaultImageSize)];
       imageView.contentMode = UIViewContentModeScaleAspectFill;
       imageView.clipsToBounds = YES;
+      imageView.image = nil;//??
       [self addSubview : imageView];
    }
 }
@@ -177,7 +182,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    if (!author) {
       author = [[UILabel alloc] initWithFrame : CGRectMake(0., 0., 100., 20.) ];
       author.textColor = [UIColor brownColor];
-      author.font = [UIFont fontWithName : [NewsTableViewCell authorLabelFontName] size : 12.f];
+      author.font = [UIFont fontWithName : [NewsTableViewCell authorLabelFontName] size : 9.f];
       author.backgroundColor = [UIColor clearColor];
       author.clipsToBounds = YES;
       [self addSubview : author];
@@ -259,9 +264,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    //Author can be empty, date can be empty, but we always "allocate" space for them.
    //Dynamic part is built from title and text (whatever string is not empty).
 
-   //Author is always at fixed place, should fit into one line and take 3/4 of rect.size.width.
-   author.frame = CGRectMake(rect.origin.x, cellInset, rect.size.width * 0.75, fixedLabelSize);
-   author.numberOfLines = 1;
+
    
 
    //Now, layout labels, which have non-nil text (dynamic part).
@@ -286,9 +289,10 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    }
 
    CGFloat dynamicHeight = 0.f;
-   CGFloat currY = cellInset + fixedLabelSize;//inset and size of "Author" label.
 
    if (nLabelsToLayout) {
+      CGFloat currY = cellInset;
+
       for (unsigned i = 0; i < nLabelsToLayout; ++i)
          dynamicHeight += geom[i].height;
       
@@ -296,7 +300,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
       //I layout these two labels in this area. Otherwise, I simply add dynamicHeiht to the totalHeight.
       if (dynamicHeight < rect.size.height - 2 * cellInset - 2 * fixedLabelSize)
          //Default rect size is enough to place text.
-         currY = rect.size.height / 2 - dynamicHeight / 2;
+         currY += (rect.size.height - 2 * cellInset - 2 * fixedLabelSize)  / 2  - dynamicHeight / 2;
 
       for (unsigned i = 0; i < nLabelsToLayout; ++i) {
          UILabel *label = labelsToLayout[i];
@@ -307,15 +311,23 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
       }
 
       if (dynamicHeight < rect.size.height - 2 * cellInset - 2 * fixedLabelSize)
-         currY = rect.size.height - cellInset - fixedLabelSize;//inset and size of "Date" label.
+         currY = rect.size.height - cellInset - 2 * fixedLabelSize;//inset and size of "Date" label.
 
       //Date label here. It's always just 1 line of text and not wider than 3/4 of rect.size.width.
+      author.frame = CGRectMake(rect.origin.x, currY, rect.size.width * sourceLabelWidthRatio, fixedLabelSize);
+      author.numberOfLines = 1;
+      
+      currY += fixedLabelSize;
+      
+      date.frame = CGRectMake(rect.origin.x, currY, rect.size.width * dateLabelWidthRatio, fixedLabelSize);
       date.numberOfLines = 1;
-      date.frame = CGRectMake(rect.origin.x, currY, rect.size.width * 0.75, fixedLabelSize);
    } else {
       //Date label here. It's always just 1 line of text and not wider than 3/4 of rect.size.width.
+      author.frame = CGRectMake(rect.origin.x, rect.size.height - 2 * fixedLabelSize - cellInset, rect.size.width * sourceLabelWidthRatio, fixedLabelSize);
+      author.numberOfLines = 1;
+
+      date.frame = CGRectMake(rect.origin.x, rect.size.height - cellInset - fixedLabelSize, rect.size.width * dateLabelWidthRatio, fixedLabelSize);
       date.numberOfLines = 1;
-      date.frame = CGRectMake(rect.origin.x, rect.size.height - cellInset - fixedLabelSize, rect.size.width * 0.75, fixedLabelSize);
    }
 
    if (dynamicHeight > rect.size.height - 2 * cellInset - 2 * fixedLabelSize)
@@ -329,15 +341,24 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 {
    assert(data && "setCellData:image:imageOnTheRight:, data parameter is nil");
 
+   //TODO: check WHY do I have images of size 1x1 ????
+   const CGFloat minImageSize = 10.f;//??
+
    author.text = data.link && [data.link length] ? data.link : nil;
    title.text = [data.title stringByConvertingHTMLToPlainText];
-   text.text  = nil;//FIXFIXFIX
-  
+   //Set summary.
+   text.text = nil;//data.summary ? [data.summary stringByConvertingHTMLToPlainText] : nil;
+
    NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
    [dateFormatter setDateFormat:@"d MMM. yyyy"];
    date.text = [dateFormatter stringFromDate : data.date];
 
-   imageView.image = image;
+   if (image && image.size.width > minImageSize && image.size.height > minImageSize)
+      imageView.image = image;
+   else
+      imageView.image = nil;
+
+
 
    CGRect cellFrame = self.frame;
    

@@ -6,19 +6,19 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import "BulletinGridViewController.h"
+//Modified by Timur Pocheptsov.
+
 #import "NSDate+LastOccurrenceOfWeekday.h"
-#import "BulletinGridViewCell.h"
+#import "BulletinGridViewController.h"
+#import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
-
-@interface BulletinGridViewController ()
-
-@end
+#import "BulletinGridViewCell.h"
+#import "DeviceCheck.h"
 
 @implementation BulletinGridViewController
-//@synthesize rangesOfArticlesSeparatedByWeek;
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+//________________________________________________________________________________________
+- (id) initWithCoder : (NSCoder *) aDecoder
 {
     if (self = [super initWithCoder:aDecoder]) {
         self.gridView.resizesCellWidthToFit = NO;
@@ -28,19 +28,22 @@
     return self;
 }
 
-- (void)viewDidLoad
+//________________________________________________________________________________________
+- (void) viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 }
 
-- (void)viewDidUnload
+//________________________________________________________________________________________
+- (void) viewDidUnload
 {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) interfaceOrientation
 {
      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         return YES;
@@ -49,105 +52,168 @@
 
 }
 
-- (NSArray *)calculateRangesOfArticlesSeparatedByWeek:(NSArray *)articles
+//________________________________________________________________________________________
+- (NSArray *) calculateRangesOfArticlesSeparatedByWeek : (NSArray *) articles
 {
-    NSMutableArray *issues = [NSMutableArray array];
-    NSRange currentRange = NSMakeRange(0, 0);
-    MWFeedItem *firstArticle = [articles objectAtIndex:0];
-    NSDate *currentIssueDate = [[firstArticle.date midnight] nextOccurrenceOfWeekday:2];
-    
-    for (int i=0; i<articles.count; i++) {
-        
-        MWFeedItem *article = [articles objectAtIndex:i];
-        NSDate *oneWeekLater = [article.date dateByAddingTimeInterval:60*60*24*7];
-        // if the current article is within a week of the current issue date, add it to the current issue
-        if ([oneWeekLater compare:currentIssueDate] == NSOrderedDescending) {
-            currentRange.length++;
-        } else {    // otherwise, it's time to store the current issue and start a new issue
-            NSValue *rangeValue = [NSValue valueWithRange:currentRange];
-            [issues addObject:rangeValue];
-            currentIssueDate = [[article.date midnight] nextOccurrenceOfWeekday:2];
-            currentRange.location = i;
-            currentRange.length = 1;
-        }
-    }
-    NSValue *rangeValue = [NSValue valueWithRange:currentRange];
-    [issues addObject:rangeValue];
-    
-    return issues;
+   assert(articles != nil && "calculateRangesOfArticlesSeparatedByWeek:, articles parameter is nil");
+   
+   //TP: I had to replace this function completely.
+
+   NSMutableArray *issues = [NSMutableArray array];
+
+   if (![articles count])
+      return issues;
+
+   NSRange currentRange = NSMakeRange(0, 0);
+
+   MWFeedItem *firstArticle = [articles objectAtIndex : 0];
+   
+   NSCalendar * const calendar = [NSCalendar currentCalendar];
+   const NSUInteger requiredComponents = NSWeekCalendarUnit | NSYearCalendarUnit;
+
+   NSDateComponents *dateComponents = [calendar components : requiredComponents fromDate : firstArticle.date];
+   NSInteger currentWeek = dateComponents.week;
+   NSInteger currentYear = dateComponents.year;
+   currentRange.length = 1;//we already have at least one.
+   
+   for (int i = 1; i < articles.count; i++) {
+      MWFeedItem * const article = [articles objectAtIndex : i];
+      
+      dateComponents = [calendar components : requiredComponents fromDate : article.date];
+
+      if (dateComponents.year != currentYear || dateComponents.week != currentWeek) {
+         [issues addObject : [NSValue valueWithRange : currentRange]];
+         
+         currentRange.location = i;
+         currentRange.length = 1;
+         currentWeek = dateComponents.week;
+         currentYear = dateComponents.year;
+      } else
+         currentRange.length++;
+   }
+
+   [issues addObject : [NSValue valueWithRange : currentRange]];
+
+   return issues;
 }
 
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+//________________________________________________________________________________________
+- (NSString *) issueTitleForRange : (NSRange) issueRange dateFormatterStyle : (NSDateFormatterStyle) style
 {
-    NewsGridViewController *viewController = [segue destinationViewController];
-    NSUInteger issueIndex = [self.gridView indexOfSelectedItem];
-    viewController.aggregator = self.aggregator;
-    viewController.aggregator.delegate = viewController;
-    
-    NSRange issueRange = [[self.rangesOfArticlesSeparatedByWeek objectAtIndex:issueIndex] rangeValue];
-    viewController.rangeOfArticlesToShow = issueRange;
-    [viewController.gridView reloadData];
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
-    MWFeedItem *latestArticle = [viewController.aggregator.allArticles objectAtIndex:issueRange.location+issueRange.length-1];
-    NSDate *issueDate = [[latestArticle.date midnight] nextOccurrenceOfWeekday:2];
-    NSString *issueDateString = [dateFormatter stringFromDate:issueDate];
-    viewController.title = [NSString stringWithFormat:@"%@", issueDateString];
+   //TP: return a string == the name of the bulletin issue, corresponding to the articleIndex.
+   assert(issueRange.length > 0 && "issueTitleForArticle:, parameter issueRange is an empty range");
 
-    
-    [self.gridView deselectItemAtIndex:self.gridView.indexOfSelectedItem animated:YES];
+   //Set the title for a bulletin - "Week " + date of the week beginning day for this article.
+   MWFeedItem * const latestArticle = [self.aggregator.allArticles objectAtIndex : issueRange.location + issueRange.length - 1];
+
+   //Formatter to create a string representation.
+   NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+   dateFormatter.dateStyle = style;
+
+   //Weekday of the article's date
+   NSDateComponents * const dateComponents = [[NSCalendar currentCalendar] components : NSWeekdayCalendarUnit fromDate : latestArticle.date];
+
+   NSString *issueDateString = nil;
+   if (dateComponents.weekday > 1) {
+      NSDate * const firstDay = [latestArticle.date dateByAddingTimeInterval : -(dateComponents.weekday - 1) * 24 * 60 * 60];
+      issueDateString = [dateFormatter stringFromDate:firstDay];
+   } else {
+      issueDateString = [dateFormatter stringFromDate : latestArticle.date];
+   }
+   
+   return [NSString stringWithFormat : @"Week %@", issueDateString];
+}
+
+//________________________________________________________________________________________
+-(void) prepareForSegue : (UIStoryboardSegue *) segue sender : (id) sender
+{
+   if ([DeviceCheck deviceIsiPad]) {
+      NewsGridViewController * const viewController = [segue destinationViewController];
+      
+      NSUInteger issueIndex = [self.gridView indexOfSelectedItem];
+      viewController.aggregator = self.aggregator;
+      viewController.aggregator.delegate = viewController;
+       
+      NSRange issueRange = [[self.rangesOfArticlesSeparatedByWeek objectAtIndex : issueIndex] rangeValue];
+      viewController.rangeOfArticlesToShow = issueRange;
+      [viewController.gridView reloadData];
+
+      //TP: change issue naming.
+      viewController.title = [self issueTitleForRange : issueRange dateFormatterStyle : NSDateFormatterShortStyle];
+   } else {
+      //Ugly code duplication for the moment - different controllers for iPad/iPhone devices.
+      NewsTableViewController * const viewController = [segue destinationViewController];
+      
+      NSUInteger issueIndex = [self.gridView indexOfSelectedItem];
+      viewController.aggregator = self.aggregator;
+      viewController.aggregator.delegate = viewController;
+       
+      NSRange issueRange = [[self.rangesOfArticlesSeparatedByWeek objectAtIndex : issueIndex] rangeValue];
+      viewController.rangeOfArticlesToShow = issueRange;
+      //[(UITableView *)viewController.view reloadData];
+
+      //TP: change issue naming.
+      viewController.title = [self issueTitleForRange : issueRange dateFormatterStyle : NSDateFormatterShortStyle];
+   }
+
+   [self.gridView deselectItemAtIndex : self.gridView.indexOfSelectedItem animated : YES];
 }
 
 #pragma mark - AQGridView methods
 
+//________________________________________________________________________________________
 - (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView
 {
     return self.rangesOfArticlesSeparatedByWeek.count;
 }
 
-- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
+//________________________________________________________________________________________
+- (AQGridViewCell *) gridView : (AQGridView *) gridView cellForItemAtIndex : (NSUInteger) index
 {
-    static NSString *bulletinCellIdentifier = @"bulletinCell";
+   //TP: I had to replace this function completely.
+   
+   static NSString *bulletinCellIdentifier = @"bulletinCell";
 
-    BulletinGridViewCell *cell = (BulletinGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:bulletinCellIdentifier];
-    if (cell == nil) {
-        cell = [[BulletinGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 120.0) reuseIdentifier:bulletinCellIdentifier];
-        cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
-    }
-    
-    NSRange issueRange = [[self.rangesOfArticlesSeparatedByWeek objectAtIndex:index] rangeValue];
-    NSMutableString *articlesString = [NSMutableString stringWithFormat:@"%d ", issueRange.length];
-    [articlesString appendString: issueRange.length>1?@"articles":@"article"];
-    cell.descriptionLabel.text = articlesString;
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
-    MWFeedItem *latestArticle = [self.aggregator.allArticles objectAtIndex:issueRange.location+issueRange.length-1];
-    NSDate *issueDate = [[latestArticle.date midnight] nextOccurrenceOfWeekday:2];
-    NSString *issueDateString = [dateFormatter stringFromDate:issueDate];
-    cell.titleLabel.text = [NSString stringWithFormat:@"Week of %@", issueDateString];
-    
-    return cell;
+   BulletinGridViewCell *cell = (BulletinGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:bulletinCellIdentifier];
+   if (!cell) {
+      cell = [[BulletinGridViewCell alloc] initWithFrame : CGRectMake(0.0, 0.0, 300.0, 120.0) reuseIdentifier : bulletinCellIdentifier];
+      cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
+   }
+ 
+   const NSRange issueRange = [[self.rangesOfArticlesSeparatedByWeek objectAtIndex : index] rangeValue];
+   assert(issueRange.length > 0 && "gridView:cellForItemAtIndex:, issue range for artice is empty");
+
+   //As a title for a cell set "Week " + first day of this week.
+   cell.titleLabel.text = [self issueTitleForRange : issueRange dateFormatterStyle : NSDateFormatterMediumStyle];
+
+   //Show the number of articles in this issue.
+   NSMutableString * const articlesString = [NSMutableString stringWithFormat : @"%d ", issueRange.length];
+   [articlesString appendString : issueRange.length > 1 ? @"articles" : @"article"];
+   cell.descriptionLabel.text = articlesString;
+
+   return cell;
 }
 
-- (CGSize) portraitGridCellSizeForGridView: (AQGridView *) aGridView
+//________________________________________________________________________________________
+- (CGSize) portraitGridCellSizeForGridView : (AQGridView *) aGridView
 {
-        return CGSizeMake(320.0, 140.0);
+   return CGSizeMake(320.0, 140.0);
 }
 
-- (void) gridView: (AQGridView *) gridView didSelectItemAtIndex: (NSUInteger) index numFingersTouch:(NSUInteger)numFingers
+//________________________________________________________________________________________
+- (void) gridView : (AQGridView *) gridView didSelectItemAtIndex : (NSUInteger) index numFingersTouch : (NSUInteger) numFingers
 {
-    [self performSegueWithIdentifier:@"ShowBulletinArticles" sender:self];
+   [self performSegueWithIdentifier : @"ShowBulletinArticles" sender : self];
 }
 
 #pragma mark - RSSAggregatorDelegate methods
 
-- (void)allFeedsDidLoadForAggregator:(RSSAggregator *)sender
+//________________________________________________________________________________________
+- (void) allFeedsDidLoadForAggregator : (RSSAggregator *) sender
 {
-    [super allFeedsDidLoadForAggregator:sender];
-    self.rangesOfArticlesSeparatedByWeek = [self calculateRangesOfArticlesSeparatedByWeek:self.aggregator.allArticles];
-    [self.gridView reloadData];
+   [super allFeedsDidLoadForAggregator : sender];
+   self.rangesOfArticlesSeparatedByWeek = [self calculateRangesOfArticlesSeparatedByWeek : self.aggregator.allArticles];
+   [self.gridView reloadData];
 }
 
 @end

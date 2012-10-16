@@ -10,10 +10,10 @@
 #import "WebcastsParser.h"
 #import "MBProgressHUD.h"
 
-typedef enum {
+enum WebcastMode {
     WebcastModeRecent,
     WebcastModeUpcoming
-} WebcastMode;
+};
 
 @interface WebcastsGridViewController : AQGridViewController<WebcastsParserDelegate, MBProgressHUDDelegate>
 {

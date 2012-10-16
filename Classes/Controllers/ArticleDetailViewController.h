@@ -18,6 +18,7 @@
 }
 @property (nonatomic, strong) UIWebView *contentWebView;
 @property (nonatomic, strong) NSString *contentString;
+@property (nonatomic, assign) BOOL loadOriginalLink;
 
 - (void)setContentForArticle:(MWFeedItem *)article;
 - (void)setContentForVideoMetadata:(NSDictionary *)videoMetadata;

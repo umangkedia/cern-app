@@ -6,6 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
+#import <Availability.h>
+
 #import "MWCaptionView.h"
 #import "MWPhoto.h"
 
@@ -48,8 +50,15 @@ static const CGFloat labelPadding = 10;
     _label.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     _label.opaque = NO;
     _label.backgroundColor = [UIColor clearColor];
+
+#ifdef __IPHONE_6_0
+    _label.textAlignment = NSTextAlignmentCenter;
+    _label.lineBreakMode = NSLineBreakByWordWrapping;
+#else
     _label.textAlignment = UITextAlignmentCenter;
     _label.lineBreakMode = UILineBreakModeWordWrap;
+#endif
+
     _label.numberOfLines = 3;
     _label.textColor = [UIColor whiteColor];
     _label.shadowColor = [UIColor blackColor];

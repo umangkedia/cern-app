@@ -8,12 +8,21 @@
 
 #import "AQGridViewCell.h"
 
+namespace ROOT {
+namespace CernApp {
+
+enum GridCellStyle {
+   iPadStyle,
+   iPhoneStyle
+};
+
+}
+}
+
 @interface NewsGridViewCell : AQGridViewCell
-/*{
-    UILabel *titleLabel;
-    UILabel *dateLabel;
-    UIImageView *thumbnailImageView;
-}*/
+
+- (id) initWithFrame : (CGRect)frame reuseIdentifier : (NSString *) aReuseIdentifier cellStyle : (ROOT::CernApp::GridCellStyle) style;
+
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *dateLabel;
 @property (nonatomic, strong) UIImageView *thumbnailImageView;

@@ -11,13 +11,15 @@
 #import "NewsGridViewCell.h"
 #import "DeviceCheck.h"
 
+namespace CernApp = ROOT::CernApp;
+
 @implementation NewsGridViewCell
 //@synthesize titleLabel, dateLabel, thumbnailImageView;
 
-- (id) initWithFrame:(CGRect)frame reuseIdentifier:(NSString *)aReuseIdentifier
+- (id) initWithFrame : (CGRect) frame reuseIdentifier : (NSString *) aReuseIdentifier cellStyle : (CernApp::GridCellStyle) cellStyle
 {
     if (self = [super initWithFrame : frame reuseIdentifier : aReuseIdentifier]) {
-        if ([DeviceCheck deviceIsiPad]) {
+        if ([DeviceCheck deviceIsiPad] || cellStyle == CernApp::iPadStyle) {
             //For the moment, I have two separate versions, later I'll make it more general
             //(as soon as we invent layout algorithm for iPad version).
             self.layer.borderColor = [UIColor whiteColor].CGColor;

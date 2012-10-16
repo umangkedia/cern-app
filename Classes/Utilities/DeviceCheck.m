@@ -10,11 +10,18 @@
 
 @implementation DeviceCheck
 
+//________________________________________________________________________________________
 + (BOOL) deviceIsiPad
 {
    //Docs says nothing about possible device names, giving only two examples: "iPod touch" and "iPhone".
    NSString * const deviceModel = [UIDevice currentDevice].model;
    return [deviceModel rangeOfString:@"iPad"].location != NSNotFound;
+}
+
+//________________________________________________________________________________________
++ (BOOL) deviceIsiPhone5
+{
+   return [UIScreen mainScreen].bounds.size.height > 480.f;
 }
 
 @end

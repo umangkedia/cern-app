@@ -12,6 +12,7 @@
 #define kArticleDetailViewIdentifier @"ArticleDetailViewIdentifier"
 #define kExperimentFunctionSelectorViewIdentifier @"ExperimentFunctionSelectorViewControllerIdentifier"
 #define kExperimentNewsViewController @"ExperimentNewsViewControllerIdentifier"
+#define kExperimentNewsTableViewController @"ExperimentNewsTableViewControllerIdentifier"
 #define kEventDisplayViewController @"EventDisplayViewControllerIdentifier"
 #define kALICEPhotoGridViewController @"ALICEPhotoGridViewControllerIdentifier"
 #define kStaticInfoScrollViewController @"StaticInfoScrollViewControllerIdentifier"

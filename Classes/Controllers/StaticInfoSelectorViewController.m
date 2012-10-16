@@ -85,6 +85,8 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+   
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
     NSDictionary *item = [self.tableDataSource objectAtIndex:indexPath.row];
     cell.textLabel.text = [item objectForKey:@"Title"];

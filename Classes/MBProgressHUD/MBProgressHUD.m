@@ -4,6 +4,8 @@
 // Created by Matej Bukovinski on 2.4.09.
 //
 
+#import <Availability.h>
+
 #import "MBProgressHUD.h"
 
 
@@ -421,7 +423,13 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 - (void)setupLabels {
 	label = [[UILabel alloc] initWithFrame:self.bounds];
 	label.adjustsFontSizeToFitWidth = NO;
+
+#ifdef __IPHONE_6_0
+   label.textAlignment = NSTextAlignmentCenter;
+#else
 	label.textAlignment = UITextAlignmentCenter;
+#endif
+
 	label.opaque = NO;
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
@@ -432,7 +440,13 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	detailsLabel = [[UILabel alloc] initWithFrame:self.bounds];
 	detailsLabel.font = self.detailsLabelFont;
 	detailsLabel.adjustsFontSizeToFitWidth = NO;
+
+#ifdef __IPHONE_6_0
+	detailsLabel.textAlignment = NSTextAlignmentCenter;
+#else
 	detailsLabel.textAlignment = UITextAlignmentCenter;
+#endif
+
 	detailsLabel.opaque = NO;
 	detailsLabel.backgroundColor = [UIColor clearColor];
 	detailsLabel.textColor = [UIColor whiteColor];

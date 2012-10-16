@@ -7,6 +7,7 @@
 //
 
 #import "RSSAggregator.h"
+#import "MWFeedItem.h"
 
 @implementation RSSAggregator
 
@@ -93,9 +94,20 @@
     for (RSSFeed *feed in self.feeds) {
         [aggregation addObjectsFromArray:feed.articles];
     }
+
+    /*
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
     NSArray *sortedAggregation = [aggregation sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-    return sortedAggregation;
+    */
+   
+    NSArray *sortedItems = [aggregation sortedArrayUsingComparator:
+                            ^ NSComparisonResult(id a, id b)
+                            {
+                                return ![((MWFeedItem *)a).date compare : ((MWFeedItem *)b).date];
+                            }
+                            ];
+   
+    return sortedItems;
 }
 
 - (void)downloadAllFirstImages
@@ -117,19 +129,21 @@
         NSData *imageData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
         UIImage *image = [[UIImage alloc] initWithData:imageData];
        
-        if (!image)
-            image = [UIImage imageNamed:@"image_not_found.png"];
+        //if (!image)
+        //    image = [UIImage imageNamed:@"image_not_found.png"];
        
-        NSNumber *articleIndex = [NSNumber numberWithInt:[self.allArticles indexOfObject:article]];
-        //if (image) {
-        [self.firstImages setObject:image forKey:articleIndex];
-        /*} else {
-            NSLog(@"Article thumbnail download failed, will try again.");
-            [self downloadFirstImageForArticle:article];
-        }*/
-        // Inform the delegate on the main thread that the image downloaded
-        if (self.delegate && [self.delegate respondsToSelector:@selector(aggregator:didDownloadFirstImage:forArticle:)]) {
-            [self performSelectorOnMainThread:@selector(informDelegateOfFirstImageDownloadForArticleIndex:) withObject:articleIndex waitUntilDone:NO];
+        if (image) {
+           NSNumber *articleIndex = [NSNumber numberWithInt:[self.allArticles indexOfObject:article]];
+           //if (image) {
+           [self.firstImages setObject:image forKey:articleIndex];
+           /*} else {
+               NSLog(@"Article thumbnail download failed, will try again.");
+               [self downloadFirstImageForArticle:article];
+           }*/
+           // Inform the delegate on the main thread that the image downloaded
+           if (self.delegate && [self.delegate respondsToSelector:@selector(aggregator:didDownloadFirstImage:forArticle:)]) {
+               [self performSelectorOnMainThread:@selector(informDelegateOfFirstImageDownloadForArticleIndex:) withObject:articleIndex waitUntilDone:NO];
+           }
         }
     }
 }

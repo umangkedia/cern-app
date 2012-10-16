@@ -6,71 +6,79 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import "ExperimentsViewController.h"
-//#import "ExperimentTableViewController.h"
-#import "ExperimentFunctionSelectorViewController.h"
-#import "Constants.h"
 #import <QuartzCore/QuartzCore.h>
+
+#import "ExperimentFunctionSelectorViewController.h"
+#import "ExperimentsViewController.h"
+#import "DeviceCheck.h"
+#import "Constants.h"
 
 #define CMS_BUTTON 0
 #define LHCB_BUTTON 1
 #define ATLAS_BUTTON 2
 #define ALICE_BUTTON 3
 
-@interface ExperimentsViewController ()
-
-@end
-
 @implementation ExperimentsViewController
+
 @synthesize mapImageView, shadowImageView, atlasButton, cmsButton, aliceButton, lhcbButton, lhcButton, popoverController;
 
+//________________________________________________________________________________________
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        self.mapImageView.backgroundColor = [UIColor clearColor];
-        self.mapImageView.opaque = NO;
-        self.shadowImageView.backgroundColor = [UIColor clearColor];
-        self.shadowImageView.opaque = NO;
-    }
-    return self;
+   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+   if (self) {
+      self.mapImageView.backgroundColor = [UIColor clearColor];
+      self.mapImageView.opaque = NO;
+      self.shadowImageView.backgroundColor = [UIColor clearColor];
+      self.shadowImageView.opaque = NO;
+   }
+
+   return self;
 }
 
+//________________________________________________________________________________________
 - (void)viewDidLoad
 {
 }
 
+//________________________________________________________________________________________
 - (void)viewDidAppear:(BOOL)animated
 {
-
-    // Fade in the shadow graphic
-    [UIView animateWithDuration:1.0 animations:^{self.shadowImageView.alpha = 1.0;}];
+   // Fade in the shadow graphic
+   [UIView animateWithDuration : 0.5f animations:^{self.shadowImageView.alpha = 1.f;}];
 }
 
+//________________________________________________________________________________________
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.navigationController.navigationBarHidden = YES;
-    [self setupVisualsForOrientation:[UIApplication sharedApplication].statusBarOrientation withDuration:0.0];
+   self.shadowImageView.alpha = 0.f;
+   
+   self.navigationController.navigationBarHidden = YES;
+   [self setupVisualsForOrientation:[UIApplication sharedApplication].statusBarOrientation withDuration : 0.];
 }
 
+//________________________________________________________________________________________
 - (void)viewWillDisappear:(BOOL)animated
 {
-    self.navigationController.navigationBarHidden = NO;
+   self.navigationController.navigationBarHidden = NO;
 }
 
+//________________________________________________________________________________________
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-    else
-        return (interfaceOrientation == UIInterfaceOrientationPortrait);
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      return YES;
+   else
+      return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+//________________________________________________________________________________________
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self setupVisualsForOrientation:toInterfaceOrientation withDuration:duration];
+   [self setupVisualsForOrientation:toInterfaceOrientation withDuration:duration];
 }
 
+//________________________________________________________________________________________
 - (void)setupVisualsForOrientation:(UIDeviceOrientation)orientation withDuration:(NSTimeInterval)duration
 {
     CATransition *transition = [CATransition animation];
@@ -81,18 +89,32 @@
     
     // We have to hardcode the coordinates of each button on the screen for each device orientation. Yes, this is horrible
     // but it's really the only way to do it.
+   
+    //TP: I'm pretty sure, there are over 9000 ways to make it right way instead of this hardcoded nightmare ;)
+   
     if (UIDeviceOrientationIsPortrait(orientation)) {
-        
-        self.mapImageView.image = [UIImage imageNamed:@"mapPortrait"];
+
+        const BOOL deviceIsIPhone5 = [DeviceCheck deviceIsiPhone5];
+       
+        self.mapImageView.image = [UIImage imageNamed:@"mapPortrait"];//This does not work correctly???
         self.shadowImageView.image = [UIImage imageNamed:@"mapShadowPortrait"];
-        
+       
+        if ([DeviceCheck deviceIsiPhone5]) {
+            self.mapImageView.image = [UIImage imageNamed : @"mapPortrait-568h@2x~iphone"];
+            self.shadowImageView.image = [UIImage imageNamed : @"mapShadowPortrait-568h@2x~iphone"];
+        }
+       
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            float sideLength = 44.0;
-            self.atlasButton.frame = CGRectMake(168.0, 244.0, sideLength, sideLength);
-            self.cmsButton.frame = CGRectMake(61.0, 308.0, sideLength, sideLength);
-            self.aliceButton.frame = CGRectMake(235.0, 260.0, sideLength, sideLength);
-            self.lhcbButton.frame = CGRectMake(87.0, 241.0, sideLength, sideLength);
-            self.lhcButton.frame = CGRectMake(220.0, 310.0, sideLength, sideLength);
+            //568 image was not scaled, I can not calculate this shift from sizes,
+            //that's why it's ... elegantly hardcoded :))))
+            const CGFloat yShift = deviceIsIPhone5 ? 35.f : 0.f;
+        
+            const CGFloat sideLength = 44.f;
+            self.atlasButton.frame = CGRectMake(168.0, 244.0 + yShift, sideLength, sideLength);
+            self.cmsButton.frame = CGRectMake(61.0, 308.0 + yShift, sideLength, sideLength);
+            self.aliceButton.frame = CGRectMake(235.0, 260.0 + yShift, sideLength, sideLength);
+            self.lhcbButton.frame = CGRectMake(87.0, 241.0 + yShift, sideLength, sideLength);
+            self.lhcButton.frame = CGRectMake(220.0, 310.0 + yShift, sideLength, sideLength);
             
         } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             float sideLength = 85.0;
@@ -117,25 +139,26 @@
     }
 }
 
+//________________________________________________________________________________________
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    ExperimentFunctionSelectorViewController *viewController = [segue destinationViewController];
+   ExperimentFunctionSelectorViewController *viewController = [segue destinationViewController];
 
-    // Since viewController.experiment is an ExperimentType enum, it will be an integer between 0 and 3. So the button tags in the storyboard are just set to match the enum types.
-    viewController.experiment = ((UIButton *)sender).tag;
+   // Since viewController.experiment is an ExperimentType enum, it will be an integer between 0 and 3. So the button tags in the storyboard are just set to match the enum types.
+   viewController.experiment = ((UIButton *)sender).tag;
 }
 
+//________________________________________________________________________________________
 - (IBAction)buttonTapped:(UIButton *)sender
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        ExperimentFunctionSelectorViewController *viewController = [[UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil] instantiateViewControllerWithIdentifier:kExperimentFunctionSelectorViewIdentifier];        
-        viewController.experiment = sender.tag;
-        self.popoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
-        self.popoverController.popoverContentSize = CGSizeMake(320, 200);
-        
-        //show the popover next to the annotation view (pin)
-        [self.popoverController presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+      ExperimentFunctionSelectorViewController *viewController = [[UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil] instantiateViewControllerWithIdentifier:kExperimentFunctionSelectorViewIdentifier];
+      viewController.experiment = sender.tag;
+      self.popoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
+      self.popoverController.popoverContentSize = CGSizeMake(320, 200);
+      //show the popover next to the annotation view (pin)
+      [self.popoverController presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
    }
- }
+}
 
 @end

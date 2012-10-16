@@ -10,10 +10,12 @@
 #import "RSSAggregator.h"
 #import "PhotosGridViewController.h"
 #import "NewsGridViewController.h"
+#import "NewsTableViewController.h"
 #import "BulletinGridViewController.h"
 #import "StaticInfoSelectorViewController.h"
 #import "StaticInfoScrollViewController.h"
 #import "WebcastsGridViewController.h"
+#import "DeviceCheck.h"
 #import "Constants.h"
 
 @implementation AppDelegate
@@ -78,9 +80,12 @@
     switch (index) {
         case TabIndexNews: {
             // Populate the general News view controller with news feeds
-            [((NewsGridViewController *)viewController).aggregator addFeedForURL:[NSURL URLWithString:@"http://twitter.com/statuses/user_timeline/15234407.rss"]];
-            [((NewsGridViewController *)viewController).aggregator addFeedForURL:[NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
+            if ([DeviceCheck deviceIsiPad])
+               [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
+            else
+               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
             [(NewsGridViewController *)viewController refresh];
+
             break;
         }
         case TabIndexAbout: {

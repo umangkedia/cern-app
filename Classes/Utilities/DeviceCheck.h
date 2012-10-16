@@ -9,5 +9,6 @@
 @interface DeviceCheck : NSObject
 
 + (BOOL) deviceIsiPad;
++ (BOOL) deviceIsiPhone5;
 
 @end
