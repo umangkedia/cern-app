@@ -96,12 +96,12 @@
 
         const BOOL deviceIsIPhone5 = [DeviceCheck deviceIsiPhone5];
        
-        self.mapImageView.image = [UIImage imageNamed:@"mapPortrait"];//This does not work correctly???
-        self.shadowImageView.image = [UIImage imageNamed:@"mapShadowPortrait"];
-       
         if ([DeviceCheck deviceIsiPhone5]) {
             self.mapImageView.image = [UIImage imageNamed : @"mapPortrait-568h@2x~iphone"];
             self.shadowImageView.image = [UIImage imageNamed : @"mapShadowPortrait-568h@2x~iphone"];
+        } else {
+            self.mapImageView.image = [UIImage imageNamed:@"mapPortrait"];//This does not work correctly???
+            self.shadowImageView.image = [UIImage imageNamed:@"mapShadowPortrait"];
         }
        
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
