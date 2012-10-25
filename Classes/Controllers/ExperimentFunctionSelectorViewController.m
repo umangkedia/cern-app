@@ -18,7 +18,9 @@
 
 #import "Constants.h"
 
-@implementation ExperimentFunctionSelectorViewController
+@implementation ExperimentFunctionSelectorViewController {
+   NSMutableArray *experimentFeeds;
+}
 
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
@@ -61,6 +63,14 @@
          break;
       default: break;
    }
+   
+   if (!experimentFeeds)
+      experimentFeeds = [[NSMutableArray alloc] init];
+   else
+      [experimentFeeds removeAllObjects];
+   
+   //Read from plist and fill?
+   
 }
 
 //________________________________________________________________________________________
