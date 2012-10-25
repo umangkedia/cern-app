@@ -2,15 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LHC</key>
-	<dict>
-		<key>Event display</key>
-		<dict/>
-	</dict>
 	<key>LHCb</key>
 	<dict>
-		<key>Event display</key>
-		<dict/>
 		<key>Feeds</key>
 		<dict>
 			<key>LHCb Tweets</key>
@@ -24,13 +17,9 @@
 			<key>ALICE News</key>
 			<string>http://alicematters.web.cern.ch/rss.xml</string>
 		</dict>
-		<key>Event display</key>
-		<dict/>
 	</dict>
 	<key>CMS</key>
 	<dict>
-		<key>Event display</key>
-		<dict/>
 		<key>Feeds</key>
 		<dict>
 			<key>CMS News</key>
@@ -39,8 +28,6 @@
 	</dict>
 	<key>ATLAS</key>
 	<dict>
-		<key>Event display</key>
-		<dict/>
 		<key>Feeds</key>
 		<dict>
 			<key>ATLAS News</key>
