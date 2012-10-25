@@ -166,6 +166,7 @@
 		41E618901614CFAB00BAA7D4 /* ArticleCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = 41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */; };
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
 		41E6189B1614DABB00BAA7D4 /* RSSArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6189A1614DABB00BAA7D4 /* RSSArticle.m */; };
+		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
@@ -421,6 +422,7 @@
 		41E618931614CFB500BAA7D4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		41E618991614DAAF00BAA7D4 /* RSSArticle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSSArticle.h; sourceTree = "<group>"; };
 		41E6189A1614DABB00BAA7D4 /* RSSArticle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSArticle.m; sourceTree = "<group>"; };
+		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
@@ -680,6 +682,7 @@
 				41E618271614CEB700BAA7D4 /* MainStoryboard_iPad.storyboard */,
 				41E618281614CEB700BAA7D4 /* MainStoryboard_iPhone.storyboard */,
 				41E6188D1614CF7000BAA7D4 /* StaticInformation.plist */,
+				700F547816396A130082B89E /* CERNLive.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1062,6 +1065,7 @@
 				4162A4651625BD5D002B9D09 /* Default-Portrait@2x~ipad.png in Resources */,
 				4162A4671625BD65002B9D09 /* Default-Portrait~ipad.png in Resources */,
 				41C0659416271ED1000DC176 /* iTunesArtwork in Resources */,
+				700F547916396A130082B89E /* CERNLive.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
