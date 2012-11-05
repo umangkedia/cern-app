@@ -198,9 +198,12 @@
 
 @end
 
+
+#pragma mark - ExperimentFunctionSelectorViewController.
+
 //________________________________________________________________________________________
 @implementation ExperimentFunctionSelectorViewController {
-
+   NSMutableArray *liveData;
 }
 
 //________________________________________________________________________________________
@@ -225,6 +228,49 @@
 }
 
 //________________________________________________________________________________________
+- (void) readLIVEData
+{
+   NSString * const path = [[NSBundle mainBundle] pathForResource : @"CERNLive" ofType : @"plist"];
+   NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
+   assert(plistDict != nil && "readLIVEData:, no dictionary or CERNLive.plist found");
+
+   if (!liveData)
+      liveData = [[NSMutableArray alloc] init];
+   else
+      [liveData removeAllObjects];
+
+   if (id base = [plistDict objectForKey : self.title]) {
+      assert([base isKindOfClass : [NSArray class]] && "readLIVEData:, entry for experiment must have NSArray type");
+      NSArray * const dataSource = (NSArray *)base;
+      
+      for (id arrayItem in dataSource) {
+         assert([arrayItem isKindOfClass : [NSDictionary class]] && "readLIVEData:, array of dictionaries expected");
+         NSDictionary * const data = (NSDictionary *)arrayItem;
+         
+         id base = [data objectForKey : @"Category name"];
+         assert(base != nil && [base isKindOfClass : [NSString class]] && "readLIVEData:, string key 'Category name' was not found");
+         
+         NSString *catName = (NSString *)base;
+         
+         if ([catName isEqualToString : @"News"]) {
+            LIVENews *news = [[LIVENews alloc] initWithLIVEData : data];
+            if (news)
+               [liveData addObject : news];
+            else
+               NSLog(@"LIVENews initialization failed for %@", self.title);
+
+         } else if ([catName isEqualToString:@"Event display"]) {
+            //NSLog(@"Event display found for %@", self.title);
+         } else if ([catName isEqualToString:@"DAQ"]) {
+            //NSLog(@"DAQ found for %@", self.title);
+         } else {
+            assert(0 && "readLIVEData, unknown data entry found");
+         }
+      }
+   }
+}
+
+//________________________________________________________________________________________
 - (void) viewWillAppear : (BOOL) animated
 {
    self.navigationController.navigationBarHidden = NO;
@@ -242,10 +288,14 @@
       case LHCb:
          self.title = @"LHCb";
          break;
+      case LHC:
+         self.title = @"LHC";
+         break;
       default: break;
    }
    
    //
+   [self readLIVEData];
 }
 
 //________________________________________________________________________________________
