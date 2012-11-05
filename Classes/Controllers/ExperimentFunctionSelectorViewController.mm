@@ -8,6 +8,8 @@
 
 //Modified by Timur Pocheptsov.
 
+#include <cassert>
+
 #import "ExperimentFunctionSelectorViewController.h"
 #import "EventDisplayViewController.h"
 #import "PhotosGridViewController.h"
@@ -18,8 +20,187 @@
 
 #import "Constants.h"
 
+//________________________________________________________________________________________
+@interface ExperimentLIVEData : NSObject
+
+- (id) initWithLIVEData : (NSDictionary *) data;
+
+- (NSUInteger) numberOfRows;
+- (NSUInteger) numberOfViewsForRow : (NSUInteger) row;
+- (NSString *) textForRow : (NSUInteger) row;
+
+@end
+
+@implementation ExperimentLIVEData
+
+//________________________________________________________________________________________
+- (id) initWithLIVEData : (NSDictionary *) data
+{
+   assert(data != nil && "initWithLIVEData, 'data' parameter is nil");
+   
+   self = [super init];
+
+   return self;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfRows
+{
+   return 0;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfViewsForRow:(NSUInteger)row
+{
+   (void)row;
+   return 0;
+}
+
+//________________________________________________________________________________________
+- (NSString *) textForRow : (NSUInteger) row
+{
+   (void)row;
+   return @"";
+}
+
+@end
+
+//________________________________________________________________________________________
+@interface LIVENews : ExperimentLIVEData {
+   NSMutableArray *feeds;
+   NSMutableArray *tweets;
+   NSMutableArray *pages;
+}
+
+- (id) initWithLIVEData : (NSDictionary *) data;
+
+- (NSUInteger) numberOfRows;
+- (NSUInteger) numberOfViewsForRow : (NSUInteger)row;
+- (NSString *) textForRow : (NSUInteger) row;
+
+@end
+
+@implementation LIVENews
+
+//________________________________________________________________________________________
+- (id) initWithLIVEData : (NSDictionary *) data
+{
+   assert(data != nil && "initWithLIVEData, 'data' parameter is nil");
+   
+   if (self = [super initWithLIVEData : data]) {
+      //
+      if (id base = [data objectForKey : @"Feeds"]) {
+         assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Feeds'");
+         NSArray * const feedsSrc = (NSArray *)base;
+         
+         if ([feedsSrc count]) {
+            feeds = [[NSMutableArray alloc] init];
+            for (id feed in feedsSrc) {
+               //Check here, feed should be a string.
+               assert([feed isKindOfClass : [NSString class]] && "initWithLIVEData:, feed must be of NSString type");
+               [feeds addObject : feed];
+            }
+         }
+      }
+      //
+      if (id base = [data objectForKey : @"Pages"]) {
+         assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Pages'");
+         NSArray * const pagesSrc = (NSArray *)base;
+         
+         if ([pagesSrc count]) {
+            pages = [[NSMutableArray alloc] init];
+            for (id page in pagesSrc) {
+               //Check here, feed should be a string.
+               assert([page isKindOfClass : [NSString class]] && "initWithLIVEData:, page must be of NSString type");
+               [pages addObject : page];
+            }
+         }
+      }
+      //
+      if (id base = [data objectForKey : @"Tweets"]) {
+         assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Tweets'");
+         NSArray * const tweetsSrc = (NSArray *)base;
+         
+         if ([tweetsSrc count]) {
+            feeds = [[NSMutableArray alloc] init];
+            for (id tweet in tweetsSrc) {
+               //Check here, feed should be a string.
+               assert([tweet isKindOfClass : [NSString class]] && "initWithLIVEData:, tweet must be of NSString type");
+               [tweets addObject : tweet];
+            }
+         }
+      }
+   }
+
+   return self;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfRows
+{
+   //Max. == 2.
+   NSUInteger nRows = 0;
+   if ([feeds count] || [pages count])
+      ++nRows;
+   if ([tweets count])
+      ++nRows;
+   
+   return nRows;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfViewsForRow : (NSUInteger)row
+{
+   if (!row) {
+      //feeds, pages.
+      assert([feeds count] || [pages count] && "numberOfViewsForRow:, no data in the 'News' section");
+      return [feeds count] + [pages count];
+   }
+   
+   assert(row == 1 && "numberOfViewsForRow:, row index must be <= 1");
+   assert([tweets count] > 0 && "numberOfViewForRow:, called for empty 'Tweets' section");
+
+   return [tweets count];
+}
+
+//________________________________________________________________________________________
+- (NSString *) textForRow : (NSUInteger) row
+{
+   if (!row) {
+      assert([feeds count] || [pages count] && "textForRow:, no data in the 'News' section");
+      return @"News";
+   }
+   
+   assert(row == 1 && "textForRow:, row index must be <= 1");
+   assert([tweets count] > 0 && "textForRow:, called for empty 'Tweets' section");
+
+   return @"Tweets";
+}
+
+@end
+
+//________________________________________________________________________________________
+@interface EventDisplayData : ExperimentLIVEData
+
+@end
+
+@implementation EventDisplayData
+
+@end
+
+//________________________________________________________________________________________
+@interface DAQData : ExperimentLIVEData
+
+@end
+
+@implementation DAQData
+
+
+@end
+
+//________________________________________________________________________________________
 @implementation ExperimentFunctionSelectorViewController {
-   NSMutableArray *experimentFeeds;
+
 }
 
 //________________________________________________________________________________________
@@ -64,13 +245,7 @@
       default: break;
    }
    
-   if (!experimentFeeds)
-      experimentFeeds = [[NSMutableArray alloc] init];
-   else
-      [experimentFeeds removeAllObjects];
-   
-   //Read from plist and fill?
-   
+   //
 }
 
 //________________________________________________________________________________________

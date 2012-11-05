@@ -21,7 +21,7 @@
 		41E6178F1614CE1700BAA7D4 /* ArticleDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617261614CE1700BAA7D4 /* ArticleDetailViewController.m */; };
 		41E617901614CE1700BAA7D4 /* BulletinGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617281614CE1700BAA7D4 /* BulletinGridViewController.m */; };
 		41E617911614CE1700BAA7D4 /* EventDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.m */; };
-		41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.m */; };
+		41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */; };
 		41E617931614CE1700BAA7D4 /* ExperimentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.m */; };
 		41E617941614CE1700BAA7D4 /* NewsGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */; };
 		41E617951614CE1700BAA7D4 /* PhotosGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617321614CE1700BAA7D4 /* PhotosGridViewController.m */; };
@@ -226,7 +226,7 @@
 		41E617291614CE1700BAA7D4 /* EventDisplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventDisplayViewController.h; sourceTree = "<group>"; };
 		41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventDisplayViewController.m; sourceTree = "<group>"; };
 		41E6172B1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperimentFunctionSelectorViewController.h; sourceTree = "<group>"; };
-		41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExperimentFunctionSelectorViewController.m; sourceTree = "<group>"; };
+		41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ExperimentFunctionSelectorViewController.mm; sourceTree = "<group>"; };
 		41E6172D1614CE1700BAA7D4 /* ExperimentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperimentsViewController.h; sourceTree = "<group>"; };
 		41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExperimentsViewController.m; sourceTree = "<group>"; };
 		41E6172F1614CE1700BAA7D4 /* NewsGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsGridViewController.h; sourceTree = "<group>"; };
@@ -505,7 +505,7 @@
 				41E617291614CE1700BAA7D4 /* EventDisplayViewController.h */,
 				41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.m */,
 				41E6172B1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.h */,
-				41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.m */,
+				41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */,
 				41E6172D1614CE1700BAA7D4 /* ExperimentsViewController.h */,
 				41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.m */,
 				41E6172F1614CE1700BAA7D4 /* NewsGridViewController.h */,
@@ -1080,7 +1080,7 @@
 				41E6178F1614CE1700BAA7D4 /* ArticleDetailViewController.m in Sources */,
 				41E617901614CE1700BAA7D4 /* BulletinGridViewController.m in Sources */,
 				41E617911614CE1700BAA7D4 /* EventDisplayViewController.m in Sources */,
-				41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.m in Sources */,
+				41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */,
 				41E617931614CE1700BAA7D4 /* ExperimentsViewController.m in Sources */,
 				41E617941614CE1700BAA7D4 /* NewsGridViewController.mm in Sources */,
 				41E617951614CE1700BAA7D4 /* PhotosGridViewController.m in Sources */,

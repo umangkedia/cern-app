@@ -10,10 +10,8 @@
 #import "ExperimentsViewController.h"
 
 @interface ExperimentFunctionSelectorViewController : UITableViewController
-/*{
-    ExperimentType experiment;
-}*/
+
 @property ExperimentType experiment;
 
-
 @end
+
