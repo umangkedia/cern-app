@@ -175,6 +175,7 @@
 		704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.m */; };
 		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
 		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
+		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -437,6 +438,9 @@
 		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
 		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewController.mm; sourceTree = "<group>"; };
 		709E9829161B1E1A00F225DD /* NewsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewController.h; sourceTree = "<group>"; };
+		70E1A7B7164A8A280018536F /* ScrollSelector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScrollSelector.mm; path = CustomWidgets/ScrollSelector.mm; sourceTree = "<group>"; };
+		70E1A7B8164A8A280018536F /* ScrollSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelector.h; path = CustomWidgets/ScrollSelector.h; sourceTree = "<group>"; };
+		70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelectorDelegate.h; path = CustomWidgets/ScrollSelectorDelegate.h; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -484,6 +488,7 @@
 		41E617201614CE1700BAA7D4 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				70E1A7B6164A89FB0018536F /* CustomWidgets */,
 				41E617211614CE1700BAA7D4 /* AppDelegate */,
 				41E617241614CE1700BAA7D4 /* Controllers */,
 				41E6173F1614CE1700BAA7D4 /* MBProgressHUD */,
@@ -850,6 +855,16 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		70E1A7B6164A89FB0018536F /* CustomWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				70E1A7B7164A8A280018536F /* ScrollSelector.mm */,
+				70E1A7B8164A8A280018536F /* ScrollSelector.h */,
+				70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */,
+			);
+			name = CustomWidgets;
+			sourceTree = "<group>";
+		};
 		E1B6924815D9913B00EC9AFA /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1144,6 +1159,7 @@
 				709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */,
 				709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */,
 				41AB925C1642D16A0025E5ED /* PullRefreshTableViewController.m in Sources */,
+				70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
