@@ -173,7 +173,7 @@
     // Don't forget to call stopLoading at the end.
     [self performSelector:@selector(stopLoading) withObject:nil afterDelay:2.0];
 }
-
+/*
 - (void)dealloc {
     [refreshHeaderView release];
     [refreshLabel release];
@@ -183,6 +183,6 @@
     [textRelease release];
     [textLoading release];
     [super dealloc];
-}
+}*/
 
 @end
