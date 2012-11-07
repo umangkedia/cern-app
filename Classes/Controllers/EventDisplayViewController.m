@@ -35,7 +35,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
     
     CGRect titleViewFrame = CGRectMake(0.0, 0.0, 200.0, 44.0);
     UIView *titleView = [[UIView alloc] initWithFrame:titleViewFrame];

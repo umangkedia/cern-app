@@ -529,6 +529,8 @@
       [self pushNewsControllerForExperiment];
    else if (indexPath.row == 1)
       [self pushEventDisplayForExperiment];
+   
+   [tableView deselectRowAtIndexPath : indexPath animated : NO];
    //else - something else if we have.
 }
 
