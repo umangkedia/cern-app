@@ -230,7 +230,7 @@
    
    //Here's a trick: usually, table view from storyboard is a top level view and
    //takes the full screen, but we need a space at the top to add a scroller.
-   
+  /*
    CGRect frame = self.view.frame;
    UIView *view = [[UIView alloc] initWithFrame : frame];
    
@@ -249,7 +249,7 @@
 
    [view addSubview : selector];
    [view addSubview : tableView];
-   self.view = view;
+   self.view = view;*/
 }
 
 //________________________________________________________________________________________

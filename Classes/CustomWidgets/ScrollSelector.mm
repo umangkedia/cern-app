@@ -72,11 +72,11 @@ const CGFloat cellHeight = 40.f;
                                        contentScroll.frame.size.width, contentScroll.frame.size.height);
       //At least something is good about modern Obj-C - no need in explicit NSNumber creation for every literal.
       gradientLayer.locations = @[@0.0f, @0.35f, @0.65f, @1.0f];
-      gradientLayer.colors = [NSArray arrayWithObjects :
+      gradientLayer.colors = @[
                               (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.95] CGColor],
                               (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.] CGColor],
                               (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.] CGColor],
-                              (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.95] CGColor], nil];
+                              (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.95] CGColor]];
       [self.layer insertSublayer : gradientLayer above : dropshadowLayer];
    }
 
