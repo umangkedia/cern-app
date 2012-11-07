@@ -15,6 +15,7 @@
 #import "PhotosGridViewController.h"
 #import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
+#import "ScrollSelector.h"
 #import "DeviceCheck.h"
 #import "AppDelegate.h"
 
@@ -225,6 +226,30 @@
 
    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+   //NSLog(@"self.view is %@", self.view);
+   
+   //Here's a trick: usually, table view from storyboard is a top level view and
+   //takes the full screen, but we need a space at the top to add a scroller.
+   
+   CGRect frame = self.view.frame;
+   UIView *view = [[UIView alloc] initWithFrame : frame];
+   
+   UITableView *tableView = self.tableView;
+   
+   frame.origin = CGPointZero;
+   CGRect topScrollerFrame = frame;
+   topScrollerFrame.size.height = [ScrollSelector defaultHeight];
+   
+   ScrollSelector *selector = [[ScrollSelector alloc] initWithFrame : topScrollerFrame];
+   [selector addItemNames : @[@"Feed one", @"Feed two", @"Feed three"]];
+   
+   frame.origin.y = [ScrollSelector defaultHeight];
+   frame.size.height -= [ScrollSelector defaultHeight];
+   tableView.frame = frame;
+
+   [view addSubview : selector];
+   [view addSubview : tableView];
+   self.view = view;
 }
 
 //________________________________________________________________________________________
@@ -303,7 +328,7 @@
 {
    [super viewDidUnload];
    // Release any retained subviews of the main view.
-   // e.g. self.myOutlet = nil;
+   // e.g. self.myOutlet = nil;   
 }
 
 //________________________________________________________________________________________
