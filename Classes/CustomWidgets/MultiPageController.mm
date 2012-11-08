@@ -30,10 +30,10 @@
 {
    [super viewDidLoad];
    if (self.view) {
-      self.view.backgroundColor = [UIColor blueColor];
+      self.view.backgroundColor = [UIColor blackColor];
       
       const CGRect frame = self.view.frame;
-      selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0.f, 0.f, frame.size.width, [ScrollSelector defaultHeight])];
+      selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0.15 * frame.size.width, 0.f, 0.7 * frame.size.width, [ScrollSelector defaultHeight])];
       [self.view addSubview : selector];
 
       //Items must be added into the selector.
