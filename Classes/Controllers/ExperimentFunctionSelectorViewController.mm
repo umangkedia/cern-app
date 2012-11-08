@@ -15,6 +15,7 @@
 #import "PhotosGridViewController.h"
 #import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
+#import "MultiPageController.h"
 #import "ScrollSelector.h"
 #import "DeviceCheck.h"
 #import "AppDelegate.h"
@@ -28,6 +29,7 @@
 
 - (NSUInteger) numberOfRows;
 - (NSString *) textForRow : (NSUInteger) row;
+- (void) loadLIVEData : (ExperimentFunctionSelectorViewController *) controller forRow : (NSUInteger) row;
 
 @end
 
@@ -61,6 +63,13 @@
 {
    (void)row;
    return @"";
+}
+
+//________________________________________________________________________________________
+- (void) loadLIVEData : (ExperimentFunctionSelectorViewController *) controller forRow : (NSUInteger) row
+{
+   (void) controller;
+   (void) row;
 }
 
 @end
@@ -181,6 +190,21 @@
    return @"Tweets";
 }
 
+//________________________________________________________________________________________
+- (void) loadLIVEData : (ExperimentFunctionSelectorViewController *) controller forRow : (NSUInteger) row
+{
+   //
+   if ([feeds count] && !row) {
+      //We initialize MultiPageController with feeds.
+      MultiPageController * const feedController = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
+      [controller.navigationController pushViewController : feedController animated : YES];
+      
+      [feedController setItems : feeds];
+   } else {
+      //Not implemented - pages or tweets.
+   }
+}
+
 @end
 
 //________________________________________________________________________________________
@@ -233,26 +257,6 @@
    
    //Here's a trick: usually, table view from storyboard is a top level view and
    //takes the full screen, but we need a space at the top to add a scroller.
-  /*
-   CGRect frame = self.view.frame;
-   UIView *view = [[UIView alloc] initWithFrame : frame];
-   
-   UITableView *tableView = self.tableView;
-   
-   frame.origin = CGPointZero;
-   CGRect topScrollerFrame = frame;
-   topScrollerFrame.size.height = [ScrollSelector defaultHeight];
-   
-   ScrollSelector *selector = [[ScrollSelector alloc] initWithFrame : topScrollerFrame];
-   [selector addItemNames : @[@"Feed one", @"Feed two", @"Feed three"]];
-   
-   frame.origin.y = [ScrollSelector defaultHeight];
-   frame.size.height -= [ScrollSelector defaultHeight];
-   tableView.frame = frame;
-
-   [view addSubview : selector];
-   [view addSubview : tableView];
-   self.view = view;*/
 }
 
 //________________________________________________________________________________________
@@ -368,8 +372,6 @@
    unsigned nRows = 0;
    for (ExperimentLIVEData *data in liveData)
       nRows += [data numberOfRows];
-   
-   NSLog(@"n of rows to return %u", nRows + 1);
    
    return nRows + 1;//1 for event display (to be changed).
 }
@@ -567,17 +569,36 @@
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
+   [tableView deselectRowAtIndexPath : indexPath animated : NO];
+
    if (self.experiment == CMS) {
-   
+      assert(indexPath.row >= 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row is negative");//WTF??
+      const NSUInteger row = indexPath.row;
+      
+      NSUInteger nRows = 0;
+
+      //That part is quite ugly, but ... what can I do? :)
+      for (ExperimentLIVEData *data in liveData) {
+         const NSUInteger dataRows = [data numberOfRows];
+         if (row >= nRows && row < nRows + dataRows)
+            return [data loadLIVEData:self forRow : row - nRows];
+         else
+            nRows += dataRows;
+      }
+      
+      //If we are here, it's a time to load an event display :)
+      [self pushEventDisplayForExperiment];
    } else {
       if (!indexPath.row)
          [self pushNewsControllerForExperiment];
       else if (indexPath.row == 1)
          [self pushEventDisplayForExperiment];
-      
-      [tableView deselectRowAtIndexPath : indexPath animated : NO];
+
+
    }
    //else - something else if we have.
+   
+
 }
 
 @end

@@ -14,4 +14,6 @@
 
 @interface MultiPageController : UIViewController<ScrollSelectorDelegate, UIScrollViewDelegate>
 
+- (void) setItems : (NSMutableArray *) items;
+
 @end

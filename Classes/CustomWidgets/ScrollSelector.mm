@@ -140,7 +140,7 @@ const CGFloat cellHeight = 40.f;
 #pragma mark - Picker's content management.
 
 //____________________________________________________________________________________________________
-- (void) addItemNames : (NSArray *) items
+- (void) addItemNames : (NSMutableArray *) items
 {
    assert(items != nil && "addItemNames:, 'items' parameter is nil");
 
@@ -150,7 +150,7 @@ const CGFloat cellHeight = 40.f;
    CGFloat currPos = xPad;
    NSEnumerator * const enumerator = [items objectEnumerator];
 
-   UIFont *labelFont = [UIFont fontWithName:@"PT Sans" size : 18];
+   UIFont *labelFont = [UIFont fontWithName:@"PT Sans" size : 20];
    assert(labelFont != nil && "addItemNames, labelFont was not found");
 
    for (NSString *itemName = [enumerator nextObject]; itemName; itemName = [enumerator nextObject]) {

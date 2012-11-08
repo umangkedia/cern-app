@@ -8,7 +8,7 @@
 
 + (CGFloat) defaultHeight;
 
-- (void) addItemNames : (NSArray *)items;
+- (void) addItemNames : (NSMutableArray *)items;
 - (void) setSelectedItem : (unsigned) item;
 
 @end

@@ -176,6 +176,7 @@
 		70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */ = {isa = PBXBuildFile; fileRef = 70736CB4164BAF3A009FF383 /* KeyVal.m */; };
 		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
 		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
+		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
 		70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7DB164AD2040018536F /* MultiPageController.mm */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
@@ -442,6 +443,7 @@
 		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
 		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewController.mm; sourceTree = "<group>"; };
 		709E9829161B1E1A00F225DD /* NewsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewController.h; sourceTree = "<group>"; };
+		70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiPageController.xib; sourceTree = "<group>"; };
 		70E1A7B7164A8A280018536F /* ScrollSelector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScrollSelector.mm; path = CustomWidgets/ScrollSelector.mm; sourceTree = "<group>"; };
 		70E1A7B8164A8A280018536F /* ScrollSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelector.h; path = CustomWidgets/ScrollSelector.h; sourceTree = "<group>"; };
 		70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelectorDelegate.h; path = CustomWidgets/ScrollSelectorDelegate.h; sourceTree = "<group>"; };
@@ -711,6 +713,7 @@
 				41E618281614CEB700BAA7D4 /* MainStoryboard_iPhone.storyboard */,
 				41E6188D1614CF7000BAA7D4 /* StaticInformation.plist */,
 				700F547816396A130082B89E /* CERNLive.plist */,
+				70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1108,6 +1111,7 @@
 				41C0659416271ED1000DC176 /* iTunesArtwork in Resources */,
 				700F547916396A130082B89E /* CERNLive.plist in Resources */,
 				41AB925E1642D18C0025E5ED /* arrow.png in Resources */,
+				70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
