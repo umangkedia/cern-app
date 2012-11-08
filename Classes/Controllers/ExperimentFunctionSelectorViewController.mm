@@ -254,9 +254,6 @@
    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
    //NSLog(@"self.view is %@", self.view);
-   
-   //Here's a trick: usually, table view from storyboard is a top level view and
-   //takes the full screen, but we need a space at the top to add a scroller.
 }
 
 //________________________________________________________________________________________
