@@ -81,6 +81,8 @@
    NSMutableArray *pages;
 }
 
+@property (nonatomic, retain) NSString *experimentName;
+
 - (id) initWithLIVEData : (NSDictionary *) data;
 
 - (NSUInteger) numberOfRows;
@@ -89,6 +91,8 @@
 @end
 
 @implementation LIVENews
+
+@synthesize experimentName;
 
 //________________________________________________________________________________________
 - (id) initWithLIVEData : (NSDictionary *) data
@@ -198,7 +202,7 @@
       //We initialize MultiPageController with feeds.
       MultiPageController * const feedController = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
       [controller.navigationController pushViewController : feedController animated : YES];
-      
+      feedController.title = [experimentName stringByAppendingString : @" News"];
       [feedController setItems : feeds];
    } else {
       //Not implemented - pages or tweets.
@@ -283,9 +287,10 @@
          
          if ([catName isEqualToString : @"News"]) {
             LIVENews *news = [[LIVENews alloc] initWithLIVEData : data];
-            if (news)
+            if (news) {
+               news.experimentName = self.title;
                [liveData addObject : news];
-            else
+            } else
                NSLog(@"LIVENews initialization failed for %@", self.title);
 
          } else if ([catName isEqualToString:@"Event display"]) {
@@ -578,7 +583,7 @@
       for (ExperimentLIVEData *data in liveData) {
          const NSUInteger dataRows = [data numberOfRows];
          if (row >= nRows && row < nRows + dataRows)
-            return [data loadLIVEData:self forRow : row - nRows];
+            return [data loadLIVEData : self forRow : row - nRows];
          else
             nRows += dataRows;
       }
