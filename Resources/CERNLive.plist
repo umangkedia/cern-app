@@ -8,11 +8,12 @@
 			<key>Category name</key>
 			<string>News</string>
 			<key>Feeds</key>
-			<array/>
+			<dict/>
 			<key>Tweets</key>
-			<array>
+			<dict>
+				<key>LHCb tweet</key>
 				<string>https://twitter.com/statuses/user_timeline/92522167.rss</string>
-			</array>
+			</dict>
 		</dict>
 		<dict>
 			<key>Category name</key>
@@ -57,11 +58,12 @@
 			<key>Category name</key>
 			<string>News</string>
 			<key>Feeds</key>
-			<array>
+			<dict>
+				<key>New item</key>
 				<string>http://cms.web.cern.ch/news/category/265/rss.xml</string>
-			</array>
+			</dict>
 			<key>Tweets</key>
-			<array/>
+			<dict/>
 		</dict>
 		<dict>
 			<key>Category name</key>

@@ -122,10 +122,11 @@
       }
       */
       //
+      
       /*
       if (id base = [data objectForKey : @"Tweets"]) {
-         assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Tweets'");
-         NSArray * const tweetsSrc = (NSArray *)base;
+         assert([base isKindOfClass : [NSDictionary class]] && "initWithLIVEData:, NSDictionary is expected for the key 'Tweets'");
+         NSDictionary * const tweetsSrc = (NSDictionary *)base;
          
          if ([tweetsSrc count]) {
             feeds = [[NSMutableArray alloc] init];
@@ -135,8 +136,7 @@
                [tweets addObject : tweet];
             }
          }
-      }
-      */
+      }*/
    }
 
    return self;
@@ -318,12 +318,13 @@
          break;
       case LHC:
          self.title = @"LHC";
-         break;
+         break;//do not read LIVE data for LHC for the moment.
       default: break;
    }
    
    //
-   [self readLIVEData];
+   if (self.experiment == CMS)
+      [self readLIVEData];
 }
 
 //________________________________________________________________________________________
@@ -359,7 +360,18 @@
    if (self.experiment == LHC)
       return 1;
    
-   return 2;
+   if (self.experiment != CMS)
+      return 2;
+   
+   assert(liveData && [liveData count] && "tableView:numberOfRowsInSection:, no LIVE data found");
+   
+   unsigned nRows = 0;
+   for (ExperimentLIVEData *data in liveData)
+      nRows += [data numberOfRows];
+   
+   NSLog(@"n of rows to return %u", nRows + 1);
+   
+   return nRows + 1;//1 for event display (to be changed).
 }
 
 //________________________________________________________________________________________
@@ -395,6 +407,8 @@
       case 1:
          cell.textLabel.text = @"Event Display";
          break;
+      default:
+         assert(0 && "tableView:cellForRowAtIndexPath:, bad index");
    }
    
    return cell;
@@ -553,12 +567,16 @@
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   if (!indexPath.row)
-      [self pushNewsControllerForExperiment];
-   else if (indexPath.row == 1)
-      [self pushEventDisplayForExperiment];
+   if (self.experiment == CMS) {
    
-   [tableView deselectRowAtIndexPath : indexPath animated : NO];
+   } else {
+      if (!indexPath.row)
+         [self pushNewsControllerForExperiment];
+      else if (indexPath.row == 1)
+         [self pushEventDisplayForExperiment];
+      
+      [tableView deselectRowAtIndexPath : indexPath animated : NO];
+   }
    //else - something else if we have.
 }
 
