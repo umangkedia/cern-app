@@ -11,6 +11,7 @@
 
 #define kArticleDetailViewIdentifier @"ArticleDetailViewIdentifier"
 #define kExperimentFunctionSelectorViewIdentifier @"ExperimentFunctionSelectorViewControllerIdentifier"
+#define kExperimentFeedTableViewController @"ExperimentFeedTableViewControllerIdentifier"
 #define kExperimentNewsViewController @"ExperimentNewsViewControllerIdentifier"
 #define kExperimentNewsTableViewController @"ExperimentNewsTableViewControllerIdentifier"
 #define kEventDisplayViewController @"EventDisplayViewControllerIdentifier"

@@ -10,11 +10,12 @@
 #import "ArticleDetailViewController.h"
 #import "NewsTableViewController.h"
 #import "NewsTableViewCell.h"
+#import "Constants.h"
 
 
 @implementation NewsTableViewController
 
-@synthesize rangeOfArticlesToShow;
+@synthesize rangeOfArticlesToShow, loaded, navigationControllerForArticle;
 
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
@@ -146,6 +147,7 @@
 {
    [super allFeedsDidLoadForAggregator : theAggregator];
    [(UITableView *)self.view reloadData];
+   loaded = YES;
 }
 
 //________________________________________________________________________________________
@@ -175,6 +177,23 @@
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
    // Navigation logic may go here. Create and push another view controller.
+   assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
+
+   if (navigationControllerForArticle) {
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+      assert(mainStoryboard != nil && "tableView:didSelectRowAtIndexPath, storyboard is nil");
+      
+      ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : kArticleDetailViewIdentifier];
+      //Actually, no need in assert - storyboard will generate an exception.
+      assert(viewController != nil && "tableView:didSelectRowAtIndexPath, no ArticleDetailViewController was found in a storyboard");
+      viewController.loadOriginalLink = YES;
+      const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
+      [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : index]];
+      
+      [navigationControllerForArticle pushViewController : viewController animated : YES];
+   }
+   
+   [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 
 //________________________________________________________________________________________

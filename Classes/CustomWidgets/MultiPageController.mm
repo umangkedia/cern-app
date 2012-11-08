@@ -5,9 +5,11 @@
 
 #import <cstdlib>
 
+#import "NewsTableViewController.h"
 #import "MultiPageController.h"
 #import "ScrollSelector.h"
 #import "DeviceCheck.h"
+#import "Constants.h"
 #import "KeyVal.h"
 
 @implementation MultiPageController {
@@ -17,11 +19,13 @@
    NSMutableArray *tableControllers;
 }
 
+//________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
    return NO;
 }
 
+//________________________________________________________________________________________
 - (void)viewDidLoad
 {
    [super viewDidLoad];
@@ -62,26 +66,31 @@
       pageControl.pageIndicatorTintColor = [UIColor blackColor];
       [self.view addSubview : pageControl];
       pageControl.hidden = YES;
+      
+      tableControllers = [[NSMutableArray alloc] init];
    }
 }
 
+//________________________________________________________________________________________
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
+//________________________________________________________________________________________
 - (void) setItems : (NSMutableArray *) items
 {
-   NSMutableArray * const titles = [[NSMutableArray alloc] init];
-   for (id itemBase in items) {
-      assert([itemBase isKindOfClass : [KeyVal class]] && "setItems:, KeyVal expected");
-      KeyVal *pair = (KeyVal *)itemBase;
-      assert([pair.key isKindOfClass : [NSString class]] && "setItems:, key expected to be a string");
-      [titles addObject : pair.key];
-   }
+   if (const NSUInteger nPages = [items count]) {
+      NSMutableArray * const titles = [[NSMutableArray alloc] init];
+      
+      for (id itemBase in items) {
+         assert([itemBase isKindOfClass : [KeyVal class]] && "setItems:, KeyVal expected");
+         KeyVal *pair = (KeyVal *)itemBase;
+         assert([pair.key isKindOfClass : [NSString class]] && "setItems:, key expected to be a string");
+         [titles addObject : pair.key];
+      }
    
-   if (const NSUInteger nPages = [titles count]) {
       [selector addItemNames : titles];
       [selector setNeedsDisplay];
       
@@ -89,11 +98,23 @@
       CGRect frame = navigationView.frame;
       frame.origin.y = 0;
       
-      for (NSUInteger i = 0; i < nPages; ++i) {
-         frame.origin.x = i * frame.size.width;
-         UIView *fakeView = [[UIView alloc] initWithFrame : frame];
-         fakeView.backgroundColor = [UIColor colorWithRed : (rand() % 256 / 256.f) green : (rand() % 256 / 256.f) blue : (rand() % 256) / 256.f alpha : 1.f];
-         [navigationView addSubview : fakeView];
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+      assert(mainStoryboard != nil && "setItems:, storyboard is nil");
+      
+      for (KeyVal *pair in items) {
+         //
+         NewsTableViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kExperimentFeedTableViewController];
+         //Actually, no need in assert - storyboard will generate an exception.
+         assert(newsViewController != nil && "setItems:, no NewsTableViewController was found in a storyboard");
+         //
+         newsViewController.view.frame = frame;
+         [tableControllers addObject : newsViewController];
+         [navigationView addSubview : newsViewController.view];
+         //
+         [newsViewController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)pair.val]];
+         newsViewController.navigationControllerForArticle = self.navigationController;
+         //
+         frame.origin.x += frame.size.width;
       }
       
       navigationView.contentOffset = CGPointZero;
@@ -105,28 +126,44 @@
          pageControl.hidden = NO;
       } else
          pageControl.hidden = YES;
+      
+//      NSLog(@""))
+      [[tableControllers objectAtIndex : 0] refresh];
    }
    //Now we had to initialize a lot of feed parsers.
 }
 
 #pragma mark - ScrollSelectorDelegate
 
+//________________________________________________________________________________________
 - (void) item : (unsigned int) item selectedIn : (ScrollSelector *) selector
 {
    //Item was selected by scrolling the "selector wheel".
    const CGPoint newOffset = CGPointMake(item * navigationView.frame.size.width, 0.f);
    [navigationView setContentOffset:newOffset animated : YES];
    pageControl.currentPage = item;
+
+   NewsTableViewController *nextController = [tableControllers objectAtIndex : item];
+   assert(nextController != nil && "item:selectedIn:, controller not found for the page");
+   if (![nextController loaded])
+      [nextController refresh];
+
 }
 
 #pragma mark - UIScrollViewDelegate
 
+//________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) sender
 {
    //Page scrolled, adjust selector now.
    const unsigned page = navigationView.contentOffset.x / navigationView.frame.size.width;
    [selector setSelectedItem : page];
    pageControl.currentPage = page;
+   
+   NewsTableViewController *nextController = [tableControllers objectAtIndex : page];
+   assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
+   if (![nextController loaded])
+      [nextController refresh];
 }
 
 @end
