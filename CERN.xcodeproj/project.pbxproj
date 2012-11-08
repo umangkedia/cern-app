@@ -173,6 +173,7 @@
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
 		704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.m */; };
+		70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */ = {isa = PBXBuildFile; fileRef = 70736CB4164BAF3A009FF383 /* KeyVal.m */; };
 		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
 		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
@@ -435,6 +436,8 @@
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
 		704A8DF51615E25800AAA5B2 /* DeviceCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCheck.h; sourceTree = "<group>"; };
 		704A8DF61615E25800AAA5B2 /* DeviceCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceCheck.m; sourceTree = "<group>"; };
+		70736CB3164BAF3A009FF383 /* KeyVal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyVal.h; sourceTree = "<group>"; };
+		70736CB4164BAF3A009FF383 /* KeyVal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyVal.m; sourceTree = "<group>"; };
 		709E9825161B1DD300F225DD /* NewsTableViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewCell.mm; sourceTree = "<group>"; };
 		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
 		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewController.mm; sourceTree = "<group>"; };
@@ -665,6 +668,8 @@
 				41E617861614CE1700BAA7D4 /* UIImage+SquareScaledImage.m */,
 				704A8DF51615E25800AAA5B2 /* DeviceCheck.h */,
 				704A8DF61615E25800AAA5B2 /* DeviceCheck.m */,
+				70736CB3164BAF3A009FF383 /* KeyVal.h */,
+				70736CB4164BAF3A009FF383 /* KeyVal.m */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1166,6 +1171,7 @@
 				41AB925C1642D16A0025E5ED /* PullRefreshTableViewController.m in Sources */,
 				70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */,
 				70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */,
+				70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

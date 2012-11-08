@@ -18,8 +18,8 @@
 #import "ScrollSelector.h"
 #import "DeviceCheck.h"
 #import "AppDelegate.h"
-
 #import "Constants.h"
+#import "KeyVal.h"
 
 //________________________________________________________________________________________
 @interface ExperimentLIVEData : NSObject
@@ -27,7 +27,6 @@
 - (id) initWithLIVEData : (NSDictionary *) data;
 
 - (NSUInteger) numberOfRows;
-- (NSUInteger) numberOfViewsForRow : (NSUInteger) row;
 - (NSString *) textForRow : (NSUInteger) row;
 
 @end
@@ -76,7 +75,6 @@
 - (id) initWithLIVEData : (NSDictionary *) data;
 
 - (NSUInteger) numberOfRows;
-- (NSUInteger) numberOfViewsForRow : (NSUInteger)row;
 - (NSString *) textForRow : (NSUInteger) row;
 
 @end
@@ -91,19 +89,24 @@
    if (self = [super initWithLIVEData : data]) {
       //
       if (id base = [data objectForKey : @"Feeds"]) {
-         assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Feeds'");
-         NSArray * const feedsSrc = (NSArray *)base;
+         assert([base isKindOfClass : [NSDictionary class]] && "initWithLIVEData:, NSDictionary is expected for the key 'Feeds'");
+         NSDictionary * const feedsSrc = (NSDictionary *)base;
          
          if ([feedsSrc count]) {
             feeds = [[NSMutableArray alloc] init];
-            for (id feed in feedsSrc) {
-               //Check here, feed should be a string.
-               assert([feed isKindOfClass : [NSString class]] && "initWithLIVEData:, feed must be of NSString type");
-               [feeds addObject : feed];
+            for (NSString *key in feedsSrc) {
+               id val = [feedsSrc objectForKey : key];
+               assert([val isKindOfClass:[NSString class]] && "value in a 'Feed's dictionary must be a string");
+               KeyVal *newPair = [[KeyVal alloc] init];
+               newPair.key = key;
+               newPair.val = val;
+               
+               [feeds addObject : newPair];
             }
          }
       }
       //
+      /*
       if (id base = [data objectForKey : @"Pages"]) {
          assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Pages'");
          NSArray * const pagesSrc = (NSArray *)base;
@@ -117,7 +120,9 @@
             }
          }
       }
+      */
       //
+      /*
       if (id base = [data objectForKey : @"Tweets"]) {
          assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Tweets'");
          NSArray * const tweetsSrc = (NSArray *)base;
@@ -131,6 +136,7 @@
             }
          }
       }
+      */
    }
 
    return self;
@@ -139,9 +145,11 @@
 //________________________________________________________________________________________
 - (NSUInteger) numberOfRows
 {
-   //Max. == 2.
+   //Max. == 3 - feeds, tweets, pages.
    NSUInteger nRows = 0;
-   if ([feeds count] || [pages count])
+   if ([feeds count])
+      ++nRows;
+   if ([pages count])
       ++nRows;
    if ([tweets count])
       ++nRows;
@@ -150,30 +158,25 @@
 }
 
 //________________________________________________________________________________________
-- (NSUInteger) numberOfViewsForRow : (NSUInteger)row
-{
-   if (!row) {
-      //feeds, pages.
-      assert([feeds count] || [pages count] && "numberOfViewsForRow:, no data in the 'News' section");
-      return [feeds count] + [pages count];
-   }
-   
-   assert(row == 1 && "numberOfViewsForRow:, row index must be <= 1");
-   assert([tweets count] > 0 && "numberOfViewForRow:, called for empty 'Tweets' section");
-
-   return [tweets count];
-}
-
-//________________________________________________________________________________________
 - (NSString *) textForRow : (NSUInteger) row
 {
+   assert(([feeds count] > 0 || [pages count] > 0 || [tweets count] > 0) && "textForRow:, no data for experiment found");
+
+   //I do not check row index and pages/tweets/feeds existance.
+
    if (!row) {
-      assert([feeds count] || [pages count] && "textForRow:, no data in the 'News' section");
-      return @"News";
+      if ([feeds count])
+         return @"News";
+      if ([pages count])
+         return @"News pages";
+      
+      return @"Tweets";
+   } else if (row == 1) {
+      if ([pages count])
+         return @"News pages";
+      
+      return @"Tweets";
    }
-   
-   assert(row == 1 && "textForRow:, row index must be <= 1");
-   assert([tweets count] > 0 && "textForRow:, called for empty 'Tweets' section");
 
    return @"Tweets";
 }
