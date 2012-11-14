@@ -143,7 +143,8 @@
    } else {
       //Ugly code duplication for the moment - different controllers for iPad/iPhone devices.
       NewsTableViewController * const viewController = [segue destinationViewController];
-      
+      viewController.shouldRefresh = NO;
+
       NSUInteger issueIndex = [self.gridView indexOfSelectedItem];
       viewController.aggregator = self.aggregator;
       viewController.aggregator.delegate = viewController;

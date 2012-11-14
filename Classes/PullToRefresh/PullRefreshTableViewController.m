@@ -35,13 +35,15 @@
 
 @implementation PullRefreshTableViewController
 
-@synthesize textPull, textRelease, textLoading, refreshHeaderView, refreshLabel, refreshArrow, refreshSpinner;
+@synthesize textPull, textRelease, textLoading, refreshHeaderView, refreshLabel, refreshArrow, refreshSpinner, shouldRefresh;
 
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
 {
-   if (self = [super initWithStyle : style])
+   if (self = [super initWithStyle : style]) {
+      shouldRefresh = YES;
       [self setupStrings];
+   }
 
    return self;
 }
@@ -49,66 +51,75 @@
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
-   if (self = [super initWithCoder:aDecoder])
+   if (self = [super initWithCoder : aDecoder]) {
+      shouldRefresh = YES;
       [self setupStrings];
+   }
 
    return self;
 }
 
 //________________________________________________________________________________________
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
 {
-  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-  if (self != nil)
-    [self setupStrings];
+   if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
+      shouldRefresh = YES;
+      [self setupStrings];
+   }
 
-  return self;
+   return self;
 }
 
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
-  [super viewDidLoad];
-  [self addPullToRefreshHeader];
+   [super viewDidLoad];
+  
+   //TODO: this is a temporary trick for a bulletin!!!
+   if (shouldRefresh)
+      [self addPullToRefreshHeader];
 }
 
 //________________________________________________________________________________________
 - (void) setupStrings
 {
-  textPull = @"Pull down to refresh...";
-  textRelease = @"Release to refresh...";
-  textLoading = @"Loading...";
+   textPull = @"Pull down to refresh...";
+   textRelease = @"Release to refresh...";
+   textLoading = @"Loading...";
 }
 
 //________________________________________________________________________________________
 - (void) addPullToRefreshHeader
 {
-    refreshHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0 - REFRESH_HEADER_HEIGHT, 320, REFRESH_HEADER_HEIGHT)];
-    refreshHeaderView.backgroundColor = [UIColor clearColor];
+   refreshHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0 - REFRESH_HEADER_HEIGHT, 320, REFRESH_HEADER_HEIGHT)];
+   refreshHeaderView.backgroundColor = [UIColor clearColor];
 
-    refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEADER_HEIGHT)];
-    refreshLabel.backgroundColor = [UIColor clearColor];
-    refreshLabel.font = [UIFont boldSystemFontOfSize:12.0];
-    refreshLabel.textAlignment = NSTextAlignmentCenter;
+   refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 320, REFRESH_HEADER_HEIGHT)];
+   refreshLabel.backgroundColor = [UIColor clearColor];
+   refreshLabel.font = [UIFont boldSystemFontOfSize:12.0];
+   refreshLabel.textAlignment = NSTextAlignmentCenter;
 
-    refreshArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow.png"]];
-    refreshArrow.frame = CGRectMake(floorf((REFRESH_HEADER_HEIGHT - 27) / 2),
-                                    (floorf(REFRESH_HEADER_HEIGHT - 44) / 2),
-                                    27, 44);
+   refreshArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow.png"]];
+   refreshArrow.frame = CGRectMake(floorf((REFRESH_HEADER_HEIGHT - 27) / 2),
+                                 (floorf(REFRESH_HEADER_HEIGHT - 44) / 2),
+                                 27, 44);
 
-    refreshSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    refreshSpinner.frame = CGRectMake(floorf(floorf(REFRESH_HEADER_HEIGHT - 20) / 2), floorf((REFRESH_HEADER_HEIGHT - 20) / 2), 20, 20);
-    refreshSpinner.hidesWhenStopped = YES;
+   refreshSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+   refreshSpinner.frame = CGRectMake(floorf(floorf(REFRESH_HEADER_HEIGHT - 20) / 2), floorf((REFRESH_HEADER_HEIGHT - 20) / 2), 20, 20);
+   refreshSpinner.hidesWhenStopped = YES;
 
-    [refreshHeaderView addSubview : refreshLabel];
-    [refreshHeaderView addSubview : refreshArrow];
-    [refreshHeaderView addSubview : refreshSpinner];
-    [self.tableView addSubview : refreshHeaderView];
+   [refreshHeaderView addSubview : refreshLabel];
+   [refreshHeaderView addSubview : refreshArrow];
+   [refreshHeaderView addSubview : refreshSpinner];
+   [self.tableView addSubview : refreshHeaderView];
 }
 
 //________________________________________________________________________________________
 - (void) scrollViewWillBeginDragging : (UIScrollView *) scrollView
 {
+   if (!shouldRefresh)
+      return;
+
    if (isLoading)
       return;
 
@@ -116,8 +127,11 @@
 }
 
 //________________________________________________________________________________________
-- (void) scrollViewDidScroll:(UIScrollView *) scrollView
+- (void) scrollViewDidScroll : (UIScrollView *) scrollView
 {
+   if (!shouldRefresh)//TODO: this is a temporary hack!!!
+      return;
+
    if (isLoading) {
       // Update the content inset, good for section headers
       if (scrollView.contentOffset.y > 0)
@@ -143,6 +157,9 @@
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL)decelerate
 {
+   if (!shouldRefresh)//TODO: this is a temporary hack!!!
+      return;
+
    if (isLoading)
       return;
    
@@ -200,7 +217,7 @@
 {
    // This is just a demo. Override this method with your custom reload action.
    // Don't forget to call stopLoading at the end.
-   [self performSelector:@selector(stopLoading) withObject:nil afterDelay:2.0];
+   [self performSelector : @selector(stopLoading) withObject : nil afterDelay : 2.0];
 }
 
 /*

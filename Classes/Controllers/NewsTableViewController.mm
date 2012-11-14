@@ -104,9 +104,7 @@
 //________________________________________________________________________________________
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
-   // Return the number of rows in the section.
-   NSLog(@"number of rows in section! ");
-   
+   // Return the number of rows in the section.   
    if (self.rangeOfArticlesToShow.length)
       return self.rangeOfArticlesToShow.length;
    else
@@ -118,8 +116,6 @@
 {
    //Find feed item first.
    const NSInteger row = indexPath.row;
-   NSLog(@"row is %d, count %d", row, [self.aggregator.allArticles count]);
-   
    assert(row >= 0 && row < [self.aggregator.allArticles count]);
 
    MWFeedItem * const article = [self.aggregator.allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];

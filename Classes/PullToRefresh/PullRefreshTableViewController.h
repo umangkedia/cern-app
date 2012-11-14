@@ -49,6 +49,7 @@
 @property (nonatomic, copy) NSString *textPull;
 @property (nonatomic, copy) NSString *textRelease;
 @property (nonatomic, copy) NSString *textLoading;
+@property (nonatomic) BOOL shouldRefresh;
 
 - (void)setupStrings;
 - (void)addPullToRefreshHeader;
