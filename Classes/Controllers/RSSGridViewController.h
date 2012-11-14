@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import "PullRefreshTableViewController.h"
 #import "AQGridViewController.h"
 #import "RSSAggregator.h"
 #import "MBProgressHUD.h"
@@ -19,7 +20,8 @@
 
 @end
 
-@interface RSSTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
+@interface RSSTableViewController : PullRefreshTableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
+//UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
 
 @property (nonatomic, strong) RSSAggregator *aggregator;
 - (void) refresh;

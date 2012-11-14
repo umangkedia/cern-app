@@ -35,6 +35,11 @@
     [self addFeed:feed];
 }
 
+- (void) clearAllFeeds
+{
+   self.allArticles = nil;
+}
+
 - (void)refreshAllFeeds
 {
     _feedFailCount = 0;

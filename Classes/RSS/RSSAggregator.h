@@ -26,6 +26,8 @@
     int _feedFailCount;
 }
 
+- (void) clearAllFeeds;
+
 @property (nonatomic, strong) NSMutableArray *feeds;
 @property (nonatomic, strong) id<RSSAggregatorDelegate> delegate;
 @property (nonatomic, strong) NSArray *allArticles;

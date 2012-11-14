@@ -147,6 +147,8 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator
 {
    [MBProgressHUD hideHUDForView : self.view animated : YES];
+   
+   [self stopLoading];
 }
 
 //________________________________________________________________________________________
