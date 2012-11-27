@@ -56,7 +56,6 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       self.view.backgroundColor = [UIColor blackColor];
       
       const CGRect frame = self.view.frame;
-//      selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0.15 * frame.size.width, 0.f, 0.7 * frame.size.width, [ScrollSelector defaultHeight])];
       selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0, 0.f, frame.size.width, [ScrollSelector defaultHeight])];
       selector.layer.shadowColor = [UIColor blackColor].CGColor;
       selector.layer.shadowOpacity = 0.5f;
