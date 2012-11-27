@@ -144,6 +144,7 @@
    assert(row >= 0 && row < [self.aggregator.allArticles count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
    MWFeedItem * const article = [self.aggregator.allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];
+   //From time to time this crap dies at start.
    UIImage * const image = [self.aggregator firstImageForArticle : article];
 
    return [NewsTableViewCell calculateCellHeightForData : article image : image imageOnTheRight : (indexPath.row % 4) == 3];
@@ -177,6 +178,7 @@
    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
    NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
 //   [(UITableView *)self.view reloadRowsAtIndexPaths : indexPaths withRowAnimation : UIT UITableViewRowAnimationFade];
+   //This crap dies at start.
    [(UITableView *)self.view reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
 }
 

@@ -25,6 +25,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    UIScrollView *navigationView;
    ScrollSelector *selector;
    NSMutableArray *tableControllers;
+   BOOL autoScroll;
 }
 
 //________________________________________________________________________________________
@@ -96,6 +97,8 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 
       //This is the ugly hack for ugly API/Frameworks/logic by Apple.
       tableControllers = [[NSMutableArray alloc] init];
+      
+      autoScroll = NO;
    }
 }
 
@@ -160,7 +163,8 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 {
    //Item was selected by scrolling the "selector wheel".
    const CGPoint newOffset = CGPointMake(item * navigationView.frame.size.width, 0.f);
-   [navigationView setContentOffset:newOffset animated : YES];
+   autoScroll = YES;
+   [navigationView setContentOffset : newOffset animated : YES];
 
    NewsTableViewController *nextController = [tableControllers objectAtIndex : item];
    assert(nextController != nil && "item:selectedIn:, controller not found for the page");
@@ -172,6 +176,19 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 #pragma mark - UIScrollViewDelegate
 
 //________________________________________________________________________________________
+- (void) scrollViewDidScroll : (UIScrollView *) view
+{
+   if (!autoScroll)
+      [selector scrollToPos : navigationView.contentOffset.x / navigationView.contentSize.width];
+}
+
+//________________________________________________________________________________________
+- (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+   autoScroll = NO;
+}
+
+//________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) sender
 {
    //Page scrolled, adjust selector now.
@@ -179,6 +196,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    [selector setSelectedItem : page];
    
    NewsTableViewController *nextController = [tableControllers objectAtIndex : page];
+
    assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
    if (![nextController loaded])
       [nextController refresh];

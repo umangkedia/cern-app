@@ -10,5 +10,6 @@
 
 - (void) addItemNames : (NSMutableArray *)items;
 - (void) setSelectedItem : (unsigned) item;
+- (void) scrollToPos : (CGFloat) pos;
 
 @end

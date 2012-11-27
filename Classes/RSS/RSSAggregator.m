@@ -87,7 +87,7 @@
 
 - (UIImage *)firstImageForArticle:(MWFeedItem *)article
 {
-   //TODO: this shit crashes from time to time.
+   //TODO: this shit crashes at start from time to time.
     NSNumber *articleIndex = [NSNumber numberWithInt:[self.allArticles indexOfObject:article]];
     return [self.firstImages objectForKey:articleIndex];
 }
@@ -156,6 +156,7 @@
 
 - (void)informDelegateOfFirstImageDownloadForArticleIndex:(NSNumber *)index
 {
+   //TODO: this crap dies at start.
     MWFeedItem *article = [self.allArticles objectAtIndex:index.intValue];
     UIImage *image = [self.firstImages objectForKey:index];
     [self.delegate aggregator:self didDownloadFirstImage:image forArticle:article];

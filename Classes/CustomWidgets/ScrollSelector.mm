@@ -112,6 +112,13 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 }
 
 //____________________________________________________________________________________________________
+- (void) scrollToPos : (CGFloat)pos
+{
+   const CGFloat x = (contentScroll.contentSize.width - 2 * xPad) * pos;
+   [contentScroll setContentOffset : CGPointMake(x, 0.f) animated : NO];
+}
+
+//____________________________________________________________________________________________________
 - (void) notify
 {
    if ([delegate respondsToSelector:@selector(item:selectedIn:)])
