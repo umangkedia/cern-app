@@ -85,9 +85,17 @@
         case TabIndexNews: {
             // Populate the general News view controller with news feeds
             if ([DeviceCheck deviceIsiPad])
-               [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
-            else
+               [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];           
+            else {
+               //
                [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
+               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://home.web.cern.ch/cern-people/announcements/feed"]];
+               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://home.web.cern.ch/cern-people/updates/feed"]];
+               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString : @"http://home.web.cern.ch/cern-people/opinion/feed"]];
+               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://home.web.cern.ch/students-educators/updates/feed"]];
+               //
+            }
+
             [(NewsGridViewController *)viewController refresh];
 
             break;
