@@ -7,6 +7,7 @@
 namespace {
 
 const CGFloat cellHeight = 40.f;
+const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 
 }
 
@@ -30,9 +31,9 @@ const CGFloat cellHeight = 40.f;
 - (void) calculateContentsGeometry
 {
    const CGRect frame = contentScroll.frame;
-   
-   xPad = 0.2f * frame.size.width;
-   cellWidth = 0.6f * frame.size.width;
+
+   cellWidth = cellWidthRatio * frame.size.width;
+   xPad = (1.f - cellWidthRatio) / 2.f * frame.size.width;
 }
 
 //____________________________________________________________________________________________________
