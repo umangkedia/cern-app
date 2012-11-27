@@ -450,7 +450,7 @@
 		70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelectorDelegate.h; path = CustomWidgets/ScrollSelectorDelegate.h; sourceTree = "<group>"; };
 		70E1A7DB164AD2040018536F /* MultiPageController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MultiPageController.mm; path = CustomWidgets/MultiPageController.mm; sourceTree = "<group>"; };
 		70E1A7DC164AD2040018536F /* MultiPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiPageController.h; path = CustomWidgets/MultiPageController.h; sourceTree = "<group>"; };
-		70E5995B1664C97A00BEB6ED /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_btn.png; path = Resources/Images/back_btn.png; sourceTree = "<group>"; };
+		70E5995B1664C97A00BEB6ED /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -726,6 +726,7 @@
 				41E617C91614CEB700BAA7D4 /* Cards */,
 				41E618161614CEB700BAA7D4 /* TabBarIcons */,
 				41C0659316271ED1000DC176 /* iTunesArtwork */,
+				70E5995B1664C97A00BEB6ED /* back_btn.png */,
 				4162A4541625BA87002B9D09 /* Default~iphone.png */,
 				4162A4561625BA98002B9D09 /* Default@2x~iphone.png */,
 				41BBD0E31615AC810057EDE2 /* Default-568h@2x.png */,
@@ -891,7 +892,6 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
-				70E5995B1664C97A00BEB6ED /* back_btn.png */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,

@@ -5,6 +5,8 @@
 
 #import <cstdlib>
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "NewsTableViewController.h"
 #import "MultiPageController.h"
 #import "ScrollSelector.h"
@@ -14,8 +16,8 @@
 
 namespace {
 
-const CGFloat tbBtnHeight = 25.f;
-const CGFloat tbBtnWidth = 45.f;
+const CGFloat tbBtnHeight = 24.5f;
+const CGFloat tbBtnWidth = 51.f;
 
 }
 
@@ -53,7 +55,11 @@ const CGFloat tbBtnWidth = 45.f;
       self.view.backgroundColor = [UIColor blackColor];
       
       const CGRect frame = self.view.frame;
-      selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0.15 * frame.size.width, 0.f, 0.7 * frame.size.width, [ScrollSelector defaultHeight])];
+//      selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0.15 * frame.size.width, 0.f, 0.7 * frame.size.width, [ScrollSelector defaultHeight])];
+      selector = [[ScrollSelector alloc] initWithFrame : CGRectMake(0, 0.f, frame.size.width, [ScrollSelector defaultHeight])];
+      selector.layer.shadowColor = [UIColor blackColor].CGColor;
+      selector.layer.shadowOpacity = 0.5f;
+      selector.layer.shadowOffset = CGSizeMake(0.f, 5.f);
       [self.view addSubview : selector];
 
       //Items must be added into the selector.
@@ -76,18 +82,17 @@ const CGFloat tbBtnWidth = 45.f;
       navigationView.showsVerticalScrollIndicator = NO;
       navigationView.pagingEnabled = YES;
       
-      //
       UIButton *backButton = [UIButton buttonWithType : UIButtonTypeCustom];
       backButton.backgroundColor = [UIColor clearColor];
-      [backButton setTitle : @"Back" forState:UIControlStateNormal];
-
       backButton.frame = CGRectMake(5.f, ([ScrollSelector defaultHeight] - tbBtnHeight) / 2.f, tbBtnWidth, tbBtnHeight);
-
       [backButton setImage:[UIImage imageNamed:@"back_btn.png"] forState : UIControlStateNormal];
       [self.view addSubview : backButton];
-      [self.view bringSubviewToFront:backButton];
-      [backButton addTarget:self action:@selector(backButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-      
+
+      [backButton addTarget : self action : @selector(backButtonPressed) forControlEvents : UIControlEventTouchUpInside];
+
+      [self.view bringSubviewToFront : selector];
+      [self.view bringSubviewToFront : backButton];
+
       //This is the ugly hack for ugly API/Frameworks/logic by Apple.
       tableControllers = [[NSMutableArray alloc] init];
    }
