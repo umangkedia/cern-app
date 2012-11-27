@@ -16,8 +16,8 @@
 
 namespace {
 
-const CGFloat tbBtnHeight = 24.5f;
-const CGFloat tbBtnWidth = 51.f;
+const CGFloat tbBtnHeight = 35.f;//24.5f;
+const CGFloat tbBtnWidth = 35.f;//51.f;
 
 }
 
@@ -85,7 +85,8 @@ const CGFloat tbBtnWidth = 51.f;
       UIButton *backButton = [UIButton buttonWithType : UIButtonTypeCustom];
       backButton.backgroundColor = [UIColor clearColor];
       backButton.frame = CGRectMake(5.f, ([ScrollSelector defaultHeight] - tbBtnHeight) / 2.f, tbBtnWidth, tbBtnHeight);
-      [backButton setImage:[UIImage imageNamed:@"back_btn.png"] forState : UIControlStateNormal];
+      [backButton setImage:[UIImage imageNamed:@"back_button_flat.png"] forState : UIControlStateNormal];
+      backButton.alpha = 0.9f;
       [self.view addSubview : backButton];
 
       [backButton addTarget : self action : @selector(backButtonPressed) forControlEvents : UIControlEventTouchUpInside];
