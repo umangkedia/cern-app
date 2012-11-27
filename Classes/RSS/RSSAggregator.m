@@ -87,6 +87,7 @@
 
 - (UIImage *)firstImageForArticle:(MWFeedItem *)article
 {
+   //TODO: this shit crashes from time to time.
     NSNumber *articleIndex = [NSNumber numberWithInt:[self.allArticles indexOfObject:article]];
     return [self.firstImages objectForKey:articleIndex];
 }

@@ -179,6 +179,7 @@
 		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
 		70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7DB164AD2040018536F /* MultiPageController.mm */; };
+		70E5995C1664C97A00BEB6ED /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995B1664C97A00BEB6ED /* back_btn.png */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -449,6 +450,7 @@
 		70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelectorDelegate.h; path = CustomWidgets/ScrollSelectorDelegate.h; sourceTree = "<group>"; };
 		70E1A7DB164AD2040018536F /* MultiPageController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MultiPageController.mm; path = CustomWidgets/MultiPageController.mm; sourceTree = "<group>"; };
 		70E1A7DC164AD2040018536F /* MultiPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiPageController.h; path = CustomWidgets/MultiPageController.h; sourceTree = "<group>"; };
+		70E5995B1664C97A00BEB6ED /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_btn.png; path = Resources/Images/back_btn.png; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -889,6 +891,7 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
+				70E5995B1664C97A00BEB6ED /* back_btn.png */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,
@@ -994,6 +997,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E5995C1664C97A00BEB6ED /* back_btn.png in Resources */,
 				7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */,
 				7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */,
 				41E6182A1614CEB700BAA7D4 /* alice.png in Resources */,

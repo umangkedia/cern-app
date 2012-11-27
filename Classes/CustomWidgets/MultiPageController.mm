@@ -12,10 +12,16 @@
 #import "Constants.h"
 #import "KeyVal.h"
 
+namespace {
+
+const CGFloat tbBtnHeight = 25.f;
+const CGFloat tbBtnWidth = 45.f;
+
+}
+
 @implementation MultiPageController {
    UIScrollView *navigationView;
    ScrollSelector *selector;
-   UIPageControl *pageControl;
    NSMutableArray *tableControllers;
 }
 
@@ -23,6 +29,20 @@
 - (BOOL) shouldAutorotate
 {
    return NO;
+}
+
+//________________________________________________________________________________________
+- (void) viewWillAppear:(BOOL)animated
+{
+   [self.navigationController setNavigationBarHidden : YES];
+   [super viewWillAppear : animated];
+}
+
+//________________________________________________________________________________________
+- (void) viewWillDisappear:(BOOL)animated
+{
+   [self.navigationController setNavigationBarHidden : NO];
+   [super viewWillDisappear : animated];
 }
 
 //________________________________________________________________________________________
@@ -56,17 +76,19 @@
       navigationView.showsVerticalScrollIndicator = NO;
       navigationView.pagingEnabled = YES;
       
-      //This is the ugly hack for ugly API/Frameworks/logic by Apple.
-      if ([DeviceCheck deviceIsiPhone5])
-         pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0.f, frame.size.height - 150, frame.size.width, 40.f)];
-      else
-         pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0.f, frame.size.height - 250, frame.size.width, 40.f)];
+      //
+      UIButton *backButton = [UIButton buttonWithType : UIButtonTypeCustom];
+      backButton.backgroundColor = [UIColor clearColor];
+      [backButton setTitle : @"Back" forState:UIControlStateNormal];
 
-      pageControl.currentPageIndicatorTintColor = [UIColor redColor];
-      pageControl.pageIndicatorTintColor = [UIColor blackColor];
-      [self.view addSubview : pageControl];
-      pageControl.hidden = YES;
+      backButton.frame = CGRectMake(5.f, ([ScrollSelector defaultHeight] - tbBtnHeight) / 2.f, tbBtnWidth, tbBtnHeight);
+
+      [backButton setImage:[UIImage imageNamed:@"back_btn.png"] forState : UIControlStateNormal];
+      [self.view addSubview : backButton];
+      [self.view bringSubviewToFront:backButton];
+      [backButton addTarget:self action:@selector(backButtonPressed) forControlEvents:UIControlEventTouchUpInside];
       
+      //This is the ugly hack for ugly API/Frameworks/logic by Apple.
       tableControllers = [[NSMutableArray alloc] init];
    }
 }
@@ -81,7 +103,7 @@
 //________________________________________________________________________________________
 - (void) setItems : (NSMutableArray *) items
 {
-   if (const NSUInteger nPages = [items count]) {
+   if ([items count]) {
       NSMutableArray * const titles = [[NSMutableArray alloc] init];
       
       for (id itemBase in items) {
@@ -120,14 +142,6 @@
       navigationView.contentOffset = CGPointZero;
       navigationView.contentSize = CGSizeMake([titles count] * frame.size.width, frame.size.height);
       
-      if (nPages > 1) {
-         [pageControl setNumberOfPages : nPages];
-         pageControl.currentPage = 0;
-         pageControl.hidden = NO;
-      } else
-         pageControl.hidden = YES;
-      
-//      NSLog(@""))
       [[tableControllers objectAtIndex : 0] refresh];
    }
    //Now we had to initialize a lot of feed parsers.
@@ -141,7 +155,6 @@
    //Item was selected by scrolling the "selector wheel".
    const CGPoint newOffset = CGPointMake(item * navigationView.frame.size.width, 0.f);
    [navigationView setContentOffset:newOffset animated : YES];
-   pageControl.currentPage = item;
 
    NewsTableViewController *nextController = [tableControllers objectAtIndex : item];
    assert(nextController != nil && "item:selectedIn:, controller not found for the page");
@@ -158,12 +171,19 @@
    //Page scrolled, adjust selector now.
    const unsigned page = navigationView.contentOffset.x / navigationView.frame.size.width;
    [selector setSelectedItem : page];
-   pageControl.currentPage = page;
    
    NewsTableViewController *nextController = [tableControllers objectAtIndex : page];
    assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
    if (![nextController loaded])
       [nextController refresh];
+}
+
+#pragma mark - Navigation.
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
 }
 
 @end
