@@ -204,7 +204,6 @@
 //________________________________________________________________________________________
 - (void) gridView : (AQGridView *) gridView didSelectItemAtIndex : (NSUInteger) index numFingersTouch : (NSUInteger) numFingers
 {
-   NSLog(@"fucking nav bar: %@", self.navigationController.navigationBar);
    [self performSegueWithIdentifier : @"ShowBulletinArticles" sender : self];
 }
 

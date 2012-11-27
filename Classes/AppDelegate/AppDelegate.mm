@@ -40,6 +40,9 @@
 
    [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
    [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
+   
+   [[UIBarButtonItem appearance] setTintColor : [UIColor clearColor]];
+   [[UIBarButtonItem appearance] setBackButtonBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forState : UIControlStateNormal barMetrics : UIBarMetricsDefault];
 
    return YES;
 }
