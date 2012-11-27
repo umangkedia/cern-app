@@ -182,6 +182,7 @@
 		70E5995C1664C97A00BEB6ED /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995B1664C97A00BEB6ED /* back_btn.png */; };
 		70E5995E1664E26F00BEB6ED /* back_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995D1664E26F00BEB6ED /* back_button.png */; };
 		70E599601664E3C200BEB6ED /* back_button_flat.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995F1664E3C200BEB6ED /* back_button_flat.png */; };
+		70E59964166507DE00BEB6ED /* navbarback.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E59963166507DE00BEB6ED /* navbarback.png */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -455,6 +456,7 @@
 		70E5995B1664C97A00BEB6ED /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		70E5995D1664E26F00BEB6ED /* back_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button.png; sourceTree = "<group>"; };
 		70E5995F1664E3C200BEB6ED /* back_button_flat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_flat.png; sourceTree = "<group>"; };
+		70E59963166507DE00BEB6ED /* navbarback.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = navbarback.png; path = Resources/Images/navbarback.png; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -898,6 +900,7 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
+				70E59963166507DE00BEB6ED /* navbarback.png */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,
@@ -1003,6 +1006,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E59964166507DE00BEB6ED /* navbarback.png in Resources */,
 				70E599601664E3C200BEB6ED /* back_button_flat.png in Resources */,
 				70E5995E1664E26F00BEB6ED /* back_button.png in Resources */,
 				70E5995C1664C97A00BEB6ED /* back_btn.png in Resources */,

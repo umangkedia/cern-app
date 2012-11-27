@@ -22,46 +22,47 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.tabBarController = (UITabBarController *)self.window.rootViewController;
-    self.tabBarController.delegate = self;
-    self.tabBarController.moreNavigationController.delegate = self;
-    self.tabBarController.customizableViewControllers = [NSArray array];
-    self.tabsAlreadySetup = [NSMutableDictionary dictionary];
-    [self setupViewController:[self.tabBarController.viewControllers objectAtIndex:TabIndexNews] atIndex:TabIndexNews];
+   self.tabBarController = (UITabBarController *)self.window.rootViewController;
+   self.tabBarController.delegate = self;
+   self.tabBarController.moreNavigationController.delegate = self;
+   self.tabBarController.customizableViewControllers = [NSArray array];
+   self.tabsAlreadySetup = [NSMutableDictionary dictionary];
+   [self setupViewController:[self.tabBarController.viewControllers objectAtIndex:TabIndexNews] atIndex:TabIndexNews];
 
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexNews]).tabBarItem.image = [UIImage imageNamed:@"news"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexLive]).tabBarItem.image = [UIImage imageNamed:@"live"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexAbout]).tabBarItem.image = [UIImage imageNamed:@"about"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexBulletin]).tabBarItem.image = [UIImage imageNamed:@"bulletin"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexPhotos]).tabBarItem.image = [UIImage imageNamed:@"latestPhotos"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexVideos]).tabBarItem.image = [UIImage imageNamed:@"latestVideos"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexWebcasts]).tabBarItem.image = [UIImage imageNamed:@"webcasts"];
-    ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexJobs]).tabBarItem.image = [UIImage imageNamed:@"jobs"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexNews]).tabBarItem.image = [UIImage imageNamed:@"news"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexLive]).tabBarItem.image = [UIImage imageNamed:@"live"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexAbout]).tabBarItem.image = [UIImage imageNamed:@"about"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexBulletin]).tabBarItem.image = [UIImage imageNamed:@"bulletin"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexPhotos]).tabBarItem.image = [UIImage imageNamed:@"latestPhotos"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexVideos]).tabBarItem.image = [UIImage imageNamed:@"latestVideos"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexWebcasts]).tabBarItem.image = [UIImage imageNamed:@"webcasts"];
+   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexJobs]).tabBarItem.image = [UIImage imageNamed:@"jobs"];
 
-    
-    return YES;
+   [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
+   [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
+
+   return YES;
 }
 
 - (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController
 {
-    int index = [theTabBarController.viewControllers indexOfObject:viewController];
-    [self setupViewController:viewController atIndex:index];
+   int index = [theTabBarController.viewControllers indexOfObject:viewController];
+   [self setupViewController:viewController atIndex:index];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)showingViewController animated:(BOOL)animated
 {
-    
-    UINavigationBar *morenavbar = navigationController.navigationBar;
-    UINavigationItem *morenavitem = morenavbar.topItem;
-    /* We don't need Edit button in More screen. */
-    morenavitem.rightBarButtonItem = nil;
-    
-    // In order to figure out the index of the selected view controller, we have to search through tabBarController.viewControllers for a UINavigationController that has no topViewController, because the selected view controller got popped off its navigation stack.
-    id checkIfNil = ^BOOL(id element, NSUInteger idx, BOOL *stop) {
-        return [(UINavigationController *)element topViewController] == nil;
-    };
-    int index = [self.tabBarController.viewControllers indexOfObjectPassingTest:checkIfNil];
-    [self setupViewController:showingViewController atIndex:index];
+   UINavigationBar *morenavbar = navigationController.navigationBar;
+   UINavigationItem *morenavitem = morenavbar.topItem;
+   /* We don't need Edit button in More screen. */
+   morenavitem.rightBarButtonItem = nil;
+
+   // In order to figure out the index of the selected view controller, we have to search through tabBarController.viewControllers for a UINavigationController that has no topViewController, because the selected view controller got popped off its navigation stack.
+   id checkIfNil = ^BOOL(id element, NSUInteger idx, BOOL *stop) {
+     return [(UINavigationController *)element topViewController] == nil;
+   };
+   int index = [self.tabBarController.viewControllers indexOfObjectPassingTest:checkIfNil];
+   [self setupViewController:showingViewController atIndex:index];
 }
 
 - (void)setupViewController:(UIViewController *)viewController atIndex:(int)index

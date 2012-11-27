@@ -31,8 +31,8 @@
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view.
+   [super viewDidLoad];
+   // Do any additional setup after loading the view.
 }
 
 //________________________________________________________________________________________
@@ -204,6 +204,7 @@
 //________________________________________________________________________________________
 - (void) gridView : (AQGridView *) gridView didSelectItemAtIndex : (NSUInteger) index numFingersTouch : (NSUInteger) numFingers
 {
+   NSLog(@"fucking nav bar: %@", self.navigationController.navigationBar);
    [self performSegueWithIdentifier : @"ShowBulletinArticles" sender : self];
 }
 

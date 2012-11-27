@@ -6,7 +6,7 @@
 
 namespace {
 
-const CGFloat cellHeight = 40.f;
+const CGFloat cellHeight = 44.f;//40.f;
 const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 
 }
