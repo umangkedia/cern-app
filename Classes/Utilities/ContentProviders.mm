@@ -21,8 +21,8 @@
       
       feedName = (NSString *)base;
 
-      base = [feedInfo objectForKey : @"Feed"];
-      assert(base != nil && [base isKindOfClass : [NSString class]] && "initWith:, object for 'Feed' was not found or is not of string type");
+      base = [feedInfo objectForKey : @"Url"];
+      assert(base != nil && [base isKindOfClass : [NSString class]] && "initWith:, object for 'Url' was not found or is not of string type");
       
       feed = (NSString *)base;
    }

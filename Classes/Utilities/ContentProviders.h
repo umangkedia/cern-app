@@ -17,7 +17,7 @@
 @end
 
 //
-//
+//I'm using this class, at the moment, for news feeds and tweets.
 //
 @interface FeedProvider : NSObject<ContentProvider>
 

@@ -84,7 +84,21 @@
                   FeedProvider *provider = [[FeedProvider alloc] initWith : feedInfo];
                   [liveData addObject : provider];
                }
-            }         
+            }
+            
+            //Some nice code duplicaiton here :)
+            if ((base = [data objectForKey : @"Tweets"])) {
+               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Tweets' key must be of an array type");
+               NSArray *tweetProviders = (NSArray *)base;
+               
+               for (id info in tweetProviders) {
+                  assert([info isKindOfClass : [NSDictionary class]] && "readLIVEData, feed info must be a dictionary");
+                  NSDictionary *tweetInfo = (NSDictionary *)info;
+                  FeedProvider *provider = [[FeedProvider alloc] initWith : tweetInfo];
+                  [liveData addObject : provider];
+               }
+            }            
+            
          } else if ([catName isEqualToString:@"Event display"]) {
             //NSLog(@"Event display found for %@", self.title);
          } else if ([catName isEqualToString:@"DAQ"]) {
@@ -101,7 +115,6 @@
 {
    //
    assert(selected >= 0 && "loadMultipageControllerWithSelectedItem:, parameter selected must be non-negative");
-   assert(self.experiment == CMS && "loadMultipageControllerWithSelectedItem:, implemented only for CMS at the moment");
    
    MultiPageController * const controller = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
 
@@ -140,12 +153,12 @@
          break;
       case LHC:
          self.title = @"LHC";
-         break;//do not read LIVE data for LHC for the moment.
+         break;
       default: break;
    }
    
    //
-   if (self.experiment == CMS)
+   if (self.experiment != LHC)
       [self readLIVEData];
 }
 
@@ -182,9 +195,6 @@
    if (self.experiment == LHC)
       return 1;
    
-   if (self.experiment != CMS)
-      return 2;
-   
    assert(liveData && [liveData count] && "tableView:numberOfRowsInSection:, no LIVE data found");
 
    return [liveData count] + 1;//1 for event display (to be changed).
@@ -198,7 +208,7 @@
    if (!cell)
       cell = [[UITableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : CellIdentifier];
 
-   if (self.experiment == CMS) {
+   if (self.experiment != LHC) {
       //TODO: at the moment, the new experimental controller/view is only for CMS.
       //<= : [liveData count] + 1 for event display.
       assert(indexPath.row <= [liveData count] && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
@@ -214,29 +224,11 @@
 
    switch (indexPath.row) {
       case 0:
-         switch (self.experiment) {
-            case ATLAS:
-               cell.textLabel.text = @"ATLAS News";
-               break;
-            /*case CMS:
-               cell.textLabel.text = @"CMS News";
-               break;*/
-            case ALICE:
-               cell.textLabel.text = @"ALICE News";
-               break;
-            case LHCb:
-               cell.textLabel.text = @"LHCb News";
-               break;
-            case LHC:
-               cell.textLabel.text = @"LHC Data";
-               default: break;
-         }
-
+         cell.textLabel.text = @"LHC Data";
          break;
-      
-      case 1:
+/*      case 1:
          cell.textLabel.text = @"Event Display";
-         break;
+         break;*/
       default:
          assert(0 && "tableView:cellForRowAtIndexPath:, bad index");
    }
@@ -399,23 +391,19 @@
 {
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 
-   if (self.experiment == CMS) {
+   if (self.experiment != LHC) {
       assert(indexPath.row >= 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row is negative");//WTF??
       if (indexPath.row < [liveData count])
          [self loadMultiPageControllerWithSelectedItem:indexPath.row];
       else
          [self pushEventDisplayForExperiment];
    } else {
+      //LHC is still a "special" case :(
       if (!indexPath.row)
          [self pushNewsControllerForExperiment];
       else if (indexPath.row == 1)
          [self pushEventDisplayForExperiment];
-
-
    }
-   //else - something else if we have.
-   
-
 }
 
 @end
