@@ -97,8 +97,8 @@
 {
    self.rangeOfArticlesToShow = NSRange();
    [self.aggregator clearAllFeeds];
-   [self.tableView reloadData];
    [super refresh];
+   [self.tableView reloadData];
 }
 
 //________________________________________________________________________________________
@@ -156,7 +156,7 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
    [super allFeedsDidLoadForAggregator : theAggregator];
-   [(UITableView *)self.view reloadData];
+   [self.tableView reloadData];
    loaded = YES;
 }
 

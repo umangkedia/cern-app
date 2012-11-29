@@ -3,6 +3,7 @@
 //  Copyright (c) 2012 Timur Pocheptsov. All rights reserved.
 //
 
+#import <cassert>
 #import <cstdlib>
 
 #import <QuartzCore/QuartzCore.h>
@@ -111,6 +112,8 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 //________________________________________________________________________________________
 - (void) setItems : (NSMutableArray *) items
 {
+   assert(items != nil && "setItems:, items parameter is nil");
+
    if ([items count]) {
       NSMutableArray * const titles = [[NSMutableArray alloc] init];
       
@@ -153,6 +156,40 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       [[tableControllers objectAtIndex : 0] refresh];
    }
    //Now we had to initialize a lot of feed parsers.
+}
+
+//________________________________________________________________________________________
+- (void) preparePagesFor : (NSMutableArray *) itemNames
+{
+   assert(itemNames != nil && "preparePagesFor:, itemNames parameter is nil");
+   assert([itemNames count] && "preparePagesFor:, at least one item expected");
+
+   navigationView.contentOffset = CGPointZero;
+   navigationView.contentSize = CGSizeMake([itemNames count] * navigationView.frame.size.width, navigationView.frame.size.height);
+   
+   [selector addItemNames : itemNames];
+   [tableControllers removeAllObjects];//???
+}
+
+//________________________________________________________________________________________
+- (void) addPageFor : (NewsTableViewController *) controller
+{
+   assert(controller != nil && "addPageFor:, controller parameter is nil");
+   
+   CGRect newPageFrame = navigationView.frame;
+   newPageFrame.origin.y = 0.f;
+   newPageFrame.origin.x = [tableControllers count] * newPageFrame.size.width;
+
+   //Geometry is an everlasting pain with UIKit and Interface Builder.
+   if ([DeviceCheck deviceIsiPhone5])
+      newPageFrame.size.height = 460;
+   else
+      newPageFrame.size.height = 368;
+
+   controller.view.frame = newPageFrame;
+
+   [tableControllers addObject : controller];
+   [navigationView addSubview : controller.view];
 }
 
 #pragma mark - ScrollSelectorDelegate
@@ -207,6 +244,22 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 - (void) backButtonPressed
 {
    [self.navigationController popViewControllerAnimated : YES];
+}
+
+//________________________________________________________________________________________
+- (void) selectPage : (NSInteger) page
+{
+   assert(page < [tableControllers count] && "selectPage:, page number is out of bounds");
+   
+   NewsTableViewController *controller = (NewsTableViewController *)[tableControllers objectAtIndex : page];
+   
+   if (page) {
+      const CGPoint offset = CGPointMake(page * navigationView.frame.size.width, 0.f);
+      [navigationView setContentOffset : offset animated : NO];
+   }
+   
+   [selector setSelectedItem : page];
+   [controller refresh];
 }
 
 @end

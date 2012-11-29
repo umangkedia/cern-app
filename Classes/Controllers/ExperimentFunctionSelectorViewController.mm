@@ -16,226 +16,19 @@
 #import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
 #import "MultiPageController.h"
+#import "ContentProviders.h"
 #import "ScrollSelector.h"
 #import "DeviceCheck.h"
 #import "AppDelegate.h"
 #import "Constants.h"
-#import "KeyVal.h"
-
-//________________________________________________________________________________________
-@interface ExperimentLIVEData : NSObject
-
-- (id) initWithLIVEData : (NSDictionary *) data;
-
-- (NSUInteger) numberOfRows;
-- (NSString *) textForRow : (NSUInteger) row;
-- (void) loadLIVEData : (ExperimentFunctionSelectorViewController *) controller forRow : (NSUInteger) row;
-
-@end
-
-@implementation ExperimentLIVEData
-
-//________________________________________________________________________________________
-- (id) initWithLIVEData : (NSDictionary *) data
-{
-   assert(data != nil && "initWithLIVEData, 'data' parameter is nil");
-   
-   self = [super init];
-
-   return self;
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) numberOfRows
-{
-   return 0;
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) numberOfViewsForRow:(NSUInteger)row
-{
-   (void)row;
-   return 0;
-}
-
-//________________________________________________________________________________________
-- (NSString *) textForRow : (NSUInteger) row
-{
-   (void)row;
-   return @"";
-}
-
-//________________________________________________________________________________________
-- (void) loadLIVEData : (ExperimentFunctionSelectorViewController *) controller forRow : (NSUInteger) row
-{
-   (void) controller;
-   (void) row;
-}
-
-@end
-
-//________________________________________________________________________________________
-@interface LIVENews : ExperimentLIVEData {
-   NSMutableArray *feeds;
-   NSMutableArray *tweets;
-   NSMutableArray *pages;
-}
-
-@property (nonatomic, retain) NSString *experimentName;
-
-- (id) initWithLIVEData : (NSDictionary *) data;
-
-- (NSUInteger) numberOfRows;
-- (NSString *) textForRow : (NSUInteger) row;
-
-@end
-
-@implementation LIVENews
-
-@synthesize experimentName;
-
-//________________________________________________________________________________________
-- (id) initWithLIVEData : (NSDictionary *) data
-{
-   assert(data != nil && "initWithLIVEData, 'data' parameter is nil");
-   
-   if (self = [super initWithLIVEData : data]) {
-      //
-      if (id base = [data objectForKey : @"Feeds"]) {
-         assert([base isKindOfClass : [NSDictionary class]] && "initWithLIVEData:, NSDictionary is expected for the key 'Feeds'");
-         NSDictionary * const feedsSrc = (NSDictionary *)base;
-         
-         if ([feedsSrc count]) {
-            feeds = [[NSMutableArray alloc] init];
-            for (NSString *key in feedsSrc) {
-               id val = [feedsSrc objectForKey : key];
-               assert([val isKindOfClass:[NSString class]] && "value in a 'Feed's dictionary must be a string");
-               KeyVal *newPair = [[KeyVal alloc] init];
-               newPair.key = key;
-               newPair.val = val;
-               
-               [feeds addObject : newPair];
-            }
-         }
-      }
-      //
-      /*
-      if (id base = [data objectForKey : @"Pages"]) {
-         assert([base isKindOfClass : [NSArray class]] && "initWithLIVEData:, NSArray is expected for the key 'Pages'");
-         NSArray * const pagesSrc = (NSArray *)base;
-         
-         if ([pagesSrc count]) {
-            pages = [[NSMutableArray alloc] init];
-            for (id page in pagesSrc) {
-               //Check here, feed should be a string.
-               assert([page isKindOfClass : [NSString class]] && "initWithLIVEData:, page must be of NSString type");
-               [pages addObject : page];
-            }
-         }
-      }
-      */
-      //
-      
-      /*
-      if (id base = [data objectForKey : @"Tweets"]) {
-         assert([base isKindOfClass : [NSDictionary class]] && "initWithLIVEData:, NSDictionary is expected for the key 'Tweets'");
-         NSDictionary * const tweetsSrc = (NSDictionary *)base;
-         
-         if ([tweetsSrc count]) {
-            feeds = [[NSMutableArray alloc] init];
-            for (id tweet in tweetsSrc) {
-               //Check here, feed should be a string.
-               assert([tweet isKindOfClass : [NSString class]] && "initWithLIVEData:, tweet must be of NSString type");
-               [tweets addObject : tweet];
-            }
-         }
-      }*/
-   }
-
-   return self;
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) numberOfRows
-{
-   //Max. == 3 - feeds, tweets, pages.
-   NSUInteger nRows = 0;
-   if ([feeds count])
-      ++nRows;
-   if ([pages count])
-      ++nRows;
-   if ([tweets count])
-      ++nRows;
-   
-   return nRows;
-}
-
-//________________________________________________________________________________________
-- (NSString *) textForRow : (NSUInteger) row
-{
-   assert(([feeds count] > 0 || [pages count] > 0 || [tweets count] > 0) && "textForRow:, no data for experiment found");
-
-   //I do not check row index and pages/tweets/feeds existance.
-
-   if (!row) {
-      if ([feeds count])
-         return @"News";
-      if ([pages count])
-         return @"News pages";
-      
-      return @"Tweets";
-   } else if (row == 1) {
-      if ([pages count])
-         return @"News pages";
-      
-      return @"Tweets";
-   }
-
-   return @"Tweets";
-}
-
-//________________________________________________________________________________________
-- (void) loadLIVEData : (ExperimentFunctionSelectorViewController *) controller forRow : (NSUInteger) row
-{
-   //
-   if ([feeds count] && !row) {
-      //We initialize MultiPageController with feeds.
-      MultiPageController * const feedController = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
-      [controller.navigationController pushViewController : feedController animated : YES];
-      feedController.title = [experimentName stringByAppendingString : @" News"];
-      [feedController setItems : feeds];
-   } else {
-      //Not implemented - pages or tweets.
-   }
-}
-
-@end
-
-//________________________________________________________________________________________
-@interface EventDisplayData : ExperimentLIVEData
-
-@end
-
-@implementation EventDisplayData
-
-@end
-
-//________________________________________________________________________________________
-@interface DAQData : ExperimentLIVEData
-
-@end
-
-@implementation DAQData
-
-
-@end
-
 
 #pragma mark - ExperimentFunctionSelectorViewController.
 
 //________________________________________________________________________________________
 @implementation ExperimentFunctionSelectorViewController {
    NSMutableArray *liveData;
+   
+   NSMutableArray *contentProviders;
 }
 
 //________________________________________________________________________________________
@@ -280,13 +73,18 @@
          NSString *catName = (NSString *)base;
          
          if ([catName isEqualToString : @"News"]) {
-            LIVENews *news = [[LIVENews alloc] initWithLIVEData : data];
-            if (news) {
-               news.experimentName = self.title;
-               [liveData addObject : news];
-            } else
-               NSLog(@"LIVENews initialization failed for %@", self.title);
 
+            if ((base = [data objectForKey : @"Feeds"])) {
+               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Feeds' key must be of an array type");
+               NSArray *feedProviders = (NSArray *)base;
+               
+               for (id info in feedProviders) {
+                  assert([info isKindOfClass : [NSDictionary class]] && "readLIVEData, feed info must be a dictionary");
+                  NSDictionary *feedInfo = (NSDictionary *)info;
+                  FeedProvider *provider = [[FeedProvider alloc] initWith : feedInfo];
+                  [liveData addObject : provider];
+               }
+            }         
          } else if ([catName isEqualToString:@"Event display"]) {
             //NSLog(@"Event display found for %@", self.title);
          } else if ([catName isEqualToString:@"DAQ"]) {
@@ -296,6 +94,30 @@
          }
       }
    }
+}
+
+//________________________________________________________________________________________
+- (void) loadMultiPageControllerWithSelectedItem : (NSInteger) selected
+{
+   //
+   assert(selected >= 0 && "loadMultipageControllerWithSelectedItem:, parameter selected must be non-negative");
+   assert(self.experiment == CMS && "loadMultipageControllerWithSelectedItem:, implemented only for CMS at the moment");
+   
+   MultiPageController * const controller = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
+
+   NSMutableArray *itemNames = [[NSMutableArray alloc] init];
+   for (NSObject<ContentProvider> *provider in liveData)
+      [itemNames addObject : [provider categoryName]];
+   
+   [self.navigationController pushViewController : controller animated : YES];
+
+   [controller preparePagesFor : itemNames];
+
+   
+   for (NSObject<ContentProvider> *provider in liveData)
+      [provider addPageWithContentTo : controller];
+   
+   [controller selectPage : selected];
 }
 
 //________________________________________________________________________________________
@@ -364,12 +186,8 @@
       return 2;
    
    assert(liveData && [liveData count] && "tableView:numberOfRowsInSection:, no LIVE data found");
-   
-   unsigned nRows = 0;
-   for (ExperimentLIVEData *data in liveData)
-      nRows += [data numberOfRows];
-   
-   return nRows + 1;//1 for event display (to be changed).
+
+   return [liveData count] + 1;//1 for event display (to be changed).
 }
 
 //________________________________________________________________________________________
@@ -380,15 +198,29 @@
    if (!cell)
       cell = [[UITableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : CellIdentifier];
 
+   if (self.experiment == CMS) {
+      //TODO: at the moment, the new experimental controller/view is only for CMS.
+      //<= : [liveData count] + 1 for event display.
+      assert(indexPath.row <= [liveData count] && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
+      
+      if (indexPath.row < [liveData count]) {
+         NSObject<ContentProvider> *provider = [liveData objectAtIndex : indexPath.row];
+         cell.textLabel.text = [provider categoryName];
+      } else
+         cell.textLabel.text = @"Event Display";
+      
+      return cell;
+   }
+
    switch (indexPath.row) {
       case 0:
          switch (self.experiment) {
             case ATLAS:
                cell.textLabel.text = @"ATLAS News";
                break;
-            case CMS:
+            /*case CMS:
                cell.textLabel.text = @"CMS News";
-               break;
+               break;*/
             case ALICE:
                cell.textLabel.text = @"ALICE News";
                break;
@@ -569,21 +401,10 @@
 
    if (self.experiment == CMS) {
       assert(indexPath.row >= 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row is negative");//WTF??
-      const NSUInteger row = indexPath.row;
-      
-      NSUInteger nRows = 0;
-
-      //That part is quite ugly, but ... what can I do? :)
-      for (ExperimentLIVEData *data in liveData) {
-         const NSUInteger dataRows = [data numberOfRows];
-         if (row >= nRows && row < nRows + dataRows)
-            return [data loadLIVEData : self forRow : row - nRows];
-         else
-            nRows += dataRows;
-      }
-      
-      //If we are here, it's a time to load an event display :)
-      [self pushEventDisplayForExperiment];
+      if (indexPath.row < [liveData count])
+         [self loadMultiPageControllerWithSelectedItem:indexPath.row];
+      else
+         [self pushEventDisplayForExperiment];
    } else {
       if (!indexPath.row)
          [self pushNewsControllerForExperiment];

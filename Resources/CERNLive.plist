@@ -112,14 +112,26 @@
 			<key>Category name</key>
 			<string>News</string>
 			<key>Feeds</key>
-			<dict>
-				<key>ATLAS blog</key>
-				<string>http://pdg2.lbl.gov/atlasblog/?feed=rss2</string>
-				<key>CMS feed</key>
-				<string>http://cms.web.cern.ch/news/category/265/rss.xml</string>
-				<key>Courier</key>
-				<string>http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&amp;ln=en</string>
-			</dict>
+			<array>
+				<dict>
+					<key>Feed</key>
+					<string>http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&amp;ln=en</string>
+					<key>Name</key>
+					<string>Test feed1</string>
+				</dict>
+				<dict>
+					<key>Feed</key>
+					<string>http://cms.web.cern.ch/news/category/265/rss.xml</string>
+					<key>Name</key>
+					<string>CMS news</string>
+				</dict>
+				<dict>
+					<key>Feed</key>
+					<string>http://pdg2.lbl.gov/atlasblog/?feed=rss2</string>
+					<key>Name</key>
+					<string>Test feed2</string>
+				</dict>
+			</array>
 			<key>Tweets</key>
 			<array/>
 		</dict>

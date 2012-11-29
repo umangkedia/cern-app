@@ -171,6 +171,7 @@
 		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
+		702F5778166755070066E45D /* ContentProviders.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702F5777166755070066E45D /* ContentProviders.mm */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
 		704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.m */; };
 		70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */ = {isa = PBXBuildFile; fileRef = 70736CB4164BAF3A009FF383 /* KeyVal.m */; };
@@ -438,6 +439,8 @@
 		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
+		702F5776166755070066E45D /* ContentProviders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentProviders.h; sourceTree = "<group>"; };
+		702F5777166755070066E45D /* ContentProviders.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ContentProviders.mm; sourceTree = "<group>"; };
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
 		704A8DF51615E25800AAA5B2 /* DeviceCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCheck.h; sourceTree = "<group>"; };
 		704A8DF61615E25800AAA5B2 /* DeviceCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceCheck.m; sourceTree = "<group>"; };
@@ -680,6 +683,8 @@
 				704A8DF61615E25800AAA5B2 /* DeviceCheck.m */,
 				70736CB3164BAF3A009FF383 /* KeyVal.h */,
 				70736CB4164BAF3A009FF383 /* KeyVal.m */,
+				702F5776166755070066E45D /* ContentProviders.h */,
+				702F5777166755070066E45D /* ContentProviders.mm */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1192,6 +1197,7 @@
 				70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */,
 				70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */,
 				70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */,
+				702F5778166755070066E45D /* ContentProviders.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -154,6 +154,10 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 
    if (![items count])
       return;
+   //
+   for (UIView *v in [contentScroll subviews])
+      [v removeFromSuperview];
+   //
 
    CGFloat currPos = xPad;
    NSEnumerator * const enumerator = [items objectEnumerator];
@@ -175,7 +179,7 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
       currPos += cellWidth;
    }
 
-   contentScroll.contentSize = CGSizeMake(2 * xPad + [items count] * cellWidth, cellHeight);
+   contentScroll.contentSize = CGSizeMake(2 * xPad + [items count] * cellWidth, cellHeight);   
    [self setSelectedItem : 0];
 }
 
