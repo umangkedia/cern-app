@@ -42,7 +42,7 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
-   [(UITableView *)self.view reloadData];
+   [self.tableView reloadData];
 }
 
 //________________________________________________________________________________________
@@ -64,8 +64,7 @@
 //________________________________________________________________________________________
 - (void) prepareForSegue : (UIStoryboardSegue *) segue sender : (id)sender
 {
-   UITableView * const tableView = (UITableView *)self.view;
-   NSIndexPath * const indexPath = [tableView indexPathForSelectedRow];
+   NSIndexPath * const indexPath = [self.tableView indexPathForSelectedRow];
 
    assert(indexPath != nil && "prepareForSegue:sender:, index path for selected table's row is nil");
    ArticleDetailViewController * const viewController = (ArticleDetailViewController *)segue.destinationViewController;
@@ -177,9 +176,9 @@
 
    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
    NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
-//   [(UITableView *)self.view reloadRowsAtIndexPaths : indexPaths withRowAnimation : UIT UITableViewRowAnimationFade];
+
    //This crap dies at start.
-   [(UITableView *)self.view reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+   [self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - Table view delegate

@@ -1,16 +1,6 @@
-//
-//  ExperimentDetailTableViewController.m
-//  CERN App
-//
-//  Created by Eamon Ford on 7/20/12.
-//  Copyright (c) 2012 CERN. All rights reserved.
-//
-
-//Modified by Timur Pocheptsov.
-
 #include <cassert>
 
-#import "ExperimentFunctionSelectorViewController.h"
+#import "ExperimentLiveControllerIPHONE.h"
 #import "EventDisplayViewController.h"
 #import "PhotosGridViewController.h"
 #import "NewsTableViewController.h"
@@ -22,13 +12,15 @@
 #import "AppDelegate.h"
 #import "Constants.h"
 
-#pragma mark - ExperimentFunctionSelectorViewController.
+#pragma mark - ExperimentLiveControllerIPHONE.
 
 //________________________________________________________________________________________
-@implementation ExperimentFunctionSelectorViewController {
+@implementation ExperimentLiveControllerIPHONE {
    NSMutableArray *liveData;
    NSMutableArray *contentProviders;
 }
+
+@synthesize experiment;
 
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
@@ -135,7 +127,7 @@
 {
    self.navigationController.navigationBarHidden = NO;
 
-   switch (self.experiment) {
+   switch (experiment) {
       case ATLAS:
          self.title = @"ATLAS";
          break;
@@ -154,7 +146,7 @@
       default: break;
    }
 
-   if (self.experiment != LHC)
+   if (experiment != LHC)
       [self readLIVEData];
 }
 
@@ -182,7 +174,7 @@
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
    //TP: at the moment we have only "News" and "Event display" cells.
-   if (self.experiment == LHC)
+   if (experiment == LHC)
       return 1;
    
    assert(liveData && [liveData count] && "tableView:numberOfRowsInSection:, no LIVE data found");
@@ -198,7 +190,7 @@
    if (!cell)
       cell = [[UITableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : CellIdentifier];
 
-   if (self.experiment != LHC) {
+   if (experiment != LHC) {
       //TODO: at the moment, the new experimental controller/view is only for CMS.
       //<= : [liveData count] + 1 for event display.
       assert(indexPath.row <= [liveData count] && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
@@ -226,23 +218,10 @@
 {
    //Part for event display.
    
-   UIStoryboard *mainStoryboard = nil;
-   UINavigationController *navigationController = nil;
-   
-   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-      mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-      navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex : TabIndexLive];
-      ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
-      [experimentsVC.popoverController dismissPopoverAnimated : YES];
-   } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-      mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-      navigationController = self.navigationController;
-   }
-   
-   EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
+   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+   EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kEventDisplayViewController];
 
-   switch (self.experiment) {
+   switch (experiment) {
       case ATLAS: {
          CGFloat largeImageDimension = 764.0;
          CGFloat smallImageDimension = 379.0;
@@ -272,7 +251,7 @@
       case ALICE: {
          PhotosGridViewController *photosViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kALICEPhotoGridViewController];
          photosViewController.photoDownloader.url = [NSURL URLWithString:@"https://cdsweb.cern.ch/record/1305399/export/xm?ln=en"];
-         [navigationController pushViewController : photosViewController animated : YES];
+         [self.navigationController pushViewController : photosViewController animated : YES];
          return;
       }
 
@@ -289,7 +268,7 @@
       default: break;
    }
 
-   [navigationController pushViewController : eventViewController animated : YES];
+   [self.navigationController pushViewController : eventViewController animated : YES];
 }
 
 //________________________________________________________________________________________
@@ -297,7 +276,7 @@
 {
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 
-   if (self.experiment != LHC) {
+   if (experiment != LHC) {
       assert(indexPath.row >= 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row is negative");//WTF??
       if (indexPath.row < [liveData count])
          [self loadMultiPageControllerWithSelectedItem:indexPath.row];
@@ -320,7 +299,7 @@
          navigationController = self.navigationController;
       }
 
-      assert(self.experiment == LHC && "pushNewsControllerForExperiment, must called ONLY for LHC");
+      assert(experiment == LHC && "pushNewsControllerForExperiment, must called ONLY for LHC");
 
       EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png"] boundaryRects : nil];
