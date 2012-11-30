@@ -143,8 +143,6 @@
 
       NSDictionary * const image5 = @{@"ImageName" : @"RhoZ", @"Url" : @"http://cmsonline.cern.ch/evtdisp/RhoZ.png"};
       [liveEvents addObject : image5];
-      
-      NSLog(@"live events: %@", liveEvents);
 
       [eventViewController setTableContents : liveEvents experimentName : @"CMS"];
       [controller addPageFor : eventViewController];

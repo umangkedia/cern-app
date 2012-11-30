@@ -110,7 +110,6 @@ enum ControllerMode {
       NSDictionary * const dict = (NSDictionary *)imageDesc;
       
       id base = [dict objectForKey:[LiveEventTableController nameKey]];
-      NSLog(@"base is %@", base);
       assert([base isKindOfClass : [NSString class]] && "Image name must be a string object");
       
       NSString * const name = (NSString *)base;
