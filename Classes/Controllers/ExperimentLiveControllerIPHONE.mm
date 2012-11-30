@@ -3,6 +3,7 @@
 #import "ExperimentLiveControllerIPHONE.h"
 #import "EventDisplayViewController.h"
 #import "PhotosGridViewController.h"
+#import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
 #import "MultiPageController.h"
@@ -111,13 +112,43 @@
    for (NSObject<ContentProvider> *provider in liveData)
       [itemNames addObject : [provider categoryName]];
    
+   if (experiment == CMS)
+      [itemNames addObject : @"LIVE Events"];
+   
    [self.navigationController pushViewController : controller animated : YES];
-
    [controller preparePagesFor : itemNames];
 
-   
    for (NSObject<ContentProvider> *provider in liveData)
       [provider addPageWithContentTo : controller];
+   
+   
+   //
+   if (experiment == CMS) {
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+      LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kLiveEventTableViewController];
+      //
+      NSMutableArray *liveEvents = [[NSMutableArray alloc] init];
+
+      NSDictionary * const image1 = @{@"ImageName" : @"3D Tower", @"Url" : @"http://cmsonline.cern.ch/evtdisp/3DTower.png"};
+      [liveEvents addObject : image1];
+
+      NSDictionary * const image2 = @{@"ImageName" : @"3D RecHit", @"Url" : @"http://cmsonline.cern.ch/evtdisp/3DRecHit.png"};
+      [liveEvents addObject : image2];
+      
+      NSDictionary * const image3 = @{@"ImageName" : @"Lego", @"Url" : @"http://cmsonline.cern.ch/evtdisp/Lego.png"};
+      [liveEvents addObject : image3];
+
+      NSDictionary * const image4 = @{@"ImageName" : @"RhoPhi", @"Url" : @"http://cmsonline.cern.ch/evtdisp/RhoPhi.png"};
+      [liveEvents addObject : image4];
+
+      NSDictionary * const image5 = @{@"ImageName" : @"RhoZ", @"Url" : @"http://cmsonline.cern.ch/evtdisp/RhoZ.png"};
+      [liveEvents addObject : image5];
+      
+      NSLog(@"live events: %@", liveEvents);
+
+      [eventViewController setTableContents : liveEvents experimentName : @"CMS"];
+      [controller addPageFor : eventViewController];
+   }
    
    [controller selectPage : selected];
 }

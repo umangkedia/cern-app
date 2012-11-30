@@ -20,6 +20,11 @@
 //This is a _very_ special way to create images: ATLAS have one big png and we cut pieces (front and side view)
 //from this big image.
 - (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds experimentName : (NSString *) name;
+- (void) refresh;
+
+@property (nonatomic) BOOL loaded;
+
+
 
 @end
 

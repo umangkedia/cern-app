@@ -62,6 +62,8 @@ enum ControllerMode {
    NSString *sourceName;
 }
 
+@synthesize loaded;
+
 //________________________________________________________________________________________
 + (NSString *) nameKey
 {
@@ -101,11 +103,14 @@ enum ControllerMode {
    mode = kLIVEEventManyImages;
    sourceName = name;
    
+   loaded = NO;
+   
    for (id imageDesc in contents) {
       assert([imageDesc isKindOfClass : [NSDictionary class]] && "setTableContents:, array of dictionaries expected");
       NSDictionary * const dict = (NSDictionary *)imageDesc;
       
       id base = [dict objectForKey:[LiveEventTableController nameKey]];
+      NSLog(@"base is %@", base);
       assert([base isKindOfClass : [NSString class]] && "Image name must be a string object");
       
       NSString * const name = (NSString *)base;
@@ -131,6 +136,8 @@ enum ControllerMode {
       [tableData removeAllObjects];
    else
       tableData = [[NSMutableArray alloc] init];
+   
+   loaded = NO;
 
    mode = kLIVEEventOneImage;
    sourceName = name;
@@ -159,6 +166,9 @@ enum ControllerMode {
 {
    //Here we start loading images one by one, asynchronously (next load only started after the
    //previous finished of failed). Nothing is changed except images and probably dates.
+   
+   loaded = NO;
+   
    if ([tableData count]) {
       [self.tableView reloadData];
 
@@ -279,7 +289,8 @@ enum ControllerMode {
          NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
          imageData = [[NSMutableData alloc] init];
          connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
-      }
+      } else
+         loaded = YES;
    } else {
       //Now we have to cut sub-images.
       for (LiveImageData *liveData in tableData) {
@@ -292,6 +303,8 @@ enum ControllerMode {
       
       imageData = nil;
       connection = nil;
+      
+      loaded = YES;
       
       //Ok, we can update ALL the rows now!
       [self.tableView reloadData];
@@ -318,9 +331,11 @@ enum ControllerMode {
 
          imageData = [[NSMutableData alloc] init];
          connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
-      }      
+      } else
+         loaded = YES;
    } else {
       //Image load failed, nothing to update, no cell has any image.
+      loaded = YES;
    }
    
 }
