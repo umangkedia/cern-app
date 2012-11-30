@@ -9,7 +9,7 @@
 #import <cassert>
 
 #import "LiveEventTableController.h"
-
+#import "NewsTableViewCell.h"
 
 namespace {
 
@@ -198,12 +198,34 @@ enum ControllerMode {
 //________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   static NSString *CellIdentifier = @"Cell";
-   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath : indexPath];
+   //Find feed item first.
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < [tableData count] && "tableView:cellForRowAtIndexPath:, row must be in the range [0, [tableData count])");
+   LiveImageData * const liveData = (LiveImageData *)[tableData objectAtIndex : row];
 
-   // Configure the cell...
-    
+   static NSString *CellIdentifier = @"NewsCell";
+   
+   //Why do not I have compilation error (warning at least)? And get runtime error on non-existing selector instead?
+   //Apple always thinks different.
+   //NewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : CellIdentifier forIndexPath : indexPath];
+
+   NewsTableViewCell *cell = (NewsTableViewCell *)[self.tableView dequeueReusableCellWithIdentifier : CellIdentifier];
+   if (!cell)
+      cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+
+   [cell setCellData : liveData.imageName source : sourceName image : liveData.image imageOnTheRight : (indexPath.row % 4) == 3];
+
    return cell;
+}
+
+//________________________________________________________________________________________
+- (CGFloat) tableView : (UITableView *) tableView heightForRowAtIndexPath : (NSIndexPath *) indexPath
+{
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < [tableData count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
+
+   LiveImageData * const liveData = (LiveImageData *)[tableData objectAtIndex : row];
+   return [NewsTableViewCell calculateCellHeightForText : liveData.imageName source : sourceName image : liveData.image imageOnTheRight : (indexPath.row % 4) == 3];
 }
 
 #pragma mark - Table view delegate
