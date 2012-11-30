@@ -8,7 +8,7 @@
 //this class have to know too much about concrete experiments and the way they
 //display live events.
 
-@interface LiveEventTableController : UITableViewController<NSURLConnectionDelegate>
+@interface LiveEventTableController : UITableViewController<NSURLConnectionDelegate, UITableViewDataSource, UITableViewDelegate>
 
 //These are the keys to be used when setting table's data -
 //array of dictionaries.
@@ -16,10 +16,10 @@
 + (NSString *) urlKey;
 
 //'contents' is an array of pairs [url : name].
-- (void) setTableContents : (NSArray *) contents;
+- (void) setTableContents : (NSArray *) contents experimentName : (NSString *) name;
 //This is a _very_ special way to create images: ATLAS have one big png and we cut pieces (front and side view)
 //from this big image.
-- (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds;
+- (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds experimentName : (NSString *) name;
 
 @end
 

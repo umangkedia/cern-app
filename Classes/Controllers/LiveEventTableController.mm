@@ -59,6 +59,7 @@ enum ControllerMode {
    unsigned imageToLoad;
    NSURLConnection *connection;
    NSMutableData *imageData;
+   NSString *sourceName;
 }
 
 //________________________________________________________________________________________
@@ -87,9 +88,10 @@ enum ControllerMode {
 }
 
 //________________________________________________________________________________________
-- (void) setTableContents : (NSArray *) contents
+- (void) setTableContents : (NSArray *) contents experimentName : (NSString *)name
 {
    assert(contents != nil && "setTableContents:, contents parameter is nil");
+   assert(name != nil && "setTableContents:, name parameter is nil");
 
    if (tableData)
       [tableData removeAllObjects];
@@ -97,6 +99,7 @@ enum ControllerMode {
       tableData = [[NSMutableArray alloc] init];
 
    mode = kLIVEEventManyImages;
+   sourceName = name;
    
    for (id imageDesc in contents) {
       assert([imageDesc isKindOfClass : [NSDictionary class]] && "setTableContents:, array of dictionaries expected");
@@ -117,11 +120,12 @@ enum ControllerMode {
 }
 
 //________________________________________________________________________________________
-- (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds
+- (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds experimentName : (NSString *) name
 {
    assert(url != nil && "setTableContentsFromImage:cellNames:imageBounds:, url parameter is nil");
    assert(names != nil && "setTableContentsFromImage:cellNames:imageBounds:, names parameter is nil");
    assert(bounds != nil && "setTableContentsFromImage:cellNames:imageBounds:, bounds parameter is nil");
+   assert(name != nil && "setTableContentsFromImage:cellNames:imageBounds:, name parameter is nil");
    
    if (tableData)
       [tableData removeAllObjects];
@@ -129,6 +133,7 @@ enum ControllerMode {
       tableData = [[NSMutableArray alloc] init];
 
    mode = kLIVEEventOneImage;
+   sourceName = name;
 
    unsigned i = 0;//quite ugly :)
    for (id imageDesc in names) {

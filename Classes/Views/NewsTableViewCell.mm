@@ -19,6 +19,8 @@ const CGFloat defaultHeightNoImage = 60.f;
 const CGFloat sourceLabelWidthRatio = 0.85;
 const CGFloat dateLabelWidthRatio = 0.75;
 
+//TODO: check WHY do I have images of size 1x1 ????
+const CGFloat minImageSize = 10.f;//??
 
 //This is for "Author" and "Date" labels.
 const CGFloat fixedLabelSize = 15.f;
@@ -264,9 +266,6 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    //Author can be empty, date can be empty, but we always "allocate" space for them.
    //Dynamic part is built from title and text (whatever string is not empty).
 
-
-   
-
    //Now, layout labels, which have non-nil text (dynamic part).
    //Hehe, __weak is just for fun :) Or ...
    __weak UILabel *labelsToLayout[2] = {};
@@ -341,9 +340,6 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 {
    assert(data && "setCellData:image:imageOnTheRight:, data parameter is nil");
 
-   //TODO: check WHY do I have images of size 1x1 ????
-   const CGFloat minImageSize = 10.f;//??
-
    author.text = data.link && [data.link length] ? data.link : nil;
    title.text = [data.title stringByConvertingHTMLToPlainText];
    //Set summary.
@@ -379,6 +375,44 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 }
 
 //________________________________________________________________________________________
+- (void) setCellData : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right
+{
+   assert(cellText != nil && "setCellData:source:image:imageOnTheRight:, cellText parameter is nil");
+   assert(source != nil && "setCellData:source:image:imageOnTheRight:, source parameter is nil");
+
+   title.text = cellText;
+   author.text = source;
+ 
+   NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+   [dateFormatter setDateFormat:@"d MMM. yyyy"];
+   date.text = [dateFormatter stringFromDate : [NSDate date]];
+
+   if (image && image.size.width > minImageSize && image.size.height > minImageSize)
+      imageView.image = image;
+   else
+      imageView.image = nil;
+
+   CGRect cellFrame = self.frame;
+   
+   if (right && imageView.image) {
+      CGRect textRect = CGRectMake(cellInset, 0, cellFrame.size.width - bigImageSize - 2 * cellInset, bigImageSize + 2 * cellInset);//130
+      cellFrame.size.height = [self layoutText : textRect];
+      imageView.frame = CGRectMake(cellFrame.size.width - bigImageSize - cellInset, cellFrame.size.height / 2 - bigImageSize / 2, bigImageSize, bigImageSize);
+   } else if (imageView.image) {
+      CGRect textRect = CGRectMake(defaultImageSize + 2 * cellInset, 0.f, cellFrame.size.width - defaultImageSize - 3 * cellInset, defaultImageSize + 2 * cellInset);
+      cellFrame.size.height = [self layoutText : textRect];
+      imageView.frame = CGRectMake(cellInset, cellFrame.size.height / 2 - defaultImageSize / 2, defaultImageSize, defaultImageSize);
+   } else {
+      CGRect textRect = CGRectMake(cellInset, 0.f, cellFrame.size.width - 2 * cellInset, defaultHeightNoImage);
+      cellFrame.size.height = [self layoutText : textRect];
+   }
+
+   self.frame = cellFrame;
+
+}
+
+
+//________________________________________________________________________________________
 + (CGFloat) calculateCellHeightForData : (MWFeedItem *) data image : (UIImage *) image imageOnTheRight : (BOOL) right
 {
    assert(data != nil && "calculateCellHeightForData:imageOnTheRight:, data parameter is nil");
@@ -386,6 +420,18 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    static NewsTableViewCell *cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
    [cell setCellData : data image : image imageOnTheRight : right];
 
+   return cell.frame.size.height;
+}
+
+//________________________________________________________________________________________
++ (CGFloat) calculateCellHeightForText : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right
+{
+   assert(cellText != nil && "calculateCellHeightForText:source:image:imageOnTheRight:, cellText parameter is nil");
+   assert(source != nil && "calculateCellHeightForText:source:image:imageOnTheRight:, source parameter is nil");
+   
+   static NewsTableViewCell *cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+   [cell setCellData : cellText source : source image : image imageOnTheRight : right];
+   
    return cell.frame.size.height;
 }
 
