@@ -160,6 +160,8 @@ enum ControllerMode {
    //Here we start loading images one by one, asynchronously (next load only started after the
    //previous finished of failed). Nothing is changed except images and probably dates.
    if ([tableData count]) {
+      [self.tableView reloadData];
+
       if (connection)
          [connection cancel];
 
