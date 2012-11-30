@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-//Modified by Timur Pocheptsov.
-
 #include <cassert>
 
 #import "ExperimentFunctionSelectorViewController.h"
@@ -16,19 +14,13 @@
 #import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
 #import "MultiPageController.h"
-#import "ContentProviders.h"
 #import "ScrollSelector.h"
 #import "DeviceCheck.h"
 #import "AppDelegate.h"
 #import "Constants.h"
 
-#pragma mark - ExperimentFunctionSelectorViewController.
 
-//________________________________________________________________________________________
-@implementation ExperimentFunctionSelectorViewController {
-   NSMutableArray *liveData;
-   NSMutableArray *contentProviders;
-}
+@implementation ExperimentFunctionSelectorViewController
 
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
@@ -44,90 +36,12 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
-}
+   // Uncomment the following line to preserve selection between presentations.
+   // self.clearsSelectionOnViewWillAppear = NO;
 
-//________________________________________________________________________________________
-- (void) readLIVEData
-{
-   NSString * const path = [[NSBundle mainBundle] pathForResource : @"CERNLive" ofType : @"plist"];
-   NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
-   assert(plistDict != nil && "readLIVEData:, no dictionary or CERNLive.plist found");
-
-   if (!liveData)
-      liveData = [[NSMutableArray alloc] init];
-   else
-      [liveData removeAllObjects];
-
-   if (id base = [plistDict objectForKey : self.title]) {
-      assert([base isKindOfClass : [NSArray class]] && "readLIVEData:, entry for experiment must have NSArray type");
-      NSArray * const dataSource = (NSArray *)base;
-      
-      for (id arrayItem in dataSource) {
-         assert([arrayItem isKindOfClass : [NSDictionary class]] && "readLIVEData:, array of dictionaries expected");
-         NSDictionary * const data = (NSDictionary *)arrayItem;
-         
-         id base = [data objectForKey : @"Category name"];
-         assert(base != nil && [base isKindOfClass : [NSString class]] && "readLIVEData:, string key 'Category name' was not found");
-         
-         NSString *catName = (NSString *)base;
-
-         //Read news feeds, tweets.
-         if ([catName isEqualToString : @"News"]) {
-            if ((base = [data objectForKey : @"Feeds"])) {
-               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Feeds' key must be of an array type");
-               NSArray *feedProviders = (NSArray *)base;
-               
-               for (id info in feedProviders) {
-                  assert([info isKindOfClass : [NSDictionary class]] && "readLIVEData, feed info must be a dictionary");
-                  NSDictionary *feedInfo = (NSDictionary *)info;
-                  FeedProvider *provider = [[FeedProvider alloc] initWith : feedInfo];
-                  [liveData addObject : provider];
-               }
-            }
-            
-            //Some nice code duplicaiton here :)
-            if ((base = [data objectForKey : @"Tweets"])) {
-               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Tweets' key must be of an array type");
-               NSArray *tweetProviders = (NSArray *)base;
-               
-               for (id info in tweetProviders) {
-                  assert([info isKindOfClass : [NSDictionary class]] && "readLIVEData, feed info must be a dictionary");
-                  NSDictionary *tweetInfo = (NSDictionary *)info;
-                  FeedProvider *provider = [[FeedProvider alloc] initWith : tweetInfo];
-                  [liveData addObject : provider];
-               }
-            }            
-            
-         } else if ([catName isEqualToString:@"Event display"]) {
-            //
-         } else if ([catName isEqualToString:@"DAQ"]) {
-            //
-         }
-      }
-   }
-}
-
-//________________________________________________________________________________________
-- (void) loadMultiPageControllerWithSelectedItem : (NSInteger) selected
-{
-   //
-   assert(selected >= 0 && "loadMultipageControllerWithSelectedItem:, parameter selected must be non-negative");
-   
-   MultiPageController * const controller = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
-
-   NSMutableArray *itemNames = [[NSMutableArray alloc] init];
-   for (NSObject<ContentProvider> *provider in liveData)
-      [itemNames addObject : [provider categoryName]];
-   
-   [self.navigationController pushViewController : controller animated : YES];
-
-   [controller preparePagesFor : itemNames];
-
-   
-   for (NSObject<ContentProvider> *provider in liveData)
-      [provider addPageWithContentTo : controller];
-   
-   [controller selectPage : selected];
+   // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+   // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+   //NSLog(@"self.view is %@", self.view);
 }
 
 //________________________________________________________________________________________
@@ -150,24 +64,23 @@
          break;
       case LHC:
          self.title = @"LHC";
-         break;
+         break;//do not read LIVE data for LHC for the moment.
       default: break;
    }
-
-   if (self.experiment != LHC)
-      [self readLIVEData];
 }
 
 //________________________________________________________________________________________
 - (void) viewDidUnload
 {
    [super viewDidUnload];
+   // Release any retained subviews of the main view.
+   // e.g. self.myOutlet = nil;   
 }
 
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation)interfaceOrientation
 {
-   return NO;
+   return YES;
 }
 
 #pragma mark - Table view data source
@@ -185,9 +98,7 @@
    if (self.experiment == LHC)
       return 1;
    
-   assert(liveData && [liveData count] && "tableView:numberOfRowsInSection:, no LIVE data found");
-
-   return [liveData count] + 1;//1 for event display (to be changed).
+   return 2;
 }
 
 //________________________________________________________________________________________
@@ -198,48 +109,106 @@
    if (!cell)
       cell = [[UITableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : CellIdentifier];
 
-   if (self.experiment != LHC) {
-      //TODO: at the moment, the new experimental controller/view is only for CMS.
-      //<= : [liveData count] + 1 for event display.
-      assert(indexPath.row <= [liveData count] && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
+   switch (indexPath.row) {
+      case 0:
+         switch (self.experiment) {
+            case ATLAS:
+               cell.textLabel.text = @"ATLAS News";
+               break;
+            case CMS:
+               cell.textLabel.text = @"CMS News";
+               break;
+            case ALICE:
+               cell.textLabel.text = @"ALICE News";
+               break;
+            case LHCb:
+               cell.textLabel.text = @"LHCb News";
+               break;
+            case LHC:
+               cell.textLabel.text = @"LHC Data";
+               default: break;
+         }
+
+         break;
       
-      if (indexPath.row < [liveData count]) {
-         NSObject<ContentProvider> *provider = [liveData objectAtIndex : indexPath.row];
-         cell.textLabel.text = [provider categoryName];
-      } else
+      case 1:
          cell.textLabel.text = @"Event Display";
-      
-      return cell;
+         break;
+      default:
+         assert(0 && "tableView:cellForRowAtIndexPath:, bad index");
    }
-
-   //The special case for LHC.
-   assert(indexPath.row == 0 && "tableView:cellForRowAtIndexPath:, intexPath.row is out of bounds");
-   cell.textLabel.text = @"LHC Data";
-
+   
    return cell;
 }
 
 #pragma mark - Table view delegate
 
 //________________________________________________________________________________________
+- (void) pushNewsControllerInto : (UINavigationController *) navigationController fromStoryboard : (UIStoryboard *) mainStoryboard
+         withTitle : (NSString *) title feed : (NSString *) feed
+{
+   NewsGridViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kExperimentNewsViewController];
+   newsViewController.title = title;
+   [newsViewController.aggregator addFeedForURL:[NSURL URLWithString : feed]];
+   [newsViewController refresh];
+   [navigationController pushViewController : newsViewController animated : YES];                    
+}
+
+//________________________________________________________________________________________
+- (void) pushNewsControllerForExperiment
+{
+   //TP: split ugly code in didSelectRowAtIndexPath into news/event displays functions (still ugly :)).
+
+   UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+   AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+   UINavigationController *navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex:TabIndexLive];
+   ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
+   [experimentsVC.popoverController dismissPopoverAnimated : YES];
+   
+   switch (self.experiment) {
+      case ATLAS: {
+         [self pushNewsControllerInto : navigationController fromStoryboard : mainStoryboard
+         withTitle : @"ATLAS News" feed : @"http://pdg2.lbl.gov/atlasblog/?feed=rss2"];
+         break;
+      }
+      case CMS: {
+         [self pushNewsControllerInto : navigationController fromStoryboard : mainStoryboard
+         withTitle : @"CMS News" feed : @"http://cms.web.cern.ch/news/category/265/rss.xml"];
+         break;
+      }
+      case ALICE: {
+         //TP: on iPhone, replace NewsGridViewController with NewsTableViewController.
+         [self pushNewsControllerInto : navigationController fromStoryboard : mainStoryboard
+         withTitle : @"ALICE News" feed : @"http://alicematters.web.cern.ch/rss.xml"];
+         break;
+      }
+      case LHCb: {
+         [self pushNewsControllerInto : navigationController fromStoryboard : mainStoryboard
+         withTitle : @"LHCb News" feed : @"https://twitter.com/statuses/user_timeline/92522167.rss"];//TP: twitter???
+         break;
+      }
+      case LHC: {
+         EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
+         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png"] boundaryRects:nil];
+         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png"] boundaryRects:nil];
+         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png"] boundaryRects:nil];
+         eventViewController.title = @"LHC Data";
+         [navigationController pushViewController:eventViewController animated:YES];
+         break;
+      }
+      default: break;
+   }
+}
+
+//________________________________________________________________________________________
 - (void) pushEventDisplayForExperiment
 {
    //Part for event display.
-   
-   UIStoryboard *mainStoryboard = nil;
-   UINavigationController *navigationController = nil;
-   
-   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-      mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-      navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex : TabIndexLive];
-      ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
-      [experimentsVC.popoverController dismissPopoverAnimated : YES];
-   } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-      mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-      navigationController = self.navigationController;
-   }
-   
+   AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+   UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+   UINavigationController *navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex : TabIndexLive];
+   ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
+   [experimentsVC.popoverController dismissPopoverAnimated : YES];   
    EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
 
    switch (self.experiment) {
@@ -297,50 +266,10 @@
 {
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 
-   if (self.experiment != LHC) {
-      assert(indexPath.row >= 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row is negative");//WTF??
-      if (indexPath.row < [liveData count])
-         [self loadMultiPageControllerWithSelectedItem:indexPath.row];
-      else
-         [self pushEventDisplayForExperiment];
-   } else {
-      //LHC is still a "special" case :(
-      assert(indexPath.row == 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row must be 0");
-      UIStoryboard *mainStoryboard = nil;
-      UINavigationController *navigationController = nil;
-
-      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-         AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-         mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-         navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex:TabIndexLive];
-         ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
-         [experimentsVC.popoverController dismissPopoverAnimated : YES];
-      } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-         mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-         navigationController = self.navigationController;
-      }
-
-      assert(self.experiment == LHC && "pushNewsControllerForExperiment, must called ONLY for LHC");
-
-      EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
-      [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png"] boundaryRects : nil];
-      [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png"] boundaryRects : nil];
-      [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png"] boundaryRects : nil];
-      eventViewController.title = @"LHC Data";
-      [navigationController pushViewController : eventViewController animated : YES];
-   }
-}
-
-//This is a temporary solution (well, ... all temporary hacks tend to become permanent :)) )
-//For live event data we do not have any generic
-//data structures or sources or data itself.
-//So we do different and quite ugly tricks to
-//have anything at all and still trying to fit this into the general picture.
-
-//________________________________________________________________________________________
-- (void) addLiveEventsPage
-{
-   //
+   if (!indexPath.row)
+      [self pushNewsControllerForExperiment];
+   else if (indexPath.row == 1)
+      [self pushEventDisplayForExperiment];
 }
 
 @end
