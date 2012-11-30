@@ -185,7 +185,7 @@
             CGRect boundaryRect = [rectValue CGRectValue];
             CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, boundaryRect);
             UIImage *partialImage = [UIImage imageWithCGImage:imageRef];
-
+            CGImageRelease(imageRef);
             NSDictionary *imageInfo = [NSMutableDictionary dictionary];
             [imageInfo setValue:partialImage forKey:RESULT_IMAGE];
             [imageInfo setValue:[boundaryInfo objectForKey:SOURCE_DESCRIPTION] forKey:SOURCE_DESCRIPTION];

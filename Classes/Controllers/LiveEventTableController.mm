@@ -296,8 +296,10 @@ enum ControllerMode {
          //Strange, that UIImage does not have a ctor from another UIImage and rect.
          //So we need all this gymnastics.
          CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, liveData.bounds));
-         if (imageRef)
+         if (imageRef) {
             liveData.image = [UIImage imageWithCGImage : imageRef];
+            CGImageRelease(imageRef);
+         }
       }
       
       imageData = nil;
