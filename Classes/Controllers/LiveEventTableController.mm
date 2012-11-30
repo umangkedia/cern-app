@@ -226,8 +226,10 @@ enum ControllerMode {
    
    (void) urlConnection;
 
-   //Woo-hoo! We've got an image!
-   UIImage *newImage = [UIImage imageWithData : imageData];
+   //Woo-hoo! We've got an image!(??)
+   UIImage *newImage = nil;
+   if ([imageData length])
+      newImage = [UIImage imageWithData : imageData];
    
    if (mode == kLIVEEventManyImages) {
       LiveImageData *liveImageData = (LiveImageData *)[tableData objectAtIndex : imageToLoad];
@@ -239,19 +241,31 @@ enum ControllerMode {
          NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
          NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
          [self.tableView reloadRowsAtIndexPaths : indexPaths withRowAnimation : UITableViewRowAnimationNone];
-         
-         //Now, should we download another image?
-         if (imageToLoad + 1 < [tableData count]) {
-            ++imageToLoad;
-            liveImageData = (LiveImageData *)[tableData objectAtIndex : imageToLoad];
-            NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
-
-            imageData = [[NSMutableData alloc] init];
-            connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
-         }
+      }
+      
+      //Now, should we download another image?
+      if (imageToLoad + 1 < [tableData count]) {
+         ++imageToLoad;
+         liveImageData = (LiveImageData *)[tableData objectAtIndex : imageToLoad];
+         NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
+         imageData = [[NSMutableData alloc] init];
+         connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
       }
    } else {
       //Now we have to cut sub-images.
+      for (LiveImageData *liveData in tableData) {
+         //Strange, that UIImage does not have a ctor from another UIImage and rect.
+         //So we need all this gymnastics.
+         CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, liveData.bounds));
+         if (imageRef)
+            liveData.image = [UIImage imageWithCGImage : imageRef];
+      }
+      
+      imageData = nil;
+      connection = nil;
+      
+      //Ok, we can update ALL the rows now!
+      [self.tableView reloadData];
    }
 }
 
