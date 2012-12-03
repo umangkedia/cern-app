@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import <cassert>
+
 #import <Availability.h>
 
 #import "EventDisplayViewController.h"
@@ -21,69 +23,75 @@
 @end
 
 @implementation EventDisplayViewController
+
+//________________________________________________________________________________________
 @synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder]) {
-        self.sources = [NSMutableArray array];
-        numPages = 0;
-    }
-    return self;
+   if (self = [super initWithCoder:aDecoder]) {
+      self.sources = [NSMutableArray array];
+      numPages = 0;
+   }
+
+   return self;
 }
 
+//________________________________________________________________________________________
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    
-    CGRect titleViewFrame = CGRectMake(0.0, 0.0, 200.0, 44.0);
-    UIView *titleView = [[UIView alloc] initWithFrame:titleViewFrame];
-    titleView.backgroundColor = [UIColor clearColor];
-    
-    titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, titleView.frame.size.width, 24.0)];
-    titleLabel.backgroundColor = [UIColor clearColor];
-    titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
-   
-#ifdef __IPHONE_6_0
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-#else
-    titleLabel.textAlignment = UITextAlignmentCenter;
-#endif
+   [super viewDidLoad];
 
-    titleLabel.text = self.title;
-    [titleView addSubview:titleLabel];
-    
-    dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, titleLabel.frame.size.height, titleView.frame.size.width, titleView.frame.size.height-titleLabel.frame.size.height)];
-    dateLabel.backgroundColor = [UIColor clearColor];
-    dateLabel.textColor = [UIColor whiteColor];
-    dateLabel.font = [UIFont boldSystemFontOfSize:13.0];
+   CGRect titleViewFrame = CGRectMake(0.0, 0.0, 200.0, 44.0);
+   UIView *titleView = [[UIView alloc] initWithFrame:titleViewFrame];
+   titleView.backgroundColor = [UIColor clearColor];
 
-#ifdef __IPHONE_6_0
-    dateLabel.textAlignment = NSTextAlignmentCenter ;
-#else
-    dateLabel.textAlignment = UITextAlignmentCenter;
-#endif
+   titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, titleView.frame.size.width, 24.0)];
+   titleLabel.backgroundColor = [UIColor clearColor];
+   titleLabel.textColor = [UIColor whiteColor];
+   titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
 
-    [titleView addSubview:dateLabel];
-    
-    self.navigationItem.titleView = titleView;
-    
-    self.pageControl.numberOfPages = numPages;
-    self.scrollView.backgroundColor = [UIColor blackColor];
+   #ifdef __IPHONE_6_0
+   titleLabel.textAlignment = NSTextAlignmentCenter;
+   #else
+   titleLabel.textAlignment = UITextAlignmentCenter;
+   #endif
+
+   titleLabel.text = self.title;
+   [titleView addSubview:titleLabel];
+
+   dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, titleLabel.frame.size.height, titleView.frame.size.width, titleView.frame.size.height-titleLabel.frame.size.height)];
+   dateLabel.backgroundColor = [UIColor clearColor];
+   dateLabel.textColor = [UIColor whiteColor];
+   dateLabel.font = [UIFont boldSystemFontOfSize:13.0];
+
+   #ifdef __IPHONE_6_0
+   dateLabel.textAlignment = NSTextAlignmentCenter ;
+   #else
+   dateLabel.textAlignment = UITextAlignmentCenter;
+   #endif
+
+   [titleView addSubview:dateLabel];
+
+   self.navigationItem.titleView = titleView;
+
+   self.pageControl.numberOfPages = numPages;
+   self.scrollView.backgroundColor = [UIColor blackColor];
 }
 
+//________________________________________________________________________________________
 - (void)viewDidAppear:(BOOL)animated
 {
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width*numPages, 1.0);
-    for (int i=0; i<numPages; i++) {
-        [self addSpinnerToPage:i];
-    }
-    
-    [self refresh:self];
+   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * numPages, 1.f);
+
+   for (int i = 0; i< numPages; i++)
+      [self addSpinnerToPage : i];
+
+   [self refresh : self];
 }
 
-- (void)viewDidUnload
+//________________________________________________________________________________________
+- (void) viewDidUnload
 {
     [super viewDidUnload];
     for (UIView *subview in self.scrollView.subviews) {
@@ -94,6 +102,7 @@
     }
 }
 
+//________________________________________________________________________________________
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
@@ -102,12 +111,13 @@
         return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-
+//________________________________________________________________________________________
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     currentPage = self.pageControl.currentPage;
 }
 
+//________________________________________________________________________________________
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     CGFloat oldScreenWidth = UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)?[UIScreen mainScreen].bounds.size.height:[UIScreen mainScreen].bounds.size.width;
@@ -125,6 +135,7 @@
     }];
 }
 
+//________________________________________________________________________________________
 - (void)addSourceWithDescription:(NSString *)description URL:(NSURL *)url boundaryRects:(NSArray *)boundaryRects
 {
     NSMutableDictionary *source = [NSMutableDictionary dictionary];
@@ -142,7 +153,8 @@
 
 #pragma mark - Loading event display images
 
-- (IBAction)refresh:(id)sender
+//________________________________________________________________________________________
+- (IBAction) refresh : (id)sender
 {
     self.refreshButton.enabled = NO;
     self.downloadedResults = [NSMutableArray array];
@@ -160,6 +172,7 @@
     }
 }
 
+//________________________________________________________________________________________
 - (void)synchronouslyDownloadImageForSource:(NSDictionary *)source
 {
     // Download the image from the specified source
@@ -207,6 +220,7 @@
     }
 }
 
+//________________________________________________________________________________________
 - (NSDate *)lastModifiedDateFromHTTPResponse:(NSHTTPURLResponse *)response
 {
     NSDictionary *allHeaderFields = response.allHeaderFields;
@@ -217,6 +231,7 @@
     return [dateFormatter dateFromString:lastModifiedString];
 }
 
+//________________________________________________________________________________________
 - (NSString *)timeAgoStringFromDate:(NSDate *)date
 {
     int secondsAgo = abs([date timeIntervalSinceNow]);
@@ -233,6 +248,7 @@
         
 #pragma mark - UI methods
 
+//________________________________________________________________________________________
 - (void)addDisplay:(NSDictionary *)eventDisplayInfo toPage:(int)page
 {
     UIImage *image = [eventDisplayInfo objectForKey:RESULT_IMAGE];
@@ -243,6 +259,7 @@
     [self.scrollView addSubview:imageView];
 }
 
+//________________________________________________________________________________________
 - (void)addSpinnerToPage:(int)page
 {
     UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -251,10 +268,19 @@
     [self.scrollView addSubview:spinner];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)sender {
+//________________________________________________________________________________________
+- (void) scrollViewDidScroll : (UIScrollView *)sender {
     CGFloat pageWidth = self.scrollView.frame.size.width;
     int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     self.pageControl.currentPage = page;
+}
+
+//________________________________________________________________________________________
+- (void) scrollToPage : (NSInteger) page
+{
+ //  assert(page >= 0 && page < [sources count]);
+   self.scrollView.contentOffset = CGPointMake(page * self.scrollView.frame.size.width, 0);
+   self.pageControl.currentPage = page;
 }
 
 @end

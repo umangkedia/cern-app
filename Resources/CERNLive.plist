@@ -115,12 +115,6 @@
 					<key>Name</key>
 					<string>CMS news</string>
 				</dict>
-				<dict>
-					<key>Url</key>
-					<string>http://pdg2.lbl.gov/atlasblog/?feed=rss2</string>
-					<key>Name</key>
-					<string>Test feed2</string>
-				</dict>
 			</array>
 		</dict>
 		<dict>

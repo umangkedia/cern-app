@@ -48,6 +48,6 @@
 
 - (void) addPageWithContentTo : (MultiPageController *) controller;
 - (void) loadControllerTo : (UINavigationController *) controller;
-- (void) loadControllerTo : (UINavigationController *) controller selectedImage : (unsigned) selected;
+- (void) loadControllerTo : (UINavigationController *) controller selectedImage : (NSInteger) selected;
 
 @end

@@ -165,13 +165,12 @@ namespace {
 }
 
 //________________________________________________________________________________________
-- (void) loadControllerTo : (UINavigationController *) controller selectedImage : (unsigned int) selected
+- (void) loadControllerTo : (UINavigationController *) controller selectedImage : (NSInteger) selected
 {
    using namespace CernAPP;
    
-   (void) selected;
-
    assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+   //assert(selected >= 0 && selected < [liveEvents count] && "loadControllerTo:, parameter 'selected' is out of bounds");
    
    UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
    EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
@@ -208,6 +207,9 @@ namespace {
 
    eventViewController.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    [controller pushViewController : eventViewController animated : YES];
+   
+   if (selected)
+      [eventViewController scrollToPage : selected];
 }
 
 @end

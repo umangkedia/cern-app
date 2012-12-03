@@ -40,4 +40,7 @@
 - (void)addDisplay:(NSDictionary *)eventDisplayInfo toPage:(int)page;
 - (void)addSpinnerToPage:(int)page;
 
+//
+- (void) scrollToPage : (NSInteger) page;
+
 @end
