@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ExperimentsViewController.h"
+#import "Experiments.h"
 
 @interface ExperimentLiveControllerIPHONE : UITableViewController
 
-@property (nonatomic, assign) ExperimentType experiment;
+@property (nonatomic, assign) CernAPP::LHCExperiment experiment;
 
 @end

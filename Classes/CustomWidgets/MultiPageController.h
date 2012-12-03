@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ScrollSelectorDelegate.h"
+#import "PageController.h"
 
 
 @class NewsTableViewController;
@@ -19,7 +20,7 @@
 
 - (void) setItems : (NSMutableArray *) items;
 
-- (void) addPageFor : (UITableViewController *) controller;
+- (void) addPageFor : (UITableViewController<PageController> *) controller;
 
 - (void) preparePagesFor : (NSMutableArray *) itemNames;
 - (void) selectPage : (NSInteger) page;

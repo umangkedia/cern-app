@@ -8,11 +8,18 @@
 #import <UIKit/UIKit.h>
 
 #import "RSSGridViewController.h"
+#import "PageController.h"
 
-@interface NewsTableViewController : RSSTableViewController
+@interface NewsTableViewController : RSSTableViewController<PageController>
+
+//From PageController protocol:
+- (void) refresh;
 
 @property NSRange rangeOfArticlesToShow;
-@property BOOL loaded;
+
+//From PageController protocol:
+@property (nonatomic) BOOL loaded;
+
 @property __weak UINavigationController *navigationControllerForArticle;
 
 @end

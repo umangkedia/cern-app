@@ -173,7 +173,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 }
 
 //________________________________________________________________________________________
-- (void) addPageFor : (UITableViewController *) controller
+- (void) addPageFor : (UITableViewController<PageController> *) controller
 {
    assert(controller != nil && "addPageFor:, controller parameter is nil");
    
@@ -203,21 +203,11 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    autoScroll = YES;
    [navigationView setContentOffset : newOffset animated : YES];
 
-   UITableViewController * const nextController = [tableControllers objectAtIndex : item];
+   UITableViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : item];
    assert(nextController != nil && "item:selectedIn:, controller not found for the page");
    
-   //TODO: That's a quite ugly test. Add a special protocal for this.
-   if ([nextController isKindOfClass : [NewsTableViewController class]]) {
-      NewsTableViewController *nc = (NewsTableViewController *)nextController;
-      if (![nc loaded])
-         [nc refresh];
-   } else if ([nextController isKindOfClass : [LiveEventTableController class]]) {
-      LiveEventTableController *nc = (LiveEventTableController *)nextController;
-      if (![nc loaded])
-         [nc refresh];
-   }
-   
-
+   if (!nextController.loaded)
+      [nextController refresh];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -241,22 +231,12 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    //Page scrolled, adjust selector now.
    const unsigned page = navigationView.contentOffset.x / navigationView.frame.size.width;
    [selector setSelectedItem : page];
-   
-   //NewsTableViewController *nextController = [tableControllers objectAtIndex : page];
-   UITableViewController * const nextController = [tableControllers objectAtIndex : page];
+
+   UITableViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : page];
 
    assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
-
-   //TODO: add a protocol for this to avoid ugly type checks here.
-   if ([nextController isKindOfClass:[NewsTableViewController class]]) {
-      NewsTableViewController * const nc = (NewsTableViewController *)nextController;
-      if(![nc loaded])
-         [nc refresh];
-   } else if ([nextController isKindOfClass : [LiveEventTableController class]]) {
-      LiveEventTableController * const nc = (LiveEventTableController *)nextController;
-      if (![nc loaded])
-         [nc refresh];
-   }
+   if (!nextController.loaded)
+      [nextController refresh];
 }
 
 #pragma mark - Navigation.
@@ -271,9 +251,8 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 - (void) selectPage : (NSInteger) page
 {
    assert(page < [tableControllers count] && "selectPage:, page number is out of bounds");
-   
-//   NewsTableViewController *controller = (NewsTableViewController *)[tableControllers objectAtIndex : page];
-   UITableViewController *controller = (NewsTableViewController *)[tableControllers objectAtIndex : page];
+
+   UITableViewController<PageController> *controller = (UITableViewController<PageController> *)[tableControllers objectAtIndex : page];
    
    if (page) {
       const CGPoint offset = CGPointMake(page * navigationView.frame.size.width, 0.f);
@@ -281,8 +260,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    }
    
    [selector setSelectedItem : page];
-   if ([controller respondsToSelector : @selector(refresh)])
-      [controller performSelector : @selector(refresh)];
+   [controller refresh];
 }
 
 @end

@@ -22,7 +22,12 @@
 			<string>Event display</string>
 			<key>Images</key>
 			<array>
-				<string>http://lbcomet.cern.ch/Online/Images/evdisp.jpg</string>
+				<dict>
+					<key>Name</key>
+					<string>LHCb Event display</string>
+					<key>Image</key>
+					<string>http://lbcomet.cern.ch/Online/Images/evdisp.jpg</string>
+				</dict>
 			</array>
 		</dict>
 	</array>
@@ -57,16 +62,6 @@
 		</dict>
 		<dict>
 			<key>Category name</key>
-			<string>Event display</string>
-			<key>Images</key>
-			<array>
-				<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png</string>
-				<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png</string>
-				<string>http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Category name</key>
 			<string>DAQ</string>
 		</dict>
 	</array>
@@ -92,7 +87,12 @@
 			<string>Event display</string>
 			<key>Images</key>
 			<array>
-				<string>http://atlas-live.cern.ch/live.png</string>
+				<dict>
+					<key>Image</key>
+					<string>http://atlas-live.cern.ch/live.png</string>
+					<key>Name</key>
+					<string>ATLAS Live</string>
+				</dict>
 			</array>
 		</dict>
 	</array>

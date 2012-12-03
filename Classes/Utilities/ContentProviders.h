@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+#import "Experiments.h"
+
 @class MultiPageController;
 
 //
@@ -32,11 +34,14 @@
 @end
 
 //
+//This is class to keep references and names for Live Events.
+//Unfortunately, this class has to know, what's experiment,
+//since for some experiments we do not have normal images
+//and have to do stupid tricks to make it work at least somehow.
 //
-//
-
-/*
 @interface LiveEventsProvider : NSObject<ContentProvider>
+
+- (id) initWith : (NSArray *) images forExperiment : (CernAPP::LHCExperiment) experiment;
 
 - (NSString *) categoryName;
 - (UIImage *) categoryImage;
@@ -45,4 +50,3 @@
 - (void) loadControllerTo : (UINavigationController *) controller;
 
 @end
-*/

@@ -10,6 +10,7 @@
 
 #import "LiveEventTableController.h"
 #import "NewsTableViewCell.h"
+#import "KeyVal.h"
 
 namespace {
 
@@ -106,15 +107,15 @@ enum ControllerMode {
    loaded = NO;
    
    for (id imageDesc in contents) {
-      assert([imageDesc isKindOfClass : [NSDictionary class]] && "setTableContents:, array of dictionaries expected");
-      NSDictionary * const dict = (NSDictionary *)imageDesc;
+      assert([imageDesc isKindOfClass : [KeyVal class]] && "setTableContents:, array of KeyVal pairs expected");
+      KeyVal * const pair = (KeyVal *)imageDesc;
       
-      id base = [dict objectForKey:[LiveEventTableController nameKey]];
+      id base = pair.key;
       assert([base isKindOfClass : [NSString class]] && "Image name must be a string object");
       
       NSString * const name = (NSString *)base;
 
-      base = [dict objectForKey : [LiveEventTableController urlKey]];
+      base = pair.val;
       assert([base isKindOfClass : [NSString class]] && "Url for an image must be a string");
       NSString * const url = (NSString *)base;
       

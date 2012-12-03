@@ -9,7 +9,9 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "ExperimentFunctionSelectorViewController.h"
+#import "ExperimentLiveControllerIPHONE.h"
 #import "ExperimentsViewController.h"
+#import "Experiments.h"
 #import "DeviceCheck.h"
 #import "Constants.h"
 
@@ -79,7 +81,7 @@
 }
 
 //________________________________________________________________________________________
-- (void)setupVisualsForOrientation:(UIDeviceOrientation)orientation withDuration:(NSTimeInterval)duration
+- (void)setupVisualsForOrientation:(UIInterfaceOrientation)orientation withDuration:(NSTimeInterval)duration
 {
     CATransition *transition = [CATransition animation];
     transition.duration = duration;
@@ -92,7 +94,7 @@
    
     //TP: I'm pretty sure, there are over 9000 ways to make it right way instead of this hardcoded nightmare ;)
    
-    if (UIDeviceOrientationIsPortrait(orientation)) {
+    if (UIDeviceOrientationIsPortrait(UIDeviceOrientation(orientation))) {
 
         const BOOL deviceIsIPhone5 = [DeviceCheck deviceIsiPhone5];
        
@@ -140,12 +142,17 @@
 }
 
 //________________________________________________________________________________________
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void) prepareForSegue : (UIStoryboardSegue *) segue sender : (id) sender
 {
-   ExperimentFunctionSelectorViewController *viewController = [segue destinationViewController];
-
-   // Since viewController.experiment is an ExperimentType enum, it will be an integer between 0 and 3. So the button tags in the storyboard are just set to match the enum types.
-   viewController.experiment = ((UIButton *)sender).tag;
+   if ([DeviceCheck deviceIsiPad]) {
+      ExperimentFunctionSelectorViewController *viewController = [segue destinationViewController];
+      // Since viewController.experiment is an ExperimentType enum, it will be an integer between 0 and 3. So the button tags in the storyboard are just set to match the enum types.
+      viewController.experiment = ExperimentType(((UIButton *)sender).tag);
+   } else {
+      ExperimentLiveControllerIPHONE * const viewController = (ExperimentLiveControllerIPHONE *)[segue destinationViewController];
+      assert([sender isKindOfClass : [UIButton class]] && "prepareForSegue:sender:, parameter 'sender' is not a UIButton");
+      viewController.experiment = CernAPP::LHCExperiment(((UIButton *)sender).tag);
+   }
 }
 
 //________________________________________________________________________________________
@@ -153,7 +160,7 @@
 {
    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
       ExperimentFunctionSelectorViewController *viewController = [[UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil] instantiateViewControllerWithIdentifier:kExperimentFunctionSelectorViewIdentifier];
-      viewController.experiment = sender.tag;
+      viewController.experiment = ExperimentType(sender.tag);
       self.popoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
       self.popoverController.popoverContentSize = CGSizeMake(320, 200);
       //show the popover next to the annotation view (pin)

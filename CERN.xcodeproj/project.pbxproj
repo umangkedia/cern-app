@@ -24,7 +24,7 @@
 		41E617901614CE1700BAA7D4 /* BulletinGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617281614CE1700BAA7D4 /* BulletinGridViewController.m */; };
 		41E617911614CE1700BAA7D4 /* EventDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.m */; };
 		41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */; };
-		41E617931614CE1700BAA7D4 /* ExperimentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.m */; };
+		41E617931614CE1700BAA7D4 /* ExperimentsViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.mm */; };
 		41E617941614CE1700BAA7D4 /* NewsGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */; };
 		41E617951614CE1700BAA7D4 /* PhotosGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617321614CE1700BAA7D4 /* PhotosGridViewController.m */; };
 		41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617341614CE1700BAA7D4 /* RSSGridViewController.m */; };
@@ -179,6 +179,7 @@
 		709755A71668CC260017860F /* LiveEventTableController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709755A61668CC260017860F /* LiveEventTableController.mm */; };
 		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
 		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
+		70A32E18166CCB3200636BEE /* Experiments.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A32E17166CCB3200636BEE /* Experiments.mm */; };
 		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
 		70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7DB164AD2040018536F /* MultiPageController.mm */; };
@@ -244,7 +245,7 @@
 		41E6172B1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperimentFunctionSelectorViewController.h; sourceTree = "<group>"; };
 		41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ExperimentFunctionSelectorViewController.mm; sourceTree = "<group>"; };
 		41E6172D1614CE1700BAA7D4 /* ExperimentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperimentsViewController.h; sourceTree = "<group>"; };
-		41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExperimentsViewController.m; sourceTree = "<group>"; };
+		41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ExperimentsViewController.mm; sourceTree = "<group>"; };
 		41E6172F1614CE1700BAA7D4 /* NewsGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsGridViewController.h; sourceTree = "<group>"; };
 		41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsGridViewController.mm; sourceTree = "<group>"; };
 		41E617311614CE1700BAA7D4 /* PhotosGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotosGridViewController.h; sourceTree = "<group>"; };
@@ -441,21 +442,24 @@
 		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
-		702F5776166755070066E45D /* ContentProviders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentProviders.h; sourceTree = "<group>"; };
-		702F5777166755070066E45D /* ContentProviders.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ContentProviders.mm; sourceTree = "<group>"; };
-		702F57791667AD300066E45D /* ExperimentLiveControllerIPHONE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperimentLiveControllerIPHONE.h; sourceTree = "<group>"; };
-		702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ExperimentLiveControllerIPHONE.mm; sourceTree = "<group>"; };
+		702F5776166755070066E45D /* ContentProviders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContentProviders.h; path = Utilities/ContentProviders.h; sourceTree = "<group>"; };
+		702F5777166755070066E45D /* ContentProviders.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ContentProviders.mm; path = Utilities/ContentProviders.mm; sourceTree = "<group>"; };
+		702F57791667AD300066E45D /* ExperimentLiveControllerIPHONE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExperimentLiveControllerIPHONE.h; path = Controllers/ExperimentLiveControllerIPHONE.h; sourceTree = "<group>"; };
+		702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ExperimentLiveControllerIPHONE.mm; path = Controllers/ExperimentLiveControllerIPHONE.mm; sourceTree = "<group>"; };
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
 		704A8DF51615E25800AAA5B2 /* DeviceCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCheck.h; sourceTree = "<group>"; };
 		704A8DF61615E25800AAA5B2 /* DeviceCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceCheck.m; sourceTree = "<group>"; };
 		70736CB3164BAF3A009FF383 /* KeyVal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyVal.h; sourceTree = "<group>"; };
 		70736CB4164BAF3A009FF383 /* KeyVal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyVal.m; sourceTree = "<group>"; };
-		709755A51668CC260017860F /* LiveEventTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveEventTableController.h; sourceTree = "<group>"; };
-		709755A61668CC260017860F /* LiveEventTableController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiveEventTableController.mm; sourceTree = "<group>"; };
+		709755A51668CC260017860F /* LiveEventTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveEventTableController.h; path = Controllers/LiveEventTableController.h; sourceTree = "<group>"; };
+		709755A61668CC260017860F /* LiveEventTableController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = LiveEventTableController.mm; path = Controllers/LiveEventTableController.mm; sourceTree = "<group>"; };
 		709E9825161B1DD300F225DD /* NewsTableViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewCell.mm; sourceTree = "<group>"; };
 		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
-		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewController.mm; sourceTree = "<group>"; };
-		709E9829161B1E1A00F225DD /* NewsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewController.h; sourceTree = "<group>"; };
+		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NewsTableViewController.mm; path = Controllers/NewsTableViewController.mm; sourceTree = "<group>"; };
+		709E9829161B1E1A00F225DD /* NewsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NewsTableViewController.h; path = Controllers/NewsTableViewController.h; sourceTree = "<group>"; };
+		70A32E11166CAD3500636BEE /* PageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PageController.h; path = Controllers/PageController.h; sourceTree = "<group>"; };
+		70A32E16166CBFC200636BEE /* Experiments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Experiments.h; sourceTree = "<group>"; };
+		70A32E17166CCB3200636BEE /* Experiments.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Experiments.mm; sourceTree = "<group>"; };
 		70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiPageController.xib; sourceTree = "<group>"; };
 		70E1A7B7164A8A280018536F /* ScrollSelector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScrollSelector.mm; path = CustomWidgets/ScrollSelector.mm; sourceTree = "<group>"; };
 		70E1A7B8164A8A280018536F /* ScrollSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelector.h; path = CustomWidgets/ScrollSelector.h; sourceTree = "<group>"; };
@@ -513,6 +517,7 @@
 		41E617201614CE1700BAA7D4 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				70A32E12166CBEEB00636BEE /* ExperimentLIVE */,
 				70E1A7B6164A89FB0018536F /* CustomWidgets */,
 				41E617211614CE1700BAA7D4 /* AppDelegate */,
 				41E617241614CE1700BAA7D4 /* Controllers */,
@@ -541,8 +546,6 @@
 		41E617241614CE1700BAA7D4 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				709E9828161B1E1A00F225DD /* NewsTableViewController.mm */,
-				709E9829161B1E1A00F225DD /* NewsTableViewController.h */,
 				41E617251614CE1700BAA7D4 /* ArticleDetailViewController.h */,
 				41E617261614CE1700BAA7D4 /* ArticleDetailViewController.m */,
 				41E617271614CE1700BAA7D4 /* BulletinGridViewController.h */,
@@ -552,7 +555,7 @@
 				41E6172B1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.h */,
 				41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */,
 				41E6172D1614CE1700BAA7D4 /* ExperimentsViewController.h */,
-				41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.m */,
+				41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.mm */,
 				41E6172F1614CE1700BAA7D4 /* NewsGridViewController.h */,
 				41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */,
 				41E617311614CE1700BAA7D4 /* PhotosGridViewController.h */,
@@ -569,10 +572,6 @@
 				41E6173C1614CE1700BAA7D4 /* VideosGridViewController.mm */,
 				41E6173D1614CE1700BAA7D4 /* WebcastsGridViewController.h */,
 				41E6173E1614CE1700BAA7D4 /* WebcastsGridViewController.mm */,
-				702F57791667AD300066E45D /* ExperimentLiveControllerIPHONE.h */,
-				702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */,
-				709755A51668CC260017860F /* LiveEventTableController.h */,
-				709755A61668CC260017860F /* LiveEventTableController.mm */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -693,8 +692,6 @@
 				704A8DF61615E25800AAA5B2 /* DeviceCheck.m */,
 				70736CB3164BAF3A009FF383 /* KeyVal.h */,
 				70736CB4164BAF3A009FF383 /* KeyVal.m */,
-				702F5776166755070066E45D /* ContentProviders.h */,
-				702F5777166755070066E45D /* ContentProviders.mm */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -892,11 +889,29 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		70A32E12166CBEEB00636BEE /* ExperimentLIVE */ = {
+			isa = PBXGroup;
+			children = (
+				709E9828161B1E1A00F225DD /* NewsTableViewController.mm */,
+				709E9829161B1E1A00F225DD /* NewsTableViewController.h */,
+				70E1A7DB164AD2040018536F /* MultiPageController.mm */,
+				70E1A7DC164AD2040018536F /* MultiPageController.h */,
+				70A32E11166CAD3500636BEE /* PageController.h */,
+				702F5776166755070066E45D /* ContentProviders.h */,
+				702F5777166755070066E45D /* ContentProviders.mm */,
+				702F57791667AD300066E45D /* ExperimentLiveControllerIPHONE.h */,
+				702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */,
+				709755A51668CC260017860F /* LiveEventTableController.h */,
+				709755A61668CC260017860F /* LiveEventTableController.mm */,
+				70A32E16166CBFC200636BEE /* Experiments.h */,
+				70A32E17166CCB3200636BEE /* Experiments.mm */,
+			);
+			name = ExperimentLIVE;
+			sourceTree = "<group>";
+		};
 		70E1A7B6164A89FB0018536F /* CustomWidgets */ = {
 			isa = PBXGroup;
 			children = (
-				70E1A7DB164AD2040018536F /* MultiPageController.mm */,
-				70E1A7DC164AD2040018536F /* MultiPageController.h */,
 				70E1A7B7164A8A280018536F /* ScrollSelector.mm */,
 				70E1A7B8164A8A280018536F /* ScrollSelector.h */,
 				70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */,
@@ -1158,7 +1173,7 @@
 				41E617901614CE1700BAA7D4 /* BulletinGridViewController.m in Sources */,
 				41E617911614CE1700BAA7D4 /* EventDisplayViewController.m in Sources */,
 				41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */,
-				41E617931614CE1700BAA7D4 /* ExperimentsViewController.m in Sources */,
+				41E617931614CE1700BAA7D4 /* ExperimentsViewController.mm in Sources */,
 				41E617941614CE1700BAA7D4 /* NewsGridViewController.mm in Sources */,
 				41E617951614CE1700BAA7D4 /* PhotosGridViewController.m in Sources */,
 				41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */,
@@ -1210,6 +1225,7 @@
 				702F5778166755070066E45D /* ContentProviders.mm in Sources */,
 				702F577B1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm in Sources */,
 				709755A71668CC260017860F /* LiveEventTableController.mm in Sources */,
+				70A32E18166CCB3200636BEE /* Experiments.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1291,6 +1307,8 @@
 		E1F7B6C8156EDC7D0092367F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1315,6 +1333,8 @@
 		E1F7B6C9156EDC7D0092367F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";

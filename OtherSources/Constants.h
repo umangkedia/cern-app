@@ -25,5 +25,4 @@
 #define kVideoMetadataPropertyDate @"VideoMetadataPropertyDate"
 #define kVideoMetadataPropertyVideoURL @"mp40600"
 #define kVideoMetadataPropertyThumbnailURL @"jpgposterframe"
-#define kLiveEventTableViewController @"LiveEventTableControllerID"
 #endif
