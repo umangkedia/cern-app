@@ -10,6 +10,7 @@
 
 #import "LiveEventTableController.h"
 #import "NewsTableViewCell.h"
+#import "ContentProviders.h"
 #import "KeyVal.h"
 
 namespace {
@@ -63,7 +64,7 @@ enum ControllerMode {
    NSString *sourceName;
 }
 
-@synthesize loaded, provider;
+@synthesize loaded, provider, navController;
 
 //________________________________________________________________________________________
 + (NSString *) nameKey
@@ -245,7 +246,11 @@ enum ControllerMode {
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-//   assert(provider != nil && "");
+   assert(provider != nil && "tableView:didSelectRowAtIndexPath:, provider is nil");
+   assert(navController != nil && "tableView:didSelectRowAtIndexPath:, navController is nil");
+
+   [self.tableView deselectRowAtIndexPath : indexPath animated : NO];
+   [provider loadControllerTo : navController selectedImage : 0];
 }
 
 #pragma mark - NSURLConnection delegate

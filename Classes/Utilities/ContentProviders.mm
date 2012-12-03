@@ -153,6 +153,8 @@ namespace {
       [eventViewController setTableContents:liveEvents experimentName : experimentName];
    }
    
+   eventViewController.provider = self;
+   eventViewController.navController = controller.navigationController;
    [controller addPageFor : eventViewController];
 }
 

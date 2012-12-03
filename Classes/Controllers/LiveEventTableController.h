@@ -30,7 +30,7 @@
 @property (nonatomic) BOOL loaded;
 
 @property (nonatomic) __weak LiveEventsProvider *provider;
-
+@property (nonatomic) __weak UINavigationController *navController;
 
 @end
 
