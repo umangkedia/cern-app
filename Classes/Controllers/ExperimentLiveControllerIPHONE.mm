@@ -2,15 +2,11 @@
 
 #import "ExperimentLiveControllerIPHONE.h"
 #import "EventDisplayViewController.h"
-#import "ExperimentsViewController.h"
 #import "PhotosGridViewController.h"
 #import "LiveEventTableController.h"
-#import "NewsTableViewController.h"
 #import "MultiPageController.h"
 #import "ContentProviders.h"
-#import "ScrollSelector.h"
 #import "DeviceCheck.h"
-#import "AppDelegate.h"
 #import "Constants.h"
 
 #pragma mark - ExperimentLiveControllerIPHONE.
@@ -315,28 +311,15 @@
    } else {
       //LHC is still a "special" case :(
       assert(indexPath.row == 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row must be 0");
-      UIStoryboard *mainStoryboard = nil;
-      UINavigationController *navigationController = nil;
-
-      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-         AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-         mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-         navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex:TabIndexLive];
-         ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
-         [experimentsVC.popoverController dismissPopoverAnimated : YES];
-      } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-         mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-         navigationController = self.navigationController;
-      }
-
-      assert(experiment == LHCExperiment::LHC && "pushNewsControllerForExperiment, must called ONLY for LHC");
-
-      EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
+      
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+      EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png"] boundaryRects : nil];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png"] boundaryRects : nil];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png"] boundaryRects : nil];
       eventViewController.title = @"LHC Data";
-      [navigationController pushViewController : eventViewController animated : YES];
+
+      [self.navigationController pushViewController : eventViewController animated : YES];
    }
 }
 
