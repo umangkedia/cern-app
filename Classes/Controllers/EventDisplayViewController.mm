@@ -18,11 +18,12 @@
 #define RESULT_IMAGE @"Image"
 #define RESULT_LAST_UPDATED @"Last Updated"
 
-@interface EventDisplayViewController ()
-
-@end
-
-@implementation EventDisplayViewController
+@implementation EventDisplayViewController {
+   unsigned loadingSource;
+   NSURLConnection *currentConnection;
+   NSMutableData *imageData;
+   NSDate *lastUpdated;
+}
 
 //________________________________________________________________________________________
 @synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel;
@@ -32,6 +33,7 @@
    if (self = [super initWithCoder:aDecoder]) {
       self.sources = [NSMutableArray array];
       numPages = 0;
+      loadingSource = 0;
    }
 
    return self;
@@ -103,6 +105,15 @@
 }
 
 //________________________________________________________________________________________
+- (void) viewWillDisappear:(BOOL)animated
+{
+   if (currentConnection)
+      [currentConnection cancel];
+
+   [super viewWillDisappear : animated];
+}
+
+//________________________________________________________________________________________
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
@@ -156,37 +167,42 @@
 //________________________________________________________________________________________
 - (IBAction) refresh : (id)sender
 {
-    self.refreshButton.enabled = NO;
-    self.downloadedResults = [NSMutableArray array];
-    
-    // If the event display images from a previous load are already in the scrollview, remove all of them before refreshing.
-    for (UIView *subview in self.scrollView.subviews) {
-        if ([subview class] == [UIImageView class]) {
-            [subview removeFromSuperview];
-        }
-    }
-    
-    for (NSDictionary *source in self.sources) {
-        // ASYNCHRONOUSLY download the image for each source of the event display.
-        [self performSelectorInBackground:@selector(synchronouslyDownloadImageForSource:) withObject:source];
-    }
+   if (currentConnection)
+      [currentConnection cancel];
+
+   // If the event display images from a previous load are already in the scrollview, remove all of them before refreshing.
+   for (UIView *subview in self.scrollView.subviews) {
+      if ([subview class] == [UIImageView class])
+         [subview removeFromSuperview];
+   }
+   
+   if ([sources count]) {
+      self.refreshButton.enabled = NO;
+      self.downloadedResults = [NSMutableArray array];
+      NSDictionary * const source = [sources objectAtIndex : 0];
+      NSURL * const url = [source objectForKey : SOURCE_URL];
+      NSURLRequest * const request = [NSURLRequest requestWithURL : url];
+      loadingSource = 0;
+      imageData = [[NSMutableData alloc] init];
+      currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
+   }
 }
 
 //________________________________________________________________________________________
-- (void)synchronouslyDownloadImageForSource:(NSDictionary *)source
+- (void) synchronouslyDownloadImageForSource : (NSDictionary *) source
 {
     // Download the image from the specified source
     NSURL *url = [source objectForKey:SOURCE_URL];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] init];
-    NSData *imageData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    UIImage *image = [UIImage imageWithData:imageData];
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    UIImage *image = [UIImage imageWithData : data];
     
-    NSDate *lastUpdated = [self lastModifiedDateFromHTTPResponse:response];
+    NSDate *updated = [self lastModifiedDateFromHTTPResponse:response];
 
     // Just set the date in the nav bar to the date of the first image, because they should all be pretty much the same anyway
     if (self.downloadedResults.count == 0) {
-        self.dateLabel.text = [self timeAgoStringFromDate:lastUpdated];
+        self.dateLabel.text = [self timeAgoStringFromDate:updated];
     }
     
     // If the downloaded image needs to be divided into several smaller images, do that now and add each
@@ -202,7 +218,7 @@
             NSDictionary *imageInfo = [NSMutableDictionary dictionary];
             [imageInfo setValue:partialImage forKey:RESULT_IMAGE];
             [imageInfo setValue:[boundaryInfo objectForKey:SOURCE_DESCRIPTION] forKey:SOURCE_DESCRIPTION];
-            [imageInfo setValue:lastUpdated forKey:RESULT_LAST_UPDATED];
+            [imageInfo setValue:updated forKey:RESULT_LAST_UPDATED];
             [self.downloadedResults addObject:imageInfo];
             [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
         }
@@ -210,7 +226,7 @@
         NSDictionary *imageInfo = [NSMutableDictionary dictionary];
         [imageInfo setValue:image forKey:RESULT_IMAGE];
         [imageInfo setValue:[source objectForKey:SOURCE_DESCRIPTION] forKey:SOURCE_DESCRIPTION];
-        [imageInfo setValue:lastUpdated forKey:RESULT_LAST_UPDATED];
+        [imageInfo setValue:updated forKey:RESULT_LAST_UPDATED];
         [self.downloadedResults addObject:imageInfo];
         [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
     }
@@ -269,7 +285,8 @@
 }
 
 //________________________________________________________________________________________
-- (void) scrollViewDidScroll : (UIScrollView *)sender {
+- (void) scrollViewDidScroll : (UIScrollView *)sender
+{
     CGFloat pageWidth = self.scrollView.frame.size.width;
     int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     self.pageControl.currentPage = page;
@@ -281,6 +298,104 @@
  //  assert(page >= 0 && page < [sources count]);
    self.scrollView.contentOffset = CGPointMake(page * self.scrollView.frame.size.width, 0);
    self.pageControl.currentPage = page;
+}
+
+#pragma mark - NSURLConnectionDelegate
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *)data
+{
+   assert(imageData != nil && "connection:didReceiveData:, imageData is nil");
+
+   [imageData appendData : data];
+}
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didReceiveResponse : (NSURLResponse *) response
+{
+   if ([response isKindOfClass : [NSHTTPURLResponse class]])
+      lastUpdated = [self lastModifiedDateFromHTTPResponse : (NSHTTPURLResponse *)response];
+   else
+      lastUpdated = [NSDate date];
+
+   // Just set the date in the nav bar to the date of the first image, because they should all be pretty much the same anyway
+   if (!self.downloadedResults.count)
+      self.dateLabel.text = [self timeAgoStringFromDate : lastUpdated];
+
+}
+
+//________________________________________________________________________________________
+- (void) connectionDidFinishLoading : (NSURLConnection *) urlConnection
+{
+   assert(loadingSource < [sources count] && "connectionDidFinishLoading, loadingSource is out of bounds");
+   
+   if ([imageData length]) {
+      UIImage * const newImage = [UIImage imageWithData : imageData];
+      if (newImage) {
+         NSDictionary * const source = (NSDictionary *)[sources objectAtIndex : loadingSource];
+         //
+         if (!lastUpdated)//TODO: this "lastUpdated" must be replaced with something more reliable.
+            lastUpdated = [NSDate date];
+
+         if (NSArray * const boundaryRects = [source objectForKey : SOURCE_BOUNDARY_RECTS]) {
+            for (NSDictionary *boundaryInfo in boundaryRects) {
+               NSValue * const rectValue = (NSValue *)[boundaryInfo objectForKey : @"Rect"];
+               const CGRect boundaryRect = [rectValue CGRectValue];
+               CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, boundaryRect));
+               UIImage * const partialImage = [UIImage imageWithCGImage : imageRef];
+               CGImageRelease(imageRef);
+               NSDictionary *imageInfo = [NSMutableDictionary dictionary];
+               [imageInfo setValue : partialImage forKey : RESULT_IMAGE];
+               [imageInfo setValue : [boundaryInfo objectForKey : SOURCE_DESCRIPTION] forKey : SOURCE_DESCRIPTION];
+               [imageInfo setValue : lastUpdated forKey : RESULT_LAST_UPDATED];
+               [self.downloadedResults addObject : imageInfo];
+               [self addDisplay : imageInfo toPage : self.downloadedResults.count - 1];
+            }
+         } else {
+            // Otherwise if the image does not need to be divided, just add the image to the results array.
+            NSDictionary * const imageInfo = [NSMutableDictionary dictionary];
+            [imageInfo setValue : newImage forKey : RESULT_IMAGE];
+            [imageInfo setValue : [source objectForKey : SOURCE_DESCRIPTION] forKey : SOURCE_DESCRIPTION];
+            [imageInfo setValue : lastUpdated forKey : RESULT_LAST_UPDATED];
+            [self.downloadedResults addObject : imageInfo];
+            [self addDisplay : imageInfo toPage : self.downloadedResults.count - 1];
+         }
+      }
+   }
+   
+   if (loadingSource + 1 < [sources count]) {
+      //We have to continue.
+      ++loadingSource;
+
+      NSDictionary * const source = [sources objectAtIndex : loadingSource];
+      NSURL * const url = [source objectForKey : SOURCE_URL];
+      NSURLRequest * const request = [NSURLRequest requestWithURL : url];
+      imageData = [[NSMutableData alloc] init];
+      currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
+   } else {
+      currentConnection = nil;
+      imageData = nil;
+      loadingSource = 0;
+      self.refreshButton.enabled = YES;
+   }
+}
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
+{
+   if (loadingSource + 1 < [sources count]) {
+      ++loadingSource;
+      NSDictionary * const source = [sources objectAtIndex : loadingSource];
+      NSURL * const url = [source objectForKey : SOURCE_URL];
+      NSURLRequest * const request = [NSURLRequest requestWithURL : url];
+      imageData = [[NSMutableData alloc] init];
+      currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
+   } else {
+      currentConnection = nil;
+      imageData = nil;
+      loadingSource = 0;
+      self.refreshButton.enabled = YES;
+   }
 }
 
 @end
