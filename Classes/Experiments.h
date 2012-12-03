@@ -14,8 +14,9 @@ enum class LHCExperiment : unsigned {
 
 const char *ExperimentName(LHCExperiment experiment);
 
-extern NSString * const liveEventTableViewControllerID;
-
+extern NSString * const LIVEEventTableViewControllerID;
+extern NSString * const ALICEPhotoGridViewControllerID;
+extern NSString * const EventDisplayViewControllerID;
 
 //Unfortunately, I have to hardcode these things here.
 extern const CGRect imageBoundsForATLAS[2];

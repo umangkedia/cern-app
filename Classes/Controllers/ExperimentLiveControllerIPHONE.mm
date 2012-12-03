@@ -242,57 +242,20 @@
 //________________________________________________________________________________________
 - (void) pushEventDisplayForExperiment
 {
-   //Part for event display.
    using namespace CernAPP;
-   
-   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
-   EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kEventDisplayViewController];
 
-   switch (experiment) {
-      case LHCExperiment::ATLAS: {
-/*         CGRect frontViewRect = CGRectMake(2.0, 2.0, largeImageDimension, largeImageDimension);
-         NSDictionary *frontView = [NSDictionary dictionaryWithObjectsAndKeys:[NSValue valueWithCGRect:frontViewRect], @"Rect", @"Front", @"Description", nil];
+   assert(experiment != LHCExperiment::LHC && "pushEventDisplayForExperiment, called for LHC");
 
-         CGRect sideViewRect = CGRectMake(2.0+4.0+largeImageDimension, 2.0, smallImageDimension, smallImageDimension);
-         NSDictionary *sideView = [NSDictionary dictionaryWithObjectsAndKeys:[NSValue valueWithCGRect:sideViewRect], @"Rect", @"Side", @"Description", nil];
-
-         NSArray *boundaryRects = [NSArray arrayWithObjects:frontView, sideView, nil];
-         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://atlas-live.cern.ch/live.png"] boundaryRects:boundaryRects];
-         eventViewController.title = @"ATLAS";*/
-         break;
-      }
-
-      case LHCExperiment::CMS: {
-         [eventViewController addSourceWithDescription:@"3D Tower" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/3DTower.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"3D RecHit" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/3DRecHit.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"Lego" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/Lego.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"RhoPhi" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/RhoPhi.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"RhoZ" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/RhoZ.png"] boundaryRects:nil];
-         eventViewController.title = @"CMS";
-         break;
-      }
-
-      case LHCExperiment::ALICE: {
-         PhotosGridViewController *photosViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kALICEPhotoGridViewController];
-         photosViewController.photoDownloader.url = [NSURL URLWithString:@"https://cdsweb.cern.ch/record/1305399/export/xm?ln=en"];
-         [self.navigationController pushViewController : photosViewController animated : YES];
-         return;
-      }
-
-      case LHCExperiment::LHCb: {
-         CGRect cropRect = CGRectMake(0.0, 66.0, 1685.0, 811.0);
-         NSDictionary *croppedView = [NSDictionary dictionaryWithObjectsAndKeys:[NSValue valueWithCGRect:cropRect], @"Rect", @"Side", @"Description", nil];
-
-         NSArray *boundaryRects = [NSArray arrayWithObjects:croppedView, nil];
-         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://lbcomet.cern.ch/Online/Images/evdisp.jpg"] boundaryRects:boundaryRects];
-         eventViewController.title = @"LHCB";
-         break;
-      }
-
-      default: break;
+   if (experiment == LHCExperiment::ALICE) {
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+      PhotosGridViewController *photosViewController = [mainStoryboard instantiateViewControllerWithIdentifier : ALICEPhotoGridViewControllerID];
+      photosViewController.photoDownloader.url = [NSURL URLWithString:@"https://cdsweb.cern.ch/record/1305399/export/xm?ln=en"];
+      [self.navigationController pushViewController : photosViewController animated : YES];
+   } else {
+      assert([liveEvents count] == 1 && "pushEventDisplayForExperiment, imeplemented only for one 'Live Events' provider");
+      LiveEventsProvider * const provider = (LiveEventsProvider *)[liveEvents objectAtIndex : 0];
+      [provider loadControllerTo : self.navigationController];
    }
-
-   [self.navigationController pushViewController : eventViewController animated : YES];
 }
 
 //________________________________________________________________________________________

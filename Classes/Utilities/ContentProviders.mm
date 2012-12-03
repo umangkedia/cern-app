@@ -1,5 +1,6 @@
 #import <cassert>
 
+#import "EventDisplayViewController.h"
 #import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
 #import "MultiPageController.h"
@@ -133,7 +134,7 @@ namespace {
    using namespace CernAPP;
    
    UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
-   LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : liveEventTableViewControllerID];
+   LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : LIVEEventTableViewControllerID];
    NSString * const experimentName = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
  
    if (experiment == LHCExperiment::ATLAS) {
@@ -158,7 +159,55 @@ namespace {
 //________________________________________________________________________________________
 - (void) loadControllerTo : (UINavigationController *) controller
 {
-   (void) controller;
+   using namespace CernAPP;
+
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+   
+   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+   EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
+   
+   switch (experiment) {
+   case LHCExperiment::ATLAS:
+      {
+         const CGRect frontViewRect = imageBoundsForATLAS[0];
+         NSDictionary * const frontView = [NSDictionary dictionaryWithObjectsAndKeys :
+                                                        [NSValue valueWithCGRect : frontViewRect],
+                                                        @"Rect", @"Front", @"Description", nil];
+
+         const CGRect sideViewRect = imageBoundsForATLAS[1];
+         NSDictionary * const sideView = [NSDictionary dictionaryWithObjectsAndKeys :
+                                                       [NSValue valueWithCGRect : sideViewRect],
+                                                       @"Rect", @"Side", @"Description", nil];
+
+         NSArray * const boundaryRects = [NSArray arrayWithObjects : frontView, sideView, nil];
+         
+         [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://atlas-live.cern.ch/live.png"] boundaryRects : boundaryRects];
+         eventViewController.title = @"ATLAS";
+      }
+      break;
+   case LHCExperiment::LHCb :
+      {
+         NSDictionary * const croppedView = [NSDictionary dictionaryWithObjectsAndKeys : [NSValue valueWithCGRect : imageBoundsForLHCb], @"Rect", @"Side", @"Description", nil];
+         NSArray *boundaryRects = [NSArray arrayWithObjects:croppedView, nil];
+         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://lbcomet.cern.ch/Online/Images/evdisp.jpg"] boundaryRects:boundaryRects];
+         eventViewController.title = @"LHCB";
+      }
+      break;
+   case LHCExperiment::CMS :
+      {
+         [eventViewController addSourceWithDescription:@"3D Tower" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/3DTower.png"] boundaryRects:nil];
+         [eventViewController addSourceWithDescription:@"3D RecHit" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/3DRecHit.png"] boundaryRects:nil];
+         [eventViewController addSourceWithDescription:@"Lego" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/Lego.png"] boundaryRects:nil];
+         [eventViewController addSourceWithDescription:@"RhoPhi" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/RhoPhi.png"] boundaryRects:nil];
+         [eventViewController addSourceWithDescription:@"RhoZ" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/RhoZ.png"] boundaryRects:nil];
+         eventViewController.title = @"CMS";
+      }
+      break;
+   default:
+      assert(0 && "loadControllerTo:, wrong experiment");
+   }
+
+   [controller pushViewController : eventViewController animated : YES];
 }
 
 @end

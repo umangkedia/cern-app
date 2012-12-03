@@ -23,15 +23,18 @@ const char *ExperimentName(LHCExperiment experiment)
    return experimentNames[n];
 }
 
-NSString * const liveEventTableViewControllerID = @"LiveEventTableControllerID";
+//String identifiers for the storybord/GUI.
+NSString * const LIVEEventTableViewControllerID = @"LiveEventTableControllerID";
+NSString * const ALICEPhotoGridViewControllerID = @"ALICEPhotoGridViewControllerIdentifier";
+NSString * const EventDisplayViewControllerID = @"EventDisplayViewControllerIdentifier";
 
+//Geometries for "Event display".
 const CGFloat largeImageDimension = 764.f;
 const CGFloat smallImageDimension = 379.f;
 
 const CGRect imageBoundsForATLAS[] = {CGRectMake(2.f, 2.f, largeImageDimension, largeImageDimension),
                                       CGRectMake(2.f + 4.f + largeImageDimension, 2.f, smallImageDimension, smallImageDimension)};
-   
-   
+
 const CGRect imageBoundsForLHCb = CGRectMake(0.f, 66.f, 1685.f, 811.f);
 
 }
