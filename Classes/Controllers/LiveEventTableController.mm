@@ -255,6 +255,17 @@ enum ControllerMode {
    [provider loadControllerTo : navController selectedImage : indexPath.row];
 }
 
+//________________________________________________________________________________________
+- (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
+{
+   //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
+   //Many thanks to Apple's "brilliant" engineers for the fact I need this - continue to think different, guys!
+   if (!section)
+      return [[UIView alloc] init];
+
+   return nil;
+}
+
 #pragma mark - NSURLConnection delegate
 
 //________________________________________________________________________________________
