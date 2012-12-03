@@ -63,7 +63,7 @@ enum ControllerMode {
    NSString *sourceName;
 }
 
-@synthesize loaded;
+@synthesize loaded, provider;
 
 //________________________________________________________________________________________
 + (NSString *) nameKey
@@ -245,7 +245,7 @@ enum ControllerMode {
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   //
+//   assert(provider != nil && "");
 }
 
 #pragma mark - NSURLConnection delegate

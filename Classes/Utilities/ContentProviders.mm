@@ -143,23 +143,31 @@ namespace {
 
       NSArray * const names = @[@"Front view", @"Side view"];
       KeyVal * const pair = (KeyVal *)[liveEvents objectAtIndex : 0];
-      [eventViewController setTableContentsFromImage : (NSString *)pair.val cellNames : names imageBounds : imageBoundsForATLAS experimentName : @"ATLAS"];
+      [eventViewController setTableContentsFromImage : (NSString *)pair.val cellNames : names imageBounds : imageBoundsForATLAS experimentName : experimentName];
    } else if (experiment == LHCExperiment::LHCb) {
       assert([liveEvents count] && "addPageWithContentTo:, no live events found");
       NSArray * const names = @[@"Side view"];
       KeyVal * const pair = (KeyVal *)[liveEvents objectAtIndex : 0];
-      [eventViewController setTableContentsFromImage : (NSString *)pair.val cellNames : names imageBounds : &imageBoundsForLHCb experimentName : @"LHCb"];
+      [eventViewController setTableContentsFromImage : (NSString *)pair.val cellNames : names imageBounds : &imageBoundsForLHCb experimentName : experimentName];
    } else {
       [eventViewController setTableContents:liveEvents experimentName : experimentName];
    }
    
-  [controller addPageFor : eventViewController];
+   [controller addPageFor : eventViewController];
 }
 
 //________________________________________________________________________________________
 - (void) loadControllerTo : (UINavigationController *) controller
 {
+   [self loadControllerTo : controller selectedImage : 0];
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UINavigationController *) controller selectedImage : (unsigned int) selected
+{
    using namespace CernAPP;
+   
+   (void) selected;
 
    assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
    
@@ -169,44 +177,34 @@ namespace {
    switch (experiment) {
    case LHCExperiment::ATLAS:
       {
-         const CGRect frontViewRect = imageBoundsForATLAS[0];
          NSDictionary * const frontView = [NSDictionary dictionaryWithObjectsAndKeys :
-                                                        [NSValue valueWithCGRect : frontViewRect],
+                                                        [NSValue valueWithCGRect : imageBoundsForATLAS[0]],
                                                         @"Rect", @"Front", @"Description", nil];
-
-         const CGRect sideViewRect = imageBoundsForATLAS[1];
          NSDictionary * const sideView = [NSDictionary dictionaryWithObjectsAndKeys :
-                                                       [NSValue valueWithCGRect : sideViewRect],
+                                                       [NSValue valueWithCGRect : imageBoundsForATLAS[1]],
                                                        @"Rect", @"Side", @"Description", nil];
 
          NSArray * const boundaryRects = [NSArray arrayWithObjects : frontView, sideView, nil];
-         
          [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://atlas-live.cern.ch/live.png"] boundaryRects : boundaryRects];
-         eventViewController.title = @"ATLAS";
       }
       break;
    case LHCExperiment::LHCb :
       {
-         NSDictionary * const croppedView = [NSDictionary dictionaryWithObjectsAndKeys : [NSValue valueWithCGRect : imageBoundsForLHCb], @"Rect", @"Side", @"Description", nil];
+         NSDictionary * const croppedView = [NSDictionary dictionaryWithObjectsAndKeys : [NSValue valueWithCGRect : imageBoundsForLHCb], @"Rect", @"Side view", @"Description", nil];
          NSArray *boundaryRects = [NSArray arrayWithObjects:croppedView, nil];
-         [eventViewController addSourceWithDescription:nil URL:[NSURL URLWithString:@"http://lbcomet.cern.ch/Online/Images/evdisp.jpg"] boundaryRects:boundaryRects];
-         eventViewController.title = @"LHCB";
+         KeyVal * const pair = (KeyVal *)[liveEvents objectAtIndex : 0];
+         [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : (NSString *)pair.val] boundaryRects:boundaryRects];
       }
       break;
    case LHCExperiment::CMS :
-      {
-         [eventViewController addSourceWithDescription:@"3D Tower" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/3DTower.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"3D RecHit" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/3DRecHit.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"Lego" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/Lego.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"RhoPhi" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/RhoPhi.png"] boundaryRects:nil];
-         [eventViewController addSourceWithDescription:@"RhoZ" URL:[NSURL URLWithString:@"http://cmsonline.cern.ch/evtdisp/RhoZ.png"] boundaryRects:nil];
-         eventViewController.title = @"CMS";
-      }
+      for (KeyVal *pair in liveEvents)
+         [eventViewController addSourceWithDescription : (NSString *)pair.key URL : [NSURL URLWithString : (NSString *)pair.val] boundaryRects : nil];
       break;
    default:
       assert(0 && "loadControllerTo:, wrong experiment");
    }
 
+   eventViewController.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    [controller pushViewController : eventViewController animated : YES];
 }
 

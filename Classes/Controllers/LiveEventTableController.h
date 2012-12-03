@@ -2,6 +2,8 @@
 
 #import "PageController.h"
 
+@class LiveEventsProvider;
+
 //Now we want to be able to have a table with different LIVE events in different cells.
 //Each cell will have a name and image (small version of an original image) + (possibly) date.
 //Images to be reused by EventDisplayViewController later (if they were loaded already,
@@ -27,6 +29,7 @@
 - (void) refresh;
 @property (nonatomic) BOOL loaded;
 
+@property (nonatomic) __weak LiveEventsProvider *provider;
 
 
 @end

@@ -7,7 +7,7 @@
 #import "MultiPageController.h"
 #import "ContentProviders.h"
 #import "DeviceCheck.h"
-#import "Constants.h"
+//#import "Constants.h"
 
 #pragma mark - ExperimentLiveControllerIPHONE.
 
@@ -276,7 +276,7 @@
       assert(indexPath.row == 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row must be 0");
       
       UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
-      EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
+      EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png"] boundaryRects : nil];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png"] boundaryRects : nil];
       [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png"] boundaryRects : nil];
