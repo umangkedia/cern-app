@@ -245,7 +245,7 @@
    
 
    [self.tableView deselectRowAtIndexPath : indexPath animated : NO];
-  // [provider loadControllerTo : navController selectedImage : indexPath.row];
+   [provider loadControllerTo : navController selectedImage : indexPath.row];
 }
 
 //________________________________________________________________________________________

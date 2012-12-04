@@ -88,11 +88,8 @@
 {
    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * numPages, 1.f);
 
-//BRAIN DEAD code is commented.
-//These spinners ... are never removed!!!
-//They are only overlapped by image views!!!
-//   for (int i = 0; i< numPages; i++)
-//      [self addSpinnerToPage : i];
+   for (int i = 0; i< numPages; i++)
+      [self addSpinnerToPage : i];
 
    [self refresh : self];
 }
@@ -299,6 +296,15 @@
 }
 
 //________________________________________________________________________________________
+- (void) removeSpinners
+{
+   for (UIView * v in self.scrollView.subviews) {
+      if ([v isKindOfClass:[UIActivityIndicatorView class]])
+         [v removeFromSuperview];
+   }
+}
+
+//________________________________________________________________________________________
 - (void) scrollViewDidScroll : (UIScrollView *)sender
 {
     CGFloat pageWidth = self.scrollView.frame.size.width;
@@ -392,6 +398,7 @@
       loadingSource = 0;
       loaded = YES;
       self.refreshButton.enabled = YES;
+      [self removeSpinners];
    }
 }
 

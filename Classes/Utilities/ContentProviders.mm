@@ -241,6 +241,22 @@ namespace {
 }
 
 //________________________________________________________________________________________
+- (void) addSourceFor : (LiveImageData *) liveData intoController : (EventDisplayViewController *) controller
+{
+   assert(liveData != nil && "addSourceFor:intoController:, parameter 'data' is nil");
+   assert(controller != nil && "addSourceFor:intoController:, parameter 'controller' is nil");
+   
+   if (liveData.bounds.size.width) {
+      NSDictionary * const dict = [NSDictionary dictionaryWithObjectsAndKeys : [NSValue valueWithCGRect : liveData.bounds],
+                                                                               @"Rect", liveData.imageName, @"Description", nil];
+      NSArray * const imageData = [NSArray arrayWithObject : dict];
+      [controller addSourceWithDescription : nil URL : [NSURL URLWithString : liveData.url] boundaryRects : imageData];
+   } else {
+      [controller addSourceWithDescription : liveData.imageName URL : [NSURL URLWithString : liveData.url] boundaryRects : nil];
+   }
+}
+
+//________________________________________________________________________________________
 - (void) addPageWithContentTo : (MultiPageController *) controller
 {
    using namespace CernAPP;
@@ -251,18 +267,7 @@ namespace {
    if ([liveEvents count] == 1 && [[liveEvents objectAtIndex : 0] isKindOfClass : [LiveImageData class]]) {
       //For such an image we just load "event display" view directly into the multi-page controller.
       EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
-      //
-      LiveImageData *liveData = (LiveImageData *)[liveEvents objectAtIndex : 0];
-      if (liveData.bounds.size.width) {
-         NSDictionary * const dict = [NSDictionary dictionaryWithObjectsAndKeys : [NSValue valueWithCGRect : liveData.bounds],
-                                                                                  @"Rect", liveData.imageName, @"Description", nil];
-         NSArray * const imageData = [NSArray arrayWithObject : dict];
-         [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : liveData.url] boundaryRects : imageData];
-      } else {
-         [eventViewController addSourceWithDescription : liveData.imageName URL : [NSURL URLWithString : liveData.url] boundaryRects : nil];
-      }
-      
-      //
+      [self addSourceFor : (LiveImageData *)[liveEvents objectAtIndex : 0] intoController : eventViewController];
       [controller addPageFor : eventViewController];
    } else {
       LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : LIVEEventTableViewControllerID];
@@ -290,34 +295,25 @@ namespace {
    UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
    EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
    
-   switch (experiment) {
-   case LHCExperiment::ATLAS:
-      {
-         NSDictionary * const frontView = [NSDictionary dictionaryWithObjectsAndKeys :
-                                                        [NSValue valueWithCGRect : imageBoundsForATLAS[0]],
-                                                        @"Rect", @"Front", @"Description", nil];
-         NSDictionary * const sideView = [NSDictionary dictionaryWithObjectsAndKeys :
-                                                       [NSValue valueWithCGRect : imageBoundsForATLAS[1]],
-                                                       @"Rect", @"Side", @"Description", nil];
-
-         NSArray * const boundaryRects = [NSArray arrayWithObjects : frontView, sideView, nil];
-         [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://atlas-live.cern.ch/live.png"] boundaryRects : boundaryRects];
+   for (id obj in liveEvents) {
+      if ([obj isKindOfClass : [LiveImageData class]])
+         [self addSourceFor : (LiveImageData *)obj intoController : eventViewController];
+      else {
+         assert([obj isKindOfClass:[NSArray class]] && "loadControllerTo:, unknown object");
+         NSArray * const imageSet = (NSArray *)obj;
+         assert([imageSet count] && "loadControllerTo:, imageSet is empty");
+         
+         NSMutableArray * const imageDescriptions = [[NSMutableArray alloc] init];
+         for (LiveImageData * liveData in imageSet) {
+            NSDictionary * const imageDict = [NSDictionary dictionaryWithObjectsAndKeys :
+                                                           [NSValue valueWithCGRect : liveData.bounds], @"Rect",
+                                                           liveData.imageName, @"Description", nil];
+            [imageDescriptions addObject : imageDict];
+         }
+         
+         LiveImageData * const liveData = (LiveImageData *)[imageSet objectAtIndex : 0];
+         [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : liveData.url] boundaryRects : imageDescriptions];
       }
-      break;
-   case LHCExperiment::LHCb :
-      {
-         NSDictionary * const croppedView = [NSDictionary dictionaryWithObjectsAndKeys : [NSValue valueWithCGRect : imageBoundsForLHCb], @"Rect", @"Side view", @"Description", nil];
-         NSArray *boundaryRects = [NSArray arrayWithObjects:croppedView, nil];
-         KeyVal * const pair = (KeyVal *)[liveEvents objectAtIndex : 0];
-         [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : (NSString *)pair.val] boundaryRects:boundaryRects];
-      }
-      break;
-   case LHCExperiment::CMS :
-      for (KeyVal *pair in liveEvents)
-         [eventViewController addSourceWithDescription : (NSString *)pair.key URL : [NSURL URLWithString : (NSString *)pair.val] boundaryRects : nil];
-      break;
-   default:
-      assert(0 && "loadControllerTo:, wrong experiment");
    }
 
    eventViewController.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
