@@ -20,7 +20,7 @@
 
 - (void) setItems : (NSMutableArray *) items;
 
-- (void) addPageFor : (UITableViewController<PageController> *) controller;
+- (void) addPageFor : (UIViewController<PageController> *) controller;
 
 - (void) preparePagesFor : (NSMutableArray *) itemNames;
 - (void) selectPage : (NSInteger) page;

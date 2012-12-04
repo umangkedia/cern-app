@@ -19,11 +19,8 @@
 + (NSString *) nameKey;
 + (NSString *) urlKey;
 
-//'contents' is an array of pairs [url : name].
+//Content provider and LiveEventTableController share the 'contents' array.
 - (void) setTableContents : (NSArray *) contents experimentName : (NSString *) name;
-//This is a _very_ special way to create images: ATLAS have one big png and we cut pieces (front and side view)
-//from this big image.
-- (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds experimentName : (NSString *) name;
 
 //PageController protocol.
 - (void) refresh;

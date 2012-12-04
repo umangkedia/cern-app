@@ -26,6 +26,8 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 @implementation MultiPageController {
    UIScrollView *navigationView;
    ScrollSelector *selector;
+   
+   //TODO: the name 'tableControllers' is not good anymore, I can have not only tables.
    NSMutableArray *tableControllers;
    BOOL autoScroll;
 }
@@ -173,7 +175,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 }
 
 //________________________________________________________________________________________
-- (void) addPageFor : (UITableViewController<PageController> *) controller
+- (void) addPageFor : (UIViewController<PageController> *) controller
 {
    assert(controller != nil && "addPageFor:, controller parameter is nil");
    
@@ -203,7 +205,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    autoScroll = YES;
    [navigationView setContentOffset : newOffset animated : YES];
 
-   UITableViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : item];
+   UIViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : item];
    assert(nextController != nil && "item:selectedIn:, controller not found for the page");
    
    if (!nextController.loaded)
@@ -232,7 +234,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    const unsigned page = navigationView.contentOffset.x / navigationView.frame.size.width;
    [selector setSelectedItem : page];
 
-   UITableViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : page];
+   UIViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : page];
 
    assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
    if (!nextController.loaded)
@@ -252,7 +254,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 {
    assert(page < [tableControllers count] && "selectPage:, page number is out of bounds");
 
-   UITableViewController<PageController> *controller = (UITableViewController<PageController> *)[tableControllers objectAtIndex : page];
+   UIViewController<PageController> *controller = (UIViewController<PageController> *)[tableControllers objectAtIndex : page];
    
    if (page) {
       const CGPoint offset = CGPointMake(page * navigationView.frame.size.width, 0.f);

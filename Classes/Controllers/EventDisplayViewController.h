@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EventDisplayViewController : UIViewController<NSURLConnectionDelegate>
+#import "PageController.h"
+
+@interface EventDisplayViewController : UIViewController<NSURLConnectionDelegate, PageController>
 {
     IBOutlet UISegmentedControl *segmentedControl;
     IBOutlet UIScrollView *scrollView;
@@ -22,6 +24,12 @@
     int numPages;
     int currentPage;
 }
+
+//PageController protocol:
+- (void) refresh;
+@property (nonatomic) BOOL loaded;
+
+
 
 @property (nonatomic, strong) UISegmentedControl *segmentedControl;
 @property (nonatomic, strong) NSMutableArray *sources;

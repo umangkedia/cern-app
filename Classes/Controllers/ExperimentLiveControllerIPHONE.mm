@@ -38,24 +38,74 @@
 #pragma mark - Methods to read "LIVE" data from the plist.
 
 //________________________________________________________________________________________
-- (void) readNewsFeedsInfo : (NSArray *) feeds
+- (bool) readNewsFeeds : (NSArray *) feeds
 {
-   assert(feeds != nil && "readNewsFeedsInfo:, feeds parameter is nil");
+   assert(feeds != nil && "readNewsFeeds:, parameter 'feeds' is nil");
+
+   bool result = false;
    
    for (id info in feeds) {
-      assert([info isKindOfClass : [NSDictionary class]] && "readLIVEData, feed info must be a dictionary");
+      assert([info isKindOfClass : [NSDictionary class]] && "readNewsFeed, feed info must be a dictionary");
       NSDictionary *feedInfo = (NSDictionary *)info;
       FeedProvider *provider = [[FeedProvider alloc] initWith : feedInfo];
       [liveData addObject : provider];
+      result = true;
    }
+   
+   return result;
 }
 
 //________________________________________________________________________________________
-- (void) readLIVEEventsInfo : (NSArray *) images
+- (bool) readNews : (NSDictionary *) dataEntry
 {
-   assert(images != nil && "readLIVEEventsInfo, images parameter is nil");
-   LiveEventsProvider *eventProvider = [[LiveEventsProvider alloc] initWith : images forExperiment : experiment];
-   [liveData addObject : eventProvider];
+   assert(dataEntry != nil && "readNews:, parameter 'dataEntry' is nil");
+
+   id base = [dataEntry objectForKey : @"Category name"];
+   assert(base != nil && [base isKindOfClass : [NSString class]] && "readNews:, string key 'Category name' was not found");
+
+   bool result = false;
+   
+   NSString *catName = (NSString *)base;
+   if ([catName isEqualToString : @"News"]) {
+      if ((base = [dataEntry objectForKey : @"Feeds"])) {
+         assert([base isKindOfClass : [NSArray class]] && "readNews:, object for 'Feeds' key must be of an array type");
+         result = [self readNewsFeeds : (NSArray *)base];
+      }
+
+      if ((base = [dataEntry objectForKey : @"Tweets"])) {
+         assert([base isKindOfClass : [NSArray class]] && "readNews:, object for 'Tweets' key must be of an array type");
+         result |= [self readNewsFeeds : (NSArray *)base];
+      }
+   }
+   
+   return result;
+}
+
+//________________________________________________________________________________________
+- (bool) readLIVEImages : (NSDictionary *) dataEntry
+{
+   assert(dataEntry != nil && "readLIVEImages, parameter 'dataEntry' is nil");
+
+   if ([dataEntry objectForKey : @"Images"]) {
+      assert([[dataEntry objectForKey : @"Images"] isKindOfClass : [NSArray class]] &&
+             "readLIVEImages:, object for 'Images' key must be of NSArray type");
+
+      NSArray *images = (NSArray *)[dataEntry objectForKey:@"Images"];
+      assert([images count] && "readLIVEImages, array of images is empty");
+      
+      LiveEventsProvider * const provider = [[LiveEventsProvider alloc] initWith : images forExperiment : experiment];
+      [liveData addObject : provider];
+      
+      if ([dataEntry objectForKey : @"Category Name"]) {
+         assert([[dataEntry objectForKey : @"Category Name"] isKindOfClass : [NSString class]] &&
+                "readLIVEImages, 'Category Name' for the data entry is not of NSString type");
+         provider.categoryName = (NSString *)[dataEntry objectForKey : @"Category Name"];
+      }
+
+      return true;
+   }
+   
+   return false;
 }
 
 //________________________________________________________________________________________
@@ -78,30 +128,13 @@
          assert([arrayItem isKindOfClass : [NSDictionary class]] && "readLIVEData:, array of dictionaries expected");
          NSDictionary * const data = (NSDictionary *)arrayItem;
          
-         id base = [data objectForKey : @"Category name"];
-         assert(base != nil && [base isKindOfClass : [NSString class]] && "readLIVEData:, string key 'Category name' was not found");
+         if ([self readNews : data])
+            continue;
          
-         NSString *catName = (NSString *)base;
-
-         //Read news feeds, tweets.
-         if ([catName isEqualToString : @"News"]) {
-            if ((base = [data objectForKey : @"Feeds"])) {
-               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Feeds' key must be of an array type");
-               [self readNewsFeedsInfo : (NSArray *)base];
-            }
-            //Some nice code duplicaiton here :)
-            if ((base = [data objectForKey : @"Tweets"])) {
-               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Tweets' key must be of an array type");
-               [self readNewsFeedsInfo : (NSArray *)base];
-            }
-         } else if ([catName isEqualToString : @"Event display"]) {
-            if ((base = [data objectForKey : @"Images"])) {
-               assert([base isKindOfClass : [NSArray class]] && "readLIVEData, object for 'Images' key must of an array type");
-               [self readLIVEEventsInfo : (NSArray *)base];
-            }
-         } else if ([catName isEqualToString : @"DAQ"]) {
-            //
-         }
+         if ([self readLIVEImages:data])
+            continue;
+         
+         //someting else can be here.
       }
    }
 }

@@ -11,57 +11,20 @@
 #import "LiveEventTableController.h"
 #import "NewsTableViewCell.h"
 #import "ContentProviders.h"
-#import "KeyVal.h"
-
-namespace {
-
-enum ControllerMode {
-   kLIVEEventOneImage,
-   kLIVEEventManyImages
-};
-
-}
-
-@interface LiveImageData : NSObject
-
-@property (nonatomic, readonly) NSString *imageName;
-@property (nonatomic, readonly) NSString *url;
-@property (nonatomic, retain) UIImage *image;
-@property (nonatomic, readonly) CGRect bounds;
-
-@end
-
-@implementation LiveImageData
-
-@synthesize imageName, url, image,bounds;
-
-//________________________________________________________________________________________
-- (id) initWithName : (NSString *) name url : (NSString *) imageUrl bounds : (CGRect) imageBounds
-{
-   if (self = [super init]) {
-      imageName = name;
-      url = imageUrl;
-      image = nil;//to be loaded yet!
-      bounds = imageBounds;
-   }
-   
-   return self;
-}
-
-@end
-
 
 //
 //
 //
 
 @implementation LiveEventTableController {
-   ControllerMode mode;
-   NSMutableArray *tableData;
-   unsigned imageToLoad;
+   unsigned tableEntryToLoad;
+   unsigned flatRowIndex;
+
    NSURLConnection *connection;
    NSMutableData *imageData;
    NSString *sourceName;
+   //
+   NSArray *tableData;
 }
 
 @synthesize loaded, provider, navController;
@@ -83,12 +46,7 @@ enum ControllerMode {
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
 {
-   //
-   if (self = [super initWithStyle : style]) {
-      mode = kLIVEEventManyImages;//Is there any guarantee this method is called at all? :(
-   }
-
-   return self;
+   return self = [super initWithStyle : style];
 }
 
 //________________________________________________________________________________________
@@ -97,60 +55,11 @@ enum ControllerMode {
    assert(contents != nil && "setTableContents:, contents parameter is nil");
    assert(name != nil && "setTableContents:, name parameter is nil");
 
-   if (tableData)
-      [tableData removeAllObjects];
-   else
-      tableData = [[NSMutableArray alloc] init];
-
-   mode = kLIVEEventManyImages;
+   tableData = contents;
    sourceName = name;
-   
    loaded = NO;
-   
-   for (id imageDesc in contents) {
-      assert([imageDesc isKindOfClass : [KeyVal class]] && "setTableContents:, array of KeyVal pairs expected");
-      KeyVal * const pair = (KeyVal *)imageDesc;
-      
-      id base = pair.key;
-      assert([base isKindOfClass : [NSString class]] && "Image name must be a string object");
-      
-      NSString * const name = (NSString *)base;
-
-      base = pair.val;
-      assert([base isKindOfClass : [NSString class]] && "Url for an image must be a string");
-      NSString * const url = (NSString *)base;
-      
-      LiveImageData * const newImage = [[LiveImageData alloc] initWithName : name url : url bounds : CGRect()];
-      [tableData addObject : newImage];
-   }
-}
-
-//________________________________________________________________________________________
-- (void) setTableContentsFromImage : (NSString *) url cellNames : (NSArray *) names imageBounds : (const CGRect *) bounds experimentName : (NSString *) name
-{
-   assert(url != nil && "setTableContentsFromImage:cellNames:imageBounds:, url parameter is nil");
-   assert(names != nil && "setTableContentsFromImage:cellNames:imageBounds:, names parameter is nil");
-   assert(bounds != nil && "setTableContentsFromImage:cellNames:imageBounds:, bounds parameter is nil");
-   assert(name != nil && "setTableContentsFromImage:cellNames:imageBounds:, name parameter is nil");
-   
-   if (tableData)
-      [tableData removeAllObjects];
-   else
-      tableData = [[NSMutableArray alloc] init];
-   
-   loaded = NO;
-
-   mode = kLIVEEventOneImage;
-   sourceName = name;
-
-   unsigned i = 0;//quite ugly :)
-   for (id imageDesc in names) {
-      assert([imageDesc isKindOfClass : [NSString class]] && "setTableContentsFromImage:cellNames:imageBounds:, array of strings expected");
-      NSString * const name = (NSString *)imageDesc;
-      LiveImageData * const newImage = [[LiveImageData alloc] initWithName : name url : url bounds : bounds[i]];
-      [tableData addObject : newImage];
-      ++i;
-   }
+   tableEntryToLoad = 0;
+   flatRowIndex = 0;
 }
 
 //________________________________________________________________________________________
@@ -159,6 +68,51 @@ enum ControllerMode {
    [super viewDidLoad];
 }
 
+#pragma mark - Aux. function to search image data for a given row index.
+
+//________________________________________________________________________________________
+- (LiveImageData *) imageDataForFlatIndex : (NSInteger) row
+{
+   //As we can have nested sub-images in a tableData, described in nested NSArrays,
+   //it's quite ugly and terribly inefficient to search for an image data. Fortunately, this code
+   //is not supposed to work with huge image data sets, we have a special views/controllers
+   //for such a sets. In our case, most probably we have only one nested NSArray if any at all
+   //(and this NSArray is the only entry in the tableData).
+
+   assert(row >= 0 && "imageDataForFlatIndex:, parameter 'row' must be non-negative");
+   assert(tableData && [tableData count] && "imageDataForFlatIndex:, tableData is either nil or empty");
+
+   LiveImageData *liveData = nil;
+   
+   NSInteger currentIndex = 0;
+   for (id obj in tableData) {
+      if ([obj isKindOfClass : [LiveImageData class]]) {
+         if (currentIndex == row) {
+            //We got our data
+            liveData = (LiveImageData *)obj;
+            break;
+         } else
+            ++currentIndex;
+      } else {
+         //First, it can be ONLY NSArray (NSMutableArray).
+         assert([obj isKindOfClass : [NSArray class]] &&
+                "tableView:cellForRowAtIndexPath:, item of unknown type");
+         NSArray * const array = (NSArray *)obj;
+         const NSInteger nSubImages = [array count];
+         if (row <= currentIndex + nSubImages) {
+            //The image data is in this nested array.
+            id base = [array objectAtIndex : row - currentIndex];
+            assert([base isKindOfClass : [LiveImageData class]]);
+            liveData = (LiveImageData *)base;
+            break;
+         } else
+            currentIndex += nSubImages;
+      }
+   }
+   
+   assert(liveData != nil && "imageDataForFlatIndex:, index is out of bounds");
+   return liveData;
+}
 
 #pragma mark - Data management.
 
@@ -171,17 +125,15 @@ enum ControllerMode {
    loaded = NO;
    
    if ([tableData count]) {
-      [self.tableView reloadData];
-
       if (connection)
          [connection cancel];
 
-      imageToLoad = 0;
-      //
-      LiveImageData *liveImageData = (LiveImageData *)[tableData objectAtIndex : 0];
-      
-      NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
+      [self.tableView reloadData];
 
+      tableEntryToLoad = 0;
+      flatRowIndex = 0;
+      LiveImageData *liveImageData = [self imageDataForFlatIndex : 0];
+      NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
       imageData = [[NSMutableData alloc] init];
       connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
    }
@@ -191,6 +143,34 @@ enum ControllerMode {
 - (void) didReceiveMemoryWarning
 {
    [super didReceiveMemoryWarning];
+}
+
+//________________________________________________________________________________________
+- (void) continueLoadImages
+{
+   assert(tableData && [tableData count] && "continueLoadFrom:, tableData is either nil or empty");
+   assert(tableEntryToLoad < [tableData count] && "continueLoadFrom:, entry to load is out of bounds");
+   
+   LiveImageData *nextImageLiveData = nil;
+   
+   id base = [tableData objectAtIndex : tableEntryToLoad];
+   
+   if ([base isKindOfClass : [LiveImageData class]])
+      nextImageLiveData = (LiveImageData *)base;
+   else {
+      assert([base isKindOfClass : [NSArray class]] &&
+             "connectionDidFinishLoading:, unknown object");
+      NSArray * const imageSet = (NSArray *)base;
+      assert([imageSet count] && "connectionDidFinishLoading:, empty image set");
+      nextImageLiveData = (LiveImageData *)[imageSet objectAtIndex : 0];
+   }
+   
+   assert(nextImageLiveData != nil && "continueLoadFrom:, no data for next image found");
+   
+   NSURL * const url = [[NSURL alloc] initWithString : nextImageLiveData.url];
+   imageData = [[NSMutableData alloc] init];
+   connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
+
 }
 
 #pragma mark - Table view data source
@@ -205,23 +185,34 @@ enum ControllerMode {
 //________________________________________________________________________________________
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
-   return [tableData count];//even if tableData is nil, this will be 0.
+//   return [tableData count];//even if tableData is nil, this will be 0.
+   assert(tableData != nil && "tableView:numberOfRowsInSection:, tableData is nil");
+   
+   NSInteger nRows = 0;
+   for (id imageDesc in tableData) {
+      if ([imageDesc isKindOfClass : [LiveImageData class]])
+         ++nRows;
+      else {
+         assert([imageDesc isKindOfClass : [NSArray class]] &&
+                "tableView:numberOfRowsInSection:, unexpected object in contentProviders");
+         nRows += [(NSArray *)imageDesc count];
+      }
+   }
+   
+   return nRows;
+   
 }
 
 //________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
    //Find feed item first.
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [tableData count] && "tableView:cellForRowAtIndexPath:, row must be in the range [0, [tableData count])");
-   LiveImageData * const liveData = (LiveImageData *)[tableData objectAtIndex : row];
+   assert(indexPath.row >= 0 && "tableView:cellForRowAtIndexPath:, indexPath.row is negative");
+   LiveImageData * const liveData = [self imageDataForFlatIndex : indexPath.row];
+   assert(liveData != nil && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
 
    static NSString *CellIdentifier = @"NewsCell";
    
-   //Why do not I have compilation error (warning at least)? And get runtime error on non-existing selector instead?
-   //Apple always thinks different.
-   //NewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : CellIdentifier forIndexPath : indexPath];
-
    NewsTableViewCell *cell = (NewsTableViewCell *)[self.tableView dequeueReusableCellWithIdentifier : CellIdentifier];
    if (!cell)
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
@@ -235,9 +226,11 @@ enum ControllerMode {
 - (CGFloat) tableView : (UITableView *) tableView heightForRowAtIndexPath : (NSIndexPath *) indexPath
 {
    const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [tableData count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
+   assert(row >= 0 && "tableView:heightForRowAtIndexPath:, indexPath.row is negative");
 
-   LiveImageData * const liveData = (LiveImageData *)[tableData objectAtIndex : row];
+   LiveImageData * const liveData = [self imageDataForFlatIndex : row];
+   assert(liveData != nil && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
+
    return [NewsTableViewCell calculateCellHeightForText : liveData.imageName source : sourceName image : liveData.image imageOnTheRight : (indexPath.row % 4) == 3];
 }
 
@@ -252,7 +245,7 @@ enum ControllerMode {
    
 
    [self.tableView deselectRowAtIndexPath : indexPath animated : NO];
-   [provider loadControllerTo : navController selectedImage : indexPath.row];
+  // [provider loadControllerTo : navController selectedImage : indexPath.row];
 }
 
 //________________________________________________________________________________________
@@ -279,7 +272,7 @@ enum ControllerMode {
 {
    assert(imageData != nil && "connectionDidFinishLoading:, imageData is nil");
    assert(tableData != nil && [tableData count] && "connectionDidFinishLoading:, tableData is either nil or empty");
-   assert(imageToLoad < [tableData count] && "connectionDidFinishLoading:, imageToLoad index is out of bounds");
+   assert(tableEntryToLoad < [tableData count] && "connectionDidFinishLoading:, tableEntryToLoad is out of bounds");
    
    (void) urlConnection;
 
@@ -288,46 +281,66 @@ enum ControllerMode {
    if ([imageData length])
       newImage = [UIImage imageWithData : imageData];
    
-   if (mode == kLIVEEventManyImages) {
-      LiveImageData *liveImageData = (LiveImageData *)[tableData objectAtIndex : imageToLoad];
+   id obj = [tableData objectAtIndex : tableEntryToLoad];
+      
+   if ([obj isKindOfClass : [LiveImageData class]]) {
+      //We've just finished loading a single image.
       if (newImage) {
-         liveImageData.image = newImage;
-         //Now:
-         //a) reload table's row.
-         NSUInteger path[2] = {0, imageToLoad};//Row to update in a table view.
+         LiveImageData * const liveData = (LiveImageData *)obj;
+         liveData.image = newImage;
+         //Reload a table's row.
+         const NSUInteger path[2] = {0, flatRowIndex};//Row to update in a table view.
          NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-         NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
+         NSArray * const indexPaths = [NSArray arrayWithObject : indexPath];
          [self.tableView reloadRowsAtIndexPaths : indexPaths withRowAnimation : UITableViewRowAnimationNone];
       }
-      
-      //Now, should we download another image?
-      if (imageToLoad + 1 < [tableData count]) {
-         ++imageToLoad;
-         liveImageData = (LiveImageData *)[tableData objectAtIndex : imageToLoad];
-         NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
-         imageData = [[NSMutableData alloc] init];
-         connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
-      } else
-         loaded = YES;
+
+      ++flatRowIndex;
    } else {
-      //Now we have to cut sub-images.
-      for (LiveImageData *liveData in tableData) {
-         //Strange, that UIImage does not have a ctor from another UIImage and rect.
-         //So we need all this gymnastics.
-         CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, liveData.bounds));
-         if (imageRef) {
-            liveData.image = [UIImage imageWithCGImage : imageRef];
-            CGImageRelease(imageRef);
-         }
-      }
+      assert([obj isKindOfClass : [NSArray class]] && "connectionDidFinishLoading:, unknown object");
+      NSArray * const imageSet = (NSArray *)obj;
+
+      //We finished loading an image, which must be divided into sub-images.
+      assert([imageSet count] && "connectionDidFinishLoading:, image set is empty");
       
+      if (newImage) {
+         //Now we have to cut sub-images.
+         NSMutableArray * const rowsToUpdate = [[NSMutableArray alloc] init];
+
+         unsigned currentRow = flatRowIndex;
+         
+         for (LiveImageData *liveData in imageSet) {
+            //Strange, that UIImage does not have a ctor from another UIImage and rect.
+            //So we need all this gymnastics.
+            CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, liveData.bounds));
+            if (imageRef) {
+               liveData.image = [UIImage imageWithCGImage : imageRef];
+               CGImageRelease(imageRef);
+               
+               const NSUInteger path[2] = {0, currentRow};//Row to update in a table view.
+               NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
+               [rowsToUpdate addObject : indexPath];
+            }
+            
+            ++currentRow;
+         }
+         
+         if ([rowsToUpdate count])
+            [self.tableView reloadRowsAtIndexPaths : rowsToUpdate withRowAnimation : UITableViewRowAnimationNone];
+
+         flatRowIndex += [imageSet count];
+      }
+   }
+   
+   ++tableEntryToLoad;
+
+   if (tableEntryToLoad < [tableData count]) {
+      //Continue.
+      [self continueLoadImages];
+   } else {
       imageData = nil;
       connection = nil;
-      
       loaded = YES;
-      
-      //Ok, we can update ALL the rows now!
-      [self.tableView reloadData];
    }
 }
 
@@ -335,29 +348,31 @@ enum ControllerMode {
 - (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
 {
    assert(tableData != nil && [tableData count] && "connection:didFailWithError:, tableData is either nil or empty");
-   assert(imageToLoad < [tableData count] && "connection:didFailWithError:, imageToLoad index is out of bounds");
+   assert(tableEntryToLoad < [tableData count] && "connection:didFailWithError:, imageToLoad index is out of bounds");
 
    (void) urlConnection;
    (void) error;
    
-   if (mode == kLIVEEventManyImages) {
-      //Ok, let's try to load the next image.
-      
-      //Now, should we download another image?
-      if (imageToLoad + 1 < [tableData count]) {
-         ++imageToLoad;
-         LiveImageData *liveImageData = (LiveImageData *)[tableData objectAtIndex : imageToLoad];
-         NSURL * const url = [[NSURL alloc] initWithString : liveImageData.url];
-
-         imageData = [[NSMutableData alloc] init];
-         connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
-      } else
-         loaded = YES;
-   } else {
-      //Image load failed, nothing to update, no cell has any image.
-      loaded = YES;
-   }
+   ++tableEntryToLoad;
    
+   if (tableEntryToLoad < [tableData count]) {
+      id base = [tableData objectAtIndex : tableEntryToLoad];
+      if ([base isKindOfClass : [LiveImageData class]])
+         ++flatRowIndex;
+      else {
+         assert([base isKindOfClass : [NSArray class]] &&
+                "connection:didFailWithError:, unknown object");
+         flatRowIndex += [(NSArray *)base count];
+      }
+      
+      [self continueLoadImages];
+   } else {
+      imageData = nil;
+      connection = nil;
+      loaded = YES;
+      flatRowIndex = 0;
+      tableEntryToLoad = 0;
+   }   
 }
 
 

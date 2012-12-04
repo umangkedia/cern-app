@@ -26,7 +26,7 @@
 }
 
 //________________________________________________________________________________________
-@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel;
+@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, loaded;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -40,7 +40,7 @@
 }
 
 //________________________________________________________________________________________
-- (void)viewDidLoad
+- (void) viewDidLoad
 {
    [super viewDidLoad];
 
@@ -79,15 +79,20 @@
 
    self.pageControl.numberOfPages = numPages;
    self.scrollView.backgroundColor = [UIColor blackColor];
+   
+   loaded = NO;
 }
 
 //________________________________________________________________________________________
-- (void)viewDidAppear:(BOOL)animated
+- (void) viewDidAppear : (BOOL) animated
 {
    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * numPages, 1.f);
 
-   for (int i = 0; i< numPages; i++)
-      [self addSpinnerToPage : i];
+//BRAIN DEAD code is commented.
+//These spinners ... are never removed!!!
+//They are only overlapped by image views!!!
+//   for (int i = 0; i< numPages; i++)
+//      [self addSpinnerToPage : i];
 
    [self refresh : self];
 }
@@ -149,6 +154,7 @@
 //________________________________________________________________________________________
 - (void)addSourceWithDescription:(NSString *)description URL:(NSURL *)url boundaryRects:(NSArray *)boundaryRects
 {
+    loaded = NO;
     NSMutableDictionary *source = [NSMutableDictionary dictionary];
     [source setValue:description forKey:SOURCE_DESCRIPTION];
     [source setValue:url forKey:SOURCE_URL];
@@ -165,10 +171,18 @@
 #pragma mark - Loading event display images
 
 //________________________________________________________________________________________
+- (void) refresh
+{
+   [self refresh : self];
+}
+
+//________________________________________________________________________________________
 - (IBAction) refresh : (id)sender
 {
    if (currentConnection)
       [currentConnection cancel];
+   
+   loaded = NO;
 
    // If the event display images from a previous load are already in the scrollview, remove all of them before refreshing.
    for (UIView *subview in self.scrollView.subviews) {
@@ -267,12 +281,12 @@
 //________________________________________________________________________________________
 - (void)addDisplay:(NSDictionary *)eventDisplayInfo toPage:(int)page
 {
-    UIImage *image = [eventDisplayInfo objectForKey:RESULT_IMAGE];
-    CGRect imageViewFrame = CGRectMake(self.scrollView.frame.size.width*page, 0.0, self.scrollView.frame.size.width, self.scrollView.frame.size.height);
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageViewFrame];
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.image = image;
-    [self.scrollView addSubview:imageView];
+   UIImage *image = [eventDisplayInfo objectForKey:RESULT_IMAGE];
+   CGRect imageViewFrame = CGRectMake(self.scrollView.frame.size.width*page, 0., self.scrollView.frame.size.width, self.scrollView.frame.size.height);
+   UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageViewFrame];
+   imageView.contentMode = UIViewContentModeScaleAspectFit;
+   imageView.image = image;
+   [self.scrollView addSubview:imageView];
 }
 
 //________________________________________________________________________________________
@@ -376,6 +390,7 @@
       currentConnection = nil;
       imageData = nil;
       loadingSource = 0;
+      loaded = YES;
       self.refreshButton.enabled = YES;
    }
 }
@@ -394,6 +409,7 @@
       currentConnection = nil;
       imageData = nil;
       loadingSource = 0;
+      loaded = YES;
       self.refreshButton.enabled = YES;
    }
 }

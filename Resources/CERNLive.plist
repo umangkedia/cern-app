@@ -19,12 +19,25 @@
 		</dict>
 		<dict>
 			<key>Category name</key>
-			<string>Event display</string>
+			<string>Live Events</string>
 			<key>Images</key>
 			<array>
 				<dict>
 					<key>Name</key>
-					<string>LHCb Event display</string>
+					<string>Side view</string>
+					<key>Bounds</key>
+					<dict>
+						<key>cropH</key>
+						<integer>811</integer>
+						<key>cropW</key>
+						<integer>1685</integer>
+						<key>cropY</key>
+						<integer>66</integer>
+						<key>cropX</key>
+						<integer>0</integer>
+					</dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
 					<key>Image</key>
 					<string>http://lbcomet.cern.ch/Online/Images/evdisp.jpg</string>
 				</dict>
@@ -84,14 +97,44 @@
 		</dict>
 		<dict>
 			<key>Category name</key>
-			<string>Event display</string>
+			<string>Live Events</string>
 			<key>Images</key>
 			<array>
 				<dict>
+					<key>Bounds</key>
+					<array>
+						<dict>
+							<key>cropX</key>
+							<integer>2</integer>
+							<key>cropY</key>
+							<integer>2</integer>
+							<key>cropW</key>
+							<integer>764</integer>
+							<key>cropH</key>
+							<integer>764</integer>
+						</dict>
+						<dict>
+							<key>cropX</key>
+							<integer>770</integer>
+							<key>cropY</key>
+							<integer>2</integer>
+							<key>cropW</key>
+							<integer>379</integer>
+							<key>cropH</key>
+							<integer>370</integer>
+						</dict>
+					</array>
+					<key>Names</key>
+					<array>
+						<string>Front view</string>
+						<string>Side view</string>
+					</array>
+					<key>Category Name</key>
+					<string>ImageSet</string>
+					<key>nImages</key>
+					<integer>2</integer>
 					<key>Image</key>
 					<string>http://atlas-live.cern.ch/live.png</string>
-					<key>Name</key>
-					<string>ATLAS Live</string>
 				</dict>
 			</array>
 		</dict>
@@ -119,34 +162,44 @@
 		</dict>
 		<dict>
 			<key>Category name</key>
-			<string>Event display</string>
+			<string>Live Events</string>
 			<key>Images</key>
 			<array>
 				<dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
 					<key>Name</key>
 					<string>3D Tower</string>
 					<key>Image</key>
 					<string>http://cmsonline.cern.ch/evtdisp/3DTower.png</string>
 				</dict>
 				<dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
 					<key>Name</key>
 					<string>3D RecHit</string>
 					<key>Image</key>
 					<string>http://cmsonline.cern.ch/evtdisp/3DRecHit.png</string>
 				</dict>
 				<dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
 					<key>Name</key>
 					<string>Lego</string>
 					<key>Image</key>
 					<string>http://cmsonline.cern.ch/evtdisp/Lego.png</string>
 				</dict>
 				<dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
 					<key>Name</key>
 					<string>RhoPhi</string>
 					<key>Image</key>
 					<string>http://cmsonline.cern.ch/evtdisp/RhoPhi.png</string>
 				</dict>
 				<dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
 					<key>Name</key>
 					<string>RhoZ</string>
 					<key>Image</key>

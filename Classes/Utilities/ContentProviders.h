@@ -10,11 +10,12 @@
 @protocol ContentProvider <NSObject>
 @optional
 
-- (NSString *) categoryName;
 - (UIImage *) categoryImage;
 
 - (void) addPageWithContentTo : (MultiPageController *) controller;
 - (void) loadControllerTo : (UINavigationController *) controller;
+
+@property (nonatomic, retain) NSString *categoryName;
 
 @end
 
@@ -25,7 +26,8 @@
 
 - (id) initWith : (NSDictionary *) feedInfo;
 
-- (NSString *) categoryName;
+@property (nonatomic, retain) NSString *categoryName;
+
 - (UIImage *) categoryImage;
 
 - (void) addPageWithContentTo : (MultiPageController *) controller;
@@ -41,13 +43,25 @@
 //
 @interface LiveEventsProvider : NSObject<ContentProvider>
 
-- (id) initWith : (NSArray *) images forExperiment : (CernAPP::LHCExperiment) experiment;
+- (id) initWith : (NSArray *) dataEntry forExperiment : (CernAPP::LHCExperiment) experiment;
 
-- (NSString *) categoryName;
+@property (nonatomic, retain) NSString *categoryName;
+
 - (UIImage *) categoryImage;
 
 - (void) addPageWithContentTo : (MultiPageController *) controller;
 - (void) loadControllerTo : (UINavigationController *) controller;
 - (void) loadControllerTo : (UINavigationController *) controller selectedImage : (NSInteger) selected;
+
+@end
+
+@interface LiveImageData : NSObject
+
+- (id) initWithName : (NSString *) name url : (NSString *) imageUrl bounds : (CGRect) imageBounds;
+
+@property (nonatomic, readonly) NSString *imageName;
+@property (nonatomic, readonly) NSString *url;
+@property (nonatomic, retain) UIImage *image;
+@property (nonatomic, readonly) CGRect bounds;
 
 @end
