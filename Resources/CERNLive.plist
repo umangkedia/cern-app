@@ -11,7 +11,7 @@
 			<array>
 				<dict>
 					<key>Url</key>
-					<string>https://twitter.com/statuses/user_timeline/92522167.rss</string>
+					<string>http://api.twitter.com/1/statuses/user_timeline.rss?screen_name=LHCBExperiment</string>
 					<key>Name</key>
 					<string>Tweet</string>
 				</dict>

@@ -119,7 +119,6 @@
 
 // Parse using URL for backwards compatibility
 - (BOOL)parse {
-
 	// Reset
 	[self reset];
 	
