@@ -137,6 +137,12 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       CGRect frame = navigationView.frame;
       frame.origin.y = 0;
       
+      //Geometry is an everlasting pain with UIKit and Interface Builder.
+      if ([DeviceCheck deviceIsiPhone5])
+         frame.size.height = 460;
+      else
+         frame.size.height = 368;
+      
       UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
       assert(mainStoryboard != nil && "setItems:, storyboard is nil");
       
