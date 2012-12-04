@@ -11,7 +11,7 @@
 			<array>
 				<dict>
 					<key>Url</key>
-					<string>https://twitter.com/statuses/user_timeline/92522167.rss</string>
+					<string>https://twitter.com/LHCbExperiment</string>
 					<key>Name</key>
 					<string>Tweet</string>
 				</dict>
@@ -162,17 +162,41 @@
 			<array>
 				<dict>
 					<key>Url</key>
-					<string>http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&amp;ln=en</string>
-					<key>Name</key>
-					<string>Test feed1</string>
-				</dict>
-				<dict>
-					<key>Url</key>
 					<string>http://cms.web.cern.ch/news/category/265/rss.xml</string>
 					<key>Name</key>
 					<string>CMS news</string>
 				</dict>
 			</array>
+		</dict>
+		<dict>
+			<key>Images</key>
+			<array>
+				<dict>
+					<key>Image</key>
+					<string>http://cmspage1.web.cern.ch/cmspage1/data/page1.png</string>
+					<key>Name</key>
+					<string>CMS Status</string>
+					<key>Category name</key>
+					<string>SingleImage</string>
+				</dict>
+			</array>
+			<key>Category name</key>
+			<string>CMS Status</string>
+		</dict>
+		<dict>
+			<key>Images</key>
+			<array>
+				<dict>
+					<key>Name</key>
+					<string>DAQ Status</string>
+					<key>Image</key>
+					<string>http://cmsonline.cern.ch/daqStatusSCX/aDAQmon/DAQstatusGre.jpg</string>
+					<key>Category name</key>
+					<string>SingleImage</string>
+				</dict>
+			</array>
+			<key>Category name</key>
+			<string>DAQ Status</string>
 		</dict>
 		<dict>
 			<key>Category name</key>
