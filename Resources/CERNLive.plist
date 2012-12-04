@@ -63,17 +63,33 @@
 	<key>LHC</key>
 	<array>
 		<dict>
-			<key>Category name</key>
-			<string>News</string>
-			<key>Feeds</key>
-			<dict>
-				<key>New item</key>
-				<string>http://cms.web.cern.ch/news/category/265/rss.xml</string>
-			</dict>
-			<key>Tweets</key>
-			<dict/>
-		</dict>
-		<dict>
+			<key>Images</key>
+			<array>
+				<dict>
+					<key>Image</key>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png</string>
+					<key>Name</key>
+					<string>LHC Page1</string>
+					<key>Category Name</key>
+					<string>SingleImage</string>
+				</dict>
+				<dict>
+					<key>Image</key>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png</string>
+					<key>Name</key>
+					<string>LHC Page 2</string>
+					<key>Category Name</key>
+					<string>SingleImage</string>
+				</dict>
+				<dict>
+					<key>Category Name</key>
+					<string>SingleImage</string>
+					<key>Name</key>
+					<string>Coordination Planning</string>
+					<key>Image</key>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png</string>
+				</dict>
+			</array>
 			<key>Category name</key>
 			<string>DAQ</string>
 		</dict>

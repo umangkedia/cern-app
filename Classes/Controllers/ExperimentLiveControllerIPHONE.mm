@@ -96,10 +96,10 @@
       LiveEventsProvider * const provider = [[LiveEventsProvider alloc] initWith : images forExperiment : experiment];
       [liveData addObject : provider];
       
-      if ([dataEntry objectForKey : @"Category Name"]) {
-         assert([[dataEntry objectForKey : @"Category Name"] isKindOfClass : [NSString class]] &&
+      if ([dataEntry objectForKey : @"Category name"]) {
+         assert([[dataEntry objectForKey : @"Category name"] isKindOfClass : [NSString class]] &&
                 "readLIVEImages, 'Category Name' for the data entry is not of NSString type");
-         provider.categoryName = (NSString *)[dataEntry objectForKey : @"Category Name"];
+         provider.categoryName = (NSString *)[dataEntry objectForKey : @"Category name"];
       }
 
       return true;
@@ -131,7 +131,7 @@
          if ([self readNews : data])
             continue;
          
-         if ([self readLIVEImages:data])
+         if ([self readLIVEImages : data])
             continue;
          
          //someting else can be here.
@@ -145,7 +145,6 @@
    using namespace CernAPP;
 
    assert(selected >= 0 && "loadMultiPageControllerWithSelectedItem:, parameter selected must be non-negative");
-   assert(experiment != LHCExperiment::LHC && "loadMultiPageControllerWithSelectedItem:, not implemented for LHC");
    
    MultiPageController * const controller = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
 
@@ -153,23 +152,11 @@
    for (NSObject<ContentProvider> *provider in liveData)
       [itemNames addObject : [provider categoryName]];
    
-   //As usually, special case.
-//   if (experiment != LHCExperiment::ALICE)
-//      [itemNames addObject : @"LIVE Events"];
-   
-   
    [self.navigationController pushViewController : controller animated : YES];
    [controller preparePagesFor : itemNames];
 
    for (NSObject<ContentProvider> *provider in liveData)
       [provider addPageWithContentTo : controller];
-   
-   //Now, as usually, non-generic part.
-/*   if (experiment != LHCExperiment::ALICE) {
-      assert([liveEvents count] && "loadMultiPageControllerWithSelectedItem:, no live events found");
-      LiveEventsProvider *provider = (LiveEventsProvider *)[liveEvents objectAtIndex : 0];
-      [provider addPageWithContentTo : controller];
-   }*/
    
    [controller selectPage : selected];
 }
@@ -182,8 +169,7 @@
    self.navigationController.navigationBarHidden = NO;
    self.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
 
-   if (experiment != LHCExperiment::LHC)//LHC is not an experiment, we treat it in a special way.
-      [self readLIVEData];
+   [self readLIVEData];
 }
 
 //________________________________________________________________________________________
@@ -211,9 +197,6 @@
 {
    //TP: at the moment we have only "News" and "Event display" cells.
    using namespace CernAPP;
-   
-   if (experiment == LHCExperiment::LHC)
-      return 1;
    
    assert(liveData && [liveData count] && "tableView:numberOfRowsInSection:, no LIVE data found");
 
@@ -243,17 +226,13 @@
       } else
          cell.textLabel.text = @"Live Events";
 
-   } else if (experiment != LHCExperiment::LHC) {
+   } else {
       //TODO: at the moment, the new experimental controller/view is only for CMS.
       //<= : [liveData count] + 1 for event display.
       assert(indexPath.row >= 0 && indexPath.row < [liveData count] && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
       
       NSObject<ContentProvider> * const provider = (NSObject<ContentProvider> *)[liveData objectAtIndex : indexPath.row];
       cell.textLabel.text = [provider categoryName];
-   } else {
-      //The special case for LHC.
-      assert(indexPath.row == 0 && "tableView:cellForRowAtIndexPath:, intexPath.row is out of bounds");
-      cell.textLabel.text = @"LHC Data";
    }
 
    return cell;
@@ -289,21 +268,9 @@
       else
          [self pushEventDisplayForExperiment];
       
-   } else if (experiment != LHCExperiment::LHC) {
+   } else {
       assert(indexPath.row >= 0 && indexPath.row < [liveData count] && "tableView:didSelectRowAtIndexPath:, indexPath.row is out of bounds");
       [self loadMultiPageControllerWithSelectedItem : indexPath.row];
-   } else  {
-      //LHC is still a "special" case :(
-      assert(indexPath.row == 0 && "tableView:didSelectRowAtIndexPath:, indexPath.row must be 0");
-      
-      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
-      EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
-      [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png"] boundaryRects : nil];
-      [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png"] boundaryRects : nil];
-      [eventViewController addSourceWithDescription : nil URL : [NSURL URLWithString : @"http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png"] boundaryRects : nil];
-      eventViewController.title = @"LHC Data";
-
-      [self.navigationController pushViewController : eventViewController animated : YES];   
    }
 }
 
