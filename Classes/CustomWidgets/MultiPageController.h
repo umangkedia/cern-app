@@ -25,4 +25,7 @@
 - (void) preparePagesFor : (NSMutableArray *) itemNames;
 - (void) selectPage : (NSInteger) page;
 
+//TODO: stupid hack
+- (void) hideBackButton : (BOOL) hide;
+
 @end

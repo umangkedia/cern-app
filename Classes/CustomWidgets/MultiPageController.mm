@@ -30,6 +30,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    //TODO: the name 'tableControllers' is not good anymore, I can have not only tables.
    NSMutableArray *tableControllers;
    BOOL autoScroll;
+   UIButton *backButton;
 }
 
 //________________________________________________________________________________________
@@ -56,6 +57,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
 - (void)viewDidLoad
 {
    [super viewDidLoad];
+   
    if (self.view) {
       self.view.backgroundColor = [UIColor blackColor];
       
@@ -86,7 +88,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       navigationView.showsVerticalScrollIndicator = NO;
       navigationView.pagingEnabled = YES;
       
-      UIButton *backButton = [UIButton buttonWithType : UIButtonTypeCustom];
+      backButton = [UIButton buttonWithType : UIButtonTypeCustom];
       backButton.backgroundColor = [UIColor clearColor];
       backButton.frame = CGRectMake(5.f, ([ScrollSelector defaultHeight] - tbBtnHeight) / 2.f, tbBtnWidth, tbBtnHeight);
       [backButton setImage:[UIImage imageNamed:@"back_button_flat.png"] forState : UIControlStateNormal];
@@ -98,7 +100,6 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       [self.view bringSubviewToFront : selector];
       [self.view bringSubviewToFront : backButton];
 
-      //This is the ugly hack for ugly API/Frameworks/logic by Apple.
       tableControllers = [[NSMutableArray alloc] init];
       
       autoScroll = NO;
@@ -118,6 +119,8 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    assert(items != nil && "setItems:, items parameter is nil");
 
    if ([items count]) {
+      [self view];//Force view load!
+
       NSMutableArray * const titles = [[NSMutableArray alloc] init];
       
       for (id itemBase in items) {
@@ -138,7 +141,6 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       assert(mainStoryboard != nil && "setItems:, storyboard is nil");
       
       for (KeyVal *pair in items) {
-         //
          NewsTableViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kExperimentFeedTableViewController];
          //Actually, no need in assert - storyboard will generate an exception.
          assert(newsViewController != nil && "setItems:, no NewsTableViewController was found in a storyboard");
@@ -158,6 +160,7 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
       
       [[tableControllers objectAtIndex : 0] refresh];
    }
+
    //Now we had to initialize a lot of feed parsers.
 }
 
@@ -263,6 +266,12 @@ const CGFloat tbBtnWidth = 35.f;//51.f;
    
    [selector setSelectedItem : page];
    [controller refresh];
+}
+
+//________________________________________________________________________________________
+- (void) hideBackButton : (BOOL) hide
+{
+   [backButton setHidden : hide];
 }
 
 @end

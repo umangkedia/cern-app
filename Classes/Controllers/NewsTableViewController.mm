@@ -155,6 +155,7 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
    [super allFeedsDidLoadForAggregator : theAggregator];
+   
    [self.tableView reloadData];
    loaded = YES;
 }

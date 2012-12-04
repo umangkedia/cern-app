@@ -15,8 +15,11 @@
 #import "StaticInfoSelectorViewController.h"
 #import "StaticInfoScrollViewController.h"
 #import "WebcastsGridViewController.h"
+//#import "NewsTableViewController.h"
+#import "MultiPageController.h"
 #import "DeviceCheck.h"
 #import "Constants.h"
+#import "KeyVal.h"
 
 @implementation AppDelegate
 
@@ -88,15 +91,36 @@
                [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];           
             else {
                //
-               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
-               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://home.web.cern.ch/cern-people/announcements/feed"]];
-               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://home.web.cern.ch/cern-people/updates/feed"]];
-               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString : @"http://home.web.cern.ch/cern-people/opinion/feed"]];
-               [((NewsTableViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://home.web.cern.ch/students-educators/updates/feed"]];
-               //
-            }
+               NSMutableArray *feeds = [[NSMutableArray alloc] init];
+               
+               assert([viewController isKindOfClass : [MultiPageController class]] &&
+                      "setupViewController:atIndex:, viewController must have MultiPageController type");
+               
+               KeyVal *pair = [[KeyVal alloc] init];
+               pair.key = @"CERN Courier";
+               pair.val = @"http://feeds.feedburner.com/CernCourier";
+               [feeds addObject : pair];
+               
+               pair = [[KeyVal alloc] init];
+               pair.key = @"Announcements";
+               pair.val = @"http://home.web.cern.ch/cern-people/announcements/feed";
+               [feeds addObject : pair];
+               
+               pair = [[KeyVal alloc] init];
+               pair.key = @"For students";
+               pair.val = @"http://home.web.cern.ch/students-educators/updates/feed";
+               [feeds addObject : pair];
+               
+               pair = [[KeyVal alloc] init];
+               pair.key = @"Updates";
+               pair.val = @"http://home.web.cern.ch/cern-people/updates/feed";
+               [feeds addObject : pair];
+               
+               MultiPageController *mpController = (MultiPageController *)viewController;
 
-            [(NewsGridViewController *)viewController refresh];
+               [mpController setItems : feeds];
+               [mpController hideBackButton : YES];
+            }
 
             break;
         }

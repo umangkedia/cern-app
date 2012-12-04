@@ -162,7 +162,7 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
    CGFloat currPos = xPad;
    NSEnumerator * const enumerator = [items objectEnumerator];
 
-   UIFont *labelFont = [UIFont fontWithName:@"PT Sans" size : 20];
+   UIFont *labelFont = [UIFont fontWithName:@"PT Sans" size : 18];// 20];
    assert(labelFont != nil && "addItemNames, labelFont was not found");
 
    for (NSString *itemName = [enumerator nextObject]; itemName; itemName = [enumerator nextObject]) {
