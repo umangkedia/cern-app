@@ -215,10 +215,10 @@ namespace {
                 "initWith:forExperiment:, array of dictionaries expected");
          
          NSDictionary * const data = (NSDictionary *)base;
-         assert([[data objectForKey : @"Category Name"] isKindOfClass : [NSString class]] &&
-                "initWith:forExperiment:, object for 'Category Name' not found or is not of NSString type");
+         assert([[data objectForKey : @"Category name"] isKindOfClass : [NSString class]] &&
+                "initWith:forExperiment:, object for 'Category name' not found or is not of NSString type");
 
-         NSString * const cat = (NSString *)[data objectForKey : @"Category Name"];
+         NSString * const cat = (NSString *)[data objectForKey : @"Category name"];
          if ([cat isEqualToString : @"SingleImage"])
             [self readSingleImage : data];
          else if ([cat isEqualToString : @"ImageSet"])

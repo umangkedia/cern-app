@@ -36,7 +36,7 @@
 						<key>cropX</key>
 						<integer>0</integer>
 					</dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Image</key>
 					<string>http://lbcomet.cern.ch/Online/Images/evdisp.jpg</string>
@@ -70,7 +70,7 @@
 					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png</string>
 					<key>Name</key>
 					<string>LHC Page1</string>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 				</dict>
 				<dict>
@@ -78,11 +78,11 @@
 					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png</string>
 					<key>Name</key>
 					<string>LHC Page 2</string>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 				</dict>
 				<dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
 					<string>Coordination Planning</string>
@@ -108,8 +108,6 @@
 					<string>ATLAS News</string>
 				</dict>
 			</array>
-			<key>Tweets</key>
-			<array/>
 		</dict>
 		<dict>
 			<key>Category name</key>
@@ -145,7 +143,7 @@
 						<string>Front view</string>
 						<string>Side view</string>
 					</array>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>ImageSet</string>
 					<key>nImages</key>
 					<integer>2</integer>
@@ -182,7 +180,7 @@
 			<key>Images</key>
 			<array>
 				<dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
 					<string>3D Tower</string>
@@ -190,7 +188,7 @@
 					<string>http://cmsonline.cern.ch/evtdisp/3DTower.png</string>
 				</dict>
 				<dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
 					<string>3D RecHit</string>
@@ -198,7 +196,7 @@
 					<string>http://cmsonline.cern.ch/evtdisp/3DRecHit.png</string>
 				</dict>
 				<dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
 					<string>Lego</string>
@@ -206,7 +204,7 @@
 					<string>http://cmsonline.cern.ch/evtdisp/Lego.png</string>
 				</dict>
 				<dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
 					<string>RhoPhi</string>
@@ -214,7 +212,7 @@
 					<string>http://cmsonline.cern.ch/evtdisp/RhoPhi.png</string>
 				</dict>
 				<dict>
-					<key>Category Name</key>
+					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
 					<string>RhoZ</string>
