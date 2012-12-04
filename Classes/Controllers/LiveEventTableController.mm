@@ -241,8 +241,7 @@
 {
    assert(provider != nil && "tableView:didSelectRowAtIndexPath:, provider is nil");
    assert(navController != nil && "tableView:didSelectRowAtIndexPath:, navController is nil");
-   assert(indexPath.row >= 0 && indexPath.row < [tableData count] && "tableView:didSelectRowAtIndexPath:, indexPath.row is out of bounds");
-   
+   //assert(indexPath.row >= 0 && indexPath.row < [tableData count] && "tableView:didSelectRowAtIndexPath:, indexPath.row is out of bounds");
 
    [self.tableView deselectRowAtIndexPath : indexPath animated : NO];
    [provider loadControllerTo : navController selectedImage : indexPath.row];

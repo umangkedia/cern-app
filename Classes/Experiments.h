@@ -18,10 +18,6 @@ extern NSString * const LIVEEventTableViewControllerID;
 extern NSString * const ALICEPhotoGridViewControllerID;
 extern NSString * const EventDisplayViewControllerID;
 
-//Unfortunately, I have to hardcode these things here.
-extern const CGRect imageBoundsForATLAS[2];
-extern const CGRect imageBoundsForLHCb;
-
 }
 
 #endif
