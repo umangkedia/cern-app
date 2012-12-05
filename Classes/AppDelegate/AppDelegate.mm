@@ -88,9 +88,10 @@
     switch (index) {
         case TabIndexNews: {
             // Populate the general News view controller with news feeds
-            if ([DeviceCheck deviceIsiPad])
-               [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];           
-            else {
+            if ([DeviceCheck deviceIsiPad]) {
+               [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
+               [(NewsGridViewController *)viewController refresh];
+            } else {
                //
                NSMutableArray *feeds = [[NSMutableArray alloc] init];
                
