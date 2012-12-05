@@ -1,5 +1,6 @@
 #import <cassert>
 
+#import <AudioToolbox/AudioToolbox.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import "ScrollSelector.h"
@@ -18,6 +19,21 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
    CGFloat xPad;
    CGFloat cellWidth;
 }
+
+/*
+
+   NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"scrollerClick" ofType:@"wav"];
+   NSLog(@"path %@", soundPath);
+   SystemSoundID soundID = SystemSoundID();
+   OSStatus status = AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath : soundPath], &soundID);
+   NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+   NSLog(@"res %@", [error localizedDescription]);
+   for (int i = 0; i < 200; ++i) {
+
+   AudioServicesPlaySystemSound (soundID);
+   }
+   
+*/
 
 @synthesize delegate;
 
@@ -85,6 +101,15 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 }
 
 //____________________________________________________________________________________________________
+- (void) playClick
+{
+   NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"scrollerClick" ofType:@"wav"];
+   SystemSoundID soundID = SystemSoundID();
+   AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath : soundPath], &soundID);
+   AudioServicesPlaySystemSound (soundID);
+}
+
+//____________________________________________________________________________________________________
 - (void) findSelectedItemAndAdjustOffset
 {
    //After scroll ended, we have to re-adjust, so
@@ -107,7 +132,6 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
    selectedItem = item;
    const CGFloat middleX = contentScroll.frame.size.width / 2;
    const CGFloat x = xPad + selectedItem * cellWidth + 0.5f * cellWidth - middleX;
-
    [contentScroll setContentOffset : CGPointMake(x, 0.f) animated : YES];
 }
 
@@ -130,8 +154,10 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 {
    const unsigned oldSelected = selectedItem;
    [self findSelectedItemAndAdjustOffset];
-   if (oldSelected != selectedItem)
+   if (oldSelected != selectedItem) {
+      [self playClick];
       [self notify];
+   }
 }
 
 //____________________________________________________________________________________________________
@@ -140,8 +166,11 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
    if (!decelerate) {
       const unsigned oldSelected = selectedItem;
       [self findSelectedItemAndAdjustOffset];
-      if (oldSelected != selectedItem)
+
+      if (oldSelected != selectedItem) {
+         [self playClick];
          [self notify];
+      }
    }
 }
 

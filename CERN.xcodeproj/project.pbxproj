@@ -175,6 +175,8 @@
 		702F577B1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
 		704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.m */; };
+		705D9FB1166F3867007C7611 /* scrollerClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = 705D9FB0166F3867007C7611 /* scrollerClick.wav */; };
+		705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 705D9FB3166F3A00007C7611 /* AudioToolbox.framework */; };
 		70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */ = {isa = PBXBuildFile; fileRef = 70736CB4164BAF3A009FF383 /* KeyVal.m */; };
 		709755A71668CC260017860F /* LiveEventTableController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709755A61668CC260017860F /* LiveEventTableController.mm */; };
 		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
@@ -449,6 +451,8 @@
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
 		704A8DF51615E25800AAA5B2 /* DeviceCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCheck.h; sourceTree = "<group>"; };
 		704A8DF61615E25800AAA5B2 /* DeviceCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceCheck.m; sourceTree = "<group>"; };
+		705D9FB0166F3867007C7611 /* scrollerClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = scrollerClick.wav; path = Sounds/scrollerClick.wav; sourceTree = "<group>"; };
+		705D9FB3166F3A00007C7611 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		70736CB3164BAF3A009FF383 /* KeyVal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyVal.h; sourceTree = "<group>"; };
 		70736CB4164BAF3A009FF383 /* KeyVal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyVal.m; sourceTree = "<group>"; };
 		709755A51668CC260017860F /* LiveEventTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveEventTableController.h; path = Controllers/LiveEventTableController.h; sourceTree = "<group>"; };
@@ -469,7 +473,7 @@
 		70E5995B1664C97A00BEB6ED /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		70E5995D1664E26F00BEB6ED /* back_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button.png; sourceTree = "<group>"; };
 		70E5995F1664E3C200BEB6ED /* back_button_flat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_flat.png; sourceTree = "<group>"; };
-		70E59963166507DE00BEB6ED /* navbarback.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = navbarback.png; path = Resources/Images/navbarback.png; sourceTree = "<group>"; };
+		70E59963166507DE00BEB6ED /* navbarback.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbarback.png; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -489,6 +493,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */,
 				E1B6925315D9919800EC9AFA /* libAQGridView.a in Frameworks */,
 				E1FFFC2B15A651B40093462B /* MediaPlayer.framework in Frameworks */,
 				E1D87E8B159EEC920051104C /* MessageUI.framework in Frameworks */,
@@ -724,6 +729,7 @@
 		41E617C31614CEB700BAA7D4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				705D9FB2166F387D007C7611 /* Sounds */,
 				703FD35A161DDB2F00B8BB8C /* Fonts */,
 				41E617C41614CEB700BAA7D4 /* Images */,
 				41E618291614CEB700BAA7D4 /* MWPhotoBrowser.bundle */,
@@ -744,6 +750,7 @@
 				41E617C91614CEB700BAA7D4 /* Cards */,
 				41E618161614CEB700BAA7D4 /* TabBarIcons */,
 				41C0659316271ED1000DC176 /* iTunesArtwork */,
+				70E59963166507DE00BEB6ED /* navbarback.png */,
 				70E5995F1664E3C200BEB6ED /* back_button_flat.png */,
 				70E5995D1664E26F00BEB6ED /* back_button.png */,
 				70E5995B1664C97A00BEB6ED /* back_btn.png */,
@@ -889,6 +896,14 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		705D9FB2166F387D007C7611 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				705D9FB0166F3867007C7611 /* scrollerClick.wav */,
+			);
+			name = Sounds;
+			sourceTree = "<group>";
+		};
 		70A32E12166CBEEB00636BEE /* ExperimentLIVE */ = {
 			isa = PBXGroup;
 			children = (
@@ -930,7 +945,7 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
-				70E59963166507DE00BEB6ED /* navbarback.png */,
+				705D9FB3166F3A00007C7611 /* AudioToolbox.framework */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,
@@ -1036,6 +1051,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				705D9FB1166F3867007C7611 /* scrollerClick.wav in Resources */,
 				70E59964166507DE00BEB6ED /* navbarback.png in Resources */,
 				70E599601664E3C200BEB6ED /* back_button_flat.png in Resources */,
 				70E5995E1664E26F00BEB6ED /* back_button.png in Resources */,
@@ -1324,7 +1340,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1352,7 +1368,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
 				WRAPPER_EXTENSION = app;
 			};
