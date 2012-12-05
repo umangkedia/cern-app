@@ -43,7 +43,7 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
 - (id) initWithFrame : (CGRect)frame
 {
    if (self = [super initWithFrame : frame]) {
-      self.backgroundColor = [UIColor colorWithRed : 0.2f green : 0.2f blue : 0.2f alpha : 1.f];
+      [self setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed : @"navbarback.png"]]];
    
       contentScroll = [[UIScrollView alloc] initWithFrame : CGRectMake(0., 0., frame.size.width, frame.size.height)];
       contentScroll.scrollEnabled = YES;
