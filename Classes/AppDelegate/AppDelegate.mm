@@ -99,8 +99,13 @@
                       "setupViewController:atIndex:, viewController must have MultiPageController type");
                
                KeyVal *pair = [[KeyVal alloc] init];
-               pair.key = @"CERN Courier";
-               pair.val = @"http://feeds.feedburner.com/CernCourier";
+               pair.key = @"News";
+               pair.val = @"http://home.web.cern.ch/about/updates/feed";
+               [feeds addObject : pair];
+
+               pair = [[KeyVal alloc] init];
+               pair.key = @"For students";
+               pair.val = @"http://home.web.cern.ch/students-educators/updates/feed";
                [feeds addObject : pair];
                
                pair = [[KeyVal alloc] init];
@@ -109,13 +114,13 @@
                [feeds addObject : pair];
                
                pair = [[KeyVal alloc] init];
-               pair.key = @"For students";
-               pair.val = @"http://home.web.cern.ch/students-educators/updates/feed";
+               pair.key = @"Opinion pieces";
+               pair.val = @"http://home.web.cern.ch/cern-people/opinion/feed";
                [feeds addObject : pair];
                
                pair = [[KeyVal alloc] init];
-               pair.key = @"Updates";
-               pair.val = @"http://home.web.cern.ch/cern-people/updates/feed";
+               pair.key = @"CERN Courier";
+               pair.val = @"http://feeds.feedburner.com/CernCourier";
                [feeds addObject : pair];
                
                MultiPageController *mpController = (MultiPageController *)viewController;
