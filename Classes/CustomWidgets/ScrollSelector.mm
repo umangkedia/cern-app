@@ -18,22 +18,9 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
    
    CGFloat xPad;
    CGFloat cellWidth;
-}
-
-/*
-
-   NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"scrollerClick" ofType:@"wav"];
-   NSLog(@"path %@", soundPath);
-   SystemSoundID soundID = SystemSoundID();
-   OSStatus status = AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath : soundPath], &soundID);
-   NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
-   NSLog(@"res %@", [error localizedDescription]);
-   for (int i = 0; i < 200; ++i) {
-
-   AudioServicesPlaySystemSound (soundID);
-   }
    
-*/
+   SystemSoundID clickSound;
+}
 
 @synthesize delegate;
 
@@ -95,18 +82,27 @@ const CGFloat cellWidthRatio = 0.4;//40 % of the full view's width.
                               (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.] CGColor],
                               (id)[[UIColor colorWithRed : 0.f green : 0.f blue : 0.f alpha : 0.95] CGColor]];
       [self.layer insertSublayer : gradientLayer above : dropshadowLayer];
+      
+      //Sound initialization.
+      NSString * const soundPath = [[NSBundle mainBundle] pathForResource:@"scrollerClick" ofType:@"wav"];
+      AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath : soundPath], &clickSound);
    }
 
    return self;
 }
 
 //____________________________________________________________________________________________________
+- (void) dealloc
+{
+   if (clickSound)//Can valid SystemSoundID be 0?
+      AudioServicesDisposeSystemSoundID(clickSound);
+}
+
+//____________________________________________________________________________________________________
 - (void) playClick
 {
-   NSString *soundPath = [[NSBundle mainBundle] pathForResource:@"scrollerClick" ofType:@"wav"];
-   SystemSoundID soundID = SystemSoundID();
-   AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath : soundPath], &soundID);
-   AudioServicesPlaySystemSound (soundID);
+   if (clickSound)//Not clear, can valid SystemSoundID be 0?
+      AudioServicesPlaySystemSound(clickSound);
 }
 
 //____________________________________________________________________________________________________
