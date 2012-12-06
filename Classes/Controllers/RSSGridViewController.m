@@ -103,6 +103,10 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+#ifdef __IPHONE_6_0
+   self.refreshControl = [[UIRefreshControl alloc] init];
+   [self.refreshControl addTarget : self action : @selector(refresh) forControlEvents : UIControlEventValueChanged];
+#endif
    // When we call self.view this will reload the view after a didReceiveMemoryWarning.
    //self.view.backgroundColor = [UIColor whiteColor];
 }
@@ -147,8 +151,11 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator
 {
    [MBProgressHUD hideHUDForView : self.view animated : YES];
-   
+#ifdef __IPHONE_6_0
+   [self.refreshControl endRefreshing];
+#else
    [self stopLoading];
+#endif
 }
 
 //________________________________________________________________________________________

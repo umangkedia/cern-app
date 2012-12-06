@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import <Availability.h>
+
 #import "PullRefreshTableViewController.h"
 #import "AQGridViewController.h"
 #import "RSSAggregator.h"
@@ -20,8 +22,11 @@
 
 @end
 
+#ifdef __IPHONE_6_0
+@interface RSSTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
+#else
 @interface RSSTableViewController : PullRefreshTableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
-//UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
+#endif
 
 @property (nonatomic, strong) RSSAggregator *aggregator;
 - (void) refresh;

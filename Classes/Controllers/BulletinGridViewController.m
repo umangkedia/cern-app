@@ -142,9 +142,10 @@
       viewController.title = [self issueTitleForRange : issueRange dateFormatterStyle : NSDateFormatterShortStyle];
    } else {
       //Ugly code duplication for the moment - different controllers for iPad/iPhone devices.
-      NewsTableViewController * const viewController = [segue destinationViewController];
+      NewsTableViewController * const viewController = [segue destinationViewController];      
+//#ifndef __IPHONE_6_0
       viewController.shouldRefresh = NO;
-
+//#endif
       NSUInteger issueIndex = [self.gridView indexOfSelectedItem];
       viewController.aggregator = self.aggregator;
       viewController.aggregator.delegate = viewController;
@@ -159,6 +160,7 @@
 
    [self.gridView deselectItemAtIndex : self.gridView.indexOfSelectedItem animated : YES];
 }
+
 
 #pragma mark - AQGridView methods
 

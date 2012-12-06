@@ -5,6 +5,8 @@
 //an every news item.
 //It can be used ONLY for iPhone/iPod touch device, for iPad we'll have different approach.
 
+#import <Availability.h>
+
 #import <UIKit/UIKit.h>
 
 #import "RSSGridViewController.h"
@@ -14,6 +16,11 @@
 
 //From PageController protocol:
 - (void) refresh;
+
+#ifdef __IPHONE_6_0
+//TODO: that's an ugly-ugly hack to disable refreshControl.
+@property (nonatomic) BOOL shouldRefresh;
+#endif
 
 @property NSRange rangeOfArticlesToShow;
 

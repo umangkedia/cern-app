@@ -13,15 +13,24 @@
 #import "Constants.h"
 
 
-@implementation NewsTableViewController
+@implementation NewsTableViewController {
+   BOOL resetColor;
+}
 
 @synthesize rangeOfArticlesToShow, loaded, navigationControllerForArticle;
+
+#ifdef __IPHONE_6_0
+@synthesize shouldRefresh;
+#endif
 
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
    if (self = [super initWithCoder : aDecoder]) {
       //
+#ifdef __IPHONE_6_0
+      shouldRefresh = YES;
+#endif
    }
 
    return self;
@@ -32,6 +41,9 @@
 {
    if (self = [super initWithStyle : style]) {
       //
+#ifdef __IPHONE_6_0
+      shouldRefresh = YES;
+#endif
    }
 
    return self;
@@ -42,6 +54,12 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+#ifdef __IPHONE_6_0
+   if (!shouldRefresh)
+      self.refreshControl = nil;//.enabled = NO;
+#endif
+   self.tableView.separatorColor = [UIColor clearColor];
+   resetColor = YES;
    [self.tableView reloadData];
 }
 
@@ -97,13 +115,15 @@
    self.rangeOfArticlesToShow = NSRange();
    [self.aggregator clearAllFeeds];
    [super refresh];
+   self.tableView.separatorColor = [UIColor clearColor];
+   resetColor = YES;
    [self.tableView reloadData];
 }
 
 //________________________________________________________________________________________
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
-   // Return the number of rows in the section.   
+   // Return the number of rows in the section.
    if (self.rangeOfArticlesToShow.length)
       return self.rangeOfArticlesToShow.length;
    else
@@ -114,6 +134,11 @@
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
    //Find feed item first.
+   if (resetColor) {
+      resetColor = NO;
+      self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
+   }
+   
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < [self.aggregator.allArticles count]);
 
@@ -207,15 +232,21 @@
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 
+/*
 //________________________________________________________________________________________
 - (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
 {
    //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
    //Many thanks to Apple's "brilliant" engineers for the fact I need this - continue to think different, guys!
-   if (!section)
-      return [[UIView alloc] init];
+   if (!section) {
+      UIView *footer = [[UIView alloc] initWithFrame : CGRectMake(0., 0., 320., 1.)];
+      footer.backgroundColor = [UIColor clearColor];
+      return footer;
+   }
 
    return nil;
 }
+*/
+
 
 @end
