@@ -9,6 +9,8 @@
 #import "PhotosGridViewController.h"
 #import "CernMediaMARCParser.h"
 #import "PhotoGridViewCell.h"
+#import "GuiAdjustment.h"
+#import "DeviceCheck.h"
 #import "AppDelegate.h"
 #import "MBProgressHUD.h"
 
@@ -37,6 +39,9 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.gridView.separatorStyle = AQGridViewCellSeparatorStyleSingleLine;
     self.gridView.resizesCellWidthToFit = YES;
+   
+   if (![DeviceCheck deviceIsiPad])
+      CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 - (void)viewDidUnload
@@ -150,7 +155,7 @@
         NSURL *url = [[self.photoDownloader.urls objectAtIndex:index] objectForKey:photoSize];
         return [MWPhoto photoWithURL:url];
     }
-    
+   
     return nil;
 }
 
@@ -167,6 +172,14 @@
 - (void)hudWasTapped:(MBProgressHUD *)hud
 {
     [self refresh];
+}
+
+#pragma mark - Navigation (since we replace left navbarbutton).
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
 }
 
 @end

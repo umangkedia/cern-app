@@ -12,6 +12,7 @@
 
 #import "EventDisplayViewController.h"
 #import "GuiAdjustment.h"
+#import "DeviceCheck.h"
 
 
 //TODO: remove this mess.
@@ -85,7 +86,8 @@
    
    loaded = NO;
    
-   CernAPP::ResetBackButton(self, @"back_button_flat.png");
+   if (![DeviceCheck deviceIsiPad])
+      CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 //________________________________________________________________________________________

@@ -11,6 +11,7 @@
 #import "ArticleDetailViewController.h"
 #import "NSString+HTML.h"
 #import "GuiAdjustment.h"
+#import "DeviceCheck.h"
 #import "Constants.h"
 
 @implementation ArticleDetailViewController {
@@ -74,7 +75,8 @@
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
-   CernAPP::ResetBackButton(self, @"back_button_flat.png");
+   if (![DeviceCheck deviceIsiPad])
+      CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 //________________________________________________________________________________________

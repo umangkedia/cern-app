@@ -159,7 +159,8 @@
       viewController.title = [self issueTitleForRange : issueRange dateFormatterStyle : NSDateFormatterShortStyle];
       
       //
-      CernAPP::ResetBackButton(viewController, @"back_button_flat.png");
+      if (![DeviceCheck deviceIsiPad])
+         CernAPP::ResetBackButton(viewController, @"back_button_flat.png");
       //
    }
 

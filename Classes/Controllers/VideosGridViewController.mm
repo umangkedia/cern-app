@@ -10,7 +10,9 @@
 
 #import "VideosGridViewController.h"
 #import "NewsGridViewCell.h"
+#import "GuiAdjustment.h"
 #import "MBProgressHUD.h"
+#import "DeviceCheck.h"
 #import "Constants.h"
 
 
@@ -53,6 +55,9 @@
     [super viewDidLoad];
     // When we call self.view this will reload the view after a didReceiveMemoryWarning.
     self.view.backgroundColor = [UIColor whiteColor];
+   
+   if (![DeviceCheck deviceIsiPad])
+      CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 - (void)viewDidUnload
@@ -186,6 +191,14 @@
     MPMoviePlayerViewController *playerController = [[MPMoviePlayerViewController alloc] initWithContentURL:url];
     [self presentMoviePlayerViewControllerAnimated:(MPMoviePlayerViewController *)playerController];
 
+}
+
+#pragma mark - Navigation (since we replace left navbarbutton).
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
 }
 
 @end

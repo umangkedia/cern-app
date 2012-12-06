@@ -26,7 +26,7 @@
 		41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */; };
 		41E617931614CE1700BAA7D4 /* ExperimentsViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.mm */; };
 		41E617941614CE1700BAA7D4 /* NewsGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */; };
-		41E617951614CE1700BAA7D4 /* PhotosGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617321614CE1700BAA7D4 /* PhotosGridViewController.m */; };
+		41E617951614CE1700BAA7D4 /* PhotosGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617321614CE1700BAA7D4 /* PhotosGridViewController.mm */; };
 		41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617341614CE1700BAA7D4 /* RSSGridViewController.m */; };
 		41E617971614CE1700BAA7D4 /* StaticInfoItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617361614CE1700BAA7D4 /* StaticInfoItemViewController.m */; };
 		41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */; };
@@ -252,7 +252,7 @@
 		41E6172F1614CE1700BAA7D4 /* NewsGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsGridViewController.h; sourceTree = "<group>"; };
 		41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsGridViewController.mm; sourceTree = "<group>"; };
 		41E617311614CE1700BAA7D4 /* PhotosGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotosGridViewController.h; sourceTree = "<group>"; };
-		41E617321614CE1700BAA7D4 /* PhotosGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotosGridViewController.m; sourceTree = "<group>"; };
+		41E617321614CE1700BAA7D4 /* PhotosGridViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhotosGridViewController.mm; sourceTree = "<group>"; };
 		41E617331614CE1700BAA7D4 /* RSSGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSGridViewController.h; sourceTree = "<group>"; };
 		41E617341614CE1700BAA7D4 /* RSSGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSGridViewController.m; sourceTree = "<group>"; };
 		41E617351614CE1700BAA7D4 /* StaticInfoItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoItemViewController.h; sourceTree = "<group>"; };
@@ -567,7 +567,7 @@
 				41E6172F1614CE1700BAA7D4 /* NewsGridViewController.h */,
 				41E617301614CE1700BAA7D4 /* NewsGridViewController.mm */,
 				41E617311614CE1700BAA7D4 /* PhotosGridViewController.h */,
-				41E617321614CE1700BAA7D4 /* PhotosGridViewController.m */,
+				41E617321614CE1700BAA7D4 /* PhotosGridViewController.mm */,
 				41E617331614CE1700BAA7D4 /* RSSGridViewController.h */,
 				41E617341614CE1700BAA7D4 /* RSSGridViewController.m */,
 				41E617351614CE1700BAA7D4 /* StaticInfoItemViewController.h */,
@@ -1196,7 +1196,7 @@
 				41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */,
 				41E617931614CE1700BAA7D4 /* ExperimentsViewController.mm in Sources */,
 				41E617941614CE1700BAA7D4 /* NewsGridViewController.mm in Sources */,
-				41E617951614CE1700BAA7D4 /* PhotosGridViewController.m in Sources */,
+				41E617951614CE1700BAA7D4 /* PhotosGridViewController.mm in Sources */,
 				41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */,
 				41E617971614CE1700BAA7D4 /* StaticInfoItemViewController.m in Sources */,
 				41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.m in Sources */,
@@ -1346,7 +1346,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1374,7 +1374,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
 				WRAPPER_EXTENSION = app;
 			};

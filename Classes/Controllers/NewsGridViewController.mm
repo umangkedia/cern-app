@@ -10,6 +10,7 @@
 #import "NewsGridViewController.h"
 #import "NewsGridViewCell.h"
 #import "NSString+HTML.h"
+#import "GuiAdjustment.h"
 #import "DeviceCheck.h"
 
 #define MIN_IMAGE_WIDTH 300.0
@@ -33,6 +34,10 @@ namespace CernApp = ROOT::CernApp;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+   
+   if (![DeviceCheck deviceIsiPad]) {
+      
+   }
 }
 
 - (void)viewDidUnload
