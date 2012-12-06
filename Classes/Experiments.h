@@ -1,5 +1,4 @@
-#ifndef CERN_Experiments_h
-#define CERN_Experiments_h
+#import <Foundation/Foundation.h>
 
 namespace CernAPP {
 
@@ -19,5 +18,3 @@ extern NSString * const ALICEPhotoGridViewControllerID;
 extern NSString * const EventDisplayViewControllerID;
 
 }
-
-#endif

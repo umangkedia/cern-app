@@ -249,4 +249,12 @@
 */
 
 
+#pragma mark - Navigation (since we replace left navbarbutton).
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
+}
+
 @end

@@ -20,8 +20,8 @@
 		41CE55B71616073F00F477AD /* D3.png in Resources */ = {isa = PBXBuildFile; fileRef = 41CE55B61616073F00F477AD /* D3.png */; };
 		41CE55B91616074A00F477AD /* D4.png in Resources */ = {isa = PBXBuildFile; fileRef = 41CE55B81616074A00F477AD /* D4.png */; };
 		41E6178E1614CE1700BAA7D4 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617231614CE1700BAA7D4 /* AppDelegate.mm */; };
-		41E6178F1614CE1700BAA7D4 /* ArticleDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617261614CE1700BAA7D4 /* ArticleDetailViewController.m */; };
-		41E617901614CE1700BAA7D4 /* BulletinGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617281614CE1700BAA7D4 /* BulletinGridViewController.m */; };
+		41E6178F1614CE1700BAA7D4 /* ArticleDetailViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617261614CE1700BAA7D4 /* ArticleDetailViewController.mm */; };
+		41E617901614CE1700BAA7D4 /* BulletinGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617281614CE1700BAA7D4 /* BulletinGridViewController.mm */; };
 		41E617911614CE1700BAA7D4 /* EventDisplayViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.mm */; };
 		41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172C1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm */; };
 		41E617931614CE1700BAA7D4 /* ExperimentsViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6172E1614CE1700BAA7D4 /* ExperimentsViewController.mm */; };
@@ -30,7 +30,7 @@
 		41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617341614CE1700BAA7D4 /* RSSGridViewController.m */; };
 		41E617971614CE1700BAA7D4 /* StaticInfoItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617361614CE1700BAA7D4 /* StaticInfoItemViewController.m */; };
 		41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */; };
-		41E617991614CE1700BAA7D4 /* StaticInfoSelectorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.m */; };
+		41E617991614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm */; };
 		41E6179A1614CE1700BAA7D4 /* VideosGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173C1614CE1700BAA7D4 /* VideosGridViewController.mm */; };
 		41E6179B1614CE1700BAA7D4 /* WebcastsGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173E1614CE1700BAA7D4 /* WebcastsGridViewController.mm */; };
 		41E6179C1614CE1700BAA7D4 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617411614CE1700BAA7D4 /* MBProgressHUD.m */; };
@@ -189,6 +189,7 @@
 		70E5995E1664E26F00BEB6ED /* back_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995D1664E26F00BEB6ED /* back_button.png */; };
 		70E599601664E3C200BEB6ED /* back_button_flat.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995F1664E3C200BEB6ED /* back_button_flat.png */; };
 		70E59964166507DE00BEB6ED /* navbarback.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E59963166507DE00BEB6ED /* navbarback.png */; };
+		70FB69621670F59D00FB2A61 /* GuiAdjustment.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70FB69601670F59D00FB2A61 /* GuiAdjustment.mm */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -239,9 +240,9 @@
 		41E617221614CE1700BAA7D4 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		41E617231614CE1700BAA7D4 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		41E617251614CE1700BAA7D4 /* ArticleDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArticleDetailViewController.h; sourceTree = "<group>"; };
-		41E617261614CE1700BAA7D4 /* ArticleDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArticleDetailViewController.m; sourceTree = "<group>"; };
+		41E617261614CE1700BAA7D4 /* ArticleDetailViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ArticleDetailViewController.mm; sourceTree = "<group>"; };
 		41E617271614CE1700BAA7D4 /* BulletinGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinGridViewController.h; sourceTree = "<group>"; };
-		41E617281614CE1700BAA7D4 /* BulletinGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BulletinGridViewController.m; sourceTree = "<group>"; };
+		41E617281614CE1700BAA7D4 /* BulletinGridViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinGridViewController.mm; sourceTree = "<group>"; };
 		41E617291614CE1700BAA7D4 /* EventDisplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventDisplayViewController.h; sourceTree = "<group>"; };
 		41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EventDisplayViewController.mm; sourceTree = "<group>"; };
 		41E6172B1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperimentFunctionSelectorViewController.h; sourceTree = "<group>"; };
@@ -259,7 +260,7 @@
 		41E617371614CE1700BAA7D4 /* StaticInfoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoScrollViewController.h; sourceTree = "<group>"; };
 		41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticInfoScrollViewController.m; sourceTree = "<group>"; };
 		41E617391614CE1700BAA7D4 /* StaticInfoSelectorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoSelectorViewController.h; sourceTree = "<group>"; };
-		41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticInfoSelectorViewController.m; sourceTree = "<group>"; };
+		41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoSelectorViewController.mm; sourceTree = "<group>"; };
 		41E6173B1614CE1700BAA7D4 /* VideosGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideosGridViewController.h; sourceTree = "<group>"; };
 		41E6173C1614CE1700BAA7D4 /* VideosGridViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideosGridViewController.mm; sourceTree = "<group>"; };
 		41E6173D1614CE1700BAA7D4 /* WebcastsGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebcastsGridViewController.h; sourceTree = "<group>"; };
@@ -474,6 +475,8 @@
 		70E5995D1664E26F00BEB6ED /* back_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button.png; sourceTree = "<group>"; };
 		70E5995F1664E3C200BEB6ED /* back_button_flat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_flat.png; sourceTree = "<group>"; };
 		70E59963166507DE00BEB6ED /* navbarback.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbarback.png; sourceTree = "<group>"; };
+		70FB695F1670F59D00FB2A61 /* GuiAdjustment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiAdjustment.h; sourceTree = "<group>"; };
+		70FB69601670F59D00FB2A61 /* GuiAdjustment.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GuiAdjustment.mm; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -552,9 +555,9 @@
 			isa = PBXGroup;
 			children = (
 				41E617251614CE1700BAA7D4 /* ArticleDetailViewController.h */,
-				41E617261614CE1700BAA7D4 /* ArticleDetailViewController.m */,
+				41E617261614CE1700BAA7D4 /* ArticleDetailViewController.mm */,
 				41E617271614CE1700BAA7D4 /* BulletinGridViewController.h */,
-				41E617281614CE1700BAA7D4 /* BulletinGridViewController.m */,
+				41E617281614CE1700BAA7D4 /* BulletinGridViewController.mm */,
 				41E617291614CE1700BAA7D4 /* EventDisplayViewController.h */,
 				41E6172A1614CE1700BAA7D4 /* EventDisplayViewController.mm */,
 				41E6172B1614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.h */,
@@ -572,7 +575,7 @@
 				41E617371614CE1700BAA7D4 /* StaticInfoScrollViewController.h */,
 				41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */,
 				41E617391614CE1700BAA7D4 /* StaticInfoSelectorViewController.h */,
-				41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.m */,
+				41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm */,
 				41E6173B1614CE1700BAA7D4 /* VideosGridViewController.h */,
 				41E6173C1614CE1700BAA7D4 /* VideosGridViewController.mm */,
 				41E6173D1614CE1700BAA7D4 /* WebcastsGridViewController.h */,
@@ -697,6 +700,8 @@
 				704A8DF61615E25800AAA5B2 /* DeviceCheck.m */,
 				70736CB3164BAF3A009FF383 /* KeyVal.h */,
 				70736CB4164BAF3A009FF383 /* KeyVal.m */,
+				70FB695F1670F59D00FB2A61 /* GuiAdjustment.h */,
+				70FB69601670F59D00FB2A61 /* GuiAdjustment.mm */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1185,8 +1190,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				41E6178E1614CE1700BAA7D4 /* AppDelegate.mm in Sources */,
-				41E6178F1614CE1700BAA7D4 /* ArticleDetailViewController.m in Sources */,
-				41E617901614CE1700BAA7D4 /* BulletinGridViewController.m in Sources */,
+				41E6178F1614CE1700BAA7D4 /* ArticleDetailViewController.mm in Sources */,
+				41E617901614CE1700BAA7D4 /* BulletinGridViewController.mm in Sources */,
 				41E617911614CE1700BAA7D4 /* EventDisplayViewController.mm in Sources */,
 				41E617921614CE1700BAA7D4 /* ExperimentFunctionSelectorViewController.mm in Sources */,
 				41E617931614CE1700BAA7D4 /* ExperimentsViewController.mm in Sources */,
@@ -1195,7 +1200,7 @@
 				41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */,
 				41E617971614CE1700BAA7D4 /* StaticInfoItemViewController.m in Sources */,
 				41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.m in Sources */,
-				41E617991614CE1700BAA7D4 /* StaticInfoSelectorViewController.m in Sources */,
+				41E617991614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm in Sources */,
 				41E6179A1614CE1700BAA7D4 /* VideosGridViewController.mm in Sources */,
 				41E6179B1614CE1700BAA7D4 /* WebcastsGridViewController.mm in Sources */,
 				41E6179C1614CE1700BAA7D4 /* MBProgressHUD.m in Sources */,
@@ -1242,6 +1247,7 @@
 				702F577B1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm in Sources */,
 				709755A71668CC260017860F /* LiveEventTableController.mm in Sources */,
 				70A32E18166CCB3200636BEE /* Experiments.mm in Sources */,
+				70FB69621670F59D00FB2A61 /* GuiAdjustment.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

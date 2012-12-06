@@ -6,6 +6,7 @@
 #import "LiveEventTableController.h"
 #import "MultiPageController.h"
 #import "ContentProviders.h"
+#import "GuiAdjustment.h"
 #import "DeviceCheck.h"
 
 #pragma mark - ExperimentLiveControllerIPHONE.
@@ -32,6 +33,7 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 #pragma mark - Methods to read "LIVE" data from the plist.
@@ -272,5 +274,14 @@
       [self loadMultiPageControllerWithSelectedItem : indexPath.row];
    }
 }
+
+#pragma mark - Navigation (since we replace left navbarbutton).
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
+}
+
 
 @end

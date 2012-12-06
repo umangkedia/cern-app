@@ -11,7 +11,10 @@
 #import <Availability.h>
 
 #import "EventDisplayViewController.h"
+#import "GuiAdjustment.h"
 
+
+//TODO: remove this mess.
 #define SOURCE_DESCRIPTION @"Description"
 #define SOURCE_URL @"URL"
 #define SOURCE_BOUNDARY_RECTS @"Boundaries"
@@ -81,6 +84,8 @@
    self.scrollView.backgroundColor = [UIColor blackColor];
    
    loaded = NO;
+   
+   CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 //________________________________________________________________________________________
@@ -420,5 +425,14 @@
       self.refreshButton.enabled = YES;
    }
 }
+
+#pragma mark - Navigation (since we replace left navbarbutton).
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
+}
+
 
 @end

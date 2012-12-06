@@ -7,10 +7,12 @@
 //
 
 #import "StaticInfoSelectorViewController.h"
-#import "StaticInfoItemViewController.h"
 #import "StaticInfoScrollViewController.h"
-#import "Constants.h"
+#import "StaticInfoItemViewController.h"
+#import "GuiAdjustment.h"
 #import "AppDelegate.h"
+#import "Constants.h"
+
 
 @interface StaticInfoSelectorViewController ()
 
@@ -47,8 +49,11 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    CGSize contentSize = CGSizeMake(320.0, [self.tableView numberOfRowsInSection:0]*[self.tableView rowHeight]);
-    self.contentSizeForViewInPopover = contentSize;
+   CGSize contentSize = CGSizeMake(320.0, [self.tableView numberOfRowsInSection:0]*[self.tableView rowHeight]);
+   self.contentSizeForViewInPopover = contentSize;
+
+   if (self.navigationController.viewControllers.count > 1)
+      CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 - (void)viewDidUnload
@@ -146,6 +151,12 @@
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
 }
 
 @end

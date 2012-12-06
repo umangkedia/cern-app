@@ -10,6 +10,7 @@
 
 #import "ArticleDetailViewController.h"
 #import "NSString+HTML.h"
+#import "GuiAdjustment.h"
 #import "Constants.h"
 
 @implementation ArticleDetailViewController {
@@ -68,6 +69,12 @@
        [spinner stopAnimating];
        [spinner setHidden : YES];
     }
+}
+
+//________________________________________________________________________________________
+- (void) viewDidLoad
+{
+   CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
 //________________________________________________________________________________________
@@ -179,5 +186,12 @@
    }
    */
 }
+
+//________________________________________________________________________________________
+- (void) backButtonPressed
+{
+   [self.navigationController popViewControllerAnimated : YES];
+}
+
 
 @end

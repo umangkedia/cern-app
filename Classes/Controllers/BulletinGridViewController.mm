@@ -13,6 +13,7 @@
 #import "NewsTableViewController.h"
 #import "NewsGridViewController.h"
 #import "BulletinGridViewCell.h"
+#import "GuiAdjustment.h"
 #import "DeviceCheck.h"
 
 @implementation BulletinGridViewController
@@ -156,6 +157,10 @@
 
       //TP: change issue naming.
       viewController.title = [self issueTitleForRange : issueRange dateFormatterStyle : NSDateFormatterShortStyle];
+      
+      //
+      CernAPP::ResetBackButton(viewController, @"back_button_flat.png");
+      //
    }
 
    [self.gridView deselectItemAtIndex : self.gridView.indexOfSelectedItem animated : YES];
