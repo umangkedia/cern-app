@@ -9,18 +9,24 @@
 
 #import "ArticleDetailViewController.h"
 #import "NewsTableViewController.h"
+#import "StoryboardIdentifiers.h"
 #import "NewsTableViewCell.h"
 #import "Constants.h"
 
-
 @implementation NewsTableViewController {
+   //I need a stupid hack - table view shows ugly empty rows,
+   //when data is not loaded yet. Before I was using empty footers,
+   //but they lead to stupid crashes with UIRefreshController
+   //(and it looks like a bug in UIKit). So now I simply set the separator's color:
+   //when no data present, it's a clear color, when we have at least one row with data -
+   //it's a gray color.
    BOOL resetColor;
 }
 
-@synthesize rangeOfArticlesToShow, loaded, navigationControllerForArticle;
+@synthesize rangeOfArticlesToShow, pageLoaded, navigationControllerForArticle;
 
 #ifdef __IPHONE_6_0
-@synthesize shouldRefresh;
+@synthesize enableRefresh;
 #endif
 
 //________________________________________________________________________________________
@@ -29,7 +35,7 @@
    if (self = [super initWithCoder : aDecoder]) {
       //
 #ifdef __IPHONE_6_0
-      shouldRefresh = YES;
+      enableRefresh = YES;
 #endif
    }
 
@@ -42,7 +48,7 @@
    if (self = [super initWithStyle : style]) {
       //
 #ifdef __IPHONE_6_0
-      shouldRefresh = YES;
+      enableRefresh = YES;
 #endif
    }
 
@@ -55,9 +61,10 @@
 {
    [super viewDidLoad];
 #ifdef __IPHONE_6_0
-   if (!shouldRefresh)
+   if (!enableRefresh)
       self.refreshControl = nil;//.enabled = NO;
 #endif
+
    self.tableView.separatorColor = [UIColor clearColor];
    resetColor = YES;
    [self.tableView reloadData];
@@ -67,16 +74,12 @@
 - (void) viewDidUnload
 {
    [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) interfaceOrientation
 {
-   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-      return YES;
-   else
-      return interfaceOrientation == UIInterfaceOrientationPortrait;
+   return NO;
 }
 
 //________________________________________________________________________________________
@@ -85,10 +88,9 @@
    NSIndexPath * const indexPath = [self.tableView indexPathForSelectedRow];
 
    assert(indexPath != nil && "prepareForSegue:sender:, index path for selected table's row is nil");
+   
    ArticleDetailViewController * const viewController = (ArticleDetailViewController *)segue.destinationViewController;
-   //
    viewController.loadOriginalLink = YES;
-   //
    const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
    [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : index]];
 }
@@ -105,8 +107,14 @@
 //________________________________________________________________________________________
 - (NSInteger) numberOfSectionsInTableView : (UITableView *) tableView
 {
-   // Return the number of sections.
+   //Table has only one section.
    return 1;
+}
+
+//________________________________________________________________________________________
+- (void) reloadPage
+{
+   [self refresh];
 }
 
 //________________________________________________________________________________________
@@ -180,9 +188,8 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
    [super allFeedsDidLoadForAggregator : theAggregator];
-   
    [self.tableView reloadData];
-   loaded = YES;
+   pageLoaded = YES;
 }
 
 //________________________________________________________________________________________
@@ -204,7 +211,7 @@
    NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
 
    //This crap dies at start.
-   [self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+   [self.tableView reloadRowsAtIndexPaths : indexPaths withRowAnimation : UITableViewRowAnimationNone];
 }
 
 #pragma mark - Table view delegate
@@ -212,16 +219,13 @@
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   // Navigation logic may go here. Create and push another view controller.
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
    if (navigationControllerForArticle) {
       UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
       assert(mainStoryboard != nil && "tableView:didSelectRowAtIndexPath, storyboard is nil");
-      
-      ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : kArticleDetailViewIdentifier];
-      //Actually, no need in assert - storyboard will generate an exception.
-      assert(viewController != nil && "tableView:didSelectRowAtIndexPath, no ArticleDetailViewController was found in a storyboard");
+
+      ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
       viewController.loadOriginalLink = YES;
       const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
       [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : index]];
@@ -231,23 +235,6 @@
    
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
-
-/*
-//________________________________________________________________________________________
-- (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
-{
-   //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
-   //Many thanks to Apple's "brilliant" engineers for the fact I need this - continue to think different, guys!
-   if (!section) {
-      UIView *footer = [[UIView alloc] initWithFrame : CGRectMake(0., 0., 320., 1.)];
-      footer.backgroundColor = [UIColor clearColor];
-      return footer;
-   }
-
-   return nil;
-}
-*/
-
 
 #pragma mark - Navigation (since we replace left navbarbutton).
 

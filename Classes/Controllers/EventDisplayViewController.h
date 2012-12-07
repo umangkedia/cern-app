@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "PageController.h"
+#import "PageControllerProtocol.h"
 
 @interface EventDisplayViewController : UIViewController<NSURLConnectionDelegate, PageController>
 {
@@ -25,9 +25,11 @@
     int currentPage;
 }
 
-//PageController protocol:
 - (void) refresh;
-@property (nonatomic) BOOL loaded;
+
+//PageController protocol:
+- (void) reloadPage;
+@property (nonatomic) BOOL pageLoaded;
 
 
 

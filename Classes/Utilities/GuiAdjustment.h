@@ -8,4 +8,6 @@ extern const CGRect defaultBackButtonRect;
 //some background image.
 void ResetBackButton(UIViewController *controller, NSString *imageName);
 
+extern const CGSize navBarBackButtonSize;
+
 }

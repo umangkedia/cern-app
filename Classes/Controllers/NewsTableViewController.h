@@ -9,23 +9,25 @@
 
 #import <UIKit/UIKit.h>
 
+#import "PageControllerProtocol.h"
 #import "RSSGridViewController.h"
-#import "PageController.h"
+
 
 @interface NewsTableViewController : RSSTableViewController<PageController>
 
-//From PageController protocol:
 - (void) refresh;
 
+//From PageController protocol:
+- (void) reloadPage;
+
 #ifdef __IPHONE_6_0
-//TODO: that's an ugly-ugly hack to disable refreshControl.
-@property (nonatomic) BOOL shouldRefresh;
+@property (nonatomic) BOOL enableRefresh;
 #endif
 
 @property NSRange rangeOfArticlesToShow;
 
 //From PageController protocol:
-@property (nonatomic) BOOL loaded;
+@property (nonatomic) BOOL pageLoaded;
 
 @property __weak UINavigationController *navigationControllerForArticle;
 

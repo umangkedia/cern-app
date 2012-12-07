@@ -125,7 +125,7 @@
                
                MultiPageController *mpController = (MultiPageController *)viewController;
 
-               [mpController setItems : feeds];
+               [mpController setNewsFeedControllersFor : feeds];
                [mpController hideBackButton : YES];
             }
 

@@ -5,6 +5,7 @@
 namespace CernAPP {
 
 const CGRect defaultBackButtonRect = CGRectMake(0., 0., 35.f, 35.f);
+const CGSize navBarBackButtonSize  = CGSizeMake(35.f, 35.f);
 
 //________________________________________________________________________________________
 void ResetBackButton(UIViewController *controller, NSString *imageName)

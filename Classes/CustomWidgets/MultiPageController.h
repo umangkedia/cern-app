@@ -6,26 +6,33 @@
 #import <UIKit/UIKit.h>
 
 #import "ScrollSelectorDelegate.h"
-#import "PageController.h"
+#import "PageControllerProtocol.h"
 
-
-@class NewsTableViewController;
-@class LiveEventTableController;
 //
-//News table views are placed in a scroll view (we can have different feeds).
-//User can either scroll pages in such a view or use "scroll-wheel" widget at the top of a view.
+//Different news feeds, live event images, etc. - are placed
+//as a separate pages in a scroll view of a multipage view controller.
+//Pages can be scrolled as usually or by scrolling
+//small "wheel-like" selector at the top of the page -
+//scroll selector.
+//This controller is for iPhone/iPod Touch only.
 //
 
 @interface MultiPageController : UIViewController<ScrollSelectorDelegate, UIScrollViewDelegate>
 
-- (void) setItems : (NSMutableArray *) items;
+- (void) setNewsFeedControllersFor : (NSMutableArray *) items;
 
+//This is a bit clumsy: controller can contain not feed tables only,
+//but something else. Still, this function is called to: 1) set
+//names for all future pages and 2) change the geometry/content size of
+//a navigation view to be able to host these pages.
+- (void) setupControllerForPages : (NSMutableArray *) pageNames;
+//Now we add pages one by one (title should be set by a previous method.
 - (void) addPageFor : (UIViewController<PageController> *) controller;
 
-- (void) preparePagesFor : (NSMutableArray *) itemNames;
-- (void) selectPage : (NSInteger) page;
-
-//TODO: stupid hack
+- (void) scrollToPage : (NSInteger) page;
 - (void) hideBackButton : (BOOL) hide;
+
+//ScrollSelectorDelegate protocol:
+- (void) item : (NSUInteger) item selectedIn : (ScrollSelector *) selector;
 
 @end

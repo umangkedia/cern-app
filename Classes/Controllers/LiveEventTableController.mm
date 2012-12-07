@@ -12,9 +12,6 @@
 #import "NewsTableViewCell.h"
 #import "ContentProviders.h"
 
-//
-//
-//
 
 @implementation LiveEventTableController {
    unsigned tableEntryToLoad;
@@ -23,11 +20,10 @@
    NSURLConnection *connection;
    NSMutableData *imageData;
    NSString *sourceName;
-   //
    NSArray *tableData;
 }
 
-@synthesize loaded, provider, navController;
+@synthesize pageLoaded, provider, navController;
 
 //________________________________________________________________________________________
 + (NSString *) nameKey
@@ -57,7 +53,7 @@
 
    tableData = contents;
    sourceName = name;
-   loaded = NO;
+   pageLoaded = NO;
    tableEntryToLoad = 0;
    flatRowIndex = 0;
 }
@@ -122,7 +118,7 @@
    //Here we start loading images one by one, asynchronously (next load only started after the
    //previous finished of failed). Nothing is changed except images and probably dates.
    
-   loaded = NO;
+   pageLoaded = NO;
    
    if ([tableData count]) {
       if (connection)
@@ -137,6 +133,12 @@
       imageData = [[NSMutableData alloc] init];
       connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
    }
+}
+
+//________________________________________________________________________________________
+- (void) reloadPage
+{
+   [self refresh];
 }
 
 //________________________________________________________________________________________
@@ -339,7 +341,7 @@
    } else {
       imageData = nil;
       connection = nil;
-      loaded = YES;
+      pageLoaded = YES;
    }
 }
 
@@ -368,7 +370,7 @@
    } else {
       imageData = nil;
       connection = nil;
-      loaded = YES;
+      pageLoaded = YES;
       flatRowIndex = 0;
       tableEntryToLoad = 0;
    }   

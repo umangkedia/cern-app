@@ -182,6 +182,7 @@
 		709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9825161B1DD300F225DD /* NewsTableViewCell.mm */; };
 		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
 		70A32E18166CCB3200636BEE /* Experiments.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A32E17166CCB3200636BEE /* Experiments.mm */; };
+		70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */; };
 		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
 		70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7DB164AD2040018536F /* MultiPageController.mm */; };
@@ -458,13 +459,15 @@
 		70736CB4164BAF3A009FF383 /* KeyVal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyVal.m; sourceTree = "<group>"; };
 		709755A51668CC260017860F /* LiveEventTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveEventTableController.h; path = Controllers/LiveEventTableController.h; sourceTree = "<group>"; };
 		709755A61668CC260017860F /* LiveEventTableController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = LiveEventTableController.mm; path = Controllers/LiveEventTableController.mm; sourceTree = "<group>"; };
-		709E9825161B1DD300F225DD /* NewsTableViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTableViewCell.mm; sourceTree = "<group>"; };
-		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
+		709E9825161B1DD300F225DD /* NewsTableViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NewsTableViewCell.mm; path = Views/NewsTableViewCell.mm; sourceTree = "<group>"; };
+		709E9826161B1DD300F225DD /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NewsTableViewCell.h; path = Views/NewsTableViewCell.h; sourceTree = "<group>"; };
 		709E9828161B1E1A00F225DD /* NewsTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NewsTableViewController.mm; path = Controllers/NewsTableViewController.mm; sourceTree = "<group>"; };
 		709E9829161B1E1A00F225DD /* NewsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NewsTableViewController.h; path = Controllers/NewsTableViewController.h; sourceTree = "<group>"; };
-		70A32E11166CAD3500636BEE /* PageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PageController.h; path = Controllers/PageController.h; sourceTree = "<group>"; };
+		70A32E11166CAD3500636BEE /* PageControllerProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PageControllerProtocol.h; path = Controllers/PageControllerProtocol.h; sourceTree = "<group>"; };
 		70A32E16166CBFC200636BEE /* Experiments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Experiments.h; sourceTree = "<group>"; };
 		70A32E17166CCB3200636BEE /* Experiments.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Experiments.mm; sourceTree = "<group>"; };
+		70A630F016722F8000C467AE /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoryboardIdentifiers.h; path = ../../OtherSources/StoryboardIdentifiers.h; sourceTree = "<group>"; };
+		70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = StoryboardIdentifiers.mm; path = ../../OtherSources/StoryboardIdentifiers.mm; sourceTree = "<group>"; };
 		70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiPageController.xib; sourceTree = "<group>"; };
 		70E1A7B7164A8A280018536F /* ScrollSelector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScrollSelector.mm; path = CustomWidgets/ScrollSelector.mm; sourceTree = "<group>"; };
 		70E1A7B8164A8A280018536F /* ScrollSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelector.h; path = CustomWidgets/ScrollSelector.h; sourceTree = "<group>"; };
@@ -525,8 +528,9 @@
 		41E617201614CE1700BAA7D4 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				70A630EF1672120000C467AE /* Multi page view */,
+				70A630EE16720F8100C467AE /* News table view */,
 				70A32E12166CBEEB00636BEE /* ExperimentLIVE */,
-				70E1A7B6164A89FB0018536F /* CustomWidgets */,
 				41E617211614CE1700BAA7D4 /* AppDelegate */,
 				41E617241614CE1700BAA7D4 /* Controllers */,
 				41E6173F1614CE1700BAA7D4 /* MBProgressHUD */,
@@ -700,6 +704,8 @@
 				704A8DF61615E25800AAA5B2 /* DeviceCheck.m */,
 				70736CB3164BAF3A009FF383 /* KeyVal.h */,
 				70736CB4164BAF3A009FF383 /* KeyVal.m */,
+				70A630F016722F8000C467AE /* StoryboardIdentifiers.h */,
+				70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */,
 				70FB695F1670F59D00FB2A61 /* GuiAdjustment.h */,
 				70FB69601670F59D00FB2A61 /* GuiAdjustment.mm */,
 			);
@@ -709,8 +715,6 @@
 		41E617871614CE1700BAA7D4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				709E9825161B1DD300F225DD /* NewsTableViewCell.mm */,
-				709E9826161B1DD300F225DD /* NewsTableViewCell.h */,
 				41E617881614CE1700BAA7D4 /* BulletinGridViewCell.h */,
 				41E617891614CE1700BAA7D4 /* BulletinGridViewCell.m */,
 				41E6178A1614CE1700BAA7D4 /* NewsGridViewCell.h */,
@@ -912,11 +916,6 @@
 		70A32E12166CBEEB00636BEE /* ExperimentLIVE */ = {
 			isa = PBXGroup;
 			children = (
-				709E9828161B1E1A00F225DD /* NewsTableViewController.mm */,
-				709E9829161B1E1A00F225DD /* NewsTableViewController.h */,
-				70E1A7DB164AD2040018536F /* MultiPageController.mm */,
-				70E1A7DC164AD2040018536F /* MultiPageController.h */,
-				70A32E11166CAD3500636BEE /* PageController.h */,
 				702F5776166755070066E45D /* ContentProviders.h */,
 				702F5777166755070066E45D /* ContentProviders.mm */,
 				702F57791667AD300066E45D /* ExperimentLiveControllerIPHONE.h */,
@@ -927,6 +926,28 @@
 				70A32E17166CCB3200636BEE /* Experiments.mm */,
 			);
 			name = ExperimentLIVE;
+			sourceTree = "<group>";
+		};
+		70A630EE16720F8100C467AE /* News table view */ = {
+			isa = PBXGroup;
+			children = (
+				709E9825161B1DD300F225DD /* NewsTableViewCell.mm */,
+				709E9826161B1DD300F225DD /* NewsTableViewCell.h */,
+				709E9828161B1E1A00F225DD /* NewsTableViewController.mm */,
+				709E9829161B1E1A00F225DD /* NewsTableViewController.h */,
+			);
+			name = "News table view";
+			sourceTree = "<group>";
+		};
+		70A630EF1672120000C467AE /* Multi page view */ = {
+			isa = PBXGroup;
+			children = (
+				70E1A7B6164A89FB0018536F /* CustomWidgets */,
+				70E1A7DB164AD2040018536F /* MultiPageController.mm */,
+				70E1A7DC164AD2040018536F /* MultiPageController.h */,
+				70A32E11166CAD3500636BEE /* PageControllerProtocol.h */,
+			);
+			name = "Multi page view";
 			sourceTree = "<group>";
 		};
 		70E1A7B6164A89FB0018536F /* CustomWidgets */ = {
@@ -1248,6 +1269,7 @@
 				709755A71668CC260017860F /* LiveEventTableController.mm in Sources */,
 				70A32E18166CCB3200636BEE /* Experiments.mm in Sources */,
 				70FB69621670F59D00FB2A61 /* GuiAdjustment.mm in Sources */,
+				70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

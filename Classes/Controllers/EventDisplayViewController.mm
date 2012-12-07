@@ -30,7 +30,7 @@
 }
 
 //________________________________________________________________________________________
-@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, loaded;
+@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, pageLoaded;
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -84,7 +84,7 @@
    self.pageControl.numberOfPages = numPages;
    self.scrollView.backgroundColor = [UIColor blackColor];
    
-   loaded = NO;
+   pageLoaded = NO;
    
    if (![DeviceCheck deviceIsiPad])
       CernAPP::ResetBackButton(self, @"back_button_flat.png");
@@ -158,7 +158,7 @@
 //________________________________________________________________________________________
 - (void)addSourceWithDescription:(NSString *)description URL:(NSURL *)url boundaryRects:(NSArray *)boundaryRects
 {
-    loaded = NO;
+    pageLoaded = NO;
     NSMutableDictionary *source = [NSMutableDictionary dictionary];
     [source setValue:description forKey:SOURCE_DESCRIPTION];
     [source setValue:url forKey:SOURCE_URL];
@@ -175,6 +175,12 @@
 #pragma mark - Loading event display images
 
 //________________________________________________________________________________________
+- (void) reloadPage
+{
+   [self refresh];
+}
+
+//________________________________________________________________________________________
 - (void) refresh
 {
    [self refresh : self];
@@ -186,7 +192,7 @@
    if (currentConnection)
       [currentConnection cancel];
    
-   loaded = NO;
+   pageLoaded = NO;
 
    // If the event display images from a previous load are already in the scrollview, remove all of them before refreshing.
    for (UIView *subview in self.scrollView.subviews) {
@@ -403,7 +409,7 @@
       currentConnection = nil;
       imageData = nil;
       loadingSource = 0;
-      loaded = YES;
+      pageLoaded = YES;
       self.refreshButton.enabled = YES;
       [self removeSpinners];
    }
@@ -423,7 +429,7 @@
       currentConnection = nil;
       imageData = nil;
       loadingSource = 0;
-      loaded = YES;
+      pageLoaded = YES;
       self.refreshButton.enabled = YES;
    }
 }

@@ -10,8 +10,9 @@
 
 @protocol PageController <NSObject>
 
-- (void) refresh;
+@required
 
-@property (nonatomic) BOOL loaded;
+- (void) reloadPage;
+@property (nonatomic) BOOL pageLoaded;
 
 @end

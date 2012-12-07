@@ -23,9 +23,4 @@ const char *ExperimentName(LHCExperiment experiment)
    return experimentNames[n];
 }
 
-//String identifiers for the storybord/GUI.
-NSString * const LIVEEventTableViewControllerID = @"LiveEventTableControllerID";
-NSString * const ALICEPhotoGridViewControllerID = @"ALICEPhotoGridViewControllerIdentifier";
-NSString * const EventDisplayViewControllerID = @"EventDisplayViewControllerIdentifier";
-
 }

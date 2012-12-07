@@ -3,7 +3,8 @@
 @class ScrollSelector;
 
 @protocol ScrollSelectorDelegate <NSObject>
+@required
 
-- (void) item : (unsigned) item selectedIn : (ScrollSelector *) selector;
+- (void) item : (NSUInteger) item selectedIn : (ScrollSelector *) selector;
 
 @end

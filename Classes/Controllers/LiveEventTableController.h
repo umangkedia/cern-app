@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-#import "PageController.h"
+#import "PageControllerProtocol.h"
 
 @class LiveEventsProvider;
 
@@ -22,9 +22,11 @@
 //Content provider and LiveEventTableController share the 'contents' array.
 - (void) setTableContents : (NSArray *) contents experimentName : (NSString *) name;
 
-//PageController protocol.
 - (void) refresh;
-@property (nonatomic) BOOL loaded;
+
+//PageController protocol.
+- (void) reloadPage;
+@property (nonatomic) BOOL pageLoaded;
 
 @property (nonatomic) __weak LiveEventsProvider *provider;
 @property (nonatomic) __weak UINavigationController *navController;

@@ -1,9 +1,8 @@
 #include <cassert>
 
 #import "ExperimentLiveControllerIPHONE.h"
-#import "EventDisplayViewController.h"
 #import "PhotosGridViewController.h"
-#import "LiveEventTableController.h"
+#import "StoryboardIdentifiers.h"
 #import "MultiPageController.h"
 #import "ContentProviders.h"
 #import "GuiAdjustment.h"
@@ -47,8 +46,8 @@
    
    for (id info in feeds) {
       assert([info isKindOfClass : [NSDictionary class]] && "readNewsFeed, feed info must be a dictionary");
-      NSDictionary *feedInfo = (NSDictionary *)info;
-      FeedProvider *provider = [[FeedProvider alloc] initWith : feedInfo];
+      NSDictionary * const feedInfo = (NSDictionary *)info;
+      FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
       [liveData addObject : provider];
       result = true;
    }
@@ -154,12 +153,12 @@
       [itemNames addObject : [provider categoryName]];
    
    [self.navigationController pushViewController : controller animated : YES];
-   [controller preparePagesFor : itemNames];
+   [controller setupControllerForPages : itemNames];
 
    for (NSObject<ContentProvider> *provider in liveData)
       [provider addPageWithContentTo : controller];
    
-   [controller selectPage : selected];
+   [controller scrollToPage : selected];
 }
 
 //________________________________________________________________________________________
@@ -228,8 +227,6 @@
          cell.textLabel.text = @"Live Events";
 
    } else {
-      //TODO: at the moment, the new experimental controller/view is only for CMS.
-      //<= : [liveData count] + 1 for event display.
       assert(indexPath.row >= 0 && indexPath.row < [liveData count] && "tableView:cellForRowAtIndexPath:, indexPath.row is out of bounds");
       
       NSObject<ContentProvider> * const provider = (NSObject<ContentProvider> *)[liveData objectAtIndex : indexPath.row];

@@ -3,9 +3,9 @@
 #import "EventDisplayViewController.h"
 #import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
+#import "StoryboardIdentifiers.h"
 #import "MultiPageController.h"
 #import "ContentProviders.h"
-#import "Constants.h"
 #import "KeyVal.h"
 
 namespace {
@@ -66,9 +66,7 @@ namespace {
    UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
    assert(mainStoryboard != nil && "addPageWithContentTo:, storyboard is nil");
 
-
-   NewsTableViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : kExperimentFeedTableViewController];
-   //Storyboard generates an exception, if it's not able to create a controller.
+   NewsTableViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::NewsTableViewControllerID];
 
    [newsViewController.aggregator addFeedForURL : [NSURL URLWithString : feed]];
    newsViewController.navigationControllerForArticle = controller.navigationController;
