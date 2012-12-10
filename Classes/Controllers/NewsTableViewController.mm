@@ -156,8 +156,6 @@
 //________________________________________________________________________________________
 - (void) reloadPage
 {
-//   if (!self.aggregator.isLoadingData)
-//      [self refresh];
    if (self.aggregator.isLoadingData) {
       [self.refreshControl endRefreshing];
       return;
@@ -176,36 +174,13 @@
    //It will re-parse feed and show load indicator.
    [self.aggregator refreshAllFeeds];
 }
-
-//________________________________________________________________________________________
-- (void) refresh
-{
-   if (self.aggregator.isLoadingData) {
-      [self.refreshControl endRefreshing];
-      return;
-   }
-
-   [noConnectionHUD hide : YES];
-   [MBProgressHUD showHUDAddedTo : self.view animated : NO];
-
-   self.rangeOfArticlesToShow = NSRange();
-   [self.aggregator clearAllFeeds];
-   
-   [allArticles removeAllObjects];
-   self.tableView.separatorColor = [UIColor clearColor];
-   resetColor = YES;
-   [self.tableView reloadData];
-   //It will re-parse feed and show load indicator.
-   [self.aggregator refreshAllFeeds];
-}
-
 
 #pragma mark - MBProgressHUDDelegate methods
 
 //________________________________________________________________________________________
 - (void) hudWasTapped : (MBProgressHUD *) hud
 {
-   [self refresh];
+   [self reloadPage];
 }
 
 #pragma mark - UITableViewDataSource.
