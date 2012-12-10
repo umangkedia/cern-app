@@ -189,6 +189,34 @@
    [self.aggregator refreshAllFeeds];
 }
 
+#ifndef __IPHONE_6_0
+
+//This method is called by PullRefreshTableViewController.
+
+//________________________________________________________________________________________
+- (void) refresh
+{
+   if (self.aggregator.isLoadingData) {
+      [self.refreshControl endRefreshing];
+      return;
+   }
+
+   [noConnectionHUD hide : YES];
+   [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+
+   self.rangeOfArticlesToShow = NSRange();
+   [self.aggregator clearAllFeeds];
+   
+   [allArticles removeAllObjects];
+   self.tableView.separatorColor = [UIColor clearColor];
+   resetColor = YES;
+   [self.tableView reloadData];
+   //It will re-parse feed and show load indicator.
+   [self.aggregator refreshAllFeeds];
+}
+
+#endif
+
 #pragma mark - MBProgressHUDDelegate methods
 
 //________________________________________________________________________________________
