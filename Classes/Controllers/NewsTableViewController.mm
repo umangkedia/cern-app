@@ -21,7 +21,7 @@
    //when no data present, it's a clear color, when we have at least one row with data -
    //it's a gray color.
    BOOL resetColor;
-   NSArray *allArticles;
+   NSMutableArray *allArticles;
 }
 
 @synthesize rangeOfArticlesToShow, pageLoaded, navigationControllerForArticle;
@@ -31,10 +31,25 @@
 #endif
 
 //________________________________________________________________________________________
-- (void) setAggregator:(RSSAggregator *)aggregator
+- (void) copyArticlesFromAggregator : (RSSAggregator *) aggregator
 {
+   //
+   if (allArticles)
+      [allArticles removeAllObjects];
+   else
+      allArticles = [[NSMutableArray alloc] init];
+   
+   for (MWFeedInfo * feed in aggregator.allArticles)
+      [allArticles addObject : feed];
+}
+
+//________________________________________________________________________________________
+- (void) setAggregator : (RSSAggregator *)aggregator
+{
+   assert(aggregator != nil && "setAggregator:, parameter 'aggregator' is nil");
+
    [super setAggregator : aggregator];
-   allArticles = aggregator.allArticles;
+   [self copyArticlesFromAggregator : aggregator];
 }
 
 //________________________________________________________________________________________
@@ -136,14 +151,15 @@
 
    self.rangeOfArticlesToShow = NSRange();
    [self.aggregator clearAllFeeds];
+   
+   [allArticles removeAllObjects];
 
    self.tableView.separatorColor = [UIColor clearColor];
    resetColor = YES;
+   [self.tableView reloadData];
 
    //It will re-parse feed and show load indicator.
    [super refresh];
-
-
 }
 
 //________________________________________________________________________________________
@@ -204,7 +220,9 @@
 //________________________________________________________________________________________
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
-   allArticles = theAggregator.allArticles;
+   assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
+
+   [self copyArticlesFromAggregator : theAggregator];
    [self.tableView reloadData];
    [super allFeedsDidLoadForAggregator : theAggregator];
    
