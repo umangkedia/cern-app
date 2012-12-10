@@ -9,26 +9,39 @@
 
 #import <UIKit/UIKit.h>
 
+#import "PullRefreshTableViewController.h"
 #import "PageControllerProtocol.h"
-#import "RSSGridViewController.h"
+#import "RSSAggregator.h"
+#import "MBProgressHUD.h"
 
+//TODO: replace MBProgressHUD with a standard indicator.
 
-@interface NewsTableViewController : RSSTableViewController<PageController>
+#ifdef __IPHONE_6_0
 
-- (void) refresh;
+@interface NewsTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate, PageController>
+
+#else
+
+@interface NewsTableViewController : PullRefreshTableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate, PageController>
+
+#endif
 
 //From PageController protocol:
 - (void) reloadPage;
+@property (nonatomic) BOOL pageLoaded;
+
+
 
 #ifdef __IPHONE_6_0
+//In some cases, we want to disable refresh control.
+//TODO: this should be re-factored: even
+//for bulletin we need a refresh.
 @property (nonatomic) BOOL enableRefresh;
 #endif
 
 @property NSRange rangeOfArticlesToShow;
 
-//From PageController protocol:
-@property (nonatomic) BOOL pageLoaded;
-
 @property __weak UINavigationController *navigationControllerForArticle;
+@property (nonatomic, strong) RSSAggregator *aggregator;
 
 @end

@@ -22,35 +22,16 @@
    //it's a gray color.
    BOOL resetColor;
    NSMutableArray *allArticles;
+   
+   //TODO: replace this with a standard indicator.
+   MBProgressHUD *noConnectionHUD;
 }
 
-@synthesize rangeOfArticlesToShow, pageLoaded, navigationControllerForArticle;
+@synthesize rangeOfArticlesToShow, pageLoaded, navigationControllerForArticle, aggregator;
 
 #ifdef __IPHONE_6_0
 @synthesize enableRefresh;
 #endif
-
-//________________________________________________________________________________________
-- (void) copyArticlesFromAggregator : (RSSAggregator *) aggregator
-{
-   //
-   if (allArticles)
-      [allArticles removeAllObjects];
-   else
-      allArticles = [[NSMutableArray alloc] init];
-   
-   for (MWFeedInfo * feed in aggregator.allArticles)
-      [allArticles addObject : feed];
-}
-
-//________________________________________________________________________________________
-- (void) setAggregator : (RSSAggregator *)aggregator
-{
-   assert(aggregator != nil && "setAggregator:, parameter 'aggregator' is nil");
-
-   [super setAggregator : aggregator];
-   [self copyArticlesFromAggregator : aggregator];
-}
 
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
@@ -60,6 +41,9 @@
 #ifdef __IPHONE_6_0
       enableRefresh = YES;
 #endif
+
+      aggregator = [[RSSAggregator alloc] init];
+      aggregator.delegate = self;
    }
 
    return self;
@@ -73,6 +57,9 @@
 #ifdef __IPHONE_6_0
       enableRefresh = YES;
 #endif
+
+      aggregator = [[RSSAggregator alloc] init];
+      aggregator.delegate = self;
    }
 
    return self;
@@ -83,9 +70,12 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+
 #ifdef __IPHONE_6_0
-   if (!enableRefresh)
-      self.refreshControl = nil;//.enabled = NO;
+   if (enableRefresh) {
+      self.refreshControl = [[UIRefreshControl alloc] init];
+      [self.refreshControl addTarget : self action : @selector(reloadPage) forControlEvents : UIControlEventValueChanged];
+   }
 #endif
 
    self.tableView.separatorColor = [UIColor clearColor];
@@ -97,6 +87,7 @@
 - (void) viewDidUnload
 {
    [super viewDidUnload];
+   //Stop all parsing loading here???
 }
 
 //________________________________________________________________________________________
@@ -104,6 +95,41 @@
 {
    return NO;
 }
+
+//________________________________________________________________________________________
+- (void) didReceiveMemoryWarning
+{
+   [super didReceiveMemoryWarning];
+   // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Aux. methods to work with aggregators/articles.
+
+//________________________________________________________________________________________
+- (void) copyArticlesFromAggregator
+{
+   assert(aggregator != nil && "copyArticlesFromAggregator, aggregator is nil");
+
+   if (allArticles)
+      [allArticles removeAllObjects];
+   else
+      allArticles = [[NSMutableArray alloc] init];
+   
+   for (MWFeedInfo *feed in aggregator.allArticles)
+      [allArticles addObject : feed];
+}
+
+//________________________________________________________________________________________
+- (void) setAggregator : (RSSAggregator *) rssAggregator
+{
+   assert(aggregator != nil && "setAggregator:, parameter 'rssAggregator' is nil");
+
+   aggregator = rssAggregator;
+   aggregator.delegate = self;
+   [self copyArticlesFromAggregator];
+}
+
+#pragma mark - Storyboard.
 
 //________________________________________________________________________________________
 - (void) prepareForSegue : (UIStoryboardSegue *) segue sender : (id)sender
@@ -118,13 +144,6 @@
    [viewController setContentForArticle : [allArticles objectAtIndex : index]];
 }
 
-//________________________________________________________________________________________
-- (void) didReceiveMemoryWarning
-{
-   [super didReceiveMemoryWarning];
-   // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table view data source
 
 //________________________________________________________________________________________
@@ -137,8 +156,25 @@
 //________________________________________________________________________________________
 - (void) reloadPage
 {
-   if (!self.aggregator.isLoadingData)
-      [self refresh];
+//   if (!self.aggregator.isLoadingData)
+//      [self refresh];
+   if (self.aggregator.isLoadingData) {
+      [self.refreshControl endRefreshing];
+      return;
+   }
+
+   [noConnectionHUD hide : YES];
+   [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+
+   self.rangeOfArticlesToShow = NSRange();
+   [self.aggregator clearAllFeeds];
+   
+   [allArticles removeAllObjects];
+   self.tableView.separatorColor = [UIColor clearColor];
+   resetColor = YES;
+   [self.tableView reloadData];
+   //It will re-parse feed and show load indicator.
+   [self.aggregator refreshAllFeeds];
 }
 
 //________________________________________________________________________________________
@@ -149,18 +185,30 @@
       return;
    }
 
+   [noConnectionHUD hide : YES];
+   [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+
    self.rangeOfArticlesToShow = NSRange();
    [self.aggregator clearAllFeeds];
    
    [allArticles removeAllObjects];
-
    self.tableView.separatorColor = [UIColor clearColor];
    resetColor = YES;
    [self.tableView reloadData];
-
    //It will re-parse feed and show load indicator.
-   [super refresh];
+   [self.aggregator refreshAllFeeds];
 }
+
+
+#pragma mark - MBProgressHUDDelegate methods
+
+//________________________________________________________________________________________
+- (void) hudWasTapped : (MBProgressHUD *) hud
+{
+   [self refresh];
+}
+
+#pragma mark - UITableViewDataSource.
 
 //________________________________________________________________________________________
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
@@ -221,12 +269,31 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
    assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
-
-   [self copyArticlesFromAggregator : theAggregator];
-   [self.tableView reloadData];
-   [super allFeedsDidLoadForAggregator : theAggregator];
    
+   [self copyArticlesFromAggregator];
+
+   [MBProgressHUD hideHUDForView : self.view animated : NO];
+#ifdef __IPHONE_6_0
+   [self.refreshControl endRefreshing];
+#else
+   [self stopLoading];
+#endif
+
+   [self.tableView reloadData];
+
    pageLoaded = YES;
+}
+
+//________________________________________________________________________________________
+- (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSError *)error
+{
+   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+    
+   noConnectionHUD.delegate = self;
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"No internet connection";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
 //________________________________________________________________________________________

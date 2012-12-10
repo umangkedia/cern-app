@@ -21,14 +21,3 @@
 - (void)refresh;
 
 @end
-
-#ifdef __IPHONE_6_0
-@interface RSSTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
-#else
-@interface RSSTableViewController : PullRefreshTableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, MBProgressHUDDelegate>
-#endif
-
-@property (nonatomic, strong) RSSAggregator *aggregator;
-- (void) refresh;
-
-@end
