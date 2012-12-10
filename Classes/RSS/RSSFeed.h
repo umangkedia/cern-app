@@ -13,8 +13,10 @@
 
 @protocol RSSFeedDelegate <NSObject>
 @optional
-- (void)feedDidLoad:(RSSFeed *)feed;
-- (void)feed:(RSSFeed *)feed didFailWithError:(NSError *)error;
+
+- (void) feedDidLoad : (RSSFeed *) feed;
+- (void) feed : (RSSFeed *) feed didFailWithError : (NSError *) error;
+
 @end
 
 
@@ -23,10 +25,9 @@
 @property (nonatomic, strong) MWFeedParser *parser;
 @property (nonatomic, strong) MWFeedInfo *info;
 @property (nonatomic, strong) NSMutableArray *articles;
-//@property (nonatomic, strong) id<RSSFeedDelegate> aggregator;
 @property (nonatomic, strong) id<RSSFeedDelegate> delegate;
 
-- (id)initWithFeedURL:(NSURL *)url;
-- (void)refresh;
+- (id)initWithFeedURL : (NSURL *) url;
+- (void) refresh;
 
 @end

@@ -66,7 +66,7 @@ namespace {
    UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
    assert(mainStoryboard != nil && "addPageWithContentTo:, storyboard is nil");
 
-   NewsTableViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::NewsTableViewControllerID];
+   NewsTableViewController *newsViewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::NewsTableViewControllerNoSequeID];
 
    [newsViewController.aggregator addFeedForURL : [NSURL URLWithString : feed]];
    newsViewController.navigationControllerForArticle = controller.navigationController;

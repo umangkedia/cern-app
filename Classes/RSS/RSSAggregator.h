@@ -7,42 +7,35 @@
 //
 
 #import <Foundation/Foundation.h>
+
 #import "RSSFeed.h"
 
 @class RSSAggregator;
 @protocol RSSAggregatorDelegate <NSObject>
 
 @optional
-- (void)allFeedsDidLoadForAggregator:(RSSAggregator *)aggregator;
-- (void)aggregator:(RSSAggregator *)aggregator didFailWithError:(NSError *)error;
-- (void)aggregator:(RSSAggregator *)aggregator didDownloadFirstImage:(UIImage *)image forArticle:(MWFeedItem *)article;
+
+- (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator;
+- (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSError *) error;
+- (void) aggregator : (RSSAggregator *) aggregator didDownloadFirstImage : (UIImage *)image forArticle : (MWFeedItem *)article;
 
 @end
 
-@interface RSSAggregator : NSObject<RSSFeedDelegate>
-{
-    @private
-    int _feedLoadCount;
-    int _feedFailCount;
-}
+@interface RSSAggregator : NSObject<RSSFeedDelegate, NSURLConnectionDelegate>
 
 - (void) clearAllFeeds;
 
 @property (nonatomic, strong) NSMutableArray *feeds;
 @property (nonatomic, strong) id<RSSAggregatorDelegate> delegate;
 @property (nonatomic, strong) NSArray *allArticles;
-@property (nonatomic, strong) NSMutableDictionary *firstImages;
+@property (nonatomic, strong) NSMutableArray *firstImages;
 
-/*
-   NSArray *sortedArray = [
-                           data sortedArrayUsingComparator : ^NSComparisonResult(id a, id b) {
-                           return [((CellData *)a).date compare : ((CellData*)b).date];}
-                          ];
-*/
+@property (nonatomic, readonly) BOOL isLoadingData;
 
 - (void) addFeed : (RSSFeed *) feed;
 - (void) addFeedForURL : (NSURL *) url;
 - (void) refreshAllFeeds;
+
 - (UIImage *) firstImageForArticle : (MWFeedItem *) article;
 - (RSSFeed *) feedForArticle : (MWFeedItem *) article;
 

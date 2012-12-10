@@ -132,7 +132,7 @@
 {
    if (self.aggregator.feeds.count) {
       [_noConnectionHUD hide : YES];
-      [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+      [MBProgressHUD showHUDAddedTo : self.view animated : NO];
       [self.aggregator refreshAllFeeds];
    }
 }
@@ -150,7 +150,7 @@
 //________________________________________________________________________________________
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator
 {
-   [MBProgressHUD hideHUDForView : self.view animated : YES];
+   [MBProgressHUD hideHUDForView : self.view animated : NO];
 #ifdef __IPHONE_6_0
    [self.refreshControl endRefreshing];
 #else
@@ -161,8 +161,8 @@
 //________________________________________________________________________________________
 - (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSError *)error
 {
-   [MBProgressHUD hideAllHUDsForView : self.view animated:YES];
-   _noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+   _noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
     
    _noConnectionHUD.delegate = self;
    _noConnectionHUD.mode = MBProgressHUDModeText;

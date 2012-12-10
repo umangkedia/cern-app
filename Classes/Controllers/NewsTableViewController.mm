@@ -21,6 +21,7 @@
    //when no data present, it's a clear color, when we have at least one row with data -
    //it's a gray color.
    BOOL resetColor;
+   NSArray *allArticles;
 }
 
 @synthesize rangeOfArticlesToShow, pageLoaded, navigationControllerForArticle;
@@ -28,6 +29,13 @@
 #ifdef __IPHONE_6_0
 @synthesize enableRefresh;
 #endif
+
+//________________________________________________________________________________________
+- (void) setAggregator:(RSSAggregator *)aggregator
+{
+   [super setAggregator : aggregator];
+   allArticles = aggregator.allArticles;
+}
 
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
@@ -92,7 +100,7 @@
    ArticleDetailViewController * const viewController = (ArticleDetailViewController *)segue.destinationViewController;
    viewController.loadOriginalLink = YES;
    const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
-   [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : index]];
+   [viewController setContentForArticle : [allArticles objectAtIndex : index]];
 }
 
 //________________________________________________________________________________________
@@ -114,28 +122,38 @@
 //________________________________________________________________________________________
 - (void) reloadPage
 {
-   [self refresh];
+   if (!self.aggregator.isLoadingData)
+      [self refresh];
 }
 
 //________________________________________________________________________________________
 - (void) refresh
 {
+   if (self.aggregator.isLoadingData) {
+      [self.refreshControl endRefreshing];
+      return;
+   }
+
    self.rangeOfArticlesToShow = NSRange();
    [self.aggregator clearAllFeeds];
-   [super refresh];
+
    self.tableView.separatorColor = [UIColor clearColor];
    resetColor = YES;
-   [self.tableView reloadData];
+
+   //It will re-parse feed and show load indicator.
+   [super refresh];
+
+
 }
 
 //________________________________________________________________________________________
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
-   // Return the number of rows in the section.
+   // Return the number of rows in the section.   
    if (self.rangeOfArticlesToShow.length)
       return self.rangeOfArticlesToShow.length;
    else
-      return self.aggregator.allArticles.count;
+      return allArticles.count;
 }
 
 //________________________________________________________________________________________
@@ -148,9 +166,9 @@
    }
    
    const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [self.aggregator.allArticles count]);
+   assert(row >= 0 && row < [allArticles count]);
 
-   MWFeedItem * const article = [self.aggregator.allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];
+   MWFeedItem * const article = [allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];
    assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
 
    static NSString *CellIdentifier = @"NewsCell";
@@ -173,12 +191,11 @@
 - (CGFloat) tableView : (UITableView *) tableView heightForRowAtIndexPath : (NSIndexPath *) indexPath
 {
    const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [self.aggregator.allArticles count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
+   assert(row >= 0 && row < [allArticles count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
-   MWFeedItem * const article = [self.aggregator.allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];
+   MWFeedItem * const article = [allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];
    //From time to time this crap dies at start.
    UIImage * const image = [self.aggregator firstImageForArticle : article];
-
    return [NewsTableViewCell calculateCellHeightForData : article image : image imageOnTheRight : (indexPath.row % 4) == 3];
 }
 
@@ -187,8 +204,10 @@
 //________________________________________________________________________________________
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
-   [super allFeedsDidLoadForAggregator : theAggregator];
+   allArticles = theAggregator.allArticles;
    [self.tableView reloadData];
+   [super allFeedsDidLoadForAggregator : theAggregator];
+   
    pageLoaded = YES;
 }
 
@@ -197,20 +216,19 @@
 {
    (void) image;
 
-   const NSUInteger index = [self.aggregator.allArticles indexOfObject : article];
+   const NSUInteger index = [allArticles indexOfObject : article];
    NSUInteger path[2] = {};
    
    if (self.rangeOfArticlesToShow.length) {
       if (index >= self.rangeOfArticlesToShow.location && index < self.rangeOfArticlesToShow.location + self.rangeOfArticlesToShow.length)
          path[1] = index - self.rangeOfArticlesToShow.location;
-   } else if (index < [self.aggregator.allArticles count]) {
+   } else if (index < [allArticles count]) {
       path[1] = index;
    }
 
    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
    NSArray *indexPaths = [NSArray arrayWithObject : indexPath];
 
-   //This crap dies at start.
    [self.tableView reloadRowsAtIndexPaths : indexPaths withRowAnimation : UITableViewRowAnimationNone];
 }
 
@@ -221,14 +239,14 @@
 {
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
-   if (navigationControllerForArticle) {
+   if (navigationControllerForArticle && !self.aggregator.isLoadingData) {
       UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
       assert(mainStoryboard != nil && "tableView:didSelectRowAtIndexPath, storyboard is nil");
 
       ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
       viewController.loadOriginalLink = YES;
       const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
-      [viewController setContentForArticle : [self.aggregator.allArticles objectAtIndex : index]];
+      [viewController setContentForArticle : [allArticles objectAtIndex : index]];
       
       [navigationControllerForArticle pushViewController : viewController animated : YES];
    }

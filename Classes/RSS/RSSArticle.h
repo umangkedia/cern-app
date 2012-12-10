@@ -9,11 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface RSSArticle : NSObject
-{
-    NSString *__weak title;
-    NSString *__weak description;
-    NSURL *__weak url;   
-}
+
 @property (weak, nonatomic) NSString *title;
 @property (weak, nonatomic) NSString *description;
 @property (weak, nonatomic) NSURL *url;

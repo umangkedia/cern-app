@@ -46,8 +46,8 @@
 		41E617A71614CE1700BAA7D4 /* CernMediaMARCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175B1614CE1700BAA7D4 /* CernMediaMARCParser.m */; };
 		41E617A81614CE1700BAA7D4 /* PhotoDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175D1614CE1700BAA7D4 /* PhotoDownloader.m */; };
 		41E617A91614CE1700BAA7D4 /* WebcastsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175F1614CE1700BAA7D4 /* WebcastsParser.m */; };
-		41E617AA1614CE1700BAA7D4 /* RSSAggregator.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617621614CE1700BAA7D4 /* RSSAggregator.m */; };
-		41E617AB1614CE1700BAA7D4 /* RSSFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617641614CE1700BAA7D4 /* RSSFeed.m */; };
+		41E617AA1614CE1700BAA7D4 /* RSSAggregator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617621614CE1700BAA7D4 /* RSSAggregator.mm */; };
+		41E617AB1614CE1700BAA7D4 /* RSSFeed.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617641614CE1700BAA7D4 /* RSSFeed.mm */; };
 		41E617AE1614CE1700BAA7D4 /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617691614CE1700BAA7D4 /* SDImageCache.m */; };
 		41E617AF1614CE1700BAA7D4 /* SDWebImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6176D1614CE1700BAA7D4 /* SDWebImageDecoder.m */; };
 		41E617B01614CE1700BAA7D4 /* SDWebImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6176F1614CE1700BAA7D4 /* SDWebImageDownloader.m */; };
@@ -167,7 +167,7 @@
 		41E6188E1614CF7000BAA7D4 /* StaticInformation.plist in Resources */ = {isa = PBXBuildFile; fileRef = 41E6188D1614CF7000BAA7D4 /* StaticInformation.plist */; };
 		41E618901614CFAB00BAA7D4 /* ArticleCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = 41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */; };
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
-		41E6189B1614DABB00BAA7D4 /* RSSArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6189A1614DABB00BAA7D4 /* RSSArticle.m */; };
+		41E6189B1614DABB00BAA7D4 /* RSSArticle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6189A1614DABB00BAA7D4 /* RSSArticle.mm */; };
 		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
@@ -295,9 +295,9 @@
 		41E6175E1614CE1700BAA7D4 /* WebcastsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebcastsParser.h; sourceTree = "<group>"; };
 		41E6175F1614CE1700BAA7D4 /* WebcastsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebcastsParser.m; sourceTree = "<group>"; };
 		41E617611614CE1700BAA7D4 /* RSSAggregator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSAggregator.h; sourceTree = "<group>"; };
-		41E617621614CE1700BAA7D4 /* RSSAggregator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSAggregator.m; sourceTree = "<group>"; };
+		41E617621614CE1700BAA7D4 /* RSSAggregator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RSSAggregator.mm; sourceTree = "<group>"; };
 		41E617631614CE1700BAA7D4 /* RSSFeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSFeed.h; sourceTree = "<group>"; };
-		41E617641614CE1700BAA7D4 /* RSSFeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSFeed.m; sourceTree = "<group>"; };
+		41E617641614CE1700BAA7D4 /* RSSFeed.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RSSFeed.mm; sourceTree = "<group>"; };
 		41E617661614CE1700BAA7D4 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		41E617671614CE1700BAA7D4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		41E617681614CE1700BAA7D4 /* SDImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDImageCache.h; sourceTree = "<group>"; };
@@ -442,7 +442,7 @@
 		41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ArticleCSS.css; sourceTree = "<group>"; };
 		41E618931614CFB500BAA7D4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		41E618991614DAAF00BAA7D4 /* RSSArticle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSSArticle.h; sourceTree = "<group>"; };
-		41E6189A1614DABB00BAA7D4 /* RSSArticle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSArticle.m; sourceTree = "<group>"; };
+		41E6189A1614DABB00BAA7D4 /* RSSArticle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RSSArticle.mm; sourceTree = "<group>"; };
 		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
@@ -649,11 +649,11 @@
 			isa = PBXGroup;
 			children = (
 				41E618991614DAAF00BAA7D4 /* RSSArticle.h */,
-				41E6189A1614DABB00BAA7D4 /* RSSArticle.m */,
+				41E6189A1614DABB00BAA7D4 /* RSSArticle.mm */,
 				41E617611614CE1700BAA7D4 /* RSSAggregator.h */,
-				41E617621614CE1700BAA7D4 /* RSSAggregator.m */,
+				41E617621614CE1700BAA7D4 /* RSSAggregator.mm */,
 				41E617631614CE1700BAA7D4 /* RSSFeed.h */,
-				41E617641614CE1700BAA7D4 /* RSSFeed.m */,
+				41E617641614CE1700BAA7D4 /* RSSFeed.mm */,
 			);
 			path = RSS;
 			sourceTree = "<group>";
@@ -1237,8 +1237,8 @@
 				41E617A71614CE1700BAA7D4 /* CernMediaMARCParser.m in Sources */,
 				41E617A81614CE1700BAA7D4 /* PhotoDownloader.m in Sources */,
 				41E617A91614CE1700BAA7D4 /* WebcastsParser.m in Sources */,
-				41E617AA1614CE1700BAA7D4 /* RSSAggregator.m in Sources */,
-				41E617AB1614CE1700BAA7D4 /* RSSFeed.m in Sources */,
+				41E617AA1614CE1700BAA7D4 /* RSSAggregator.mm in Sources */,
+				41E617AB1614CE1700BAA7D4 /* RSSFeed.mm in Sources */,
 				41E617AE1614CE1700BAA7D4 /* SDImageCache.m in Sources */,
 				41E617AF1614CE1700BAA7D4 /* SDWebImageDecoder.m in Sources */,
 				41E617B01614CE1700BAA7D4 /* SDWebImageDownloader.m in Sources */,
@@ -1256,7 +1256,7 @@
 				41E617BC1614CE1700BAA7D4 /* NewsGridViewCell.mm in Sources */,
 				41E617BD1614CE1700BAA7D4 /* PhotoGridViewCell.m in Sources */,
 				41E617C21614CE5D00BAA7D4 /* main.m in Sources */,
-				41E6189B1614DABB00BAA7D4 /* RSSArticle.m in Sources */,
+				41E6189B1614DABB00BAA7D4 /* RSSArticle.mm in Sources */,
 				704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */,
 				709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */,
 				709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */,

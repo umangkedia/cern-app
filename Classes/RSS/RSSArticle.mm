@@ -9,6 +9,7 @@
 #import "RSSArticle.h"
 
 @implementation RSSArticle
+
 @synthesize title, description, url;
 
 @end
