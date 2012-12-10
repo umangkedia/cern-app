@@ -74,7 +74,7 @@
 #ifdef __IPHONE_6_0
    if (enableRefresh) {
       self.refreshControl = [[UIRefreshControl alloc] init];
-      [self.refreshControl addTarget : self action : @selector(reloadPage) forControlEvents : UIControlEventValueChanged];
+      [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
    }
 #endif
 
@@ -154,7 +154,19 @@
 }
 
 //________________________________________________________________________________________
+- (void) reloadPageFromRefreshControl
+{
+   [self reloadPageShowHUD : NO];
+}
+
+//________________________________________________________________________________________
 - (void) reloadPage
+{
+   [self reloadPageShowHUD : YES];
+}
+
+//________________________________________________________________________________________
+- (void) reloadPageShowHUD : (BOOL) show
 {
    if (self.aggregator.isLoadingData) {
       [self.refreshControl endRefreshing];
@@ -162,7 +174,9 @@
    }
 
    [noConnectionHUD hide : YES];
-   [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+   
+   if (show)
+      [MBProgressHUD showHUDAddedTo : self.view animated : NO];
 
    self.rangeOfArticlesToShow = NSRange();
    [self.aggregator clearAllFeeds];
