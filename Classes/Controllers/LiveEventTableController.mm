@@ -21,6 +21,7 @@
    NSMutableData *imageData;
    NSString *sourceName;
    NSArray *tableData;
+   BOOL refreshing;
 }
 
 @synthesize pageLoaded, provider, navController;
@@ -56,12 +57,15 @@
    pageLoaded = NO;
    tableEntryToLoad = 0;
    flatRowIndex = 0;
+   refreshing = NO;
 }
 
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   self.refreshControl = [[UIRefreshControl alloc] init];
+   [self.refreshControl addTarget : self action : @selector(reloadPage) forControlEvents : UIControlEventValueChanged];
 }
 
 #pragma mark - Aux. function to search image data for a given row index.
@@ -118,9 +122,14 @@
    //Here we start loading images one by one, asynchronously (next load only started after the
    //previous finished of failed). Nothing is changed except images and probably dates.
    
+   if (refreshing)
+      return;
+   
    pageLoaded = NO;
    
    if ([tableData count]) {
+      refreshing = YES;
+   
       if (connection)
          [connection cancel];
 
@@ -342,6 +351,8 @@
       imageData = nil;
       connection = nil;
       pageLoaded = YES;
+      [self.refreshControl endRefreshing];
+      refreshing = NO;
    }
 }
 
@@ -373,6 +384,8 @@
       pageLoaded = YES;
       flatRowIndex = 0;
       tableEntryToLoad = 0;
+      [self.refreshControl endRefreshing];
+      refreshing = NO;
    }   
 }
 
