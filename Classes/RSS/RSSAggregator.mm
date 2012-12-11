@@ -77,6 +77,7 @@
 {
    // Only refresh all feeds if we are not already in the middle of a refresh
    if (!feedLoadCount && !loadingImages) {
+      currentConnection = nil;
       [firstImages removeAllObjects];
       feedFailCount = 0;
       feedLoadCount = feeds.count;
@@ -322,6 +323,16 @@
    }
 }
 
-
+//________________________________________________________________________________________
+- (void) stopLoading
+{
+   if (currentConnection) {
+      [currentConnection cancel];
+      currentConnection = nil;
+   }
+   
+   for (RSSFeed * feed in feeds)
+      [feed stopParsing];
+}
 
 @end

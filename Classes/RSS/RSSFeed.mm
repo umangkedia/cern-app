@@ -73,4 +73,11 @@
       [delegate feedDidLoad : self];
 }
 
+//________________________________________________________________________________________
+- (void) stopParsing
+{
+   if ([parser isParsing])
+      [parser stopParsing];
+}
+
 @end

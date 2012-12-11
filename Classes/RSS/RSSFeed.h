@@ -30,4 +30,6 @@
 - (id)initWithFeedURL : (NSURL *) url;
 - (void) refresh;
 
+- (void) stopParsing;
+
 @end

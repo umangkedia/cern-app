@@ -26,7 +26,7 @@
 - (void) clearAllFeeds;
 
 @property (nonatomic, strong) NSMutableArray *feeds;
-@property (nonatomic, strong) id<RSSAggregatorDelegate> delegate;
+@property (nonatomic) __weak id<RSSAggregatorDelegate> delegate;
 @property (nonatomic, strong) NSArray *allArticles;
 @property (nonatomic, strong) NSMutableArray *firstImages;
 
@@ -38,5 +38,7 @@
 
 - (UIImage *) firstImageForArticle : (MWFeedItem *) article;
 - (RSSFeed *) feedForArticle : (MWFeedItem *) article;
+
+- (void) stopLoading;
 
 @end

@@ -65,6 +65,11 @@
    return self;
 }
 
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [aggregator stopLoading];
+}
 
 //________________________________________________________________________________________
 - (void) viewDidLoad
@@ -286,7 +291,7 @@
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) theAggregator
 {
    assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
-   
+
    [self copyArticlesFromAggregator];
 
    [MBProgressHUD hideHUDForView : self.view animated : NO];
