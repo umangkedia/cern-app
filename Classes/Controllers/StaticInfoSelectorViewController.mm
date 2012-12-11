@@ -34,11 +34,6 @@
 {
     [super viewDidLoad];
     if (self.currentLevel == 0) {
-        // We need to load the static information from the plist file.
-        
-/*        NSString *path = [[NSBundle mainBundle] pathForResource:@"StaticInformation" ofType:@"plist"];
-        NSDictionary *plistDict = [NSDictionary dictionaryWithContentsOfFile:path];
-        self.tableDataSource = [plistDict objectForKey:@"Root"];*/
         self.navigationItem.title = @"About CERN";
     } else {
         self.navigationItem.title = self.currentTitle;
@@ -118,11 +113,11 @@
     
     // If its children have children...
     if (children && [[children objectAtIndex:0] objectForKey:@"Items"]) {
-        StaticInfoSelectorViewController *viewController = [[StaticInfoSelectorViewController alloc] init];
+        StaticInfoSelectorViewController *viewController = [[StaticInfoSelectorViewController alloc] initWithStyle:UITableViewStyleGrouped];
         viewController.tableDataSource = children;
         viewController.currentTitle = [item objectForKey:@"Title"];
-        viewController.currentLevel = self.currentLevel+1;
-        
+        viewController.currentLevel = self.currentLevel + 1;
+       
         [self.navigationController pushViewController:viewController animated:YES];
     } else {
         // Show the static info scroll view, and set its data source to the proper info set
@@ -135,8 +130,7 @@
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
             scrollViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kStaticInfoScrollViewController];
-            [self.navigationController presentModalViewController:scrollViewController animated:YES];
-            
+            [self.navigationController presentViewController:scrollViewController animated:YES completion:nil];
         } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             
             self.currentlyShowingIndexPath = [NSIndexPath indexPathForRow:selectedRow inSection:self.currentLevel];
