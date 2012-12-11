@@ -135,9 +135,7 @@
       UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browser];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
 
-      //NOTE: presentModalViewController is deprecated in iOS 6 SDK.
-      //[self presentModalViewController : navigationController animated:YES];
-      [self presentViewController:navigationController animated : YES completion : nil];
+      [self presentViewController : navigationController animated : YES completion : nil];
    } else {
       // Otherwise if the tap was anywhere else on the view, dismiss the view
       //[self dismissModalViewControllerAnimated : YES];

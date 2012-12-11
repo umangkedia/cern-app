@@ -934,7 +934,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 	
 }
 
-- (void)cancelControlHiding {
+- (void)cancelControlHiding
+{
 	// If a timer exists then cancel and release
 	if (_controlVisibilityTimer) {
 		[_controlVisibilityTimer invalidate];
@@ -943,16 +944,24 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 }
 
 // Enable/disable control visiblity timer
-- (void)hideControlsAfterDelay {
-	if (![self areControlsHidden]) {
+- (void)hideControlsAfterDelay
+{
+/*	if (![self areControlsHidden]) {
         [self cancelControlHiding];
 		_controlVisibilityTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(hideControls) userInfo:nil repeats:NO];
-	}
+	}*/
 }
 
-- (BOOL)areControlsHidden { return (_toolbar.alpha == 0); /* [UIApplication sharedApplication].isStatusBarHidden; */ }
-- (void)hideControls { [self setControlsHidden:YES animated:YES permanent:NO]; }
-- (void)toggleControls { [self setControlsHidden:![self areControlsHidden] animated:YES permanent:NO]; }
+- (BOOL) areControlsHidden { return (_toolbar.alpha == 0); /* [UIApplication sharedApplication].isStatusBarHidden; */ }
+
+- (void) hideControls
+{
+// [self setControlsHidden:YES animated:YES permanent:NO];
+}
+- (void)toggleControls
+{
+// [self setControlsHidden:![self areControlsHidden] animated:YES permanent:NO];
+}
 
 #pragma mark - Properties
 
