@@ -25,7 +25,7 @@
 @property (nonatomic, strong) MWFeedParser *parser;
 @property (nonatomic, strong) MWFeedInfo *info;
 @property (nonatomic, strong) NSMutableArray *articles;
-@property (nonatomic, strong) id<RSSFeedDelegate> delegate;
+@property (nonatomic) __weak id<RSSFeedDelegate> delegate;
 
 - (id)initWithFeedURL : (NSURL *) url;
 - (void) refresh;

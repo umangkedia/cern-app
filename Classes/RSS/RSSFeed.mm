@@ -78,6 +78,8 @@
 {
    if ([parser isParsing])
       [parser stopParsing];
+   
+   parser = nil;
 }
 
 @end
