@@ -164,11 +164,13 @@
 					<key>Url</key>
 					<string>http://cms.web.cern.ch/news/category/265/rss.xml</string>
 					<key>Name</key>
-					<string>CMS news</string>
+					<string>CMS News</string>
 				</dict>
 			</array>
 		</dict>
 		<dict>
+			<key>Category name</key>
+			<string>CMS Status</string>
 			<key>Images</key>
 			<array>
 				<dict>
@@ -180,10 +182,10 @@
 					<string>SingleImage</string>
 				</dict>
 			</array>
-			<key>Category name</key>
-			<string>CMS Status</string>
 		</dict>
 		<dict>
+			<key>Category name</key>
+			<string>DAQ Status</string>
 			<key>Images</key>
 			<array>
 				<dict>
@@ -195,8 +197,6 @@
 					<string>SingleImage</string>
 				</dict>
 			</array>
-			<key>Category name</key>
-			<string>DAQ Status</string>
 		</dict>
 		<dict>
 			<key>Category name</key>
