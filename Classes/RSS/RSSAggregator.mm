@@ -21,7 +21,7 @@
    NSURLConnection *currentConnection;
 }
 
-@synthesize feeds, delegate, allArticles, firstImages;
+@synthesize feeds, delegate, allArticles;
 
 //________________________________________________________________________________________
 - (BOOL) isLoadingData
@@ -33,7 +33,6 @@
 - (id) init
 {
    if (self = [super init]) {
-      firstImages = [[NSMutableArray alloc] init];
       feeds = [NSMutableArray array];
 
       feedLoadCount = 0;
@@ -78,7 +77,6 @@
    // Only refresh all feeds if we are not already in the middle of a refresh
    if (!feedLoadCount && !loadingImages) {
       currentConnection = nil;
-      [firstImages removeAllObjects];
       feedFailCount = 0;
       feedLoadCount = feeds.count;
 
@@ -142,16 +140,6 @@
 #pragma mark - Private helper methods
 
 //________________________________________________________________________________________
-- (UIImage *) firstImageForArticle : (MWFeedItem *) article
-{
-   const NSUInteger index = [allArticles indexOfObject : article];
-   if (index != NSNotFound && index < [firstImages count])
-      return [firstImages objectAtIndex : index];
-   
-   return nil;
-}
-
-//________________________________________________________________________________________
 - (NSArray *) aggregate
 {
    NSMutableArray *aggregation = [NSMutableArray array];
@@ -205,10 +193,12 @@
       NSURLRequest * const request = [NSURLRequest requestWithURL : imageURL];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
    } else if (imageForArticle + 1 == [allArticles count]) {
+      article.image = nil;//No image for article.
       loadingImages = NO;
       currentConnection = nil;
       imageData = nil;
    } else {
+      article.image = nil;
       ++imageForArticle;
       [self downloadFirstImageForNextArticle];
    }
@@ -282,8 +272,8 @@
       UIImage *firstImage = [[UIImage alloc] initWithData : imageData];
 
       if (firstImage) {
-         [firstImages addObject : firstImage];
          MWFeedItem * const currentArticle = [allArticles objectAtIndex : imageForArticle];
+         currentArticle.image = firstImage;
          // Inform the delegate on the main thread that the image downloaded
          if (delegate && [delegate respondsToSelector : @selector(aggregator:didDownloadFirstImage:forArticle:)])
             [self informDelegateOfFirstImage : firstImage downloadForArticle : currentArticle];
@@ -310,6 +300,9 @@
    assert(imageForArticle < [allArticles count] &&
           "connection:didFailWithError:, imageForArticle is out of bounds");
    
+   MWFeedItem * const currItem = [allArticles objectAtIndex : imageForArticle];
+   currItem.image = nil;
+   
    if (imageForArticle + 1 == [allArticles count]) {
       //Stop.
       loadingImages = NO;
@@ -326,6 +319,8 @@
 //________________________________________________________________________________________
 - (void) stopLoading
 {
+   //This one is called when controller is deleted,
+   //I do not care in what state we now.
    if (currentConnection) {
       [currentConnection cancel];
       currentConnection = nil;

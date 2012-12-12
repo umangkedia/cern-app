@@ -28,7 +28,6 @@
 @property (nonatomic, strong) NSMutableArray *feeds;
 @property (nonatomic) __weak id<RSSAggregatorDelegate> delegate;
 @property (nonatomic, strong) NSArray *allArticles;
-@property (nonatomic, strong) NSMutableArray *firstImages;
 
 @property (nonatomic, readonly) BOOL isLoadingData;
 
@@ -36,7 +35,6 @@
 - (void) addFeedForURL : (NSURL *) url;
 - (void) refreshAllFeeds;
 
-- (UIImage *) firstImageForArticle : (MWFeedItem *) article;
 - (RSSFeed *) feedForArticle : (MWFeedItem *) article;
 
 - (void) stopLoading;

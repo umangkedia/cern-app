@@ -99,7 +99,7 @@ namespace CernApp = ROOT::CernApp;
     NSString *dateString = [dateFormatter stringFromDate:article.date];
     cell.dateLabel.text = dateString;
     
-    UIImage *image = [self.aggregator firstImageForArticle:article];
+    UIImage *image = article.image;
     if (image && image.size.width >= MIN_IMAGE_WIDTH && image.size.height >= MIN_IMAGE_HEIGHT) {
         cell.thumbnailImageView.image = image;
     } else {

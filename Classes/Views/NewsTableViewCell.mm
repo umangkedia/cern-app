@@ -336,7 +336,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 }
 
 //________________________________________________________________________________________
-- (void) setCellData : (MWFeedItem *) data image : (UIImage *) image imageOnTheRight : (BOOL) right
+- (void) setCellData : (MWFeedItem *) data imageOnTheRight : (BOOL) right
 {
    assert(data && "setCellData:image:imageOnTheRight:, data parameter is nil");
 
@@ -349,12 +349,11 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    [dateFormatter setDateFormat:@"d MMM. yyyy"];
    date.text = [dateFormatter stringFromDate : data.date];
 
+   UIImage * const image = data.image;
    if (image && image.size.width > minImageSize && image.size.height > minImageSize)
       imageView.image = image;
    else
       imageView.image = nil;
-
-
 
    CGRect cellFrame = self.frame;
    
@@ -413,12 +412,12 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 
 
 //________________________________________________________________________________________
-+ (CGFloat) calculateCellHeightForData : (MWFeedItem *) data image : (UIImage *) image imageOnTheRight : (BOOL) right
++ (CGFloat) calculateCellHeightForData : (MWFeedItem *) data imageOnTheRight : (BOOL) right
 {
    assert(data != nil && "calculateCellHeightForData:imageOnTheRight:, data parameter is nil");
 
    static NewsTableViewCell *cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
-   [cell setCellData : data image : image imageOnTheRight : right];
+   [cell setCellData : data imageOnTheRight : right];
 
    return cell.frame.size.height;
 }

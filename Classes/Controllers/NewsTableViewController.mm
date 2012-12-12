@@ -280,8 +280,7 @@
    if (!cell)
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
-   UIImage * const image = [self.aggregator firstImageForArticle : article];
-   [cell setCellData : article image : image imageOnTheRight : (indexPath.row % 4) == 3];
+   [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
 
    return cell;
 }
@@ -294,8 +293,7 @@
 
    MWFeedItem * const article = [allArticles objectAtIndex : row + self.rangeOfArticlesToShow.location];
    //From time to time this crap dies at start.
-   UIImage * const image = [self.aggregator firstImageForArticle : article];
-   return [NewsTableViewCell calculateCellHeightForData : article image : image imageOnTheRight : (indexPath.row % 4) == 3];
+   return [NewsTableViewCell calculateCellHeightForData : article imageOnTheRight : (indexPath.row % 4) == 3];
 }
 
 #pragma mark - RSSAggregatorDelegate methods

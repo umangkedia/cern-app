@@ -21,11 +21,11 @@
 + (NSString *) textLabelFontName;
 + (NSString *) dateLabelFontName;
 
-+ (CGFloat) calculateCellHeightForData : (MWFeedItem *) data image : (UIImage *) image imageOnTheRight : (BOOL) right;
++ (CGFloat) calculateCellHeightForData : (MWFeedItem *) data imageOnTheRight : (BOOL) right;
 + (CGFloat) calculateCellHeightForText : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right;
 
+- (void) setCellData : (MWFeedItem *) data imageOnTheRight : (BOOL) right;
 - (void) setCellData : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right;
-- (void) setCellData : (MWFeedItem *) data image : (UIImage *) image imageOnTheRight : (BOOL) right;
 
 @property (nonatomic, retain) UILabel *author;
 @property (nonatomic, retain) UILabel *date;
