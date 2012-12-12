@@ -22,7 +22,7 @@
 #import "Constants.h"
 #import "KeyVal.h"
 
-using CernAPP::NetworkStatus;
+using namespace CernAPP;
 
 @implementation AppDelegate {
    Reachability *internetReach;

@@ -137,7 +137,7 @@
             [self.tableView reloadData];
             
             AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            scrollViewController = [appDelegate.tabBarController.viewControllers objectAtIndex:TabIndexAbout];
+            scrollViewController = [appDelegate.tabBarController.viewControllers objectAtIndex:CernAPP::TabIndexAbout];
         }
         
         scrollViewController.dataSource = staticInfoRecords;

@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RSSFeed.h"
-#import "PhotoDownloader.h"
 
-typedef enum {
+namespace CernAPP {
+
+enum TabIndices {
     TabIndexNews,
     TabIndexAbout,
     TabIndexLive,
@@ -19,7 +19,10 @@ typedef enum {
     TabIndexVideos,
     TabIndexJobs,
     TabIndexWebcasts
-} TabIndices;
+};
+
+}
+
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, UINavigationControllerDelegate>
 

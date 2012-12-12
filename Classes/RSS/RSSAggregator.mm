@@ -182,6 +182,7 @@
    assert(loadingImages == YES && "downloadFirstImageForNextArticle, can be called only while loading images");
 
    MWFeedItem * const article = [allArticles objectAtIndex : imageForArticle];
+   article.image = nil;
 
    NSString *body = article.content;
    if (!body)
@@ -193,12 +194,10 @@
       NSURLRequest * const request = [NSURLRequest requestWithURL : imageURL];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
    } else if (imageForArticle + 1 == [allArticles count]) {
-      article.image = nil;//No image for article.
       loadingImages = NO;
       currentConnection = nil;
       imageData = nil;
    } else {
-      article.image = nil;
       ++imageForArticle;
       [self downloadFirstImageForNextArticle];
    }
@@ -224,7 +223,6 @@
 {
    if (!htmlString)
       return nil;
-
 
    NSScanner * const theScanner = [NSScanner scannerWithString : htmlString];
    //Find the start of IMG tag
@@ -270,14 +268,15 @@
    
    if ([imageData length]) {
       UIImage *firstImage = [[UIImage alloc] initWithData : imageData];
-
+      MWFeedItem * const currentArticle = [allArticles objectAtIndex : imageForArticle];
+      
       if (firstImage) {
-         MWFeedItem * const currentArticle = [allArticles objectAtIndex : imageForArticle];
          currentArticle.image = firstImage;
          // Inform the delegate on the main thread that the image downloaded
          if (delegate && [delegate respondsToSelector : @selector(aggregator:didDownloadFirstImage:forArticle:)])
             [self informDelegateOfFirstImage : firstImage downloadForArticle : currentArticle];
-      }
+      } else
+         currentArticle.image = nil;
 
       if (imageForArticle + 1 == [allArticles count]) {
          //We stop

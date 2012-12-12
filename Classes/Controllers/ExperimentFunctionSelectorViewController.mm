@@ -161,7 +161,7 @@
 
    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-   UINavigationController *navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex:TabIndexLive];
+   UINavigationController *navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex:CernAPP::TabIndexLive];
    ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
    [experimentsVC.popoverController dismissPopoverAnimated : YES];
    
@@ -206,7 +206,7 @@
    //Part for event display.
    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-   UINavigationController *navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex : TabIndexLive];
+   UINavigationController *navigationController = [appDelegate.tabBarController.viewControllers objectAtIndex : CernAPP::TabIndexLive];
    ExperimentsViewController *experimentsVC = (ExperimentsViewController *)navigationController.topViewController;
    [experimentsVC.popoverController dismissPopoverAnimated : YES];   
    EventDisplayViewController *eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kEventDisplayViewController];
