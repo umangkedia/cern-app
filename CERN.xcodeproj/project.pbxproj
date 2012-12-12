@@ -979,8 +979,6 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
-				702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */,
-				705D9FB3166F3A00007C7611 /* AudioToolbox.framework */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,
@@ -1014,6 +1012,8 @@
 				E1F7B68C156EDC7C0092367F /* Foundation.framework */,
 				E1F7B68E156EDC7C0092367F /* CoreGraphics.framework */,
 				E1F7B6B6156EDC7D0092367F /* SenTestingKit.framework */,
+				705D9FB3166F3A00007C7611 /* AudioToolbox.framework */,
+				702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1364,6 +1364,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OtherSources/CERN-Prefix.pch";
@@ -1377,6 +1378,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
