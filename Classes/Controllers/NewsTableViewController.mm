@@ -327,8 +327,18 @@
     
    noConnectionHUD.delegate = self;
    noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"No internet connection";
+   noConnectionHUD.labelText = @"Load error";
    noConnectionHUD.removeFromSuperViewOnHide = YES;
+   
+   if (!spinner.isHidden) {
+      if (spinner.isAnimating)
+         [spinner stopAnimating];
+      [spinner setHidden : YES];
+   }
+   
+#ifdef __IPHONE_6_0
+   [self.refreshControl  endRefreshing];
+#endif
 }
 
 //________________________________________________________________________________________

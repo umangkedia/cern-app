@@ -15,7 +15,7 @@
 {
    //Docs says nothing about possible device names, giving only two examples: "iPod touch" and "iPhone".
    NSString * const deviceModel = [UIDevice currentDevice].model;
-   return [deviceModel rangeOfString:@"iPad"].location != NSNotFound;
+   return [deviceModel rangeOfString : @"iPad"].location != NSNotFound;
 }
 
 //________________________________________________________________________________________

@@ -171,6 +171,8 @@
 		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
+		702A4B7A1678DB12005EBD1B /* Reachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702A4B791678DB12005EBD1B /* Reachability.mm */; };
+		702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */; };
 		702F5778166755070066E45D /* ContentProviders.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702F5777166755070066E45D /* ContentProviders.mm */; };
 		702F577B1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
@@ -446,6 +448,9 @@
 		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
+		702A4B781678DB12005EBD1B /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		702A4B791678DB12005EBD1B /* Reachability.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Reachability.mm; sourceTree = "<group>"; };
+		702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		702F5776166755070066E45D /* ContentProviders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContentProviders.h; path = Utilities/ContentProviders.h; sourceTree = "<group>"; };
 		702F5777166755070066E45D /* ContentProviders.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ContentProviders.mm; path = Utilities/ContentProviders.mm; sourceTree = "<group>"; };
 		702F57791667AD300066E45D /* ExperimentLiveControllerIPHONE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExperimentLiveControllerIPHONE.h; path = Controllers/ExperimentLiveControllerIPHONE.h; sourceTree = "<group>"; };
@@ -499,6 +504,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */,
 				705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */,
 				E1B6925315D9919800EC9AFA /* libAQGridView.a in Frameworks */,
 				E1FFFC2B15A651B40093462B /* MediaPlayer.framework in Frameworks */,
@@ -688,6 +694,8 @@
 		41E6177A1614CE1700BAA7D4 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				702A4B781678DB12005EBD1B /* Reachability.h */,
+				702A4B791678DB12005EBD1B /* Reachability.mm */,
 				41E6177B1614CE1700BAA7D4 /* GTMNSString+HTML.h */,
 				41E6177C1614CE1700BAA7D4 /* GTMNSString+HTML.m */,
 				41E6177D1614CE1700BAA7D4 /* NSDate+InternetDateTime.h */,
@@ -971,6 +979,7 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
+				702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */,
 				705D9FB3166F3A00007C7611 /* AudioToolbox.framework */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
@@ -1270,6 +1279,7 @@
 				70A32E18166CCB3200636BEE /* Experiments.mm in Sources */,
 				70FB69621670F59D00FB2A61 /* GuiAdjustment.mm in Sources */,
 				70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */,
+				702A4B7A1678DB12005EBD1B /* Reachability.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1368,7 +1378,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1396,7 +1406,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "AQGridView/**";
 				WRAPPER_EXTENSION = app;
 			};
