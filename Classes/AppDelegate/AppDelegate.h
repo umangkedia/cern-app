@@ -28,6 +28,12 @@ typedef enum {
 @property (nonatomic, strong) NSMutableDictionary *tabsAlreadySetup;
 @property (strong, nonatomic) UIWindow *window;
 
-- (void)setupViewController:(UIViewController *)viewController atIndex:(int)index;
+- (void) setupViewController : (UIViewController *) viewController atIndex : (int) index;
 
 @end
+
+namespace CernAPP {
+
+bool HasConnection();
+
+}

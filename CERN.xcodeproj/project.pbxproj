@@ -29,7 +29,7 @@
 		41E617951614CE1700BAA7D4 /* PhotosGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617321614CE1700BAA7D4 /* PhotosGridViewController.mm */; };
 		41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617341614CE1700BAA7D4 /* RSSGridViewController.m */; };
 		41E617971614CE1700BAA7D4 /* StaticInfoItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617361614CE1700BAA7D4 /* StaticInfoItemViewController.m */; };
-		41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */; };
+		41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.mm */; };
 		41E617991614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm */; };
 		41E6179A1614CE1700BAA7D4 /* VideosGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173C1614CE1700BAA7D4 /* VideosGridViewController.mm */; };
 		41E6179B1614CE1700BAA7D4 /* WebcastsGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6173E1614CE1700BAA7D4 /* WebcastsGridViewController.mm */; };
@@ -64,7 +64,7 @@
 		41E617BB1614CE1700BAA7D4 /* BulletinGridViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617891614CE1700BAA7D4 /* BulletinGridViewCell.m */; };
 		41E617BC1614CE1700BAA7D4 /* NewsGridViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6178B1614CE1700BAA7D4 /* NewsGridViewCell.mm */; };
 		41E617BD1614CE1700BAA7D4 /* PhotoGridViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6178D1614CE1700BAA7D4 /* PhotoGridViewCell.m */; };
-		41E617C21614CE5D00BAA7D4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617C11614CE5D00BAA7D4 /* main.m */; };
+		41E617C21614CE5D00BAA7D4 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617C11614CE5D00BAA7D4 /* main.mm */; };
 		41E6182A1614CEB700BAA7D4 /* alice.png in Resources */ = {isa = PBXBuildFile; fileRef = 41E617C51614CEB700BAA7D4 /* alice.png */; };
 		41E6182B1614CEB700BAA7D4 /* aliceLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 41E617C61614CEB700BAA7D4 /* aliceLogo@2x.png */; };
 		41E6182C1614CEB700BAA7D4 /* atlas@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 41E617C71614CEB700BAA7D4 /* atlas@2x.png */; };
@@ -176,7 +176,7 @@
 		702F5778166755070066E45D /* ContentProviders.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702F5777166755070066E45D /* ContentProviders.mm */; };
 		702F577B1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
-		704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.m */; };
+		704A8DF71615E25800AAA5B2 /* DeviceCheck.mm in Sources */ = {isa = PBXBuildFile; fileRef = 704A8DF61615E25800AAA5B2 /* DeviceCheck.mm */; };
 		705D9FB1166F3867007C7611 /* scrollerClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = 705D9FB0166F3867007C7611 /* scrollerClick.wav */; };
 		705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 705D9FB3166F3A00007C7611 /* AudioToolbox.framework */; };
 		70736CB5164BAF3A009FF383 /* KeyVal.m in Sources */ = {isa = PBXBuildFile; fileRef = 70736CB4164BAF3A009FF383 /* KeyVal.m */; };
@@ -261,7 +261,7 @@
 		41E617351614CE1700BAA7D4 /* StaticInfoItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoItemViewController.h; sourceTree = "<group>"; };
 		41E617361614CE1700BAA7D4 /* StaticInfoItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticInfoItemViewController.m; sourceTree = "<group>"; };
 		41E617371614CE1700BAA7D4 /* StaticInfoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoScrollViewController.h; sourceTree = "<group>"; };
-		41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticInfoScrollViewController.m; sourceTree = "<group>"; };
+		41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoScrollViewController.mm; sourceTree = "<group>"; };
 		41E617391614CE1700BAA7D4 /* StaticInfoSelectorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoSelectorViewController.h; sourceTree = "<group>"; };
 		41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoSelectorViewController.mm; sourceTree = "<group>"; };
 		41E6173B1614CE1700BAA7D4 /* VideosGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideosGridViewController.h; sourceTree = "<group>"; };
@@ -340,7 +340,7 @@
 		41E6178D1614CE1700BAA7D4 /* PhotoGridViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoGridViewCell.m; sourceTree = "<group>"; };
 		41E617BF1614CE5D00BAA7D4 /* CERN-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CERN-Prefix.pch"; sourceTree = "<group>"; };
 		41E617C01614CE5D00BAA7D4 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		41E617C11614CE5D00BAA7D4 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		41E617C11614CE5D00BAA7D4 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		41E617C51614CEB700BAA7D4 /* alice.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alice.png; sourceTree = "<group>"; };
 		41E617C61614CEB700BAA7D4 /* aliceLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "aliceLogo@2x.png"; sourceTree = "<group>"; };
 		41E617C71614CEB700BAA7D4 /* atlas@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atlas@2x.png"; sourceTree = "<group>"; };
@@ -457,7 +457,7 @@
 		702F577A1667AD300066E45D /* ExperimentLiveControllerIPHONE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ExperimentLiveControllerIPHONE.mm; path = Controllers/ExperimentLiveControllerIPHONE.mm; sourceTree = "<group>"; };
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
 		704A8DF51615E25800AAA5B2 /* DeviceCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceCheck.h; sourceTree = "<group>"; };
-		704A8DF61615E25800AAA5B2 /* DeviceCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceCheck.m; sourceTree = "<group>"; };
+		704A8DF61615E25800AAA5B2 /* DeviceCheck.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceCheck.mm; sourceTree = "<group>"; };
 		705D9FB0166F3867007C7611 /* scrollerClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = scrollerClick.wav; path = Sounds/scrollerClick.wav; sourceTree = "<group>"; };
 		705D9FB3166F3A00007C7611 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		70736CB3164BAF3A009FF383 /* KeyVal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyVal.h; sourceTree = "<group>"; };
@@ -583,7 +583,7 @@
 				41E617351614CE1700BAA7D4 /* StaticInfoItemViewController.h */,
 				41E617361614CE1700BAA7D4 /* StaticInfoItemViewController.m */,
 				41E617371614CE1700BAA7D4 /* StaticInfoScrollViewController.h */,
-				41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.m */,
+				41E617381614CE1700BAA7D4 /* StaticInfoScrollViewController.mm */,
 				41E617391614CE1700BAA7D4 /* StaticInfoSelectorViewController.h */,
 				41E6173A1614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm */,
 				41E6173B1614CE1700BAA7D4 /* VideosGridViewController.h */,
@@ -709,7 +709,7 @@
 				41E617851614CE1700BAA7D4 /* UIImage+SquareScaledImage.h */,
 				41E617861614CE1700BAA7D4 /* UIImage+SquareScaledImage.m */,
 				704A8DF51615E25800AAA5B2 /* DeviceCheck.h */,
-				704A8DF61615E25800AAA5B2 /* DeviceCheck.m */,
+				704A8DF61615E25800AAA5B2 /* DeviceCheck.mm */,
 				70736CB3164BAF3A009FF383 /* KeyVal.h */,
 				70736CB4164BAF3A009FF383 /* KeyVal.m */,
 				70A630F016722F8000C467AE /* StoryboardIdentifiers.h */,
@@ -738,7 +738,7 @@
 			children = (
 				41E617BF1614CE5D00BAA7D4 /* CERN-Prefix.pch */,
 				41E617C01614CE5D00BAA7D4 /* Constants.h */,
-				41E617C11614CE5D00BAA7D4 /* main.m */,
+				41E617C11614CE5D00BAA7D4 /* main.mm */,
 			);
 			path = OtherSources;
 			sourceTree = "<group>";
@@ -1229,7 +1229,7 @@
 				41E617951614CE1700BAA7D4 /* PhotosGridViewController.mm in Sources */,
 				41E617961614CE1700BAA7D4 /* RSSGridViewController.m in Sources */,
 				41E617971614CE1700BAA7D4 /* StaticInfoItemViewController.m in Sources */,
-				41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.m in Sources */,
+				41E617981614CE1700BAA7D4 /* StaticInfoScrollViewController.mm in Sources */,
 				41E617991614CE1700BAA7D4 /* StaticInfoSelectorViewController.mm in Sources */,
 				41E6179A1614CE1700BAA7D4 /* VideosGridViewController.mm in Sources */,
 				41E6179B1614CE1700BAA7D4 /* WebcastsGridViewController.mm in Sources */,
@@ -1264,9 +1264,9 @@
 				41E617BB1614CE1700BAA7D4 /* BulletinGridViewCell.m in Sources */,
 				41E617BC1614CE1700BAA7D4 /* NewsGridViewCell.mm in Sources */,
 				41E617BD1614CE1700BAA7D4 /* PhotoGridViewCell.m in Sources */,
-				41E617C21614CE5D00BAA7D4 /* main.m in Sources */,
+				41E617C21614CE5D00BAA7D4 /* main.mm in Sources */,
 				41E6189B1614DABB00BAA7D4 /* RSSArticle.mm in Sources */,
-				704A8DF71615E25800AAA5B2 /* DeviceCheck.m in Sources */,
+				704A8DF71615E25800AAA5B2 /* DeviceCheck.mm in Sources */,
 				709E9827161B1DD300F225DD /* NewsTableViewCell.mm in Sources */,
 				709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */,
 				41AB925C1642D16A0025E5ED /* PullRefreshTableViewController.m in Sources */,

@@ -11,6 +11,7 @@
 #import "NewsTableViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "NewsTableViewCell.h"
+#import "AppDelegate.h"
 #import "Constants.h"
 
 @implementation NewsTableViewController {
@@ -188,6 +189,20 @@
       [self.refreshControl endRefreshing];
       return;
    }
+
+   if (!CernAPP::HasConnection()) {
+      UIAlertView *alert = [[UIAlertView alloc] initWithTitle : @"CERN.app" message : @"No network connection!" delegate:nil cancelButtonTitle : @"Ok" otherButtonTitles : nil];
+      [alert show];
+#ifdef __IPHONE_6_0
+      [self.refreshControl endRefreshing];
+      [spinner stopAnimating];
+      [spinner setHidden : NO];
+      
+      return;
+#endif
+   }
+
+
 
    [noConnectionHUD hide : YES];
    

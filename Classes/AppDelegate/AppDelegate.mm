@@ -17,12 +17,37 @@
 #import "WebcastsGridViewController.h"
 //#import "NewsTableViewController.h"
 #import "MultiPageController.h"
+#import "Reachability.h"
 #import "DeviceCheck.h"
 #import "Constants.h"
 #import "KeyVal.h"
 
-@implementation AppDelegate
+using CernAPP::NetworkStatus;
 
+@implementation AppDelegate {
+   Reachability *internetReach;
+}
+
+//________________________________________________________________________________________
+- (void) reachabilityStatusChanged : (Reachability *) current
+{
+   assert(current != nil && "reachabilityStatusChanged:, parameter 'current' is nil");
+   
+   if (current == internetReach) {
+      if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
+         UIAlertView *alert = [[UIAlertView alloc] initWithTitle : @"CERN.app" message : @"No network connection!" delegate:nil cancelButtonTitle : @"Ok" otherButtonTitles : nil];
+         [alert show];
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (bool) hasNetworkConnection
+{
+   return [internetReach currentReachabilityStatus] == NetworkStatus::notReachable;
+}
+
+//________________________________________________________________________________________
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 //
@@ -45,18 +70,22 @@
    [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
    [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
    
-//   [[UIBarButtonItem appearance] setTintColor : [UIColor clearColor]];
-//   [[UIBarButtonItem appearance] setBackButtonBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forState : UIControlStateNormal barMetrics : UIBarMetricsDefault];
+   [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
+   internetReach = [Reachability reachabilityForInternetConnection];
+	[internetReach startNotifier];
+	[self reachabilityStatusChanged : internetReach];
 
    return YES;
 }
 
+//________________________________________________________________________________________
 - (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController
 {
    int index = [theTabBarController.viewControllers indexOfObject:viewController];
    [self setupViewController:viewController atIndex:index];
 }
 
+//________________________________________________________________________________________
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)showingViewController animated:(BOOL)animated
 {
    UINavigationBar *morenavbar = navigationController.navigationBar;
@@ -72,6 +101,7 @@
    [self setupViewController:showingViewController atIndex:index];
 }
 
+//________________________________________________________________________________________
 - (void)setupViewController:(UIViewController *)viewController atIndex:(int)index
 {
     // Only set up each view controller once, and then never do it again.
@@ -182,3 +212,17 @@
 
 
 @end
+
+namespace CernAPP
+{
+
+//________________________________________________________________________________________
+bool HasConnection()
+{
+   assert([UIApplication sharedApplication].delegate != nil && "HasConnection, application delegate is nil");
+   id delegateBase = [UIApplication sharedApplication].delegate;
+   assert([delegateBase isKindOfClass : [AppDelegate class]] && "HasConnection, app delegate has wrong type");
+   return [(AppDelegate *)delegateBase hasNetworkConnection];
+}
+
+}
