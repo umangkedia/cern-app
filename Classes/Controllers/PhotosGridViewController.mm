@@ -127,7 +127,7 @@
     [browser setInitialPageIndex:index];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browser];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentModalViewController:navigationController animated:YES];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (CGSize) portraitGridCellSizeForGridView: (AQGridView *) aGridView
