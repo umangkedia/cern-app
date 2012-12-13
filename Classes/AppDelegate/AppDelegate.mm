@@ -20,28 +20,7 @@
 
 using namespace CernAPP;
 
-@implementation AppDelegate {
-   Reachability *internetReach;
-}
-
-//________________________________________________________________________________________
-- (void) reachabilityStatusChanged : (Reachability *) current
-{
-   assert(current != nil && "reachabilityStatusChanged:, parameter 'current' is nil");
-   
-   if (current == internetReach) {
-      if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
-         UIAlertView *alert = [[UIAlertView alloc] initWithTitle : @"CERN.app" message : @"No network connection!" delegate:nil cancelButtonTitle : @"Ok" otherButtonTitles : nil];
-         [alert show];
-      }
-   }
-}
-
-//________________________________________________________________________________________
-- (bool) hasNetworkConnection
-{
-   return [internetReach currentReachabilityStatus] == NetworkStatus::notReachable;
-}
+@implementation AppDelegate
 
 //________________________________________________________________________________________
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -65,12 +44,6 @@ using namespace CernAPP;
 
    [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
    [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
-   
-   
-   [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
-   internetReach = [Reachability reachabilityForInternetConnection];
-	[internetReach startNotifier];
-	[self reachabilityStatusChanged : internetReach];
 
    return YES;
 }
@@ -207,19 +180,4 @@ using namespace CernAPP;
     }
 }
 
-
 @end
-
-namespace CernAPP
-{
-
-//________________________________________________________________________________________
-bool HasConnection()
-{
-   assert([UIApplication sharedApplication].delegate != nil && "HasConnection, application delegate is nil");
-   id delegateBase = [UIApplication sharedApplication].delegate;
-   assert([delegateBase isKindOfClass : [AppDelegate class]] && "HasConnection, app delegate has wrong type");
-   return [(AppDelegate *)delegateBase hasNetworkConnection];
-}
-
-}

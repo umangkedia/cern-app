@@ -34,9 +34,3 @@ enum TabIndices {
 - (void) setupViewController : (UIViewController *) viewController atIndex : (int) index;
 
 @end
-
-namespace CernAPP {
-
-bool HasConnection();
-
-}

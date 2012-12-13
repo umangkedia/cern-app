@@ -9,9 +9,12 @@
 #import <cassert>
 
 #import "LiveEventTableController.h"
+#import "ApplicationErrors.h"
 #import "NewsTableViewCell.h"
 #import "ContentProviders.h"
+#import "Reachability.h"
 
+using CernAPP::NetworkStatus;
 
 @implementation LiveEventTableController {
    unsigned tableEntryToLoad;
@@ -22,9 +25,35 @@
    NSString *sourceName;
    NSArray *tableData;
    BOOL refreshing;
+   
+   Reachability *internetReach;
 }
 
 @synthesize pageLoaded, provider, navController;
+
+//________________________________________________________________________________________
+- (void) reachabilityStatusChanged : (Reachability *) current
+{
+   assert(current != nil && "reachabilityStatusChanged:, parameter 'current' is nil");
+      
+   if (current == internetReach) {
+      if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
+         if (refreshing) {
+            [connection cancel];
+            connection = nil;
+            imageData = nil;
+            [self.refreshControl endRefreshing];
+            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+         }
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (bool) hasConnection
+{
+   return [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
+}
 
 //________________________________________________________________________________________
 + (NSString *) nameKey
@@ -47,6 +76,13 @@
 }
 
 //________________________________________________________________________________________
+- (void) dealloc
+{
+   [internetReach stopNotifier];
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
+}
+
+//________________________________________________________________________________________
 - (void) setTableContents : (NSArray *) contents experimentName : (NSString *)name
 {
    assert(contents != nil && "setTableContents:, contents parameter is nil");
@@ -66,6 +102,11 @@
    [super viewDidLoad];
    self.refreshControl = [[UIRefreshControl alloc] init];
    [self.refreshControl addTarget : self action : @selector(reloadPage) forControlEvents : UIControlEventValueChanged];
+   
+   [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
+   internetReach = [Reachability reachabilityForInternetConnection];
+   [internetReach startNotifier];
+   [self reachabilityStatusChanged : internetReach];   
 }
 
 #pragma mark - Aux. function to search image data for a given row index.
@@ -142,6 +183,16 @@
       imageData = [[NSMutableData alloc] init];
       connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
    }
+}
+
+//________________________________________________________________________________________
+- (void) reloadPageFromRefreshControl
+{
+   if (![self hasConnection]) {
+      [self.refreshControl endRefreshing];
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+   } else
+      [self refresh];
 }
 
 //________________________________________________________________________________________
@@ -255,6 +306,12 @@
    //assert(indexPath.row >= 0 && indexPath.row < [tableData count] && "tableView:didSelectRowAtIndexPath:, indexPath.row is out of bounds");
 
    [self.tableView deselectRowAtIndexPath : indexPath animated : NO];
+   
+   if (![self hasConnection]) {
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      return;
+   }
+   
    [provider loadControllerTo : navController selectedImage : indexPath.row];
 }
 

@@ -37,11 +37,12 @@
    if (current == internetReach) {
       if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
          if (feedLoadCount) {
+            //[self cancelLoading];
+            [self stopAggregator];
             [self cancelLoading];
 
             if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
                [delegate aggregator : self didFailWithError : @"No network"];
-
 
             CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
          } else if (loadingImages){
@@ -83,6 +84,14 @@
    }
 
    return self;
+}
+
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [self stopAggregator];
+   [internetReach stopNotifier];
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
 
 //________________________________________________________________________________________
