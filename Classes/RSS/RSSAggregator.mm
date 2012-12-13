@@ -8,7 +8,9 @@
 
 #import <cassert>
 
+#import "ApplicationErrors.h"
 #import "RSSAggregator.h"
+#import "Reachability.h"
 #import "MWFeedItem.h"
 
 @implementation RSSAggregator {
@@ -19,9 +21,44 @@
    NSUInteger imageForArticle;
    NSMutableData *imageData;
    NSURLConnection *currentConnection;
+   
+   Reachability *internetReach;
 }
 
 @synthesize feeds, delegate, allArticles;
+
+//________________________________________________________________________________________
+- (void) reachabilityStatusChanged : (Reachability *) current
+{
+   assert(current != nil && "reachabilityStatusChanged:, parameter 'current' is nil");
+   
+   using CernAPP::NetworkStatus;
+   
+   if (current == internetReach) {
+      if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
+         if (feedLoadCount) {
+            [self cancelLoading];
+
+            if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
+               [delegate aggregator : self didFailWithError : @"No network"];
+
+
+            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+         } else if (loadingImages){
+            [currentConnection cancel];
+            currentConnection = nil;
+
+            for (NSUInteger i = imageForArticle, e = allArticles.count; i < e; ++i) {
+               MWFeedItem *feed = (MWFeedItem *)[allArticles objectAtIndex : i];
+               feed.image = nil;
+            }
+            
+            [self cancelLoading];
+            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+         }
+      }
+   }
+}
 
 //________________________________________________________________________________________
 - (BOOL) isLoadingData
@@ -38,6 +75,11 @@
       feedLoadCount = 0;
       feedFailCount = 0;
       loadingImages = NO;
+      
+      [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
+      internetReach = [Reachability reachabilityForInternetConnection];
+      [internetReach startNotifier];
+      [self reachabilityStatusChanged : internetReach];      
    }
 
    return self;
@@ -75,6 +117,7 @@
 - (void) refreshAllFeeds
 {
    // Only refresh all feeds if we are not already in the middle of a refresh
+   
    if (!feedLoadCount && !loadingImages) {
       currentConnection = nil;
       feedFailCount = 0;
@@ -132,7 +175,8 @@
       feedLoadCount = 0;
       //All feeds failed to load.
       if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
-         [delegate aggregator : self didFailWithError : error];
+         [delegate aggregator : self didFailWithError : @"Load error"];//[error description]];//Error messages from MWFeedParser are bad.
+      [self cancelLoading];
    } else if (!feedLoadCount)
       [self downloadAllFirstImages];
 }
@@ -194,9 +238,7 @@
       NSURLRequest * const request = [NSURLRequest requestWithURL : imageURL];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
    } else if (imageForArticle + 1 == [allArticles count]) {
-      loadingImages = NO;
-      currentConnection = nil;
-      imageData = nil;
+      [self cancelLoading];
    } else {
       ++imageForArticle;
       [self downloadFirstImageForNextArticle];
@@ -279,11 +321,7 @@
          currentArticle.image = nil;
 
       if (imageForArticle + 1 == [allArticles count]) {
-         //We stop
-         loadingImages = NO;
-         imageForArticle = 0;
-         imageData = nil;
-         currentConnection = nil;
+         [self cancelLoading];
       } else {
          ++imageForArticle;
          [self downloadFirstImageForNextArticle];
@@ -303,11 +341,7 @@
    currItem.image = nil;
    
    if (imageForArticle + 1 == [allArticles count]) {
-      //Stop.
-      loadingImages = NO;
-      imageForArticle = 0;
-      imageData = nil;
-      currentConnection = nil;
+      [self cancelLoading];
    } else {
       //Try to continue.
       ++imageForArticle;
@@ -316,7 +350,17 @@
 }
 
 //________________________________________________________________________________________
-- (void) stopLoading
+- (void) cancelLoading
+{
+   imageData = nil;
+   loadingImages = NO;
+   imageForArticle = 0;
+   feedLoadCount = 0;
+   feedFailCount = 0;
+}
+
+//________________________________________________________________________________________
+- (void) stopAggregator
 {
    //This one is called when controller is deleted,
    //I do not care in what state we now.
@@ -327,6 +371,12 @@
    
    for (RSSFeed * feed in feeds)
       [feed stopParsing];
+}
+
+//________________________________________________________________________________________
+- (bool) hasConnection
+{
+   return [internetReach currentReachabilityStatus] != CernAPP::NetworkStatus::notReachable;
 }
 
 @end

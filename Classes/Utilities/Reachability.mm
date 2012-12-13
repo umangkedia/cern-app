@@ -60,7 +60,7 @@
 
 #import "Reachability.h"
 
-#define kShouldPrintReachabilityFlags 1
+#define kShouldPrintReachabilityFlags 0
 
 namespace CernAPP {
 

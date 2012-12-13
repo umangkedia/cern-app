@@ -66,6 +66,7 @@ using namespace CernAPP;
    [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
    [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
    
+   
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
 	[internetReach startNotifier];

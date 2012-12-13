@@ -69,8 +69,10 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
-- (void)aggregator:(RSSAggregator *)aggregator didFailWithError:(NSError *)error
+- (void)aggregator:(RSSAggregator *)aggregator didFailWithError : (NSString *) error
 {
+ 	 #pragma unused (error)
+
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
 	_noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     

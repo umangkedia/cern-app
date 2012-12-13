@@ -186,6 +186,7 @@
 		70A32E18166CCB3200636BEE /* Experiments.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A32E17166CCB3200636BEE /* Experiments.mm */; };
 		70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */; };
 		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
+		70D9FA6C167A094400B80409 /* ApplicationErrors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D9FA6B167A094400B80409 /* ApplicationErrors.mm */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
 		70E1A7DD164AD2040018536F /* MultiPageController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7DB164AD2040018536F /* MultiPageController.mm */; };
 		70E5995C1664C97A00BEB6ED /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 70E5995B1664C97A00BEB6ED /* back_btn.png */; };
@@ -474,6 +475,8 @@
 		70A630F016722F8000C467AE /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoryboardIdentifiers.h; path = ../../OtherSources/StoryboardIdentifiers.h; sourceTree = "<group>"; };
 		70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = StoryboardIdentifiers.mm; path = ../../OtherSources/StoryboardIdentifiers.mm; sourceTree = "<group>"; };
 		70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiPageController.xib; sourceTree = "<group>"; };
+		70D9FA6A167A094400B80409 /* ApplicationErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationErrors.h; sourceTree = "<group>"; };
+		70D9FA6B167A094400B80409 /* ApplicationErrors.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationErrors.mm; sourceTree = "<group>"; };
 		70E1A7B7164A8A280018536F /* ScrollSelector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScrollSelector.mm; path = CustomWidgets/ScrollSelector.mm; sourceTree = "<group>"; };
 		70E1A7B8164A8A280018536F /* ScrollSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelector.h; path = CustomWidgets/ScrollSelector.h; sourceTree = "<group>"; };
 		70E1A7B9164A8A280018536F /* ScrollSelectorDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollSelectorDelegate.h; path = CustomWidgets/ScrollSelectorDelegate.h; sourceTree = "<group>"; };
@@ -716,6 +719,8 @@
 				70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */,
 				70FB695F1670F59D00FB2A61 /* GuiAdjustment.h */,
 				70FB69601670F59D00FB2A61 /* GuiAdjustment.mm */,
+				70D9FA6A167A094400B80409 /* ApplicationErrors.h */,
+				70D9FA6B167A094400B80409 /* ApplicationErrors.mm */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1280,6 +1285,7 @@
 				70FB69621670F59D00FB2A61 /* GuiAdjustment.mm in Sources */,
 				70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */,
 				702A4B7A1678DB12005EBD1B /* Reachability.mm in Sources */,
+				70D9FA6C167A094400B80409 /* ApplicationErrors.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

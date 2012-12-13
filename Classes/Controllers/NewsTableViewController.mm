@@ -11,6 +11,7 @@
 #import "NewsTableViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "NewsTableViewCell.h"
+#import "ApplicationErrors.h"
 #import "AppDelegate.h"
 #import "Constants.h"
 
@@ -71,7 +72,7 @@
 //________________________________________________________________________________________
 - (void) dealloc
 {
-   [aggregator stopLoading];
+   [aggregator stopAggregator];
 }
 
 //________________________________________________________________________________________
@@ -173,6 +174,16 @@
 //________________________________________________________________________________________
 - (void) reloadPageFromRefreshControl
 {
+   if (!aggregator.hasConnection) {
+      CernAPP::ShowErrorAlert(@"Please, check network", @"Close");
+      [self.refreshControl endRefreshing];
+      if (spinner.isAnimating)
+         [spinner stopAnimating];
+      if (!spinner.isHidden)
+         [spinner setHidden : YES];
+      return;
+   }
+
    [self reloadPageShowHUD : NO];
 }
 
@@ -186,7 +197,11 @@
 - (void) reloadPageShowHUD : (BOOL) show
 {
    if (self.aggregator.isLoadingData) {
+#ifdef __IPHONE_6_0
       [self.refreshControl endRefreshing];
+#else
+      //Stop pull-refresh animation.
+#endif
       return;
    }
 
@@ -319,14 +334,17 @@
 }
 
 //________________________________________________________________________________________
-- (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSError *)error
+- (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSString *) error
 {
    [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
    noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
     
    noConnectionHUD.delegate = self;
    noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"Load error";
+   if (error)
+      noConnectionHUD.labelText = error;
+   else
+      noConnectionHUD.labelText = @"Load error";
    noConnectionHUD.removeFromSuperViewOnHide = YES;
    
    if (!spinner.isHidden) {
@@ -369,15 +387,19 @@
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
    if (navigationControllerForArticle && !self.aggregator.isLoadingData) {
-      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
-      assert(mainStoryboard != nil && "tableView:didSelectRowAtIndexPath, storyboard is nil");
+      if (aggregator.hasConnection) {
+         UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"MainStoryboard_iPhone" bundle : nil];
+         assert(mainStoryboard != nil && "tableView:didSelectRowAtIndexPath, storyboard is nil");
 
-      ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-      viewController.loadOriginalLink = YES;
-      const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
-      [viewController setContentForArticle : [allArticles objectAtIndex : index]];
-      
-      [navigationControllerForArticle pushViewController : viewController animated : YES];
+         ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+         viewController.loadOriginalLink = YES;
+         const NSUInteger index = rangeOfArticlesToShow.length ? indexPath.row + rangeOfArticlesToShow.location : indexPath.row;
+         [viewController setContentForArticle : [allArticles objectAtIndex : index]];
+         
+         [navigationControllerForArticle pushViewController : viewController animated : YES];
+      } else {
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      }
    }
    
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
