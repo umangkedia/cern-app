@@ -207,6 +207,17 @@
       return;
    }
 
+   if (!aggregator.hasConnection) {
+      [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+      noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+    
+      noConnectionHUD.delegate = self;
+      noConnectionHUD.mode = MBProgressHUDModeText;
+      noConnectionHUD.labelText = @"No network";
+      noConnectionHUD.removeFromSuperViewOnHide = YES;
+      return;
+   }
+
    [noConnectionHUD hide : YES];
    
    if (show) {
@@ -385,6 +396,7 @@
 - (void) lostConnection : (RSSAggregator *) rssAggregator
 {
    assert(rssAggregator != nil && "lostConnection, parameter 'aggregator' is nil");
+   pageLoaded = NO;
    CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
 }
 
