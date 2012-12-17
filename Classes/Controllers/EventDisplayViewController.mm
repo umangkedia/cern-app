@@ -11,27 +11,52 @@
 #import <Availability.h>
 
 #import "EventDisplayViewController.h"
+#import "ApplicationErrors.h"
 #import "GuiAdjustment.h"
+#import "Reachability.h"
 #import "DeviceCheck.h"
 
+//We compile as Objective-C++, in C++ const have internal linkage ==
+//no need for static or unnamed namespace.
+NSString * const sourceDescription = @"Description";
+NSString * const sourceBoundaryRects = @"Boundaries";
+NSString * const resultImage = @"Image";
+NSString * const resultLastUpdate = @"Last Updated";
+NSString * const sourceURL = @"URL";
 
-//TODO: remove this mess.
-#define SOURCE_DESCRIPTION @"Description"
-#define SOURCE_URL @"URL"
-#define SOURCE_BOUNDARY_RECTS @"Boundaries"
-#define RESULT_IMAGE @"Image"
-#define RESULT_LAST_UPDATED @"Last Updated"
+using CernAPP::NetworkStatus;
 
 @implementation EventDisplayViewController {
    unsigned loadingSource;
    NSURLConnection *currentConnection;
    NSMutableData *imageData;
    NSDate *lastUpdated;
+   
+   Reachability *internetReach;
 }
 
 //________________________________________________________________________________________
+- (void) reachabilityStatusChanged : (Reachability *) current
+{
+   #pragma unused(current)
+   
+   if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
+      if (currentConnection) {
+         [currentConnection cancel];
+         currentConnection = nil;
+         
+         loadingSource = 0;
+         imageData = nil;
+         [self removeSpinners];
+
+         CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+      }
+   }
+}
+
 @synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, pageLoaded;
 
+//________________________________________________________________________________________
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
    if (self = [super initWithCoder:aDecoder]) {
@@ -41,6 +66,13 @@
    }
 
    return self;
+}
+
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [internetReach stopNotifier];
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
 
 //________________________________________________________________________________________
@@ -88,6 +120,10 @@
    
    if (![DeviceCheck deviceIsiPad])
       CernAPP::ResetBackButton(self, @"back_button_flat.png");
+   
+   [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
+   internetReach = [Reachability reachabilityForInternetConnection];
+   [internetReach startNotifier];
 }
 
 //________________________________________________________________________________________
@@ -160,10 +196,10 @@
 {
     pageLoaded = NO;
     NSMutableDictionary *source = [NSMutableDictionary dictionary];
-    [source setValue:description forKey:SOURCE_DESCRIPTION];
-    [source setValue:url forKey:SOURCE_URL];
+    [source setValue : description forKey : sourceDescription];
+    [source setValue : url forKey : sourceURL];
     if (boundaryRects) {
-        [source setValue:boundaryRects forKey:SOURCE_BOUNDARY_RECTS];
+        [source setValue : boundaryRects forKey : sourceBoundaryRects];
         // If the image downloaded from this source is going to be divided into multiple images, we will want a separate page for each of these.
         numPages += boundaryRects.count;
     } else {
@@ -204,7 +240,7 @@
       self.refreshButton.enabled = NO;
       self.downloadedResults = [NSMutableArray array];
       NSDictionary * const source = [sources objectAtIndex : 0];
-      NSURL * const url = [source objectForKey : SOURCE_URL];
+      NSURL * const url = [source objectForKey : sourceURL];
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
       loadingSource = 0;
       imageData = [[NSMutableData alloc] init];
@@ -216,7 +252,7 @@
 - (void) synchronouslyDownloadImageForSource : (NSDictionary *) source
 {
     // Download the image from the specified source
-    NSURL *url = [source objectForKey:SOURCE_URL];
+    NSURL *url = [source objectForKey : sourceURL];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] init];
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
@@ -231,7 +267,7 @@
     
     // If the downloaded image needs to be divided into several smaller images, do that now and add each
     // smaller image to the results array.
-    NSArray *boundaryRects = [source objectForKey:SOURCE_BOUNDARY_RECTS];
+    NSArray *boundaryRects = [source objectForKey:sourceBoundaryRects];
     if (boundaryRects) {
         for (NSDictionary *boundaryInfo in boundaryRects) {
             NSValue *rectValue = [boundaryInfo objectForKey:@"Rect"];
@@ -240,17 +276,17 @@
             UIImage *partialImage = [UIImage imageWithCGImage:imageRef];
             CGImageRelease(imageRef);
             NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-            [imageInfo setValue:partialImage forKey:RESULT_IMAGE];
-            [imageInfo setValue:[boundaryInfo objectForKey:SOURCE_DESCRIPTION] forKey:SOURCE_DESCRIPTION];
-            [imageInfo setValue:updated forKey:RESULT_LAST_UPDATED];
+            [imageInfo setValue:partialImage forKey:resultImage];
+            [imageInfo setValue:[boundaryInfo objectForKey:sourceDescription] forKey:sourceDescription];
+            [imageInfo setValue:updated forKey:resultLastUpdate];
             [self.downloadedResults addObject:imageInfo];
             [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
         }
     } else {    // Otherwise if the image does not need to be divided, just add the image to the results array.
         NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-        [imageInfo setValue:image forKey:RESULT_IMAGE];
-        [imageInfo setValue:[source objectForKey:SOURCE_DESCRIPTION] forKey:SOURCE_DESCRIPTION];
-        [imageInfo setValue:updated forKey:RESULT_LAST_UPDATED];
+        [imageInfo setValue:image forKey:resultImage];
+        [imageInfo setValue:[source objectForKey:sourceDescription] forKey : sourceDescription];
+        [imageInfo setValue:updated forKey:resultLastUpdate];
         [self.downloadedResults addObject:imageInfo];
         [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
     }
@@ -291,7 +327,7 @@
 //________________________________________________________________________________________
 - (void)addDisplay:(NSDictionary *)eventDisplayInfo toPage:(int)page
 {
-   UIImage *image = [eventDisplayInfo objectForKey:RESULT_IMAGE];
+   UIImage *image = [eventDisplayInfo objectForKey : resultImage];
    CGRect imageViewFrame = CGRectMake(self.scrollView.frame.size.width*page, 0., self.scrollView.frame.size.width, self.scrollView.frame.size.height);
    UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageViewFrame];
    imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -370,7 +406,7 @@
          if (!lastUpdated)//TODO: this "lastUpdated" must be replaced with something more reliable.
             lastUpdated = [NSDate date];
 
-         if (NSArray * const boundaryRects = [source objectForKey : SOURCE_BOUNDARY_RECTS]) {
+         if (NSArray * const boundaryRects = [source objectForKey : sourceBoundaryRects]) {
             for (NSDictionary *boundaryInfo in boundaryRects) {
                NSValue * const rectValue = (NSValue *)[boundaryInfo objectForKey : @"Rect"];
                const CGRect boundaryRect = [rectValue CGRectValue];
@@ -378,18 +414,18 @@
                UIImage * const partialImage = [UIImage imageWithCGImage : imageRef];
                CGImageRelease(imageRef);
                NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-               [imageInfo setValue : partialImage forKey : RESULT_IMAGE];
-               [imageInfo setValue : [boundaryInfo objectForKey : SOURCE_DESCRIPTION] forKey : SOURCE_DESCRIPTION];
-               [imageInfo setValue : lastUpdated forKey : RESULT_LAST_UPDATED];
+               [imageInfo setValue : partialImage forKey : resultImage];
+               [imageInfo setValue : [boundaryInfo objectForKey : sourceDescription] forKey : sourceDescription];
+               [imageInfo setValue : lastUpdated forKey : resultLastUpdate];
                [self.downloadedResults addObject : imageInfo];
                [self addDisplay : imageInfo toPage : self.downloadedResults.count - 1];
             }
          } else {
             // Otherwise if the image does not need to be divided, just add the image to the results array.
             NSDictionary * const imageInfo = [NSMutableDictionary dictionary];
-            [imageInfo setValue : newImage forKey : RESULT_IMAGE];
-            [imageInfo setValue : [source objectForKey : SOURCE_DESCRIPTION] forKey : SOURCE_DESCRIPTION];
-            [imageInfo setValue : lastUpdated forKey : RESULT_LAST_UPDATED];
+            [imageInfo setValue : newImage forKey : resultImage];
+            [imageInfo setValue : [source objectForKey : sourceDescription] forKey : sourceDescription];
+            [imageInfo setValue : lastUpdated forKey : resultLastUpdate];
             [self.downloadedResults addObject : imageInfo];
             [self addDisplay : imageInfo toPage : self.downloadedResults.count - 1];
          }
@@ -401,7 +437,7 @@
       ++loadingSource;
 
       NSDictionary * const source = [sources objectAtIndex : loadingSource];
-      NSURL * const url = [source objectForKey : SOURCE_URL];
+      NSURL * const url = [source objectForKey : sourceURL];
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
       imageData = [[NSMutableData alloc] init];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
@@ -421,7 +457,7 @@
    if (loadingSource + 1 < [sources count]) {
       ++loadingSource;
       NSDictionary * const source = [sources objectAtIndex : loadingSource];
-      NSURL * const url = [source objectForKey : SOURCE_URL];
+      NSURL * const url = [source objectForKey : sourceURL];
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
       imageData = [[NSMutableData alloc] init];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];

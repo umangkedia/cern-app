@@ -9,28 +9,55 @@
 //Modified by Timur Pocheptsov.
 
 #import "ArticleDetailViewController.h"
+#import "ApplicationErrors.h"
 #import "NSString+HTML.h"
 #import "GuiAdjustment.h"
+#import "Reachability.h"
 #import "DeviceCheck.h"
 #import "Constants.h"
+
+using CernAPP::NetworkStatus;
 
 @implementation ArticleDetailViewController {
    NSString *articleLink;
    UIActivityIndicatorView *spinner;
+   
+   Reachability *internetReach;
 }
 
 @synthesize contentWebView, contentString, loadOriginalLink;
 
 //________________________________________________________________________________________
+- (void) reachabilityStatusChanged : (Reachability *) current
+{
+   #pragma unused(current)
+   
+   if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
+      [self.contentWebView stopLoading];
+      if (spinner && spinner.isAnimating) {
+         [spinner stopAnimating];
+         [spinner setHidden : YES];
+         CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+      }
+   }
+}
+
+//________________________________________________________________________________________
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
 {
-   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-   
+   self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil];
    if (self) {
       // Custom initialization
    }
 
    return self;
+}
+
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [internetReach stopNotifier];
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
 
 //________________________________________________________________________________________
@@ -77,6 +104,10 @@
 {
    if (![DeviceCheck deviceIsiPad])
       CernAPP::ResetBackButton(self, @"back_button_flat.png");
+
+   [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
+   internetReach = [Reachability reachabilityForInternetConnection];
+   [internetReach startNotifier];
 }
 
 //________________________________________________________________________________________
@@ -162,6 +193,15 @@
    }
 
    return YES;
+}
+
+//________________________________________________________________________________________
+- (void) webView : (UIWebView *) webView didFailLoadWithError : (NSError *) error
+{
+   if (spinner && [spinner isAnimating]) {
+      [spinner stopAnimating];
+      [spinner setHidden : YES];
+   }
 }
 
 //________________________________________________________________________________________

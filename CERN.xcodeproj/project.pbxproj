@@ -169,6 +169,7 @@
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
 		41E6189B1614DABB00BAA7D4 /* RSSArticle.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6189A1614DABB00BAA7D4 /* RSSArticle.mm */; };
 		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
+		7019D744167F51FE0000E704 /* ControllerUtilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7019D743167F51FE0000E704 /* ControllerUtilities.mm */; };
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
 		702A4B7A1678DB12005EBD1B /* Reachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702A4B791678DB12005EBD1B /* Reachability.mm */; };
@@ -447,6 +448,8 @@
 		41E618991614DAAF00BAA7D4 /* RSSArticle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSSArticle.h; sourceTree = "<group>"; };
 		41E6189A1614DABB00BAA7D4 /* RSSArticle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RSSArticle.mm; sourceTree = "<group>"; };
 		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
+		7019D742167F51FE0000E704 /* ControllerUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerUtilities.h; sourceTree = "<group>"; };
+		7019D743167F51FE0000E704 /* ControllerUtilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ControllerUtilities.mm; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		702A4B781678DB12005EBD1B /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -721,6 +724,8 @@
 				70FB69601670F59D00FB2A61 /* GuiAdjustment.mm */,
 				70D9FA6A167A094400B80409 /* ApplicationErrors.h */,
 				70D9FA6B167A094400B80409 /* ApplicationErrors.mm */,
+				7019D742167F51FE0000E704 /* ControllerUtilities.h */,
+				7019D743167F51FE0000E704 /* ControllerUtilities.mm */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1286,6 +1291,7 @@
 				70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */,
 				702A4B7A1678DB12005EBD1B /* Reachability.mm in Sources */,
 				70D9FA6C167A094400B80409 /* ApplicationErrors.mm in Sources */,
+				7019D744167F51FE0000E704 /* ControllerUtilities.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

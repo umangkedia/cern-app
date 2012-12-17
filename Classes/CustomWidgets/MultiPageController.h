@@ -35,4 +35,6 @@
 //ScrollSelectorDelegate protocol:
 - (void) item : (NSUInteger) item selectedIn : (ScrollSelector *) selector;
 
+- (UIViewController<PageController> *) selectedViewController;
+
 @end

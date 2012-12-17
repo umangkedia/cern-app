@@ -25,6 +25,8 @@
    NSMutableArray *tableControllers;
    BOOL autoScroll;
    UIButton *backButton;
+   
+   NSUInteger selectedPage;
 }
 
 //________________________________________________________________________________________
@@ -168,6 +170,7 @@
       navigationView.contentOffset = CGPointZero;
       navigationView.contentSize = CGSizeMake([titles count] * frame.size.width, frame.size.height);
       
+      selectedPage = 0;
       UIViewController<PageController> * const firstController = (UIViewController<PageController> *)[tableControllers objectAtIndex : 0];
       [firstController reloadPage];//TODO: Check, if I should do this here.
    }
@@ -227,6 +230,15 @@
    
    if (!nextController.pageLoaded)
       [nextController reloadPage];
+   
+   selectedPage = item;
+}
+
+//________________________________________________________________________________________
+- (UIViewController<PageController> *) selectedViewController
+{
+   assert(selectedPage < [tableControllers count] && "selectedViewController, selectedPage is out of range");
+   return (UIViewController<PageController> *)[tableControllers objectAtIndex : selectedPage];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -250,11 +262,11 @@
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) sender
 {
    //Page scrolled, adjust selector now.
-   const unsigned page = navigationView.contentOffset.x / navigationView.frame.size.width;
-   [selector setSelectedItem : page];
+   selectedPage = navigationView.contentOffset.x / navigationView.frame.size.width;
+   [selector setSelectedItem : selectedPage];
    [selector playClick];
 
-   UIViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : page];
+   UIViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : selectedPage];
 
    assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
    if (![nextController pageLoaded])
@@ -276,6 +288,8 @@
    //page == selected row.
 
    assert(page >= 0 && page < [tableControllers count] && "scrollToPage:, parameter 'page' is out of bounds");
+   
+   selectedPage = page;
    
    UIViewController<PageController> *controller = (UIViewController<PageController> *)[tableControllers objectAtIndex : page];
    if (page) {

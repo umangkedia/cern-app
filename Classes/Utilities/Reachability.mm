@@ -178,7 +178,7 @@ void PrintReachabilityFlags(SCNetworkReachabilityFlags flags, const char *commen
 }
 
 //________________________________________________________________________________________
-+ (Reachability*) reachabilityForInternetConnection;
++ (Reachability*) reachabilityForInternetConnection
 {
    sockaddr_in zeroAddress = {};
 	zeroAddress.sin_len = sizeof(zeroAddress);

@@ -381,6 +381,13 @@
    [self.tableView reloadRowsAtIndexPaths : indexPaths withRowAnimation : UITableViewRowAnimationNone];
 }
 
+//________________________________________________________________________________________
+- (void) lostConnection : (RSSAggregator *) rssAggregator
+{
+   assert(rssAggregator != nil && "lostConnection, parameter 'aggregator' is nil");
+   CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+}
+
 #pragma mark - Table view delegate
 
 //________________________________________________________________________________________

@@ -34,17 +34,16 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
-   assert(current != nil && "reachabilityStatusChanged:, parameter 'current' is nil");
+   #pragma unused(current)
       
-   if (current == internetReach) {
-      if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
-         if (refreshing) {
-            [connection cancel];
-            connection = nil;
-            imageData = nil;
-            [self.refreshControl endRefreshing];
-            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-         }
+   if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
+      if (refreshing) {
+         [connection cancel];
+         connection = nil;
+         imageData = nil;
+         [self.refreshControl endRefreshing];
+         CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+         refreshing = NO;
       }
    }
 }

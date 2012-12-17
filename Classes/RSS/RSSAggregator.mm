@@ -8,7 +8,6 @@
 
 #import <cassert>
 
-#import "ApplicationErrors.h"
 #import "RSSAggregator.h"
 #import "Reachability.h"
 #import "MWFeedItem.h"
@@ -30,33 +29,33 @@
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
-   assert(current != nil && "reachabilityStatusChanged:, parameter 'current' is nil");
-   
+   #pragma unused(current)
+
    using CernAPP::NetworkStatus;
-   
-   if (current == internetReach) {
-      if ([current currentReachabilityStatus] == NetworkStatus::notReachable) {
-         if (feedLoadCount) {
-            //[self cancelLoading];
-            [self stopAggregator];
-            [self cancelLoading];
 
-            if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
-               [delegate aggregator : self didFailWithError : @"No network"];
+   if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
+      if (feedLoadCount) {
+         //[self cancelLoading];
+         [self stopAggregator];
+         [self cancelLoading];
 
-            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-         } else if (loadingImages){
-            [currentConnection cancel];
-            currentConnection = nil;
+         if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
+            [delegate aggregator : self didFailWithError : @"No network"];
 
-            for (NSUInteger i = imageForArticle, e = allArticles.count; i < e; ++i) {
-               MWFeedItem *feed = (MWFeedItem *)[allArticles objectAtIndex : i];
-               feed.image = nil;
-            }
-            
-            [self cancelLoading];
-            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+         if (delegate && [delegate respondsToSelector : @selector(lostConnection:)])
+            [delegate lostConnection : self];
+      } else if (loadingImages){
+         [currentConnection cancel];
+         currentConnection = nil;
+
+         for (NSUInteger i = imageForArticle, e = allArticles.count; i < e; ++i) {
+            MWFeedItem *feed = (MWFeedItem *)[allArticles objectAtIndex : i];
+            feed.image = nil;
          }
+         
+         [self cancelLoading];
+         if (delegate && [delegate respondsToSelector : @selector(lostConnection:)])
+            [delegate lostConnection : self];
       }
    }
 }

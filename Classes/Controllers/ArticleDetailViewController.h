@@ -9,19 +9,16 @@
 #import <UIKit/UIKit.h>
 #import "MWFeedItem.h"
 
-@interface ArticleDetailViewController : UIViewController <UIWebViewDelegate>
-{
-    IBOutlet UIWebView *contentWebView;
-    
-    @private
-    NSString *contentString;
+@interface ArticleDetailViewController : UIViewController <UIWebViewDelegate> {
+   IBOutlet UIWebView *contentWebView;
 }
+
 @property (nonatomic, strong) UIWebView *contentWebView;
 @property (nonatomic, strong) NSString *contentString;
 @property (nonatomic, assign) BOOL loadOriginalLink;
 
-- (void)setContentForArticle:(MWFeedItem *)article;
-- (void)setContentForVideoMetadata:(NSDictionary *)videoMetadata;
-- (void)setContentForTweet:(NSDictionary *)tweet;
+- (void) setContentForArticle : (MWFeedItem *) article;
+- (void) setContentForVideoMetadata : (NSDictionary *) videoMetadata;
+- (void) setContentForTweet : (NSDictionary *) tweet;
 
 @end
