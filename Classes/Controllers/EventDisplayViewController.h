@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 
 #import "PageControllerProtocol.h"
+#import "MBProgressHUD.h"
 
-@interface EventDisplayViewController : UIViewController<NSURLConnectionDelegate, PageController>
+@interface EventDisplayViewController : UIViewController<NSURLConnectionDelegate, PageController, MBProgressHUDDelegate>
 {
     IBOutlet UISegmentedControl *segmentedControl;
     IBOutlet UIScrollView *scrollView;

@@ -33,6 +33,7 @@ using CernAPP::NetworkStatus;
    NSDate *lastUpdated;
    
    Reachability *internetReach;
+   MBProgressHUD *noConnectionHUD;
 }
 
 //________________________________________________________________________________________
@@ -232,8 +233,17 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (IBAction) refresh : (id)sender
 {
-   if (![self hasConnection])
+   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+
+   if (![self hasConnection]) {
+      noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+      noConnectionHUD.color = [UIColor redColor];
+      noConnectionHUD.delegate = self;
+      noConnectionHUD.mode = MBProgressHUDModeText;
+      noConnectionHUD.labelText = @"No network";
+      noConnectionHUD.removeFromSuperViewOnHide = YES;
       return;
+   }
 
    if (currentConnection)
       [currentConnection cancel];
