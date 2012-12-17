@@ -26,6 +26,7 @@
 
 //PageController protocol.
 - (void) reloadPage;
+- (void) reloadPageFromRefreshControl;
 @property (nonatomic) BOOL pageLoaded;
 
 @property (nonatomic) __weak LiveEventsProvider *provider;

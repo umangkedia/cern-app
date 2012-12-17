@@ -61,7 +61,7 @@ using CernAPP::NetworkStatus;
    return internetReach && [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
 }
 
-@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, pageLoaded;
+@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, pageLoaded, needsRefreshButton;
 
 //________________________________________________________________________________________
 - (id)initWithCoder : (NSCoder *)aDecoder
@@ -263,6 +263,12 @@ using CernAPP::NetworkStatus;
 - (void) reloadPage
 {
    [self refresh];
+}
+
+//________________________________________________________________________________________
+- (void) reloadPageFromRefreshControl
+{
+   [self refresh : self];
 }
 
 //________________________________________________________________________________________

@@ -266,6 +266,7 @@ namespace {
       //For such an image we just load "event display" view directly into the multi-page controller.
       EventDisplayViewController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : EventDisplayViewControllerID];
       [self addSourceFor : (LiveImageData *)[liveEvents objectAtIndex : 0] intoController : eventViewController];
+      eventViewController.needsRefreshButton = YES;
       [controller addPageFor : eventViewController];
    } else {
       LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : LIVEEventTableViewControllerID];

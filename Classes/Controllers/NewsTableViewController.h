@@ -28,6 +28,7 @@
 
 //From PageController protocol:
 - (void) reloadPage;
+- (void) reloadPageFromRefreshControl;
 @property (nonatomic) BOOL pageLoaded;
 
 

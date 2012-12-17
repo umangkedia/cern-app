@@ -13,6 +13,10 @@
 @required
 
 - (void) reloadPage;
+- (void) reloadPageFromRefreshControl;
 @property (nonatomic) BOOL pageLoaded;
+
+@optional
+@property (nonatomic, assign) BOOL needsRefreshButton;
 
 @end

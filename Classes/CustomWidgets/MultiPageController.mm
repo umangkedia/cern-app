@@ -25,6 +25,7 @@
    NSMutableArray *tableControllers;
    BOOL autoScroll;
    UIButton *backButton;
+   UIButton *refreshButton;
    
    NSUInteger selectedPage;
 }
@@ -172,6 +173,7 @@
       
       selectedPage = 0;
       UIViewController<PageController> * const firstController = (UIViewController<PageController> *)[tableControllers objectAtIndex : 0];
+      [self resetRefreshButtonForController : firstController];
       [firstController reloadPage];//TODO: Check, if I should do this here.
    }
 }
@@ -228,6 +230,8 @@
    UIViewController<PageController> * const nextController = (UIViewController<PageController> *)[tableControllers objectAtIndex : item];
    assert(nextController != nil && "item:selectedIn:, controller not found for the page");
    
+   [self resetRefreshButtonForController : nextController];
+   
    if (!nextController.pageLoaded)
       [nextController reloadPage];
    
@@ -268,6 +272,8 @@
 
    UIViewController<PageController> * const nextController = (UITableViewController<PageController> *)[tableControllers objectAtIndex : selectedPage];
 
+   [self resetRefreshButtonForController : nextController];
+
    assert(nextController != nil && "scrollViewDidEndDecelerating:, controller not found for the page");
    if (![nextController pageLoaded])
       [nextController reloadPage];
@@ -279,6 +285,31 @@
 - (void) backButtonPressed
 {
    [self.navigationController popViewControllerAnimated : YES];
+}
+
+//________________________________________________________________________________________
+- (void) resetRefreshButtonForController : (UIViewController<PageController> *) controller
+{
+   assert(controller != nil && "resetRefreshButtonForController:, parameter 'controller' is nil");
+
+   if (refreshButton) {
+      [refreshButton removeFromSuperview];
+      refreshButton = nil;
+   }
+
+   if ([controller respondsToSelector : @selector(needsRefreshButton)] && controller.needsRefreshButton) {
+      refreshButton = [UIButton buttonWithType : UIButtonTypeCustom];
+      refreshButton.backgroundColor = [UIColor clearColor];
+      const CGSize &btnSize = CernAPP::navBarBackButtonSize;
+      refreshButton.frame = CGRectMake(self.view.frame.size.width - btnSize.width - 5, ([ScrollSelector defaultHeight] - btnSize.height) / 2.f, btnSize.width, btnSize.height);
+      [refreshButton setImage : [UIImage imageNamed : @"back_button_flat.png"] forState : UIControlStateNormal];
+      refreshButton.alpha = 0.9f;
+      [self.view addSubview : refreshButton];
+
+      [refreshButton addTarget : controller action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventTouchUpInside];
+
+      [self.view bringSubviewToFront : refreshButton];
+   }
 }
 
 //________________________________________________________________________________________
@@ -300,6 +331,7 @@
    assert([selector itemsCount] == [tableControllers count] &&
           "scrollToPage:, inconsistent number of pages and items in a selector");
    [selector setSelectedItem : page];
+   [self resetRefreshButtonForController : controller];
    [controller reloadPage];
 }
 
