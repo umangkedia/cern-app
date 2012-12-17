@@ -100,7 +100,7 @@ using CernAPP::NetworkStatus;
 {
    [super viewDidLoad];
    self.refreshControl = [[UIRefreshControl alloc] init];
-   [self.refreshControl addTarget : self action : @selector(reloadPage) forControlEvents : UIControlEventValueChanged];
+   [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
    
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
@@ -167,7 +167,7 @@ using CernAPP::NetworkStatus;
    
    pageLoaded = NO;
    
-   if ([tableData count]) {
+   if ([tableData count] && [self hasConnection]) {
       refreshing = YES;
    
       if (connection)

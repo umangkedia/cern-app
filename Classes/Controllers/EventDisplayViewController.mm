@@ -54,10 +54,16 @@ using CernAPP::NetworkStatus;
    }
 }
 
+//________________________________________________________________________________________
+- (bool) hasConnection
+{
+   return internetReach && [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
+}
+
 @synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, pageLoaded;
 
 //________________________________________________________________________________________
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (id)initWithCoder : (NSCoder *)aDecoder
 {
    if (self = [super initWithCoder:aDecoder]) {
       self.sources = [NSMutableArray array];
@@ -131,9 +137,10 @@ using CernAPP::NetworkStatus;
 {
    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * numPages, 1.f);
 
-   for (int i = 0; i< numPages; i++)
-      [self addSpinnerToPage : i];
+   if (![self hasConnection])
+      return;
 
+   [self addSpinners];
    [self refresh : self];
 }
 
@@ -225,6 +232,9 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (IBAction) refresh : (id)sender
 {
+   if (![self hasConnection])
+      return;
+
    if (currentConnection)
       [currentConnection cancel];
    
@@ -237,6 +247,7 @@ using CernAPP::NetworkStatus;
    }
    
    if ([sources count]) {
+      [self addSpinnerToPage : self.pageControl.currentPage];
       self.refreshButton.enabled = NO;
       self.downloadedResults = [NSMutableArray array];
       NSDictionary * const source = [sources objectAtIndex : 0];
@@ -336,7 +347,14 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void)addSpinnerToPage:(int)page
+- (void) addSpinners
+{
+   for (int i = 0; i< numPages; i++)
+      [self addSpinnerToPage : i];
+}
+
+//________________________________________________________________________________________
+- (void) addSpinnerToPage : (int) page
 {
     UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     spinner.frame = CGRectMake(self.scrollView.frame.size.width*page, 0.0, self.scrollView.frame.size.width, self.scrollView.frame.size.height);
