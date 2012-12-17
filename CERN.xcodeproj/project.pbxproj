@@ -186,6 +186,7 @@
 		709E982A161B1E1A00F225DD /* NewsTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709E9828161B1E1A00F225DD /* NewsTableViewController.mm */; };
 		70A32E18166CCB3200636BEE /* Experiments.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A32E17166CCB3200636BEE /* Experiments.mm */; };
 		70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */; };
+		70BCFA52167F8A470097994C /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = 70BCFA51167F8A470097994C /* reload.png */; };
 		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
 		70D9FA6C167A094400B80409 /* ApplicationErrors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D9FA6B167A094400B80409 /* ApplicationErrors.mm */; };
 		70E1A7BA164A8A280018536F /* ScrollSelector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E1A7B7164A8A280018536F /* ScrollSelector.mm */; };
@@ -477,6 +478,7 @@
 		70A32E17166CCB3200636BEE /* Experiments.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Experiments.mm; sourceTree = "<group>"; };
 		70A630F016722F8000C467AE /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoryboardIdentifiers.h; path = ../../OtherSources/StoryboardIdentifiers.h; sourceTree = "<group>"; };
 		70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = StoryboardIdentifiers.mm; path = ../../OtherSources/StoryboardIdentifiers.mm; sourceTree = "<group>"; };
+		70BCFA51167F8A470097994C /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reload.png; path = Resources/Images/reload.png; sourceTree = "<group>"; };
 		70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiPageController.xib; sourceTree = "<group>"; };
 		70D9FA6A167A094400B80409 /* ApplicationErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationErrors.h; sourceTree = "<group>"; };
 		70D9FA6B167A094400B80409 /* ApplicationErrors.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationErrors.mm; sourceTree = "<group>"; };
@@ -989,6 +991,7 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
+				70BCFA51167F8A470097994C /* reload.png */,
 				41BBD0E81615AED20057EDE2 /* LICENSE */,
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,
@@ -1096,6 +1099,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70BCFA52167F8A470097994C /* reload.png in Resources */,
 				705D9FB1166F3867007C7611 /* scrollerClick.wav in Resources */,
 				70E59964166507DE00BEB6ED /* navbarback.png in Resources */,
 				70E599601664E3C200BEB6ED /* back_button_flat.png in Resources */,

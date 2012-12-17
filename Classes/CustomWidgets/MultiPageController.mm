@@ -302,7 +302,7 @@
       refreshButton.backgroundColor = [UIColor clearColor];
       const CGSize &btnSize = CernAPP::navBarBackButtonSize;
       refreshButton.frame = CGRectMake(self.view.frame.size.width - btnSize.width - 5, ([ScrollSelector defaultHeight] - btnSize.height) / 2.f, btnSize.width, btnSize.height);
-      [refreshButton setImage : [UIImage imageNamed : @"back_button_flat.png"] forState : UIControlStateNormal];
+      [refreshButton setImage : [UIImage imageNamed : @"reload.png"] forState : UIControlStateNormal];
       refreshButton.alpha = 0.9f;
       [self.view addSubview : refreshButton];
 
