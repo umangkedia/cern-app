@@ -142,7 +142,7 @@ using CernAPP::NetworkStatus;
       return;
 
    [self addSpinners];
-   [self refresh : self];
+   [self refresh];
 }
 
 //________________________________________________________________________________________
@@ -200,7 +200,7 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void)addSourceWithDescription:(NSString *)description URL:(NSURL *)url boundaryRects:(NSArray *)boundaryRects
+- (void) addSourceWithDescription : (NSString *) description URL : (NSURL *) url boundaryRects : (NSArray *) boundaryRects
 {
     pageLoaded = NO;
     NSMutableDictionary *source = [NSMutableDictionary dictionary];
@@ -219,6 +219,47 @@ using CernAPP::NetworkStatus;
 #pragma mark - Loading event display images
 
 //________________________________________________________________________________________
+- (NSUInteger) nOfEventDisplays
+{
+   NSUInteger nD = 0;
+
+   for (UIView *v in scrollView.subviews)
+      if ([v isKindOfClass : [UIImageView class]])
+         ++nD;
+ 
+   return nD;
+}
+
+//________________________________________________________________________________________
+- (UIImageView *) imageViewForTheCurrentPage
+{
+   const NSInteger page = self.pageControl.currentPage;
+   const CGFloat scrollViewWidth = scrollView.frame.size.width;
+   const CGFloat innerX = page * scrollViewWidth + 0.5f * scrollViewWidth;
+   
+   for (UIView *v in scrollView.subviews) {
+      if ([v isKindOfClass : [UIImageView class]]) {
+         const CGRect viewFrame = v.frame;
+         if (innerX > viewFrame.origin.x && innerX < viewFrame.origin.x + viewFrame.size.width)
+            return (UIImageView *)v;
+      }
+   }
+   
+   return nil;
+}
+
+//________________________________________________________________________________________
+- (void) showErrorHUD
+{
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.scrollView animated : NO];
+   noConnectionHUD.color = [UIColor redColor];
+   noConnectionHUD.delegate = self;
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"No network";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;         
+}
+
+//________________________________________________________________________________________
 - (void) reloadPage
 {
    [self refresh];
@@ -227,21 +268,13 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) refresh
 {
-   [self refresh : self];
-}
-
-//________________________________________________________________________________________
-- (IBAction) refresh : (id)sender
-{
-   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+   [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
 
    if (![self hasConnection]) {
-      noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
-      noConnectionHUD.color = [UIColor redColor];
-      noConnectionHUD.delegate = self;
-      noConnectionHUD.mode = MBProgressHUDModeText;
-      noConnectionHUD.labelText = @"No network";
-      noConnectionHUD.removeFromSuperViewOnHide = YES;
+      UIImageView * currentView = [self imageViewForTheCurrentPage];
+      if ((currentView && !currentView.image) || ![self nOfEventDisplays])
+         [self showErrorHUD];
+         //otherwise, just show the old image.
       return;
    }
 
@@ -267,6 +300,17 @@ using CernAPP::NetworkStatus;
       imageData = [[NSMutableData alloc] init];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
    }
+}
+
+//________________________________________________________________________________________
+- (IBAction) refresh : (id) sender
+{
+   //This method is connected to the "reload" button.
+
+   if (![self hasConnection])
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+
+   [self refresh];
 }
 
 //________________________________________________________________________________________
@@ -384,9 +428,16 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) scrollViewDidScroll : (UIScrollView *)sender
 {
-    CGFloat pageWidth = self.scrollView.frame.size.width;
-    int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-    self.pageControl.currentPage = page;
+   CGFloat pageWidth = self.scrollView.frame.size.width;
+   int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+   self.pageControl.currentPage = page;
+   
+   if (![self hasConnection]) {
+      [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
+      UIImageView * const v = [self imageViewForTheCurrentPage];
+      if ((v && !v.image) || ![self nOfEventDisplays])
+         [self showErrorHUD];
+   }
 }
 
 //________________________________________________________________________________________
@@ -395,6 +446,13 @@ using CernAPP::NetworkStatus;
  //  assert(page >= 0 && page < [sources count]);
    self.scrollView.contentOffset = CGPointMake(page * self.scrollView.frame.size.width, 0);
    self.pageControl.currentPage = page;
+
+   if (![self hasConnection]) {
+      [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
+      UIImageView *v = [self imageViewForTheCurrentPage];
+      if ((v && !v.image) || ![self nOfEventDisplays])
+         [self showErrorHUD];
+   }
 }
 
 #pragma mark - NSURLConnectionDelegate
@@ -403,7 +461,6 @@ using CernAPP::NetworkStatus;
 - (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *)data
 {
    assert(imageData != nil && "connection:didReceiveData:, imageData is nil");
-
    [imageData appendData : data];
 }
 
@@ -505,6 +562,5 @@ using CernAPP::NetworkStatus;
 {
    [self.navigationController popViewControllerAnimated : YES];
 }
-
 
 @end
