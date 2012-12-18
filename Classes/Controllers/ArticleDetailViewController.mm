@@ -215,8 +215,10 @@ using CernAPP::NetworkStatus;
    if (spinner && [spinner isAnimating]) {
       [spinner stopAnimating];
       [spinner setHidden : YES];
+      
+      NSString *jsCode = @"(function(){window.baseUrl='https://www.readability.com';window.readabilityToken='';var s=document.createElement('script');s.setAttribute('type','text/javascript');s.setAttribute('charset','UTF-8');s.setAttribute('src',baseUrl+'/bookmarklet/read.js');document.documentElement.appendChild(s);})()";//[NSString stringWithContentsOfFile:path encoding : NSUTF8StringEncoding error : nil];
+      [webView stringByEvaluatingJavaScriptFromString : jsCode];
    }
-   
    /*
    //Many thank to Confused Vorlon for this trick (http://stackoverflow.com/questions/1511707/uiwebview-does-not-scale-content-to-fit)
    if ([self.contentWebView respondsToSelector:@selector(scrollView)]) {
