@@ -20,7 +20,7 @@
 - (void) photoDownloader : (PhotoDownloader *) photoDownloader didFailWithError : (NSError *) error;
 @end
 
-@interface PhotoDownloader : NSObject<CernMediaMarcParserDelegate>
+@interface PhotoDownloader : NSObject<CernMediaMarcParserDelegate, NSURLConnectionDataDelegate>
 
 - (void) parse;
 

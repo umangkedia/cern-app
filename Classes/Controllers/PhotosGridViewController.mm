@@ -85,7 +85,7 @@
 
 - (void)reloadCellAtIndex:(NSNumber *)index
 {
-    [self.gridView reloadItemsAtIndices:[NSIndexSet indexSetWithIndex:[index intValue]] withAnimation:AQGridViewItemAnimationTop];
+   [self.gridView reloadItemsAtIndices : [NSIndexSet indexSetWithIndex:[index intValue]] withAnimation:AQGridViewItemAnimationTop];
 }
 
 #pragma mark - PhotoDownloaderDelegate methods
@@ -98,14 +98,15 @@
 
 - (void)photoDownloader:(PhotoDownloader *)photoDownloader didDownloadThumbnailForIndex:(int)index
 {
-    [self performSelectorOnMainThread:@selector(reloadCellAtIndex:) withObject:[NSNumber numberWithInt:index] waitUntilDone:NO];
+//    [self performSelectorOnMainThread:@selector(reloadCellAtIndex:) withObject:[NSNumber numberWithInt:index] waitUntilDone:NO];
+   [self reloadCellAtIndex:[NSNumber numberWithInt:index]];
 }
 
 #pragma mark - AQGridView methods
 
 - (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView
 {
-        return self.photoDownloader.urls.count;
+   return self.photoDownloader.urls.count;
 }
 - (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
 {

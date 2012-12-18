@@ -13,9 +13,11 @@
 #import "UIImage+SquareScaledImage.h"
 #import "PhotoDownloader.h"
 
-
 @implementation PhotoDownloader {
    CernMediaMARCParser *parser;
+   NSMutableData *thumbnailData;
+   NSURLConnection *currentConnection;
+   NSUInteger imageToLoad;
 }
 
 @synthesize urls, thumbnails, delegate, isDownloading;
@@ -66,8 +68,9 @@
 
    assert(aParser != nil && "parser:didParseRecord:, parameter 'aParser' is null");
    assert(record != nil && "parser:didParseRecord:, parameter 'record' is null");
+   
+   //Now, we do some magic to fix bad assumptions.
 
-   {
    NSDictionary * const resources = (NSDictionary *)[record objectForKey : @"resources"];
    assert(resources != nil && "parser:didParseRecord:, no object for the key 'resources' was found");
    
@@ -75,31 +78,23 @@
    for (NSUInteger i = 1, e = aParser.resourceTypes.count; i < e; ++i) {
       NSArray * const typedData = (NSArray *)[resources objectForKey : [aParser.resourceTypes objectAtIndex : i]];
       if (typedData.count != nPhotos) {
-         //NSLog(@"GOT A TROUBLE!!! %@", record);
-         return;//break;
+         //I simply ignore this record - have no idea what to do with such a data.
+         return;
       }
    }
-   }
 
-   // we will assume that each array in the dictionary has the same number of photo urls
-   NSMutableDictionary *resources = [record objectForKey:@"resources"];
-   const int numPhotosInRecord = ((NSArray *)[resources objectForKey:[parser.resourceTypes objectAtIndex : 0]]).count;
-
-   for (int i = 0; i < numPhotosInRecord; i++) {
-      NSMutableDictionary *photo = [NSMutableDictionary dictionary];
-      NSArray *resourceTypes = parser.resourceTypes;
-      int numResourceTypes = resourceTypes.count;
-      for (int j=0; j<numResourceTypes; j++) {
-         NSString *currentResourceType = [resourceTypes objectAtIndex:j];
-         NSURL *url = [[resources objectForKey:currentResourceType] objectAtIndex:i];
-         [photo setObject:url forKey:currentResourceType];
+   for (NSUInteger i = 0; i < nPhotos; i++) {
+      NSMutableDictionary * const photo = [NSMutableDictionary dictionary];
+      NSArray * const resourceTypes = parser.resourceTypes;
+      
+      const NSUInteger numResourceTypes = resourceTypes.count;
+      for (NSUInteger j = 0; j < numResourceTypes; j++) {
+         NSString * const currentResourceType = [resourceTypes objectAtIndex : j];
+         NSURL * const url = [[resources objectForKey : currentResourceType] objectAtIndex : i];
+         [photo setObject : url forKey : currentResourceType];
       }
    
-      [self.urls addObject:photo];
-
-      // now download the thumbnail for that photo
-      int index = self.urls.count-1;
-      [self performSelectorInBackground:@selector(downloadThumbnailForIndex:) withObject:[NSNumber numberWithInt:index]];
+      [self.urls addObject : photo];
    }
 }
 
@@ -109,7 +104,9 @@
 //________________________________________________________________________________________
 - (void) downloadThumbnailForIndex : (id) indexNumber
 {
+   
     // now download the thumbnail for that photo
+    /*
     int index = ((NSNumber *)indexNumber).intValue;
     NSDictionary *photo = [self.urls objectAtIndex:index];
     NSURLRequest *request = [NSURLRequest requestWithURL:[photo objectForKey:@"jpgIcon"]];
@@ -120,30 +117,46 @@
       thumbnailImage = [UIImage imageNamed : @"image_not_found.png"];
     
     [self.thumbnails setObject:thumbnailImage forKey:[NSNumber numberWithInt:index]];
-
-    /*
-    if (thumbnailImage) {
-        [self.thumbnails setObject:thumbnailImage forKey:[NSNumber numberWithInt:index]];
-    } else {
-        NSLog(@"Error downloading thumbnail #%d, will try again.", index);
-        [self downloadThumbnailForIndex:[NSNumber numberWithInt:index]];
-    }
-    */
-    
+   
     if (self.thumbnails.count == self.urls.count)
         self.isDownloading = NO;
     
     if (delegate && [delegate respondsToSelector:@selector(photoDownloader:didDownloadThumbnailForIndex:)]) {
          [delegate photoDownloader:self didDownloadThumbnailForIndex:index];
-    }
+    }*/
+   
+   #pragma unused(indexNumber)
+}
+
+//________________________________________________________________________________________
+- (void) downloadNextThumbnail
+{
+   assert(isDownloading == YES && "downloadNextThumbnail, not downloading at the moment");
+   assert(imageToLoad < [urls count] && "downloadNextThumbnail, imageToLoad is out of bounds");
+
+   NSDictionary * const photoData = (NSDictionary *)[urls objectAtIndex : imageToLoad];
+   if (id urlBase = [photoData objectForKey : @"jpgIcon"]) {
+      assert([urlBase isKindOfClass:[NSURL class]] &&
+             "downloadNextThumbnail, photo data must be a dictionary");
+      
+      thumbnailData = [[NSMutableData alloc] init];
+      currentConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:(NSURL *)urlBase] delegate : self];
+      //ok, poehali.
+   }
 }
 
 //________________________________________________________________________________________
 - (void) parserDidFinish : (CernMediaMARCParser *) parser
 {
    //We start downloading images here.
+
    if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
       [delegate photoDownloaderDidFinish : self];
+
+   if (urls.count) {
+      imageToLoad = 0;
+      [self downloadNextThumbnail];
+   }
 }
 
 //________________________________________________________________________________________
@@ -151,6 +164,65 @@
 {
    if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader : didFailWithError:)])
       [self.delegate photoDownloader : self didFailWithError : error];
+}
+
+#pragma mark - NSURLConnectionDelegate
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *) data
+{
+   assert(isDownloading == YES && "connection:didReceiveData:, not downloading at the moment");
+   assert(thumbnailData != nil && "connection:didReceiveData:, thumbnailData is nil");
+   assert(data != nil && "connection:didReceiveData:, parameter 'data' is nil");
+
+   [thumbnailData appendData : data];
+}
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didFailWithError : (NSError *) error
+{
+   assert(isDownloading == YES && "connection:didFailWithError:, not downloading at the moment");
+
+   if (imageToLoad + 1 == urls.count) {
+      imageToLoad = 0;
+      isDownloading = NO;
+      if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
+         [delegate photoDownloaderDidFinish : self];
+   } else {
+      ++imageToLoad;
+      [self downloadNextThumbnail];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) connectionDidFinishLoading : (NSURLConnection *) connection
+{
+   assert(isDownloading == YES && "connectionDidFinishLoading:, not downloading at the moment");
+   assert(thumbnailData != nil && "connectionDidFinishLoading:, thumbnailData is nil");
+
+   #pragma unused(connection)
+   
+   if (thumbnailData.length) {
+      if (UIImage *newImage = [UIImage imageWithData : thumbnailData]) {
+         [self.thumbnails setObject : newImage forKey : [NSNumber numberWithInt : imageToLoad]];
+
+         if (delegate && [delegate respondsToSelector : @selector(photoDownloader:didDownloadThumbnailForIndex:)])
+            [delegate photoDownloader : self didDownloadThumbnailForIndex : imageToLoad];
+      }
+   }
+   
+   if (imageToLoad + 1 < urls.count) {
+      ++imageToLoad;
+      [self downloadNextThumbnail];
+   } else {
+      isDownloading = NO;
+      currentConnection = nil;
+      thumbnailData = nil;
+      imageToLoad = 0;
+      
+      if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
+         [delegate photoDownloaderDidFinish : self];
+   }
 }
 
 @end
