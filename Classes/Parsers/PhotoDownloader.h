@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+//The code was modified/fixed to at least some working state by Timur Pocheptsov.
+
 #import <Foundation/Foundation.h>
 #import "CernMediaMARCParser.h"
 
@@ -13,28 +15,19 @@
 
 @protocol PhotoDownloaderDelegate <NSObject>
 @optional
-- (void)photoDownloaderDidFinish:(PhotoDownloader *)photoDownloader;
-- (void)photoDownloader:(PhotoDownloader *)photoDownloader didDownloadThumbnailForIndex:(int)index;
-- (void)photoDownloader:(PhotoDownloader *)photoDownloader didFailWithError:(NSError *)error;
+- (void) photoDownloaderDidFinish : (PhotoDownloader *) photoDownloader;
+- (void) photoDownloader : (PhotoDownloader *) photoDownloader didDownloadThumbnailForIndex : (int) index;
+- (void) photoDownloader : (PhotoDownloader *) photoDownloader didFailWithError : (NSError *) error;
 @end
 
 @interface PhotoDownloader : NSObject<CernMediaMarcParserDelegate>
-{
-    NSMutableArray *urls;
-    NSMutableDictionary *thumbnails;
-    id<PhotoDownloaderDelegate> delegate;
-    
-    @private
-    CernMediaMARCParser *parser;
-    NSOperationQueue *queue;
-}
+
+- (void) parse;
 
 @property (nonatomic, strong) NSMutableArray *urls;
 @property (nonatomic, strong) NSMutableDictionary *thumbnails;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) id<PhotoDownloaderDelegate> delegate;
 @property BOOL isDownloading;
-
-- (void)parse;
 
 @end

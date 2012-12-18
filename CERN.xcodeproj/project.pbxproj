@@ -44,7 +44,7 @@
 		41E617A51614CE1700BAA7D4 /* MWTapDetectingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617561614CE1700BAA7D4 /* MWTapDetectingView.m */; };
 		41E617A61614CE1700BAA7D4 /* MWZoomingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617581614CE1700BAA7D4 /* MWZoomingScrollView.m */; };
 		41E617A71614CE1700BAA7D4 /* CernMediaMARCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175B1614CE1700BAA7D4 /* CernMediaMARCParser.m */; };
-		41E617A81614CE1700BAA7D4 /* PhotoDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175D1614CE1700BAA7D4 /* PhotoDownloader.m */; };
+		41E617A81614CE1700BAA7D4 /* PhotoDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175D1614CE1700BAA7D4 /* PhotoDownloader.mm */; };
 		41E617A91614CE1700BAA7D4 /* WebcastsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6175F1614CE1700BAA7D4 /* WebcastsParser.m */; };
 		41E617AA1614CE1700BAA7D4 /* RSSAggregator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617621614CE1700BAA7D4 /* RSSAggregator.mm */; };
 		41E617AB1614CE1700BAA7D4 /* RSSFeed.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41E617641614CE1700BAA7D4 /* RSSFeed.mm */; };
@@ -296,7 +296,7 @@
 		41E6175A1614CE1700BAA7D4 /* CernMediaMARCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CernMediaMARCParser.h; sourceTree = "<group>"; };
 		41E6175B1614CE1700BAA7D4 /* CernMediaMARCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CernMediaMARCParser.m; sourceTree = "<group>"; };
 		41E6175C1614CE1700BAA7D4 /* PhotoDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoDownloader.h; sourceTree = "<group>"; };
-		41E6175D1614CE1700BAA7D4 /* PhotoDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoDownloader.m; sourceTree = "<group>"; };
+		41E6175D1614CE1700BAA7D4 /* PhotoDownloader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhotoDownloader.mm; sourceTree = "<group>"; };
 		41E6175E1614CE1700BAA7D4 /* WebcastsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebcastsParser.h; sourceTree = "<group>"; };
 		41E6175F1614CE1700BAA7D4 /* WebcastsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebcastsParser.m; sourceTree = "<group>"; };
 		41E617611614CE1700BAA7D4 /* RSSAggregator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSAggregator.h; sourceTree = "<group>"; };
@@ -652,7 +652,7 @@
 				41E6175A1614CE1700BAA7D4 /* CernMediaMARCParser.h */,
 				41E6175B1614CE1700BAA7D4 /* CernMediaMARCParser.m */,
 				41E6175C1614CE1700BAA7D4 /* PhotoDownloader.h */,
-				41E6175D1614CE1700BAA7D4 /* PhotoDownloader.m */,
+				41E6175D1614CE1700BAA7D4 /* PhotoDownloader.mm */,
 				41E6175E1614CE1700BAA7D4 /* WebcastsParser.h */,
 				41E6175F1614CE1700BAA7D4 /* WebcastsParser.m */,
 			);
@@ -1258,7 +1258,7 @@
 				41E617A51614CE1700BAA7D4 /* MWTapDetectingView.m in Sources */,
 				41E617A61614CE1700BAA7D4 /* MWZoomingScrollView.m in Sources */,
 				41E617A71614CE1700BAA7D4 /* CernMediaMARCParser.m in Sources */,
-				41E617A81614CE1700BAA7D4 /* PhotoDownloader.m in Sources */,
+				41E617A81614CE1700BAA7D4 /* PhotoDownloader.mm in Sources */,
 				41E617A91614CE1700BAA7D4 /* WebcastsParser.m in Sources */,
 				41E617AA1614CE1700BAA7D4 /* RSSAggregator.mm in Sources */,
 				41E617AB1614CE1700BAA7D4 /* RSSFeed.mm in Sources */,
