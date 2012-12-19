@@ -47,11 +47,6 @@
     [super viewDidUnload];
 }
 
-- (void) dealloc
-{
-   NSLog(@"dealloc");
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [self refresh];
