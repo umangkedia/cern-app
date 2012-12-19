@@ -22,6 +22,6 @@
 }
 @property (nonatomic, strong) PhotoDownloader *photoDownloader;
 
-- (void)refresh;
+- (void) refresh;
 
 @end

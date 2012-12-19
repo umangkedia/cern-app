@@ -98,36 +98,6 @@
    }
 }
 
-// We will use a synchronous connection running in a background thread to download thumbnails
-// because it is much simpler than handling an arbitrary number of asynchronous connections concurrently.
-
-//________________________________________________________________________________________
-- (void) downloadThumbnailForIndex : (id) indexNumber
-{
-   
-    // now download the thumbnail for that photo
-    /*
-    int index = ((NSNumber *)indexNumber).intValue;
-    NSDictionary *photo = [self.urls objectAtIndex:index];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[photo objectForKey:@"jpgIcon"]];
-    NSData *thumbnailData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-    UIImage *thumbnailImage = [UIImage imageWithData:thumbnailData];
-    
-    if (!thumbnailImage)
-      thumbnailImage = [UIImage imageNamed : @"image_not_found.png"];
-    
-    [self.thumbnails setObject:thumbnailImage forKey:[NSNumber numberWithInt:index]];
-   
-    if (self.thumbnails.count == self.urls.count)
-        self.isDownloading = NO;
-    
-    if (delegate && [delegate respondsToSelector:@selector(photoDownloader:didDownloadThumbnailForIndex:)]) {
-         [delegate photoDownloader:self didDownloadThumbnailForIndex:index];
-    }*/
-   
-   #pragma unused(indexNumber)
-}
-
 //________________________________________________________________________________________
 - (void) downloadNextThumbnail
 {
@@ -186,8 +156,6 @@
    if (imageToLoad + 1 == urls.count) {
       imageToLoad = 0;
       isDownloading = NO;
-      if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
-         [delegate photoDownloaderDidFinish : self];
    } else {
       ++imageToLoad;
       [self downloadNextThumbnail];
@@ -219,9 +187,6 @@
       currentConnection = nil;
       thumbnailData = nil;
       imageToLoad = 0;
-      
-      if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
-         [delegate photoDownloaderDidFinish : self];
    }
 }
 

@@ -26,8 +26,6 @@
     if (self = [super initWithCoder:aDecoder]) {
         self.photoDownloader = [[PhotoDownloader alloc] init];
         self.photoDownloader.delegate = self;
-        //self.gridView.backgroundColor = [UIColor whiteColor];
-
     }
     return self;
 }
@@ -47,6 +45,11 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+}
+
+- (void) dealloc
+{
+   NSLog(@"dealloc");
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -98,7 +101,6 @@
 
 - (void)photoDownloader:(PhotoDownloader *)photoDownloader didDownloadThumbnailForIndex:(int)index
 {
-//    [self performSelectorOnMainThread:@selector(reloadCellAtIndex:) withObject:[NSNumber numberWithInt:index] waitUntilDone:NO];
    [self reloadCellAtIndex:[NSNumber numberWithInt:index]];
 }
 
