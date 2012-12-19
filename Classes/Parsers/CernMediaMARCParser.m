@@ -19,7 +19,12 @@
    BOOL foundSubfield;
    BOOL foundX;
    BOOL foundU;
+   
+   NSURLConnection *currentConnection;
+   NSXMLParser *xmlParser;
 }
+
+@synthesize isFinishedParsing;
 
 //________________________________________________________________________________________
 - (id) init
@@ -28,17 +33,40 @@
       asyncData = [[NSMutableData alloc] init];
       self.url = [[NSURL alloc] init];
       self.resourceTypes = [NSMutableArray array];
+      isFinishedParsing = YES;
    }
 
    return self;
 }
 
 //________________________________________________________________________________________
+- (void) dealloc
+{
+   [self stop];
+}
+
+//________________________________________________________________________________________
 - (void) parse
 {
-   self.isFinishedParsing = NO;
-   NSURLRequest *request = [NSURLRequest requestWithURL : self.url];
-   [NSURLConnection connectionWithRequest : request delegate : self];
+   if (isFinishedParsing) {
+      xmlParser = nil;
+      isFinishedParsing = NO;
+      NSURLRequest *request = [NSURLRequest requestWithURL : self.url];
+      currentConnection = [NSURLConnection connectionWithRequest : request delegate : self];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) stop
+{
+   if (!isFinishedParsing) {
+      if (currentConnection)
+         [currentConnection cancel];
+      currentConnection = nil;
+      if (xmlParser)
+         [xmlParser abortParsing];
+      xmlParser = nil;
+   }
 }
 
 #pragma mark NSURLConnectionDelegate methods
@@ -52,7 +80,8 @@
 //________________________________________________________________________________________
 - (void) connectionDidFinishLoading : (NSURLConnection *) connection
 {
-   NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData : asyncData];
+   currentConnection = nil;
+   xmlParser = [[NSXMLParser alloc] initWithData : asyncData];
    xmlParser.delegate = self;
    [xmlParser parse];
 }
@@ -62,6 +91,7 @@
 {
    if (self.delegate && [self.delegate respondsToSelector : @selector(parser:didFailWithError:)])
       [self.delegate parser : self didFailWithError : error];
+   currentConnection = nil;
 }
 
 #pragma mark NSXMLParserDelegate methods
@@ -182,6 +212,7 @@
    self.isFinishedParsing = YES;
    if (self.delegate && [self.delegate respondsToSelector : @selector(parserDidFinish:)])
       [self.delegate parserDidFinish : self];
+   xmlParser = nil;
 }
 
 @end

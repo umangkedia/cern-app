@@ -28,7 +28,9 @@ typedef  enum SubfieldCodeEnum {
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSArray *resourceTypes;
 @property (nonatomic) __weak id<CernMediaMarcParserDelegate> delegate;
-@property BOOL isFinishedParsing;
-- (void)parse;
+@property (nonatomic, assign) BOOL isFinishedParsing;
+
+- (void) parse;
+- (void) stop;
 
 @end

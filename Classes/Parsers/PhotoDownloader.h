@@ -31,5 +31,6 @@
 @property (nonatomic, assign) BOOL isDownloading;
 
 - (bool) hasConnection;
+- (void) stop;
 
 @end

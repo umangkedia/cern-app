@@ -27,6 +27,8 @@ using CernAPP::NetworkStatus;
 
 @synthesize urls, thumbnails, delegate, isDownloading;
 
+#pragma mark - Reachability.
+
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
@@ -49,6 +51,8 @@ using CernAPP::NetworkStatus;
    return internetReach && [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
 }
 
+#pragma mark - Object's lifetime management.
+
 //________________________________________________________________________________________
 - (id) init
 {
@@ -69,9 +73,27 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) dealloc
 {
+   [self stop];
    [internetReach stopNotifier];
    [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
+
+//________________________________________________________________________________________
+- (void) stop
+{
+   if (currentConnection) {
+      [currentConnection cancel];
+      currentConnection = nil;
+      thumbnailData = nil;
+      imageToLoad = 0;
+   }
+   
+   [parser stop];
+   
+   isDownloading = NO;
+}
+
+#pragma mark - Aux. methods.
 
 //________________________________________________________________________________________
 - (NSURL *) url
@@ -92,6 +114,23 @@ using CernAPP::NetworkStatus;
    urls = [[NSMutableArray alloc] init];
    thumbnails = [NSMutableDictionary dictionary];
    [parser parse];
+}
+
+//________________________________________________________________________________________
+- (void) downloadNextThumbnail
+{
+   assert(isDownloading == YES && "downloadNextThumbnail, not downloading at the moment");
+   assert(imageToLoad < [urls count] && "downloadNextThumbnail, imageToLoad is out of bounds");
+
+   NSDictionary * const photoData = (NSDictionary *)[urls objectAtIndex : imageToLoad];
+   if (id urlBase = [photoData objectForKey : @"jpgIcon"]) {
+      assert([urlBase isKindOfClass:[NSURL class]] &&
+             "downloadNextThumbnail, photo data must be a dictionary");
+      
+      thumbnailData = [[NSMutableData alloc] init];
+      currentConnection = [NSURLConnection connectionWithRequest : [NSURLRequest requestWithURL:(NSURL *)urlBase] delegate : self];
+      //ok, poehali.
+   }
 }
 
 #pragma mark CernMediaMARCParserDelegate methods
@@ -138,25 +177,10 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) downloadNextThumbnail
+- (void) parserDidFinish : (CernMediaMARCParser *) aParser
 {
-   assert(isDownloading == YES && "downloadNextThumbnail, not downloading at the moment");
-   assert(imageToLoad < [urls count] && "downloadNextThumbnail, imageToLoad is out of bounds");
+   #pragma unused(aParser)
 
-   NSDictionary * const photoData = (NSDictionary *)[urls objectAtIndex : imageToLoad];
-   if (id urlBase = [photoData objectForKey : @"jpgIcon"]) {
-      assert([urlBase isKindOfClass:[NSURL class]] &&
-             "downloadNextThumbnail, photo data must be a dictionary");
-      
-      thumbnailData = [[NSMutableData alloc] init];
-      currentConnection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:(NSURL *)urlBase] delegate : self];
-      //ok, poehali.
-   }
-}
-
-//________________________________________________________________________________________
-- (void) parserDidFinish : (CernMediaMARCParser *) parser
-{
    //We start downloading images here.
 
    if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
@@ -175,8 +199,10 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) parser : (CernMediaMARCParser *) parser didFailWithError : (NSError *) error
+- (void) parser : (CernMediaMARCParser *) aParser didFailWithError : (NSError *) error
 {
+   #pragma unused(aParser)
+
    if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
       [self.delegate photoDownloader : self didFailWithError : error];
 }
@@ -197,6 +223,8 @@ using CernAPP::NetworkStatus;
 - (void) connection : (NSURLConnection *) connection didFailWithError : (NSError *) error
 {
    assert(isDownloading == YES && "connection:didFailWithError:, not downloading at the moment");
+   
+   #pragma unused(error)
 
    if (imageToLoad + 1 == urls.count) {
       imageToLoad = 0;
