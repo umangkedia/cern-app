@@ -27,7 +27,7 @@
 @property (nonatomic, strong) NSMutableArray *urls;
 @property (nonatomic, strong) NSMutableDictionary *thumbnails;
 @property (nonatomic, strong) NSURL *url;
-@property (nonatomic, strong) id<PhotoDownloaderDelegate> delegate;
+@property (nonatomic) __weak id<PhotoDownloaderDelegate> delegate;
 @property (nonatomic, assign) BOOL isDownloading;
 
 - (bool) hasConnection;
