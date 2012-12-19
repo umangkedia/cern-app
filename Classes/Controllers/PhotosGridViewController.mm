@@ -9,167 +9,217 @@
 #import "PhotosGridViewController.h"
 #import "CernMediaMARCParser.h"
 #import "PhotoGridViewCell.h"
+#import "ApplicationErrors.h"
+#import "MBProgressHUD.h"
 #import "GuiAdjustment.h"
 #import "DeviceCheck.h"
 #import "AppDelegate.h"
-#import "MBProgressHUD.h"
 
-@interface PhotosGridViewController ()
-
-@end
-
-@implementation PhotosGridViewController
-@synthesize photoDownloader;
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [super initWithCoder:aDecoder]) {
-        self.photoDownloader = [[PhotoDownloader alloc] init];
-        self.photoDownloader.delegate = self;
-    }
-    return self;
+@implementation PhotosGridViewController {
+   MBProgressHUD *noConnectionHUD;
 }
 
-- (void)viewDidLoad
+@synthesize photoDownloader;
+
+//________________________________________________________________________________________
+- (id) initWithCoder : (NSCoder *) aDecoder
 {
-    [super viewDidLoad];
-    // When we call self.view this will reload the view after a didReceiveMemoryWarning.
-    self.view.backgroundColor = [UIColor whiteColor];
-    self.gridView.separatorStyle = AQGridViewCellSeparatorStyleSingleLine;
-    self.gridView.resizesCellWidthToFit = YES;
-   
+   if (self = [super initWithCoder:aDecoder]) {
+      self.photoDownloader = [[PhotoDownloader alloc] init];
+      self.photoDownloader.delegate = self;
+   }
+
+   return self;
+}
+
+//________________________________________________________________________________________
+- (void) viewDidLoad
+{
+   [super viewDidLoad];
+
+   // When we call self.view this will reload the view after a didReceiveMemoryWarning.
+   self.view.backgroundColor = [UIColor whiteColor];
+   self.gridView.separatorStyle = AQGridViewCellSeparatorStyleSingleLine;
+   self.gridView.resizesCellWidthToFit = YES;
+}
+
+//________________________________________________________________________________________
+- (void) viewDidUnload
+{
+   [super viewDidUnload];
+}
+
+//________________________________________________________________________________________
+- (void) viewWillAppear : (BOOL) animated
+{
+   [super viewWillAppear : animated];
+
    if (![DeviceCheck deviceIsiPad])
       CernAPP::ResetBackButton(self, @"back_button_flat.png");
 }
 
-- (void)viewDidUnload
+//________________________________________________________________________________________
+- (void) viewDidAppear : (BOOL) animated
 {
-    [super viewDidUnload];
+   if (![DeviceCheck deviceIsiPad]) {
+      //If I place this call in viewWillAppera, somebody seems to remove this button
+      //so it's here now.
+      CernAPP::ResetRightNavigationButton(self, @"reload.png", @selector(reloadImages));
+   }
+
+   [self refresh];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+//________________________________________________________________________________________
+- (void) didReceiveMemoryWarning
 {
-    [self refresh];
+   [super didReceiveMemoryWarning];
+
+   if (!self.photoDownloader.isDownloading) {
+      self.photoDownloader.urls = nil;
+      self.photoDownloader.thumbnails = nil;
+   }
 }
 
-- (void)didReceiveMemoryWarning
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) interfaceOrientation
 {
-    [super didReceiveMemoryWarning];
-    
-    if (!self.photoDownloader.isDownloading) {
-        self.photoDownloader.urls = nil;
-        self.photoDownloader.thumbnails = nil;
-    }
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      return YES;
+   else
+      return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+//________________________________________________________________________________________
+- (void) refresh
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-    else
-        return (interfaceOrientation == UIInterfaceOrientationPortrait);
+   if (self.photoDownloader.urls.count == 0 && !self.photoDownloader.isDownloading) {
+      [noConnectionHUD hide : YES];
+      [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+      [self.photoDownloader parse];
+   }
 }
 
-- (void)refresh
+//________________________________________________________________________________________
+- (void) reloadImages
 {
-    if (self.photoDownloader.urls.count == 0) {
-        [_noConnectionHUD hide:YES];
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [self.photoDownloader parse];
-    }
+   if (!self.photoDownloader.isDownloading) {
+      if (!photoDownloader.hasConnection)
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      else {
+         self.photoDownloader.urls = nil;
+         self.photoDownloader.thumbnails = nil;
+         [self refresh];
+      }
+   }
 }
 
 #pragma mark - Interface methods
 
-- (void)reloadCellAtIndex:(NSNumber *)index
+//________________________________________________________________________________________
+- (void) reloadCellAtIndex : (NSNumber *) index
 {
    [self.gridView reloadItemsAtIndices : [NSIndexSet indexSetWithIndex:[index intValue]] withAnimation:AQGridViewItemAnimationTop];
 }
 
 #pragma mark - PhotoDownloaderDelegate methods
 
-- (void)photoDownloaderDidFinish:(PhotoDownloader *)photoDownloader
+//________________________________________________________________________________________
+- (void) photoDownloaderDidFinish : (PhotoDownloader *) photoDownloader
 {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.gridView reloadData];
+   [MBProgressHUD hideHUDForView:self.view animated:YES];
+   [self.gridView reloadData];
 }
 
-- (void)photoDownloader:(PhotoDownloader *)photoDownloader didDownloadThumbnailForIndex:(int)index
+//________________________________________________________________________________________
+- (void) photoDownloader : (PhotoDownloader *) photoDownloader didDownloadThumbnailForIndex : (int) index
 {
    [self reloadCellAtIndex:[NSNumber numberWithInt:index]];
 }
 
 #pragma mark - AQGridView methods
 
+//________________________________________________________________________________________
 - (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView
 {
    return self.photoDownloader.urls.count;
 }
-- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
+
+//________________________________________________________________________________________
+- (AQGridViewCell *) gridView : (AQGridView *) gridView cellForItemAtIndex : (NSUInteger) index
 {
-    static NSString *photoCellIdentifier = @"photoCell";
-    PhotoGridViewCell *cell = (PhotoGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:photoCellIdentifier];
-    if (cell == nil) {
-        cell = [[PhotoGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0) reuseIdentifier:photoCellIdentifier];
-        cell.selectionStyle = AQGridViewCellSelectionStyleNone;
-    }
-    cell.imageView.image = [self.photoDownloader.thumbnails objectForKey:[NSNumber numberWithInt:index]];
-    //cell.imageView.image = [UIImage imageNamed:@"cernLogo"];
-    return cell;
+   static NSString *photoCellIdentifier = @"photoCell";
+   PhotoGridViewCell *cell = (PhotoGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:photoCellIdentifier];
+   if (cell == nil) {
+     cell = [[PhotoGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0) reuseIdentifier:photoCellIdentifier];
+     cell.selectionStyle = AQGridViewCellSelectionStyleNone;
+   }
+   cell.imageView.image = [self.photoDownloader.thumbnails objectForKey:[NSNumber numberWithInt:index]];
+   //cell.imageView.image = [UIImage imageNamed:@"cernLogo"];
+   return cell;
 }
 
-- (void) gridView: (AQGridView *) gridView didSelectItemAtIndex: (NSUInteger) index numFingersTouch:(NSUInteger)numFingers
+//________________________________________________________________________________________
+- (void) gridView : (AQGridView *) gridView didSelectItemAtIndex : (NSUInteger) index numFingersTouch : (NSUInteger)numFingers
 {
-    MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate:self];
-    browser.displayActionButton = YES;
-    [browser setInitialPageIndex:index];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browser];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentViewController:navigationController animated:YES completion:nil];
+   MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate:self];
+   browser.displayActionButton = YES;
+   [browser setInitialPageIndex:index];
+   UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browser];
+   navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+   [self presentViewController:navigationController animated:YES completion:nil];
 }
 
+//________________________________________________________________________________________
 - (CGSize) portraitGridCellSizeForGridView: (AQGridView *) aGridView
 {
-
-    return CGSizeMake(100.0, 100.0);
+   return CGSizeMake(100.f, 100.f);
 }
 
 #pragma mark - MWPhotoBrowserDelegate methods
 
-- (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser {
-    return self.photoDownloader.urls.count;
-
-}
-
-- (MWPhoto *)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index {
-    if (index < self.photoDownloader.urls.count) {
-        NSString *photoSize;
-        // Download a larger full-size image on iPad, or a smaller full-size image on iPhone
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            photoSize = @"jpgA4";
-        } else {
-            photoSize = @"jpgA5";
-        }
-        NSURL *url = [[self.photoDownloader.urls objectAtIndex:index] objectForKey:photoSize];
-        return [MWPhoto photoWithURL:url];
-    }
-   
-    return nil;
-}
-
-- (void)photoDownloader:(PhotoDownloader *)photoDownloader didFailWithError:(NSError *)error
+//________________________________________________________________________________________
+- (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser
 {
-    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-	_noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    _noConnectionHUD.delegate = self;
-    _noConnectionHUD.mode = MBProgressHUDModeText;
-    _noConnectionHUD.labelText = @"No internet connection";
-    _noConnectionHUD.removeFromSuperViewOnHide = YES;
+   return self.photoDownloader.urls.count;
 }
 
-- (void)hudWasTapped:(MBProgressHUD *)hud
+//________________________________________________________________________________________
+- (MWPhoto *) photoBrowser : (MWPhotoBrowser *) photoBrowser photoAtIndex : (NSUInteger) index
 {
-    [self refresh];
+   if (index < self.photoDownloader.urls.count) {
+      NSString *photoSize;
+      // Download a larger full-size image on iPad, or a smaller full-size image on iPhone
+      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+         photoSize = @"jpgA4";
+      } else {
+         photoSize = @"jpgA5";
+      }
+
+      NSURL *url = [[self.photoDownloader.urls objectAtIndex:index] objectForKey:photoSize];
+      return [MWPhoto photoWithURL:url];
+   }
+
+   return nil;
+}
+
+//________________________________________________________________________________________
+- (void) photoDownloader : (PhotoDownloader *) photoDownloader didFailWithError : (NSError *) error
+{
+   #pragma unused(error)//Why does compiler sometimes issue a warning, sometimes no???
+
+   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+   noConnectionHUD.delegate = self;
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"Load error";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
+}
+
+//________________________________________________________________________________________
+- (void) hudWasTapped : (MBProgressHUD *) hud
+{
+   [self refresh];
 }
 
 #pragma mark - Navigation (since we replace left navbarbutton).

@@ -24,18 +24,6 @@ typedef  enum SubfieldCodeEnum {
 @end
 
 @interface CernMediaMARCParser : NSObject<NSURLConnectionDelegate, NSXMLParserDelegate>
-{    
-    @private
-    NSMutableData *asyncData;
-    NSString *currentResourceType;
-    NSMutableDictionary *currentRecord;
-    NSMutableString *currentUValue;
-    NSString *currentDatafieldTag;
-    NSString *currentSubfieldCode;
-    BOOL foundSubfield;
-    BOOL foundX;
-    BOOL foundU;
-}
 
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSArray *resourceTypes;

@@ -28,6 +28,8 @@
 @property (nonatomic, strong) NSMutableDictionary *thumbnails;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) id<PhotoDownloaderDelegate> delegate;
-@property BOOL isDownloading;
+@property (nonatomic, assign) BOOL isDownloading;
+
+- (bool) hasConnection;
 
 @end

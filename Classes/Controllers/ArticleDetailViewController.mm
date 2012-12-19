@@ -90,7 +90,7 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void)viewWillDisappear:(BOOL)animated
+- (void) viewWillDisappear : (BOOL)animated
 {
     [self.contentWebView stopLoading];
     if (spinner && [spinner isAnimating]) {

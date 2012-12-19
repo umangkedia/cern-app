@@ -12,15 +12,42 @@
 
 #import "UIImage+SquareScaledImage.h"
 #import "PhotoDownloader.h"
+#import "Reachability.h"
+
+using CernAPP::NetworkStatus;
 
 @implementation PhotoDownloader {
    CernMediaMARCParser *parser;
    NSMutableData *thumbnailData;
    NSURLConnection *currentConnection;
    NSUInteger imageToLoad;
+   
+   Reachability *internetReach;
 }
 
 @synthesize urls, thumbnails, delegate, isDownloading;
+
+//________________________________________________________________________________________
+- (void) reachabilityStatusChanged : (Reachability *) current
+{
+   #pragma unused(current)
+   
+   if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
+      if (currentConnection) {
+         [currentConnection cancel];
+         currentConnection = nil;
+         
+         if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
+            [self.delegate photoDownloader : self didFailWithError : nil];
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (bool) hasConnection
+{
+   return internetReach && [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
+}
 
 //________________________________________________________________________________________
 - (id) init
@@ -29,9 +56,21 @@
       parser = [[CernMediaMARCParser alloc] init];
       parser.delegate = self;
       parser.resourceTypes = @[@"jpgA4", @"jpgA5", @"jpgIcon"];
+      //
+      //
+      [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
+      internetReach = [Reachability reachabilityForInternetConnection];
+      [internetReach startNotifier];
    }
 
    return self;
+}
+
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [internetReach stopNotifier];
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
 
 //________________________________________________________________________________________
@@ -49,7 +88,7 @@
 //________________________________________________________________________________________
 - (void) parse
 {
-   isDownloading = YES;
+   self.isDownloading = YES;
    urls = [[NSMutableArray alloc] init];
    thumbnails = [NSMutableDictionary dictionary];
    [parser parse];
@@ -124,15 +163,21 @@
       [delegate photoDownloaderDidFinish : self];
 
    if (urls.count) {
-      imageToLoad = 0;
-      [self downloadNextThumbnail];
+      if (!self.hasConnection) {
+         //We lost a connection during parsing??? :)
+         if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
+            [self.delegate photoDownloader : self didFailWithError : nil];
+      } else {
+         imageToLoad = 0;
+         [self downloadNextThumbnail];
+      }
    }
 }
 
 //________________________________________________________________________________________
 - (void) parser : (CernMediaMARCParser *) parser didFailWithError : (NSError *) error
 {
-   if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader : didFailWithError:)])
+   if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
       [self.delegate photoDownloader : self didFailWithError : error];
 }
 
@@ -155,7 +200,7 @@
 
    if (imageToLoad + 1 == urls.count) {
       imageToLoad = 0;
-      isDownloading = NO;
+      self.isDownloading = NO;
    } else {
       ++imageToLoad;
       [self downloadNextThumbnail];
@@ -183,7 +228,7 @@
       ++imageToLoad;
       [self downloadNextThumbnail];
    } else {
-      isDownloading = NO;
+      self.isDownloading = NO;
       currentConnection = nil;
       thumbnailData = nil;
       imageToLoad = 0;

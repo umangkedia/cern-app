@@ -6,10 +6,20 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import "CernMediaMARCParser.h"
 #import "NSDateFormatter+DateFromStringOfUnknownFormat.h"
+#import "CernMediaMARCParser.h"
 
-@implementation CernMediaMARCParser
+@implementation CernMediaMARCParser {
+   NSMutableData *asyncData;
+   NSString *currentResourceType;
+   NSMutableDictionary *currentRecord;
+   NSMutableString *currentUValue;
+   NSString *currentDatafieldTag;
+   NSString *currentSubfieldCode;
+   BOOL foundSubfield;
+   BOOL foundX;
+   BOOL foundU;
+}
 
 //________________________________________________________________________________________
 - (id) init

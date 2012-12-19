@@ -15,11 +15,7 @@
 #import "PhotoDownloader.h"
 
 @interface PhotosGridViewController : AQGridViewController<AQGridViewDataSource, AQGridViewDelegate, MWPhotoBrowserDelegate, PhotoDownloaderDelegate, MBProgressHUDDelegate>
-{
-    PhotoDownloader *photoDownloader;
-    UIView *loadingView;
-    MBProgressHUD *_noConnectionHUD;
-}
+
 @property (nonatomic, strong) PhotoDownloader *photoDownloader;
 
 - (void) refresh;
