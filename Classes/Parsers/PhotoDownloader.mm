@@ -39,6 +39,8 @@ using CernAPP::NetworkStatus;
          [currentConnection cancel];
          currentConnection = nil;
          
+         isDownloading = NO;
+         
          if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
             [self.delegate photoDownloader : self didFailWithError : nil];
       }
