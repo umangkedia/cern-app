@@ -200,8 +200,6 @@
 		41C0659316271ED1000DC176 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		41CE55B61616073F00F477AD /* D3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = D3.png; sourceTree = "<group>"; };
 		41CE55B81616074A00F477AD /* D4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = D4.png; sourceTree = "<group>"; };
-		41E617BF1614CE5D00BAA7D4 /* CERN-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CERN-Prefix.pch"; sourceTree = "<group>"; };
-		41E617C01614CE5D00BAA7D4 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		41E617C51614CEB700BAA7D4 /* alice.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alice.png; sourceTree = "<group>"; };
 		41E617C61614CEB700BAA7D4 /* aliceLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "aliceLogo@2x.png"; sourceTree = "<group>"; };
 		41E617C71614CEB700BAA7D4 /* atlas@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atlas@2x.png"; sourceTree = "<group>"; };
@@ -409,6 +407,7 @@
 		707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+SquareScaledImage.m"; sourceTree = "<group>"; };
 		707B13F8169AF6AE00180E02 /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryboardIdentifiers.h; sourceTree = "<group>"; };
 		707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StoryboardIdentifiers.mm; sourceTree = "<group>"; };
+		70BE54AF169AFC2900A3E1B6 /* CERN-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CERN-Prefix.pch"; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -444,15 +443,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		41E617BE1614CE5D00BAA7D4 /* OtherSources */ = {
-			isa = PBXGroup;
-			children = (
-				41E617BF1614CE5D00BAA7D4 /* CERN-Prefix.pch */,
-				41E617C01614CE5D00BAA7D4 /* Constants.h */,
-			);
-			path = OtherSources;
-			sourceTree = "<group>";
-		};
 		41E617C31614CEB700BAA7D4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -621,6 +611,7 @@
 		707B1342169AE8C900180E02 /* Src */ = {
 			isa = PBXGroup;
 			children = (
+				70BE54AE169AFC2900A3E1B6 /* PCH */,
 				707B13BF169AF4FA00180E02 /* RSS */,
 				707B139D169AF07D00180E02 /* Utilities */,
 				707B1396169AF01500180E02 /* DetailedViewControllers */,
@@ -837,11 +828,18 @@
 			path = RSS;
 			sourceTree = "<group>";
 		};
+		70BE54AE169AFC2900A3E1B6 /* PCH */ = {
+			isa = PBXGroup;
+			children = (
+				70BE54AF169AFC2900A3E1B6 /* CERN-Prefix.pch */,
+			);
+			path = PCH;
+			sourceTree = "<group>";
+		};
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
 				707B1342169AE8C900180E02 /* Src */,
-				41E617BE1614CE5D00BAA7D4 /* OtherSources */,
 				41E617C31614CEB700BAA7D4 /* Resources */,
 				E1F7B689156EDC7C0092367F /* Frameworks */,
 				E1F7B687156EDC7C0092367F /* Products */,
@@ -1181,7 +1179,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OtherSources/CERN-Prefix.pch";
+				GCC_PREFIX_HEADER = "Src/PCH/CERN-Prefix.pch";
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = "$(SRCROOT)/CERN.plist";
@@ -1209,7 +1207,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OtherSources/CERN-Prefix.pch";
+				GCC_PREFIX_HEADER = "Src/PCH/CERN-Prefix.pch";
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = "$(SRCROOT)/CERN.plist";
