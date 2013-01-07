@@ -42,7 +42,7 @@ using CernAPP::NetworkStatus;
          connection = nil;
          imageData = nil;
          [self.refreshControl endRefreshing];
-         CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
          refreshing = NO;
       }
    }
@@ -84,8 +84,8 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) setTableContents : (NSArray *) contents experimentName : (NSString *)name
 {
-   assert(contents != nil && "setTableContents:, contents parameter is nil");
-   assert(name != nil && "setTableContents:, name parameter is nil");
+   assert(contents != nil && "setTableContents:, parameter 'contents' is nil");
+   assert(name != nil && "setTableContents:, parameter 'name' is nil");
 
    tableData = contents;
    sourceName = name;
@@ -105,7 +105,10 @@ using CernAPP::NetworkStatus;
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
    [internetReach startNotifier];
-   [self reachabilityStatusChanged : internetReach];   
+   [self reachabilityStatusChanged : internetReach];
+   
+   if (!pageLoaded)
+      [self reloadPage];
 }
 
 #pragma mark - Aux. function to search image data for a given row index.
@@ -231,7 +234,6 @@ using CernAPP::NetworkStatus;
    NSURL * const url = [[NSURL alloc] initWithString : nextImageLiveData.url];
    imageData = [[NSMutableData alloc] init];
    connection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
-
 }
 
 #pragma mark - Table view data source
@@ -310,19 +312,8 @@ using CernAPP::NetworkStatus;
       CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
       return;
    }
-   
-   [provider loadControllerTo : navController selectedImage : indexPath.row];
-}
 
-//________________________________________________________________________________________
-- (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
-{
-   //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
-   //Many thanks to Apple's "brilliant" engineers for the fact I need this - continue to think different, guys!
-   if (!section)
-      return [[UIView alloc] init];
-
-   return nil;
+   [provider pushEventDisplayInto : navController selectedImage : indexPath.row];
 }
 
 #pragma mark - NSURLConnection delegate

@@ -6,15 +6,18 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
-#import <cassert>
+//Code with background threads and undefined behavior (shared data
+//modification from different threads) was removed and re-written
+//by Timur Pocheptsov. Bugs fixed, ugly code removed,
+//error handling (at least some) added.
 
-#import <Availability.h>
+#import <cassert>
 
 #import "EventDisplayViewController.h"
 #import "ApplicationErrors.h"
-#import "GuiAdjustment.h"
 #import "Reachability.h"
-#import "DeviceCheck.h"
+//#import "DeviceCheck.h"
+#import "GUIHelpers.h"
 
 //We compile as Objective-C++, in C++ const have internal linkage ==
 //no need for static or unnamed namespace.
@@ -34,12 +37,14 @@ using CernAPP::NetworkStatus;
    
    Reachability *internetReach;
    MBProgressHUD *noConnectionHUD;
+   
+   UIButton *refreshButton;
 }
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
-   #pragma unused(current)
+#pragma unused(current)
    
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       if (currentConnection) {
@@ -50,7 +55,7 @@ using CernAPP::NetworkStatus;
          imageData = nil;
          [self removeSpinners];
 
-         CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
       }
    }
 }
@@ -61,12 +66,12 @@ using CernAPP::NetworkStatus;
    return internetReach && [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
 }
 
-@synthesize segmentedControl, sources, downloadedResults, scrollView, refreshButton, pageControl, titleLabel, dateLabel, pageLoaded, needsRefreshButton;
+@synthesize sources, downloadedResults, scrollView, pageControl, titleLabel, dateLabel, pageLoaded, needsRefreshButton;
 
 //________________________________________________________________________________________
-- (id)initWithCoder : (NSCoder *)aDecoder
+- (id)initWithCoder : (NSCoder *) aDecoder
 {
-   if (self = [super initWithCoder:aDecoder]) {
+   if (self = [super initWithCoder : aDecoder]) {
       self.sources = [NSMutableArray array];
       numPages = 0;
       loadingSource = 0;
@@ -95,42 +100,45 @@ using CernAPP::NetworkStatus;
    titleLabel.backgroundColor = [UIColor clearColor];
    titleLabel.textColor = [UIColor whiteColor];
    titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
-
-   #ifdef __IPHONE_6_0
    titleLabel.textAlignment = NSTextAlignmentCenter;
-   #else
-   titleLabel.textAlignment = UITextAlignmentCenter;
-   #endif
-
    titleLabel.text = self.title;
-   [titleView addSubview:titleLabel];
+   [titleView addSubview : titleLabel];
 
    dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, titleLabel.frame.size.height, titleView.frame.size.width, titleView.frame.size.height-titleLabel.frame.size.height)];
    dateLabel.backgroundColor = [UIColor clearColor];
    dateLabel.textColor = [UIColor whiteColor];
    dateLabel.font = [UIFont boldSystemFontOfSize:13.0];
-
-   #ifdef __IPHONE_6_0
    dateLabel.textAlignment = NSTextAlignmentCenter ;
-   #else
-   dateLabel.textAlignment = UITextAlignmentCenter;
-   #endif
 
    [titleView addSubview:dateLabel];
 
    self.navigationItem.titleView = titleView;
 
    self.pageControl.numberOfPages = numPages;
+   if (numPages == 1)
+      [self.pageControl setHidden : YES];
    self.scrollView.backgroundColor = [UIColor blackColor];
    
    pageLoaded = NO;
    
-   if (![DeviceCheck deviceIsiPad])
-      CernAPP::ResetBackButton(self, @"back_button_flat.png");
-   
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
    [internetReach startNotifier];
+   
+   //
+   refreshButton = [UIButton buttonWithType : UIButtonTypeCustom];
+   refreshButton.backgroundColor = [UIColor clearColor];
+   const CGSize &btnSize = CernAPP::navBarBackButtonSize;
+
+   refreshButton.frame = CGRectMake(self.view.frame.size.width - btnSize.width - 5,
+                                    (CernAPP::navBarHeight - btnSize.height) / 2.f,
+                                    btnSize.width, btnSize.height);
+   [refreshButton setImage : [UIImage imageNamed : @"reload.png"] forState : UIControlStateNormal];
+   refreshButton.alpha = 0.9f;
+   [refreshButton addTarget : self action : @selector(reloadPageFromRefreshControl)
+                  forControlEvents : UIControlEventTouchUpInside];
+   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView : refreshButton];
+   //
 }
 
 //________________________________________________________________________________________
@@ -297,7 +305,7 @@ using CernAPP::NetworkStatus;
    
    if ([sources count]) {
       [self addSpinnerToPage : self.pageControl.currentPage];
-      self.refreshButton.enabled = NO;
+      refreshButton.enabled = NO;
       self.downloadedResults = [NSMutableArray array];
       NSDictionary * const source = [sources objectAtIndex : 0];
       NSURL * const url = [source objectForKey : sourceURL];
@@ -363,7 +371,7 @@ using CernAPP::NetworkStatus;
     }
     
     if (self.downloadedResults.count == numPages) {
-        self.refreshButton.enabled = YES;
+        refreshButton.enabled = YES;
     }
 }
 
@@ -449,7 +457,9 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) scrollToPage : (NSInteger) page
 {
- //  assert(page >= 0 && page < [sources count]);
+   //When controller is loaded from LiveEventTableView,
+   //any image (not at index 0) can be selected in a table,
+   //so I have to scroll to this image (page).
    self.scrollView.contentOffset = CGPointMake(page * self.scrollView.frame.size.width, 0);
    self.pageControl.currentPage = page;
 
@@ -537,7 +547,7 @@ using CernAPP::NetworkStatus;
       imageData = nil;
       loadingSource = 0;
       pageLoaded = YES;
-      self.refreshButton.enabled = YES;
+      refreshButton.enabled = YES;
       [self removeSpinners];
    }
 }
@@ -557,16 +567,8 @@ using CernAPP::NetworkStatus;
       imageData = nil;
       loadingSource = 0;
       pageLoaded = YES;
-      self.refreshButton.enabled = YES;
+      refreshButton.enabled = YES;
    }
-}
-
-#pragma mark - Navigation (since we replace left navbarbutton).
-
-//________________________________________________________________________________________
-- (void) backButtonPressed
-{
-   [self.navigationController popViewControllerAnimated : YES];
 }
 
 @end

@@ -8,9 +8,6 @@
 //Each cell will have a name and image (small version of an original image) + (possibly) date.
 //Images to be reused by EventDisplayViewController later (if they were loaded already,
 //if not - they have to be loaded by EventDisplayViewController.
-//Unfortunately, as experiments don't have uniform live event representation,
-//this class have to know too much about concrete experiments and the way they
-//display live events.
 
 @interface LiveEventTableController : UITableViewController<NSURLConnectionDelegate, UITableViewDataSource, UITableViewDelegate, PageController>
 
@@ -33,4 +30,3 @@
 @property (nonatomic) __weak UINavigationController *navController;
 
 @end
-

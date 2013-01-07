@@ -1,183 +1,54 @@
-//
-//  AppDelegate.m
-//  CERN App
-//
-//  Created by Eamon Ford on 5/24/12.
-//  Copyright (c) 2012 CERN. All rights reserved.
-//
-
-#import "StaticInfoSelectorViewController.h"
-#import "StaticInfoScrollViewController.h"
-#import "BulletinGridViewController.h"
-#import "PhotosGridViewController.h"
-#import "NewsTableViewController.h"
-#import "NewsGridViewController.h"
-#import "MultiPageController.h"
-#import "Reachability.h"
 #import "AppDelegate.h"
-#import "DeviceCheck.h"
-#import "KeyVal.h"
-
-using namespace CernAPP;
 
 @implementation AppDelegate
 
-//________________________________________________________________________________________
+@synthesize window = _window;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-//
-   self.tabBarController = (UITabBarController *)self.window.rootViewController;
-   self.tabBarController.delegate = self;
-   self.tabBarController.moreNavigationController.delegate = self;
-   self.tabBarController.customizableViewControllers = [NSArray array];
-   self.tabsAlreadySetup = [NSMutableDictionary dictionary];
-   [self setupViewController:[self.tabBarController.viewControllers objectAtIndex:TabIndexNews] atIndex:TabIndexNews];
-
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexNews]).tabBarItem.image = [UIImage imageNamed : @"news"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexLive]).tabBarItem.image = [UIImage imageNamed : @"live"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexAbout]).tabBarItem.image = [UIImage imageNamed : @"about"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexBulletin]).tabBarItem.image = [UIImage imageNamed : @"bulletin"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexPhotos]).tabBarItem.image = [UIImage imageNamed : @"latestPhotos"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexVideos]).tabBarItem.image = [UIImage imageNamed : @"latestVideos"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexWebcasts]).tabBarItem.image = [UIImage imageNamed : @"webcasts"];
-   ((UIViewController *)[self.tabBarController.viewControllers objectAtIndex:TabIndexJobs]).tabBarItem.image = [UIImage imageNamed : @"jobs"];
-
    [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
    [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
 
    return YES;
 }
 
-//________________________________________________________________________________________
-- (void)tabBarController:(UITabBarController *)theTabBarController didSelectViewController:(UIViewController *)viewController
+- (void)applicationWillResignActive:(UIApplication *)application
 {
-   int index = [theTabBarController.viewControllers indexOfObject:viewController];
-   [self setupViewController:viewController atIndex:index];
+  /*
+   Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+   Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+   */
 }
 
-//________________________________________________________________________________________
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)showingViewController animated:(BOOL)animated
+- (void)applicationDidEnterBackground:(UIApplication *)application
 {
-   UINavigationBar *morenavbar = navigationController.navigationBar;
-   UINavigationItem *morenavitem = morenavbar.topItem;
-   /* We don't need Edit button in More screen. */
-   morenavitem.rightBarButtonItem = nil;
-
-   // In order to figure out the index of the selected view controller, we have to search through tabBarController.viewControllers for a UINavigationController that has no topViewController, because the selected view controller got popped off its navigation stack.
-   id checkIfNil = ^BOOL(id element, NSUInteger idx, BOOL *stop) {
-     return [(UINavigationController *)element topViewController] == nil;
-   };
-   int index = [self.tabBarController.viewControllers indexOfObjectPassingTest:checkIfNil];
-   [self setupViewController:showingViewController atIndex:index];
+  /*
+   Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+   If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+   */
 }
 
-//________________________________________________________________________________________
-- (void)setupViewController:(UIViewController *)viewController atIndex:(int)index
+- (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Only set up each view controller once, and then never do it again.
-    if ([[self.tabsAlreadySetup objectForKey:[NSNumber numberWithInt:index]] boolValue])
-        return;
-    else
-        [self.tabsAlreadySetup setObject:[NSNumber numberWithBool:YES] forKey:[NSNumber numberWithInt:index]];
+  /*
+   Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+   */
+}
 
-    
-    if ([viewController respondsToSelector:@selector(viewControllers)]) {
-        viewController = [[(id)viewController viewControllers] objectAtIndex:0];
-    }
-    
-    switch (index) {
-        case TabIndexNews: {
-            // Populate the general News view controller with news feeds
-            if ([DeviceCheck deviceIsiPad]) {
-               [((NewsGridViewController *)viewController).aggregator addFeedForURL : [NSURL URLWithString:@"http://feeds.feedburner.com/CernCourier"]];
-               [(NewsGridViewController *)viewController refresh];
-            } else {
-               //
-               NSMutableArray *feeds = [[NSMutableArray alloc] init];
-               
-               assert([viewController isKindOfClass : [MultiPageController class]] &&
-                      "setupViewController:atIndex:, viewController must have MultiPageController type");
-               
-               KeyVal *pair = [[KeyVal alloc] init];
-               pair.key = @"News";
-               pair.val = @"http://home.web.cern.ch/about/updates/feed";
-               [feeds addObject : pair];
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+  /*
+   Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+   */
+}
 
-               pair = [[KeyVal alloc] init];
-               pair.key = @"For students";
-               pair.val = @"http://home.web.cern.ch/students-educators/updates/feed";
-               [feeds addObject : pair];
-               
-               pair = [[KeyVal alloc] init];
-               pair.key = @"Announcements";
-               pair.val = @"http://home.web.cern.ch/cern-people/announcements/feed";
-               [feeds addObject : pair];
-               
-               pair = [[KeyVal alloc] init];
-               pair.key = @"Opinion pieces";
-               pair.val = @"http://home.web.cern.ch/cern-people/opinion/feed";
-               [feeds addObject : pair];
-               
-               pair = [[KeyVal alloc] init];
-               pair.key = @"CERN Courier";
-               pair.val = @"http://feeds.feedburner.com/CernCourier";
-               [feeds addObject : pair];
-               
-               MultiPageController *mpController = (MultiPageController *)viewController;
-
-               [mpController setNewsFeedControllersFor : feeds];
-               [mpController hideBackButton : YES];
-            }
-
-            break;
-        }
-        case TabIndexAbout: {
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"StaticInformation" ofType:@"plist"];
-            NSDictionary *plistDict = [NSDictionary dictionaryWithContentsOfFile:path];
-            self.staticInfoDataSource = [plistDict objectForKey:@"Root"];
-            
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                StaticInfoSelectorViewController *selectorViewController = (StaticInfoSelectorViewController *)[[self.tabBarController.viewControllers objectAtIndex:TabIndexAbout] topViewController];
-                selectorViewController.tableDataSource = self.staticInfoDataSource;
-                
-            } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                NSArray *defaultRecords = [[self.staticInfoDataSource objectAtIndex:0] objectForKey:@"Items"];
-                StaticInfoScrollViewController *scrollViewController = [self.tabBarController.viewControllers objectAtIndex:TabIndexAbout];
-                scrollViewController.dataSource = defaultRecords;
-                [scrollViewController refresh];
-            }
-            
-            break;
-        }
-        case TabIndexLive: {
-            break;
-        }
-        case TabIndexBulletin: {
-            BulletinGridViewController *bulletinViewController = (BulletinGridViewController *)viewController;
-            [bulletinViewController.aggregator addFeedForURL:[NSURL URLWithString:@"http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&ln=en"]];
-            [bulletinViewController refresh];
-
-            break;
-        }
-        case TabIndexPhotos: {
-            // Initialize the photos view controller with a photo downloader object
-            ((PhotosGridViewController *)viewController).photoDownloader.url = [NSURL URLWithString:@"http://cdsweb.cern.ch/search?ln=en&cc=Photos&p=&f=&action_search=Search&c=Photos&c=&sf=&so=d&rm=&rg=10&sc=1&of=xm"];
-            break;
-        }
-        case TabIndexVideos: {
-            break;
-        }
-        case TabIndexJobs: {
-            [((NewsGridViewController *)viewController).aggregator addFeedForURL:[NSURL URLWithString:@"https://ert.cern.ch/browse_www/wd_portal_rss.rss?p_hostname=ert.cern.ch"]];
-            [(NewsGridViewController *)viewController refresh];
-            break;
-        }
-        case TabIndexWebcasts: {
-            break;
-        }
-        default:
-            break;
-    }
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+  /*
+   Called when the application is about to terminate.
+   Save data if appropriate.
+   See also applicationDidEnterBackground:.
+   */
 }
 
 @end

@@ -11,10 +11,10 @@
 #import "ArticleDetailViewController.h"
 #import "ApplicationErrors.h"
 #import "NSString+HTML.h"
-#import "GuiAdjustment.h"
+//#import "GuiAdjustment.h"
 #import "Reachability.h"
 #import "DeviceCheck.h"
-#import "Constants.h"
+//#import "Constants.h"
 
 using CernAPP::NetworkStatus;
 
@@ -37,7 +37,7 @@ using CernAPP::NetworkStatus;
       if (spinner && spinner.isAnimating) {
          [spinner stopAnimating];
          [spinner setHidden : YES];
-         CernAPP::ShowErrorAlertIfTopLevel(@"Please, check network!", @"Close", self);
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
       }
    }
 }
@@ -76,8 +76,7 @@ using CernAPP::NetworkStatus;
       [spinner setHidden : NO];
       [spinner startAnimating];
    
-      NSURL * const url = [NSURL URLWithString : articleLink];
-      
+      NSURL * const url = [NSURL URLWithString : articleLink];      
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
       [self.contentWebView loadRequest : request];
    } else if (self.contentString)
@@ -102,8 +101,8 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
-   if (![DeviceCheck deviceIsiPad])
-      CernAPP::ResetBackButton(self, @"back_button_flat.png");
+  // if (![DeviceCheck deviceIsiPad])
+  //    CernAPP::ResetBackButton(self, @"back_button_flat.png");
 
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
@@ -157,6 +156,7 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
+/*
 - (void)setContentForVideoMetadata:(NSDictionary *)videoMetadata
 {
     NSString *videoTag = [NSString stringWithFormat:@"<video width='100%%' controls='controls'><source src='%@' type='video/mp4' /></video>", [videoMetadata objectForKey:kVideoMetadataPropertyVideoURL]];
@@ -174,7 +174,7 @@ using CernAPP::NetworkStatus;
     self.contentString = htmlString;
     [self.contentWebView loadHTMLString:self.contentString baseURL:nil];   
 }
-
+*/
 //________________________________________________________________________________________
 - (void)setContentForTweet:(NSDictionary *)tweet
 {
@@ -227,12 +227,12 @@ using CernAPP::NetworkStatus;
    }
    */
 }
-
+/*
 //________________________________________________________________________________________
 - (void) backButtonPressed
 {
    [self.navigationController popViewControllerAnimated : YES];
 }
-
+*/
 
 @end

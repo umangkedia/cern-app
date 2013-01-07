@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+
 #import "MWFeedItem.h"
 
 @interface ArticleDetailViewController : UIViewController <UIWebViewDelegate> {
@@ -18,7 +19,7 @@
 @property (nonatomic, assign) BOOL loadOriginalLink;
 
 - (void) setContentForArticle : (MWFeedItem *) article;
-- (void) setContentForVideoMetadata : (NSDictionary *) videoMetadata;
+//- (void) setContentForVideoMetadata : (NSDictionary *) videoMetadata;
 - (void) setContentForTweet : (NSDictionary *) tweet;
 
 @end
