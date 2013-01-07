@@ -132,29 +132,7 @@
       }
    }
 }
-/*
-//________________________________________________________________________________________
-- (void) loadMultiPageControllerWithSelectedItem : (NSInteger) selected
-{
-   using namespace CernAPP;
 
-   assert(selected >= 0 && "loadMultiPageControllerWithSelectedItem:, parameter selected must be non-negative");
-   
-   MultiPageController * const controller = [[MultiPageController alloc] initWithNibName : @"MultiPageController" bundle : nil];
-
-   NSMutableArray * const itemNames = [[NSMutableArray alloc] init];
-   for (NSObject<ContentProvider> *provider in liveData)
-      [itemNames addObject : [provider categoryName]];
-   
-   [self.navigationController pushViewController : controller animated : YES];
-   [controller setupControllerForPages : itemNames];
-
-   for (NSObject<ContentProvider> *provider in liveData)
-      [provider addPageWithContentTo : controller];
-   
-   [controller scrollToPage : selected];
-}
-*/
 //________________________________________________________________________________________
 - (void) viewWillAppear : (BOOL) animated
 {
@@ -163,8 +141,8 @@
   // self.navigationController.navigationBarHidden = NO;
    self.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    
-   self.tableView.backgroundColor = [UIColor colorWithRed : 0.5f green : 0.5f blue : 0.5f alpha : 1.f];
-   self.tableView.separatorColor = [UIColor colorWithRed : 0.5f green : 0.5f blue : 0.5f alpha : 1.f];
+   self.tableView.backgroundColor = [UIColor colorWithRed : 0.447f green : 0.462f blue : 0.525f alpha : 1.f];
+   self.tableView.separatorColor = [UIColor colorWithRed : 0.365f green : 0.38f blue : 0.427f alpha : 1.f];
 
    [self readLIVEData];
    
@@ -257,8 +235,7 @@
          forRowAtIndexPath : (NSIndexPath *) indexPath
 {
 #pragma unused(aTableView, indexPath)
-
-   [cell setBackgroundColor : [UIColor colorWithRed : 0.4f green : 0.4f blue : 0.4f alpha : 1.f]];
+   [cell setBackgroundColor : [UIColor colorWithRed : 0.415f green : 0.431f blue : 0.49f alpha : 1.f]];
    cell.textLabel.textColor = [UIColor blackColor];
    cell.textLabel.font = [UIFont fontWithName : @"PT Sans" size : 16.f];
 }
@@ -294,6 +271,20 @@
 - (IBAction) revealMenu : (id) sender
 {
    [self.slidingViewController anchorTopViewTo : ECRight];
+}
+
+#pragma mark - Hack
+
+//________________________________________________________________________________________
+- (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
+{
+   //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
+   //Does Apple really have to suck all the time like this???
+   //Why does stupid table view show EMPTY rows???
+   if (!section)
+      return [[UIView alloc] init];
+
+   return nil;
 }
 
 @end

@@ -15,6 +15,7 @@ using CernAPP::ItemStyle;
 
 @implementation MenuViewController {
    NSMutableArray *menuItems;
+   MenuItemView *selectedItemView;
 }
 
 //________________________________________________________________________________________
@@ -254,9 +255,12 @@ using CernAPP::ItemStyle;
    self.slidingViewController.underLeftWidthLayout = ECFullWidth;
    
    //We additionally setup a table view here.
-   scrollView.backgroundColor = [UIColor colorWithRed : 0.5f green : 0.5f blue : 0.5f alpha : 1.f];
+   scrollView.backgroundColor = [UIColor colorWithRed : 0.447f green : 0.462f blue : 0.525f alpha : 1.f];
    scrollView.showsHorizontalScrollIndicator = NO;
    scrollView.showsVerticalScrollIndicator = NO;
+   
+   selectedItemView = nil;
+   
    [self loadMenuContents];
 }
 
@@ -264,6 +268,21 @@ using CernAPP::ItemStyle;
 - (void) viewDidLayoutSubviews
 {
    [self layoutMenu];
+}
+
+//________________________________________________________________________________________
+- (void) itemViewWasSelected : (MenuItemView *) view
+{
+   assert(view != nil && "itemViewWasSelected:, parameter 'view' is nil");
+
+   if (selectedItemView) {
+      selectedItemView.isSelected = NO;
+      [selectedItemView setNeedsDisplay];
+   }
+   
+   selectedItemView = view;
+   selectedItemView.isSelected = YES;
+   [selectedItemView setNeedsDisplay];
 }
 
 @end

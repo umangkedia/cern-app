@@ -23,10 +23,12 @@ enum class ItemStyle {
 @interface MenuItemView : UIView
 
 - (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) item
-       style : (CernAPP::ItemStyle) style controller : (UIViewController *) controller;
+       style : (CernAPP::ItemStyle) style controller : (MenuViewController *) controller;
 - (void) drawRect : (CGRect) rect;
 
 - (void) layoutText;
+
+@property (nonatomic) BOOL isSelected;
 
 @end
 

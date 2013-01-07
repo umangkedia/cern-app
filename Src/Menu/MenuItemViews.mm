@@ -36,14 +36,16 @@ using CernAPP::ItemStyle;
 
    //Weak, we do not have to control life time of these objects.
    __weak NSObject<MenuItemProtocol> *menuItem;
-   __weak UIViewController *controller;
+   __weak MenuViewController *controller;
 
    UILabel *itemLabel;
 }
 
+@synthesize isSelected;
+
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) anItem
-       style : (CernAPP::ItemStyle) aStyle controller : (UIViewController *) aController
+       style : (CernAPP::ItemStyle) aStyle controller : (MenuViewController *) aController
 {
    assert(anItem != nil && "initWithFrame:item:style:controller:, parameter 'anItem' is nil");
    assert(aStyle == ItemStyle::standalone || aStyle == ItemStyle::separator || aStyle == ItemStyle::child &&
@@ -76,6 +78,8 @@ using CernAPP::ItemStyle;
       itemLabel.layer.shadowOpacity = menuTextShadowAlpha;*/
 
       [self addSubview : itemLabel];
+      
+      isSelected = NO;
    }
    
    return self;
@@ -86,24 +90,40 @@ using CernAPP::ItemStyle;
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
    
-   CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
-   CGContextFillRect(ctx, rect);
-   
-   CGContextSetAllowsAntialiasing(ctx, false);
+   if (!isSelected) {
+      CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
+      CGContextFillRect(ctx, rect);
+      
+      CGContextSetAllowsAntialiasing(ctx, false);
 
-   //Bright line at the top.
-   CGContextSetRGBStrokeColor(ctx, 0.458, 0.478, 0.533, 1.f);
-   CGContextMoveToPoint(ctx, 0.f, 1.f);
-   CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
-   CGContextStrokePath(ctx);
+      //Bright line at the top.
+      CGContextSetRGBStrokeColor(ctx, 0.458f, 0.478f, 0.533f, 1.f);
+      CGContextMoveToPoint(ctx, 0.f, 1.f);
+      CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
+      CGContextStrokePath(ctx);
+      
+      //Dark line at the bottom.
+      CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.427f, 1.f);
+      CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+      CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+      CGContextStrokePath(ctx);
+      
+      CGContextSetAllowsAntialiasing(ctx, true);
+   } else {
+      CGPoint startPoint = CGPointZero;
+      CGPoint endPoint = CGPointMake(0.f, rect.size.height);
    
-   //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, 0.365, 0.38, 0.427, 1.f);
-   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
-   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
-   CGContextStrokePath(ctx);
+      //Create a gradient.
+      CGColorSpaceRef baseSpace(CGColorSpaceCreateDeviceRGB());
+      CGFloat positions[] = {0.f, 1.f};
+      CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
+
+      CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors[0], positions, 2);
+      CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
    
-   CGContextSetAllowsAntialiasing(ctx, true);
+      CGGradientRelease(gradient);
+      CGColorSpaceRelease(baseSpace);
+   }
 }
 
 //________________________________________________________________________________________
@@ -122,6 +142,7 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (void) handleTap
 {
+   [controller itemViewWasSelected : self];
    [menuItem itemPressedIn : controller];
 }
 
@@ -174,11 +195,11 @@ using CernAPP::ItemStyle;
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
    
-   CGContextSetRGBFillColor(ctx, 0.447, 0.462, 0.525, 1.);
+   CGContextSetRGBFillColor(ctx, 0.447f, 0.462f, 0.525f, 1.f);
    CGContextFillRect(ctx, rect);
    
    //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, 0.365, 0.38, 0.527, 1.f);
+   CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.527f, 1.f);
    CGContextMoveToPoint(ctx, 0.f, rect.size.height);
    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
    CGContextStrokePath(ctx);

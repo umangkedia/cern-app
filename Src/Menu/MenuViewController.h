@@ -4,8 +4,12 @@
 
 #import <UIKit/UIKit.h>
 
+@class MenuItemView;
+
 @interface MenuViewController : UIViewController {
    IBOutlet __weak UIScrollView *scrollView;
 }
+
+- (void) itemViewWasSelected : (MenuItemView *) view;
 
 @end
