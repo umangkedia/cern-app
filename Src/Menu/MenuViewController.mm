@@ -7,6 +7,8 @@
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "MenuViewController.h"
+#import "MenuItemViews.h"
+#import "GUIHelpers.h"
 #import "MenuItems.h"
 
 using CernAPP::ItemStyle;
@@ -14,8 +16,6 @@ using CernAPP::ItemStyle;
 @implementation MenuViewController {
    NSMutableArray *menuItems;
 }
-
-@synthesize tableView;
 
 //________________________________________________________________________________________
 - (UIImage *) loadItemImage : (NSDictionary *) desc
@@ -35,6 +35,7 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (BOOL) loadNewsSection : (NSDictionary *) desc
 {
+   assert(scrollView != nil && "loadNewSection:, scrollView is not loaded yet!");
    assert(desc != nil && "loadNewsSection:, parameter 'desc' is nil");
    
    id objBase = [desc objectForKey : @"Category name"];
@@ -59,20 +60,43 @@ using CernAPP::ItemStyle;
              "loadNewsSection:, 'Feeds' must have a NSArray type");
       NSArray * const feeds = (NSArray *)objBase;
       if (feeds.count) {
-         //First, add a section title.
-         [menuItems addObject : [[GroupTitle alloc] initWithTitle : sectionName]];
-         
+         UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
+         containerView.clipsToBounds = YES;
+         UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
+         [containerView addSubview : groupView];
+         [scrollView addSubview : containerView];
+
+         NSMutableArray * const items = [[NSMutableArray alloc] init];
          for (id info in feeds) {
             assert([info isKindOfClass : [NSDictionary class]] &&
                    "loadNewsSection, feed info must be a dictionary");
             NSDictionary * const feedInfo = (NSDictionary *)info;
             FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
-            //Now, after we created a provider, we can add menu item.
-            [menuItems addObject : [[MenuItem alloc] initWithContentProvider : provider]];
+
+            MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
+            [items addObject : newItem];
+            
+            MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : newItem
+                                             style : ItemStyle::child controller : self];
+            newItem.itemView = itemView;
+            [groupView addSubview : itemView];
          }
+
+
+         MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : sectionName
+                                         image : [self loadItemImage : desc] items : items];
+         MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame:CGRect()
+                                                     item : group controller : self];
+         [scrollView addSubview : menuGroupView];
+         
+         group.titleView = menuGroupView;
+         group.containerView = containerView;
+         group.groupView = groupView;
+         
+         [menuItems addObject : group];
       }
    }
-   
+
    return YES;
 }
 
@@ -98,17 +122,39 @@ using CernAPP::ItemStyle;
    NSArray * const experimentNames = (NSArray *)objBase;
    
    if (experimentNames.count) {
-      GroupTitle *newTitle = [[GroupTitle alloc] initWithTitle : @"LIVE"];
-      [menuItems addObject : newTitle];
-   
-      //This is just an array of strings.
+      UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
+      containerView.clipsToBounds = YES;
+      UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
+      [containerView addSubview : groupView];
+      [scrollView addSubview : containerView];
+      
+      NSMutableArray * const items = [[NSMutableArray alloc] init];
       for (id expBase in experimentNames) {
+         //This is just an array of strings.
          assert([expBase isKindOfClass : [NSString class]] &&
                 "loadLIVESection:, experiment's name must have a NSString type");
-         //
-         [menuItems addObject : [[MenuItemLIVE alloc] initWithExperiment : (NSString *)expBase]];
-         //
+         
+         MenuItemLIVE * liveItem = [[MenuItemLIVE alloc] initWithExperiment : (NSString *)expBase];
+         [items addObject : liveItem];
+            
+         MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : liveItem
+                                          style : ItemStyle::child controller : self];
+         liveItem.itemView = itemView;
+         [groupView addSubview : itemView];
       }
+
+
+      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"LIVE"
+                                      image : [self loadItemImage : desc] items : items];
+      MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
+                                                  item : group controller : self];
+      [scrollView addSubview : menuGroupView];
+         
+      group.titleView = menuGroupView;
+      group.containerView = containerView;
+      group.groupView = groupView;
+         
+      [menuItems addObject : group];
    }
 
    return YES;
@@ -151,10 +197,53 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (void) awakeFromNib
+- (void) layoutMenu
 {
-   //Here we work with our content providers.
-   [self loadMenuContents];
+   CGRect currentFrame = {0.f, 0.f, scrollView.frame.size.width};
+   CGFloat totalHeight = 0.f;
+   
+   for (NSObject<MenuItemProtocol> * item in menuItems) {
+      if ([item isKindOfClass : [MenuItemsGroup class]]) {
+         MenuItemsGroup * const group = (MenuItemsGroup *)item;
+         //
+         currentFrame.size.height = CernAPP::groupMenuItemHeight;
+         group.titleView.frame = currentFrame;
+         [group.titleView layoutText];
+         totalHeight += CernAPP::groupMenuItemHeight;
+         currentFrame.origin.y += CernAPP::groupMenuItemHeight;
+         //
+         CGRect containerFrame = currentFrame;
+         containerFrame.size.height = group.nItems * CernAPP::childMenuItemHeight;
+         group.containerView.frame = containerFrame;
+         containerFrame.origin = CGPoint();
+         group.groupView.frame = containerFrame;
+
+         totalHeight += containerFrame.size.height;         
+         
+         CGRect childFrame = currentFrame;
+         childFrame.origin.y = 0.f;
+         for (NSUInteger i = 0, e = group.nItems; i < e; ++i) {
+            //Let's place children views.
+            childFrame.size.height = CernAPP::childMenuItemHeight;
+            
+            NSObject<MenuItemProtocol> * const childItem = [group item : i];
+            
+            assert([childItem respondsToSelector : @selector(itemView)] &&
+                   "layoutMenu, child item does not have the 'itemView' selector");
+            
+            MenuItemView * const childView = childItem.itemView;
+            childView.frame = childFrame;
+            [childView layoutText];
+
+            childFrame.origin.y += CernAPP::childMenuItemHeight;
+         }
+         
+         currentFrame.origin.y += containerFrame.size.height;
+      }
+   }
+   
+   scrollView.contentOffset = CGPoint();
+   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 }
 
 //________________________________________________________________________________________
@@ -165,116 +254,16 @@ using CernAPP::ItemStyle;
    self.slidingViewController.underLeftWidthLayout = ECFullWidth;
    
    //We additionally setup a table view here.
-   tableView.backgroundColor = [UIColor colorWithRed : 0.5f green : 0.5f blue : 0.5f alpha : 1.f];
-   tableView.separatorColor = [UIColor colorWithRed : 0.5f green : 0.5f blue : 0.5f alpha : 1.f];
+   scrollView.backgroundColor = [UIColor colorWithRed : 0.5f green : 0.5f blue : 0.5f alpha : 1.f];
+   scrollView.showsHorizontalScrollIndicator = NO;
+   scrollView.showsVerticalScrollIndicator = NO;
+   [self loadMenuContents];
 }
 
 //________________________________________________________________________________________
-- (NSInteger) tableView : (UITableView *) aTableView numberOfRowsInSection : (NSInteger) sectionIndex
+- (void) viewDidLayoutSubviews
 {
-#pragma unused(aTableView, sectionIndex)
-
-   return menuItems.count;
-}
-
-//________________________________________________________________________________________
-- (void) tableView : (UITableView *) aTableView willDisplayCell : (UITableViewCell *) cell
-         forRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(aTableView)
-
-   assert(indexPath != nil &&
-          "tableView:willDisplayCell:forRowAtIndexPath:, parameter 'indexPath' is nil");
-
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < menuItems.count &&
-          "tableView:willDisplayCell:forRowAtIndexPath:, index is out of bounds");
-
-   NSObject<MenuItemProtocol> * const item = (NSObject<MenuItemProtocol> *)menuItems[row];
-   
-   if (item.itemStyle == ItemStyle::groupTitle) {
-      cell.backgroundColor = [UIColor colorWithPatternImage : [UIImage imageNamed : @"navbarback.png"]];
-      cell.textLabel.textColor = [UIColor whiteColor];
-      cell.textLabel.font = [UIFont fontWithName : @"PT Sans" size : 18.f];
-   } else {
-      [cell setBackgroundColor : [UIColor colorWithRed : 0.4f green : 0.4f blue : 0.4f alpha : 1.f]];
-      cell.textLabel.textColor = [UIColor blackColor];
-      cell.textLabel.font = [UIFont fontWithName : @"PT Sans" size : 14.f];
-   }
-}
-
-//________________________________________________________________________________________
-- (NSIndexPath *) tableView : (UITableView *) aTableView willSelectRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(aTableView)
-
-   assert(indexPath != nil &&
-          "tableView:willSelectRowAtIndexPath:, parameter 'indexPath' is nil");
-
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < menuItems.count &&
-          "tableView:willSelectRowAtIndexPath:, index is out of bounds");
-
-   NSObject<MenuItemProtocol> * const item = (NSObject<MenuItemProtocol> *)menuItems[row];
-   if (item.isSelectable)
-      return indexPath;
-   
-   return nil;
-}
-
-//________________________________________________________________________________________
-- (UITableViewCell *) tableView : (UITableView *) aTableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(aTableView)
-
-   assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
-   
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < menuItems.count &&
-          "tableView:cellForRowAtIndexPath:, index is out of bounds");
-
-   NSString * const cellIdentifier = @"MenuItemCell";
-   UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier : cellIdentifier];
-   if (!cell)
-      cell = [[UITableViewCell alloc] initWithStyle : UITableViewCellStyleSubtitle reuseIdentifier : cellIdentifier];
-
-   NSObject<MenuItemProtocol> * const item = (NSObject<MenuItemProtocol> *)menuItems[row];
-   cell.textLabel.text = item.itemText;
-
-   return cell;
-}
-
-//________________________________________________________________________________________
-- (CGFloat) tableView : (UITableView *) aTableView heightForRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(aTableView)
-
-   assert(indexPath != nil && "tableView:heightForRowAtIndexPath:, parameter 'indexPath' is nil");
-
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < menuItems.count &&
-          "tableView:heightForRowAtIndexPath:, index is out of bounds");
-   
-   NSObject<MenuItemProtocol> * const item = (NSObject<MenuItemProtocol> *)menuItems[row];
-   if (item.itemStyle == ItemStyle::groupTitle)
-      return 44.f;
-
-   return 30.f;
-}
-
-//________________________________________________________________________________________
-- (void) tableView : (UITableView *) aTableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(aTableView)
-
-   assert(indexPath != nil && "tableView:didSelectRowAtIndexPath:, parameter 'indexPath' is nil");
-   
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < menuItems.count &&
-          "tableView:didSelectRowAtIndexPath:, index is out of bounds");
-
-   NSObject<MenuItemProtocol> * const selectedItem = (NSObject<MenuItemProtocol> *)menuItems[row];
-   [selectedItem itemPressedIn : self];
+   [self layoutMenu];
 }
 
 @end

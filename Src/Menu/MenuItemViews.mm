@@ -1,0 +1,223 @@
+//
+//  MenuItemViews.m
+//  slide_menu
+//
+//  Created by Timur Pocheptsov on 1/7/13.
+//  Copyright (c) 2013 Timur Pocheptsov. All rights reserved.
+//
+
+#import <cassert>
+
+#import <QuartzCore/QuartzCore.h>
+
+#import "MenuViewController.h"
+#import "MenuItemViews.h"
+#import "GUIHelpers.h"
+
+//Menu GUI constants.
+//It's a C++, all these constants have
+//internal linkage without any 'static',
+//and no need for unnamed namespace.
+const CGFloat groupMenuItemFontSize = 18.f;
+const CGFloat childMenuItemFontSize = 14.f;
+NSString * const menuFontName = @"PT Sans";
+const CGSize menuTextShadowOffset = CGSizeMake(2.f, 2.f);
+const CGFloat menuTextShadowAlpha = 0.5f;
+const CGFloat menuItemImageSize = 24.f;//must be square image.
+const CGFloat groupMenuItemTextIdent = 10.f;
+const CGFloat groupMenuItemTextHeight = 20.f;
+const CGFloat childMenuItemTextIdent = 20.f;
+const CGFloat childMenuItemTextHeight = 20.f;
+
+using CernAPP::ItemStyle;
+
+@implementation MenuItemView {
+   ItemStyle itemStyle;
+
+   //Weak, we do not have to control life time of these objects.
+   __weak NSObject<MenuItemProtocol> *menuItem;
+   __weak UIViewController *controller;
+
+   UILabel *itemLabel;
+}
+
+//________________________________________________________________________________________
+- (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) anItem
+       style : (CernAPP::ItemStyle) aStyle controller : (UIViewController *) aController
+{
+   assert(anItem != nil && "initWithFrame:item:style:controller:, parameter 'anItem' is nil");
+   assert(aStyle == ItemStyle::standalone || aStyle == ItemStyle::separator || aStyle == ItemStyle::child &&
+          "initWithFrame:item:style:controller:, parameter 'aStyle' is invalid");
+   assert(aController != nil && "initWithFrame:item:style:controller:, parameter 'aController' is nil");
+
+   if (self = [super initWithFrame : frame]) {
+      menuItem = anItem;
+      itemStyle = aStyle;
+      controller = aController;
+      
+      UITapGestureRecognizer * const tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget : self action : @selector(handleTap)];
+      [tapRecognizer setNumberOfTapsRequired : 1];
+      [self addGestureRecognizer : tapRecognizer];
+      
+      itemLabel = [[UILabel alloc] initWithFrame : CGRect()];
+      itemLabel.text = menuItem.itemText;
+
+      UIFont * const font = [UIFont fontWithName : menuFontName size : childMenuItemFontSize];
+      assert(font != nil && "initWithFrame:item:style:controller:, font not found");
+      itemLabel.font = font;
+   
+      itemLabel.textAlignment = NSTextAlignmentLeft;
+      itemLabel.numberOfLines = 1;
+      itemLabel.clipsToBounds = YES;
+      itemLabel.backgroundColor = [UIColor clearColor];
+      /*
+      itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+      itemLabel.layer.shadowOffset = menuTextShadowOffset;
+      itemLabel.layer.shadowOpacity = menuTextShadowAlpha;*/
+
+      [self addSubview : itemLabel];
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (void) drawRect : (CGRect) rect
+{
+   CGContextRef ctx = UIGraphicsGetCurrentContext();
+   
+   CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
+   CGContextFillRect(ctx, rect);
+   
+   CGContextSetAllowsAntialiasing(ctx, false);
+
+   //Bright line at the top.
+   CGContextSetRGBStrokeColor(ctx, 0.458, 0.478, 0.533, 1.f);
+   CGContextMoveToPoint(ctx, 0.f, 1.f);
+   CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
+   CGContextStrokePath(ctx);
+   
+   //Dark line at the bottom.
+   CGContextSetRGBStrokeColor(ctx, 0.365, 0.38, 0.427, 1.f);
+   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+   CGContextStrokePath(ctx);
+   
+   CGContextSetAllowsAntialiasing(ctx, true);
+}
+
+//________________________________________________________________________________________
+- (void) layoutText
+{
+   CGRect frame = self.frame;
+   frame.origin.x = childMenuItemTextIdent;
+   frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
+   frame.size.width -= 2 * childMenuItemTextIdent;
+   frame.size.height = childMenuItemTextHeight;
+
+   itemLabel.frame = frame;
+
+}
+
+//________________________________________________________________________________________
+- (void) handleTap
+{
+   [menuItem itemPressedIn : controller];
+}
+
+@end
+
+@implementation MenuItemsGroupView {
+   __weak MenuItemsGroup *groupItem;
+   __weak MenuViewController *menuController;
+   
+   UILabel *itemLabel;
+}
+
+//________________________________________________________________________________________
+- (id) initWithFrame : (CGRect)frame item : (MenuItemsGroup *) item controller : (MenuViewController *) controller
+{
+   assert(item != nil && "initWithFrame:item:controller, parameter 'item' is nil");
+   assert(controller != nil && "initWithFrame:item:controller, parameter 'controller' is nil");
+   
+   if (self = [super initWithFrame : frame]) {
+      groupItem = item;
+      menuController = controller;
+      
+      UITapGestureRecognizer * const tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget : self action : @selector(handleTap)];
+      [tapRecognizer setNumberOfTapsRequired : 1];
+      [self addGestureRecognizer : tapRecognizer];
+      
+      itemLabel = [[UILabel alloc] initWithFrame:CGRect()];
+      [self addSubview : itemLabel];
+      itemLabel.text = item.itemText;
+      UIFont * const font = [UIFont fontWithName : menuFontName size : groupMenuItemFontSize];
+      assert(font != nil && "initWithFrame:item:controller:, font not found");
+      itemLabel.font = font;
+      
+      itemLabel.textAlignment = NSTextAlignmentLeft;
+      itemLabel.numberOfLines = 1;
+      itemLabel.clipsToBounds = YES;
+      itemLabel.backgroundColor = [UIColor clearColor];
+      itemLabel.textColor = [UIColor whiteColor];
+
+      itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+      itemLabel.layer.shadowOffset = menuTextShadowOffset;
+      itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (void) drawRect : (CGRect) rect
+{
+   CGContextRef ctx = UIGraphicsGetCurrentContext();
+   
+   CGContextSetRGBFillColor(ctx, 0.447, 0.462, 0.525, 1.);
+   CGContextFillRect(ctx, rect);
+   
+   //Dark line at the bottom.
+   CGContextSetRGBStrokeColor(ctx, 0.365, 0.38, 0.527, 1.f);
+   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+   CGContextStrokePath(ctx);
+   
+   if (groupItem.itemImage) {
+      const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
+      const CGRect imageRect = CGRectMake(4.f, frame.size.height / 2 - menuItemImageSize / 2,
+                                          menuItemImageSize, menuItemImageSize);
+      [groupItem.itemImage drawInRect : imageRect];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) layoutText
+{
+   CGRect frame = self.frame;
+   if (groupItem.itemImage)
+      frame.origin.x = menuItemImageSize + 8.f;
+   else
+      frame.origin.x = groupMenuItemTextIdent;
+   
+   frame.size.width -= frame.origin.x;//Not very smart, but ok.
+   frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
+   frame.size.height = groupMenuItemTextHeight;
+
+   itemLabel.frame = frame;
+}
+
+//________________________________________________________________________________________
+- (MenuItemsGroup *) getMenuItemsGroup
+{
+   return groupItem;
+}
+
+//________________________________________________________________________________________
+- (void) handleTap
+{
+   //Collapse or expand.
+   NSLog(@"collapse or expand!");
+}
+
+@end

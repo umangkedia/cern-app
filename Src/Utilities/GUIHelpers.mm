@@ -14,4 +14,9 @@ const CGFloat spinnerSize = 150.f;
 const CGSize navBarBackButtonSize  = CGSizeMake(35.f, 35.f);
 const CGFloat navBarHeight = 44.f;
 
+//Menu.
+const CGFloat groupMenuItemHeight = 44.f;
+const CGFloat childMenuItemHeight = 30.f;
+
+
 }

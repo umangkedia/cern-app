@@ -5,22 +5,13 @@
 
 #import "ContentProviders.h"
 
-namespace CernAPP {
-
-enum class ItemStyle {
-   groupTitle,
-   childItem
-};
-
-}
+@class MenuItemsGroupView;
+@class MenuItemView;
 
 //Protocol for menu items (not a class, not to
 //have stupid empty implementation)
 @protocol MenuItemProtocol <NSObject>
 @required
-
-- (BOOL) isSelectable;
-- (CernAPP::ItemStyle) itemStyle;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
@@ -28,18 +19,8 @@ enum class ItemStyle {
 @optional
 - (void) itemPressedIn : (UIViewController *) controller;
 
-@end
-
-//Never selectable, always with 'groupTitle' style.
-@interface GroupTitle : NSObject<MenuItemProtocol>
-
-- (id) initWithTitle : (NSString *) title;//No image yet.
-
-- (BOOL) isSelectable;
-- (CernAPP::ItemStyle) itemStyle;
-
-- (NSString *) itemText;
-- (UIImage *) itemImage;
+//Since itemView also has a reference to menu item, reference is weak.
+@property (nonatomic) __weak MenuItemView *itemView;
 
 @end
 
@@ -50,16 +31,12 @@ enum class ItemStyle {
 
 - (id) initWithContentProvider : (NSObject<ContentProvider> *) provider;
 
-- (BOOL) isSelectable;
-- (void) setIsSelectable : (BOOL) selectable;
-
-- (CernAPP::ItemStyle) itemStyle;
-- (void) setItemStyle : (CernAPP::ItemStyle) style;
-
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
 - (void) itemPressedIn : (UIViewController *) controller;
+
+@property (nonatomic) __weak MenuItemView *itemView;
 
 @end
 
@@ -71,14 +48,30 @@ enum class ItemStyle {
 
 - (id) initWithExperiment : (NSString *) name;
 
-- (BOOL) isSelectable;
-- (void) setIsSelectable : (BOOL) selectable;
-
-- (CernAPP::ItemStyle) itemStyle;
-
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
 - (void) itemPressedIn : (UIViewController *) controller;
+
+@property (nonatomic) __weak MenuItemView *itemView;
+
+@end
+
+
+@interface MenuItemsGroup : NSObject<MenuItemProtocol>
+
+- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items;
+
+- (NSString *) itemText;
+- (UIImage *) itemImage;
+
+@property (nonatomic) BOOL collapsed;
+
+- (NSUInteger) nItems;
+- (MenuItem *) item : (NSUInteger) item;
+
+@property (nonatomic) __weak MenuItemsGroupView *titleView;
+@property (nonatomic) __weak UIView *containerView;
+@property (nonatomic) __weak UIView *groupView;
 
 @end

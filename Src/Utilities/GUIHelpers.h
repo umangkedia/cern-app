@@ -6,4 +6,9 @@ extern const CGFloat spinnerSize;
 extern const CGSize navBarBackButtonSize;
 extern const CGFloat navBarHeight;
 
+//Menu.
+extern const CGFloat groupMenuItemHeight;
+extern const CGFloat childMenuItemHeight;
+
+
 }

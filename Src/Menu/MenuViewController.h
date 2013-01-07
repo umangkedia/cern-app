@@ -4,8 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-
-@property (nonatomic) __weak IBOutlet UITableView *tableView;
+@interface MenuViewController : UIViewController {
+   IBOutlet __weak UIScrollView *scrollView;
+}
 
 @end

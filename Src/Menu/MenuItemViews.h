@@ -1,0 +1,47 @@
+//
+//  MenuItemViews.h
+//  slide_menu
+//
+//  Created by Timur Pocheptsov on 1/7/13.
+//  Copyright (c) 2013 Timur Pocheptsov. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+#import "MenuItems.h"
+
+namespace CernAPP {
+
+enum class ItemStyle {
+   standalone,
+   child,
+   separator
+};
+
+}
+
+@interface MenuItemView : UIView
+
+- (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) item
+       style : (CernAPP::ItemStyle) style controller : (UIViewController *) controller;
+- (void) drawRect : (CGRect) rect;
+
+- (void) layoutText;
+
+@end
+
+@class MenuViewController;
+
+//This is a group title.
+@interface MenuItemsGroupView : UIView
+
+- (id) initWithFrame : (CGRect) frame item : (MenuItemsGroup *) item
+       controller : (MenuViewController *) controller;
+- (void) drawRect : (CGRect)rect;
+
+- (void) layoutText;
+
+- (MenuItemsGroup *) getMenuItemsGroup;
+
+@end
+

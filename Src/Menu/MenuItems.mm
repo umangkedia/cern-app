@@ -3,61 +3,12 @@
 #import "TableNavigationController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
-#import "Experiments.h"
 #import "MenuItems.h"
-
-using CernAPP::ItemStyle;
-
-//Quite a simple non-interactive table cell.
-@implementation GroupTitle {
-   NSString *title;
-}
-
-//________________________________________________________________________________________
-- (id) initWithTitle : (NSString *) aTitle
-{
-   if (self = [super init])
-      title = aTitle;
-   
-   return self;
-}
-
-//________________________________________________________________________________________
-- (BOOL) isSelectable
-{
-   //Never can be selected and a table view should never
-   //highlight it.
-   return NO;
-}
-
-//________________________________________________________________________________________
-- (ItemStyle) itemStyle
-{
-   //It always has this style only.
-   return ItemStyle::groupTitle;
-}
-
-//________________________________________________________________________________________
-- (NSString *) itemText
-{
-   return title;
-}
-
-//________________________________________________________________________________________
-- (UIImage *) itemImage
-{
-   //Noop at the moment.
-   return nil;
-}
-
-@end
 
 //This item can activate some data provider.
 @implementation MenuItem {
    NSString *itemTitle;
    NSObject<ContentProvider> *contentProvider;
-   BOOL isSelectable;
-   ItemStyle itemStyle;
 }
 
 //________________________________________________________________________________________
@@ -66,37 +17,11 @@ using CernAPP::ItemStyle;
    assert(provider != nil && "initWithTitle:contentProvider:, parameter 'provider' is nil");
    
    if (self = [super init]) {
-      itemTitle = [[NSString alloc]initWithFormat:@"   %@", provider.categoryName];// provider.categoryName;
-      itemStyle = ItemStyle::childItem;
+      itemTitle = provider.categoryName;// provider.categoryName;
       contentProvider = provider;
-      isSelectable = YES;//Enabled by default.
    }
 
    return self;
-}
-
-//________________________________________________________________________________________
-- (BOOL) isSelectable
-{
-   return isSelectable;
-}
-
-//________________________________________________________________________________________
-- (void) setIsSelectable : (BOOL) selectable
-{
-   isSelectable = selectable;
-}
-
-//________________________________________________________________________________________
-- (ItemStyle) itemStyle
-{
-   return itemStyle;
-}
-
-//________________________________________________________________________________________
-- (void) setItemStyle : (ItemStyle) style
-{
-   itemStyle = style;
 }
 
 //________________________________________________________________________________________
@@ -115,7 +40,6 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (void) itemPressedIn : (UIViewController *) controller
 {
-   assert(isSelectable == YES && "itemPressedIn:, called for disabled item");
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
    //Ask content provider to load correct view/controller.
    [contentProvider loadControllerTo : controller];
@@ -124,9 +48,7 @@ using CernAPP::ItemStyle;
 @end
 
 @implementation MenuItemLIVE {
-   CernAPP::LHCExperiment experiment;
    NSString *experimentName;
-   BOOL isSelectable;
 }
 
 //________________________________________________________________________________________
@@ -134,37 +56,16 @@ using CernAPP::ItemStyle;
 {
    assert(name != nil && "initWithExperiment:, parameter 'name' is nil");
 
-   if (self = [super init]) {
-      experiment = CernAPP::ExperimentNameToEnum(name);
+   if (self = [super init])
       experimentName = name;
-      isSelectable = YES;
-   }
    
    return self;
 }
 
 //________________________________________________________________________________________
-- (BOOL) isSelectable
-{
-   return isSelectable;
-}
-
-//________________________________________________________________________________________
-- (void) setIsSelectable : (BOOL) selectable
-{
-   isSelectable = selectable;
-}
-
-//________________________________________________________________________________________
-- (ItemStyle) itemStyle
-{
-   return ItemStyle::childItem;
-}
-
-//________________________________________________________________________________________
 - (NSString *) itemText
 {
-   return [[NSString alloc] initWithFormat:@"   %@", experimentName];
+   return experimentName;
 }
 
 //________________________________________________________________________________________
@@ -191,6 +92,67 @@ using CernAPP::ItemStyle;
       controller.slidingViewController.topViewController.view.frame = frame;
       [controller.slidingViewController resetTopView];
    }];
+}
+
+@end
+
+@implementation MenuItemsGroup {
+   NSArray *items;
+   NSString *title;
+   UIImage *image;
+   BOOL collapsed;
+}
+
+@synthesize collapsed;
+
+//________________________________________________________________________________________
+- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems
+{
+   assert(aTitle != nil && "initWithTitle:image:items, parameter 'aTitle' is nil");
+   //image can be nil.
+   assert(anItems != nil && "initWithTitle:image:items, parameter 'anItems' is nil");
+   assert(anItems.count != 0 && "initWithTitle:image:items, number of items must be > 0");
+   
+   if (self = [super init]) {
+      title = aTitle;
+      image = anImage;
+      items = anItems;
+      collapsed = NO;//Opened by default.
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (NSString *) itemText
+{
+   return title;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) itemImage
+{
+   return image;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) nItems
+{
+   return items.count;
+}
+
+//________________________________________________________________________________________
+- (MenuItem *) item : (NSUInteger) item;
+{
+   assert(item < items.count && "viewForItem:, parameter 'item' is out of bounds");
+   return items[item];
+}
+
+//________________________________________________________________________________________
+- (void) itemPressedIn : (UIViewController *) controller
+{
+   //Either collapse or expand a group.
+   NSLog(@"collapse or expand a group");
 }
 
 @end
