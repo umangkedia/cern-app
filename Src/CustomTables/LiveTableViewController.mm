@@ -276,7 +276,7 @@
       
       if (indexPath.row < [liveData count]) {
          NSObject<ContentProvider> * const provider = (NSObject<ContentProvider> *)liveData[indexPath.row];
-        // [provider pushViewControllerInto : self.navigationController];
+         [provider pushViewControllerInto : self.navigationController];
       } else
          [self pushEventDisplayForExperiment];
       
@@ -284,7 +284,7 @@
       assert(indexPath.row >= 0 && indexPath.row < [liveData count] &&
              "tableView:didSelectRowAtIndexPath:, indexPath.row is out of bounds");
       NSObject<ContentProvider> * const provider = (NSObject<ContentProvider> *)liveData[indexPath.row];
-     // [provider pushViewControllerInto : self.navigationController];
+      [provider pushViewControllerInto : self.navigationController];
    }
 }
 
