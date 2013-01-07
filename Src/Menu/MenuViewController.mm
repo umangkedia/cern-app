@@ -18,6 +18,21 @@ using CernAPP::ItemStyle;
 @synthesize tableView;
 
 //________________________________________________________________________________________
+- (UIImage *) loadItemImage : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadItemImage:, parameter 'desc' is nil");
+   
+   if (id objBase = [desc objectForKey : @"Image name"]) {
+      assert([objBase isKindOfClass : [NSString class]] &&
+             "loadItemImage:, 'Image name' must be a NSString");
+      
+      return [UIImage imageNamed : (NSString *)objBase];
+   }
+   
+   return nil;
+}
+
+//________________________________________________________________________________________
 - (BOOL) loadNewsSection : (NSDictionary *) desc
 {
    assert(desc != nil && "loadNewsSection:, parameter 'desc' is nil");

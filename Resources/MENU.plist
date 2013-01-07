@@ -5,6 +5,8 @@
 	<key>Menu Contents</key>
 	<array>
 		<dict>
+			<key>Image name</key>
+			<string>news.png</string>
 			<key>Feeds</key>
 			<array>
 				<dict>
@@ -56,6 +58,8 @@
 			<string>News</string>
 		</dict>
 		<dict>
+			<key>Image name</key>
+			<string>live.png</string>
 			<key>Experiments</key>
 			<array>
 				<string>CMS</string>
