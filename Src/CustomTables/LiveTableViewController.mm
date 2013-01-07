@@ -186,7 +186,7 @@
    NSString * const cellIdentifier = @"LiveCell";
 
    UITableViewCell *cellBase = [tableView dequeueReusableCellWithIdentifier : cellIdentifier];
-   assert([cellBase isKindOfClass:[LiveTableViewCell class]] &&
+   assert([cellBase isKindOfClass : [LiveTableViewCell class]] &&
           "tableView:cellForRowAtIndexPath:, reusable cell has a bad type");
    
    LiveTableViewCell *cell = (LiveTableViewCell *)cellBase;
