@@ -184,9 +184,12 @@
    using namespace CernAPP;
 
    NSString * const cellIdentifier = @"LiveCell";
-   LiveTableViewCell *cell = (LiveTableViewCell *)[tableView dequeueReusableCellWithIdentifier : cellIdentifier];
-   assert([cell isKindOfClass:[LiveTableViewCell class]] &&
+
+   UITableViewCell *cellBase = [tableView dequeueReusableCellWithIdentifier : cellIdentifier];
+   assert([cellBase isKindOfClass:[LiveTableViewCell class]] &&
           "tableView:cellForRowAtIndexPath:, reusable cell has a bad type");
+   
+   LiveTableViewCell *cell = (LiveTableViewCell *)cellBase;
    if (!cell)
       cell = [[LiveTableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : cellIdentifier];
 
