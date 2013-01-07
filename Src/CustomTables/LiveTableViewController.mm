@@ -2,12 +2,9 @@
 
 #import "LiveTableViewController.h"
 #import "ECSlidingViewController.h"
-//#import "PhotosGridViewController.h"
 #import "StoryboardIdentifiers.h"
-//#import "MultiPageController.h"
+#import "LiveTableViewCell.h"
 #import "ContentProviders.h"
-//#import "GuiAdjustment.h"
-//#import "DeviceCheck.h"
 
 #pragma mark - ExperimentLiveControllerIPHONE.
 
@@ -142,7 +139,7 @@
    self.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    
    self.tableView.backgroundColor = [UIColor colorWithRed : 0.447f green : 0.462f blue : 0.525f alpha : 1.f];
-   self.tableView.separatorColor = [UIColor colorWithRed : 0.365f green : 0.38f blue : 0.427f alpha : 1.f];
+   self.tableView.separatorColor = [UIColor clearColor];
 
    [self readLIVEData];
    
@@ -187,9 +184,11 @@
    using namespace CernAPP;
 
    NSString * const cellIdentifier = @"LiveCell";
-   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : cellIdentifier];
+   LiveTableViewCell *cell = (LiveTableViewCell *)[tableView dequeueReusableCellWithIdentifier : cellIdentifier];
+   assert([cell isKindOfClass:[LiveTableViewCell class]] &&
+          "tableView:cellForRowAtIndexPath:, reusable cell has a bad type");
    if (!cell)
-      cell = [[UITableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : cellIdentifier];
+      cell = [[LiveTableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : cellIdentifier];
 
    if (experiment == LHCExperiment::ALICE) {
       //I hate this. Special case again.
@@ -209,6 +208,8 @@
       NSObject<ContentProvider> * const provider = (NSObject<ContentProvider> *)liveData[indexPath.row];
       cell.textLabel.text = [provider categoryName];
    }
+
+   cell.textLabel.backgroundColor = [UIColor clearColor];
 
    return cell;
 }
@@ -235,7 +236,6 @@
          forRowAtIndexPath : (NSIndexPath *) indexPath
 {
 #pragma unused(aTableView, indexPath)
-   [cell setBackgroundColor : [UIColor colorWithRed : 0.415f green : 0.431f blue : 0.49f alpha : 1.f]];
    cell.textLabel.textColor = [UIColor blackColor];
    cell.textLabel.font = [UIFont fontWithName : @"PT Sans" size : 16.f];
 }
