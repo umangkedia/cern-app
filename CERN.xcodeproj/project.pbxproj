@@ -19,9 +19,6 @@
 		41C0659416271ED1000DC176 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 41C0659316271ED1000DC176 /* iTunesArtwork */; };
 		41CE55B71616073F00F477AD /* D3.png in Resources */ = {isa = PBXBuildFile; fileRef = 41CE55B61616073F00F477AD /* D3.png */; };
 		41CE55B91616074A00F477AD /* D4.png in Resources */ = {isa = PBXBuildFile; fileRef = 41CE55B81616074A00F477AD /* D4.png */; };
-		41E6179E1614CE1700BAA7D4 /* MWFeedInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617451614CE1700BAA7D4 /* MWFeedInfo.m */; };
-		41E6179F1614CE1700BAA7D4 /* MWFeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617471614CE1700BAA7D4 /* MWFeedItem.m */; };
-		41E617A01614CE1700BAA7D4 /* MWFeedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617491614CE1700BAA7D4 /* MWFeedParser.m */; };
 		41E617A11614CE1700BAA7D4 /* MWCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6174D1614CE1700BAA7D4 /* MWCaptionView.m */; };
 		41E617A21614CE1700BAA7D4 /* MWPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E6174F1614CE1700BAA7D4 /* MWPhoto.m */; };
 		41E617A31614CE1700BAA7D4 /* MWPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E617511614CE1700BAA7D4 /* MWPhotoBrowser.m */; };
@@ -202,6 +199,9 @@
 		707B13AD169AF1E500180E02 /* ApplicationErrors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B13AC169AF1E500180E02 /* ApplicationErrors.mm */; };
 		707B13B2169AF39800180E02 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13B0169AF39800180E02 /* MBProgressHUD.m */; };
 		707B13B3169AF39800180E02 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 707B13B1169AF39800180E02 /* README.md */; };
+		707B13BC169AF45D00180E02 /* MWFeedInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13B6169AF45D00180E02 /* MWFeedInfo.m */; };
+		707B13BD169AF45D00180E02 /* MWFeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13B8169AF45D00180E02 /* MWFeedItem.m */; };
+		707B13BE169AF45D00180E02 /* MWFeedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13BA169AF45D00180E02 /* MWFeedParser.m */; };
 		70A630F316722F8000C467AE /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */; };
 		70C6A7C3164BD3A800D307E4 /* MultiPageController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
@@ -232,13 +232,6 @@
 		41C0659316271ED1000DC176 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		41CE55B61616073F00F477AD /* D3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = D3.png; sourceTree = "<group>"; };
 		41CE55B81616074A00F477AD /* D4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = D4.png; sourceTree = "<group>"; };
-		41E617441614CE1700BAA7D4 /* MWFeedInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedInfo.h; sourceTree = "<group>"; };
-		41E617451614CE1700BAA7D4 /* MWFeedInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWFeedInfo.m; sourceTree = "<group>"; };
-		41E617461614CE1700BAA7D4 /* MWFeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedItem.h; sourceTree = "<group>"; };
-		41E617471614CE1700BAA7D4 /* MWFeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWFeedItem.m; sourceTree = "<group>"; };
-		41E617481614CE1700BAA7D4 /* MWFeedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedParser.h; sourceTree = "<group>"; };
-		41E617491614CE1700BAA7D4 /* MWFeedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWFeedParser.m; sourceTree = "<group>"; };
-		41E6174A1614CE1700BAA7D4 /* MWFeedParser_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedParser_Private.h; sourceTree = "<group>"; };
 		41E6174C1614CE1700BAA7D4 /* MWCaptionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWCaptionView.h; sourceTree = "<group>"; };
 		41E6174D1614CE1700BAA7D4 /* MWCaptionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWCaptionView.m; sourceTree = "<group>"; };
 		41E6174E1614CE1700BAA7D4 /* MWPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWPhoto.h; sourceTree = "<group>"; };
@@ -491,6 +484,13 @@
 		707B13AF169AF39800180E02 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		707B13B0169AF39800180E02 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		707B13B1169AF39800180E02 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		707B13B5169AF45D00180E02 /* MWFeedInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedInfo.h; sourceTree = "<group>"; };
+		707B13B6169AF45D00180E02 /* MWFeedInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWFeedInfo.m; sourceTree = "<group>"; };
+		707B13B7169AF45D00180E02 /* MWFeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedItem.h; sourceTree = "<group>"; };
+		707B13B8169AF45D00180E02 /* MWFeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWFeedItem.m; sourceTree = "<group>"; };
+		707B13B9169AF45D00180E02 /* MWFeedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedParser.h; sourceTree = "<group>"; };
+		707B13BA169AF45D00180E02 /* MWFeedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWFeedParser.m; sourceTree = "<group>"; };
+		707B13BB169AF45D00180E02 /* MWFeedParser_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWFeedParser_Private.h; sourceTree = "<group>"; };
 		70A630F016722F8000C467AE /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoryboardIdentifiers.h; path = ../../OtherSources/StoryboardIdentifiers.h; sourceTree = "<group>"; };
 		70A630F116722F8000C467AE /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = StoryboardIdentifiers.mm; path = ../../OtherSources/StoryboardIdentifiers.mm; sourceTree = "<group>"; };
 		70C6A7C2164BD3A800D307E4 /* MultiPageController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiPageController.xib; sourceTree = "<group>"; };
@@ -541,7 +541,6 @@
 		41E617201614CE1700BAA7D4 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				41E617431614CE1700BAA7D4 /* MWFeedParser */,
 				41E6174B1614CE1700BAA7D4 /* MWPhotoBrowser */,
 				41E617591614CE1700BAA7D4 /* Parsers */,
 				41AB92591642D16A0025E5ED /* PullToRefresh */,
@@ -551,20 +550,6 @@
 				41E617871614CE1700BAA7D4 /* Views */,
 			);
 			path = Classes;
-			sourceTree = "<group>";
-		};
-		41E617431614CE1700BAA7D4 /* MWFeedParser */ = {
-			isa = PBXGroup;
-			children = (
-				41E617441614CE1700BAA7D4 /* MWFeedInfo.h */,
-				41E617451614CE1700BAA7D4 /* MWFeedInfo.m */,
-				41E617461614CE1700BAA7D4 /* MWFeedItem.h */,
-				41E617471614CE1700BAA7D4 /* MWFeedItem.m */,
-				41E617481614CE1700BAA7D4 /* MWFeedParser.h */,
-				41E617491614CE1700BAA7D4 /* MWFeedParser.m */,
-				41E6174A1614CE1700BAA7D4 /* MWFeedParser_Private.h */,
-			);
-			path = MWFeedParser;
 			sourceTree = "<group>";
 		};
 		41E6174B1614CE1700BAA7D4 /* MWPhotoBrowser */ = {
@@ -894,6 +879,7 @@
 		707B1343169AE8C900180E02 /* 3rd party */ = {
 			isa = PBXGroup;
 			children = (
+				707B13B4169AF45D00180E02 /* MWFeedParser */,
 				707B13AE169AF39800180E02 /* MBProgressHUD */,
 				707B1366169AE8F600180E02 /* ECSlidingViewController */,
 				707B1344169AE8C900180E02 /* AQGridView */,
@@ -1036,6 +1022,20 @@
 				707B13B1169AF39800180E02 /* README.md */,
 			);
 			path = MBProgressHUD;
+			sourceTree = "<group>";
+		};
+		707B13B4169AF45D00180E02 /* MWFeedParser */ = {
+			isa = PBXGroup;
+			children = (
+				707B13B5169AF45D00180E02 /* MWFeedInfo.h */,
+				707B13B6169AF45D00180E02 /* MWFeedInfo.m */,
+				707B13B7169AF45D00180E02 /* MWFeedItem.h */,
+				707B13B8169AF45D00180E02 /* MWFeedItem.m */,
+				707B13B9169AF45D00180E02 /* MWFeedParser.h */,
+				707B13BA169AF45D00180E02 /* MWFeedParser.m */,
+				707B13BB169AF45D00180E02 /* MWFeedParser_Private.h */,
+			);
+			path = MWFeedParser;
 			sourceTree = "<group>";
 		};
 		E1F7B67B156EDC7C0092367F = {
@@ -1271,9 +1271,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41E6179E1614CE1700BAA7D4 /* MWFeedInfo.m in Sources */,
-				41E6179F1614CE1700BAA7D4 /* MWFeedItem.m in Sources */,
-				41E617A01614CE1700BAA7D4 /* MWFeedParser.m in Sources */,
 				41E617A11614CE1700BAA7D4 /* MWCaptionView.m in Sources */,
 				41E617A21614CE1700BAA7D4 /* MWPhoto.m in Sources */,
 				41E617A31614CE1700BAA7D4 /* MWPhotoBrowser.m in Sources */,
@@ -1336,6 +1333,9 @@
 				707B13AA169AF1B200180E02 /* NewsTableViewCell.mm in Sources */,
 				707B13AD169AF1E500180E02 /* ApplicationErrors.mm in Sources */,
 				707B13B2169AF39800180E02 /* MBProgressHUD.m in Sources */,
+				707B13BC169AF45D00180E02 /* MWFeedInfo.m in Sources */,
+				707B13BD169AF45D00180E02 /* MWFeedItem.m in Sources */,
+				707B13BE169AF45D00180E02 /* MWFeedParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
