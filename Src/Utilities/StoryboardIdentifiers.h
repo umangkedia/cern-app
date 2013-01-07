@@ -9,5 +9,4 @@ extern NSString * const NewsTableViewControllerID;
 extern NSString * const LiveEventTableControllerID;
 extern NSString * const EventDisplayControllerID;
 
-
 }
