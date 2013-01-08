@@ -44,6 +44,7 @@ enum class ItemStyle {
 - (void) layoutText;
 
 - (MenuItemsGroup *) menuItemsGroup;
+- (UIImageView *) discloseImageView;
 
 @end
 

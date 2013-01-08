@@ -28,6 +28,8 @@ const CGFloat groupMenuItemTextIdent = 10.f;
 const CGFloat groupMenuItemTextHeight = 20.f;
 const CGFloat childMenuItemTextIdent = 20.f;
 const CGFloat childMenuItemTextHeight = 20.f;
+const CGFloat discloseTriangleSize = 14.f;
+const CGFloat groupMenuItemLeftMargin = 80.f;
 
 using CernAPP::ItemStyle;
 
@@ -153,6 +155,7 @@ using CernAPP::ItemStyle;
    __weak MenuViewController *menuController;
    
    UILabel *itemLabel;
+   UIImageView *discloseImageView;
 }
 
 //________________________________________________________________________________________
@@ -185,6 +188,12 @@ using CernAPP::ItemStyle;
       itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
       itemLabel.layer.shadowOffset = menuTextShadowOffset;
       itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
+      
+      discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
+      discloseImageView.clipsToBounds = YES;
+      discloseImageView.contentMode = UIViewContentModeScaleAspectFill;
+      
+      [self addSubview : discloseImageView];
    }
    
    return self;
@@ -221,17 +230,25 @@ using CernAPP::ItemStyle;
    else
       frame.origin.x = groupMenuItemTextIdent;
    
-   frame.size.width -= frame.origin.x;//Not very smart, but ok.
+   frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;//Not very smart, but ok.
    frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
    frame.size.height = groupMenuItemTextHeight;
 
    itemLabel.frame = frame;
+   
+   discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width, self.frame.size.height / 2 - discloseTriangleSize / 2, discloseTriangleSize, discloseTriangleSize);
 }
 
 //________________________________________________________________________________________
 - (MenuItemsGroup *) menuItemsGroup
 {
    return groupItem;
+}
+
+//________________________________________________________________________________________
+- (UIImageView *) discloseImageView
+{
+   return discloseImageView;
 }
 
 //________________________________________________________________________________________

@@ -4,6 +4,7 @@
 
 #import <cassert>
 #import <limits>
+#import <cmath>
 
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
@@ -262,6 +263,7 @@ using CernAPP::ItemStyle;
 
    if ((1 << groupIndex) & menuState) {
       //Group is expanded now.
+      group.titleView.discloseImageView.transform = CGAffineTransformMakeRotation(0.f);
    } else {
       //Group is collapsed.
       group.groupView.alpha = 0.f;
@@ -450,10 +452,12 @@ using CernAPP::ItemStyle;
                group.containerView.hidden = NO;
                group.groupView.alpha = 1.f;
                //Triangle animation.
+               group.titleView.discloseImageView.transform = CGAffineTransformMakeRotation(0.f);//rotate the triangle.
             }
          } else if (!isVisible) {
             group.groupView.alpha = 0.f;
             //Triangle animation.
+            group.titleView.discloseImageView.transform = CGAffineTransformMakeRotation(-M_PI / 2);//rotate the triangle.
          }
       }
    }
