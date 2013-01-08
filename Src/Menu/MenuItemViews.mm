@@ -49,9 +49,10 @@ using CernAPP::ItemStyle;
 - (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) anItem
        style : (CernAPP::ItemStyle) aStyle controller : (MenuViewController *) aController
 {
-   assert(anItem != nil && "initWithFrame:item:style:controller:, parameter 'anItem' is nil");
    assert(aStyle == ItemStyle::standalone || aStyle == ItemStyle::separator || aStyle == ItemStyle::child &&
           "initWithFrame:item:style:controller:, parameter 'aStyle' is invalid");
+   assert(aStyle == ItemStyle::separator || anItem &&
+          "initWithFrame:item:style:controller:, parameter 'anItem' is nil and style is not a separator");
    assert(aController != nil && "initWithFrame:item:style:controller:, parameter 'aController' is nil");
 
    if (self = [super initWithFrame : frame]) {
@@ -59,27 +60,25 @@ using CernAPP::ItemStyle;
       itemStyle = aStyle;
       controller = aController;
       
-      UITapGestureRecognizer * const tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget : self action : @selector(handleTap)];
-      [tapRecognizer setNumberOfTapsRequired : 1];
-      [self addGestureRecognizer : tapRecognizer];
+      if (aStyle != ItemStyle::separator) {//Separator is simply a blank row in a menu.
+         UITapGestureRecognizer * const tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget : self action : @selector(handleTap)];
+         [tapRecognizer setNumberOfTapsRequired : 1];
+         [self addGestureRecognizer : tapRecognizer];
+         
+         itemLabel = [[UILabel alloc] initWithFrame : CGRect()];
+         itemLabel.text = menuItem.itemText;
+
+         UIFont * const font = [UIFont fontWithName : menuFontName size : childMenuItemFontSize];
+         assert(font != nil && "initWithFrame:item:style:controller:, font not found");
+         itemLabel.font = font;
       
-      itemLabel = [[UILabel alloc] initWithFrame : CGRect()];
-      itemLabel.text = menuItem.itemText;
+         itemLabel.textAlignment = NSTextAlignmentLeft;
+         itemLabel.numberOfLines = 1;
+         itemLabel.clipsToBounds = YES;
+         itemLabel.backgroundColor = [UIColor clearColor];
 
-      UIFont * const font = [UIFont fontWithName : menuFontName size : childMenuItemFontSize];
-      assert(font != nil && "initWithFrame:item:style:controller:, font not found");
-      itemLabel.font = font;
-   
-      itemLabel.textAlignment = NSTextAlignmentLeft;
-      itemLabel.numberOfLines = 1;
-      itemLabel.clipsToBounds = YES;
-      itemLabel.backgroundColor = [UIColor clearColor];
-      /*
-      itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
-      itemLabel.layer.shadowOffset = menuTextShadowOffset;
-      itemLabel.layer.shadowOpacity = menuTextShadowAlpha;*/
-
-      [self addSubview : itemLabel];
+         [self addSubview : itemLabel];
+      }
       
       isSelected = NO;
    }
@@ -88,49 +87,68 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (void) fill : (CGRect) rect withContext : (CGContextRef) ctx withGradient : (const CGFloat *) gradientColor
+{
+   assert(ctx != nullptr && "fill:withContext:withGradient:, parameter 'ctx' is null");
+   assert(gradientColor != nullptr && "fill:withContext:withGradient:, parameter 'gradientColor' is null");
+
+   CGPoint startPoint = CGPointZero;
+   CGPoint endPoint = CGPointMake(0.f, rect.size.height);
+      
+   //Create a gradient.
+   CGColorSpaceRef baseSpace(CGColorSpaceCreateDeviceRGB());
+   CGFloat positions[] = {0.f, 1.f};
+   //      CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
+
+   CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, gradientColor, positions, 2);
+   CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
+      
+   CGGradientRelease(gradient);
+   CGColorSpaceRelease(baseSpace);
+}
+
+//________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
    
-   if (!isSelected) {
-      CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
-      CGContextFillRect(ctx, rect);
-      
-      CGContextSetAllowsAntialiasing(ctx, false);
+   //For a separator - simply fill a rectangle with a gradient.
+   if (itemStyle == ItemStyle::separator) {
+      const CGFloat colors[][4] = {{0.415f, 0.431f, 0.49f, 1.f}, {0.447f, 0.462f, 0.525f, 1.f}};
+      [self fill:rect withContext : ctx withGradient : colors[0]];
+   } else {   
+      if (!isSelected) {
+         CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
+         CGContextFillRect(ctx, rect);
+         
+         CGContextSetAllowsAntialiasing(ctx, false);
 
-      //Bright line at the top.
-      CGContextSetRGBStrokeColor(ctx, 0.458f, 0.478f, 0.533f, 1.f);
-      CGContextMoveToPoint(ctx, 0.f, 1.f);
-      CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
-      CGContextStrokePath(ctx);
-      
-      //Dark line at the bottom.
-      CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.427f, 1.f);
-      CGContextMoveToPoint(ctx, 0.f, rect.size.height);
-      CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
-      CGContextStrokePath(ctx);
-      
-      CGContextSetAllowsAntialiasing(ctx, true);
-   } else {
-      CGPoint startPoint = CGPointZero;
-      CGPoint endPoint = CGPointMake(0.f, rect.size.height);
-   
-      //Create a gradient.
-      CGColorSpaceRef baseSpace(CGColorSpaceCreateDeviceRGB());
-      CGFloat positions[] = {0.f, 1.f};
-      CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
-
-      CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors[0], positions, 2);
-      CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
-   
-      CGGradientRelease(gradient);
-      CGColorSpaceRelease(baseSpace);
+         //Bright line at the top.
+         CGContextSetRGBStrokeColor(ctx, 0.458f, 0.478f, 0.533f, 1.f);
+         CGContextMoveToPoint(ctx, 0.f, 1.f);
+         CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
+         CGContextStrokePath(ctx);
+         
+         //Dark line at the bottom.
+         CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.427f, 1.f);
+         CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+         CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+         CGContextStrokePath(ctx);
+         
+         CGContextSetAllowsAntialiasing(ctx, true);
+      } else {
+         const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
+         [self fill:rect withContext : ctx withGradient : colors[0]];
+      }
    }
 }
 
 //________________________________________________________________________________________
 - (void) layoutText
 {
+   if (itemStyle == ItemStyle::separator)
+      return;
+
    CGRect frame = self.frame;
    frame.origin.x = childMenuItemTextIdent;
    frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;

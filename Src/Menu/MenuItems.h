@@ -76,3 +76,12 @@
 @property (nonatomic) __weak UIView *groupView;
 
 @end
+
+@interface MenuSeparator : NSObject<MenuItemProtocol>
+
+- (NSString *) itemText;
+- (UIImage *) itemImage;
+
+@property (nonatomic) __weak MenuItemView *itemView;
+
+@end

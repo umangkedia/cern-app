@@ -100,12 +100,11 @@
    NSArray *items;
    NSString *title;
    UIImage *image;
-   BOOL collapsed;
    
    NSUInteger indexInMenu;
 }
 
-@synthesize collapsed;
+@synthesize collapsed, titleView, containerView, groupView;
 
 //________________________________________________________________________________________
 - (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems index : (NSUInteger) index
@@ -162,6 +161,25 @@
 {
    //Either collapse or expand a group.
    NSLog(@"collapse or expand a group");
+}
+
+@end
+
+
+@implementation MenuSeparator
+
+@synthesize itemView;
+
+//________________________________________________________________________________________
+- (NSString *) itemText
+{
+   return nil;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) itemImage
+{
+   return nil;
 }
 
 @end

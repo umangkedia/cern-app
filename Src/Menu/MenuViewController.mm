@@ -70,7 +70,7 @@ using CernAPP::ItemStyle;
              "loadNewsSection:, 'Feeds' must have a NSArray type");
       NSArray * const feeds = (NSArray *)objBase;
       if (feeds.count) {
-         assert(menuItems.count + 1 < 32 && "loadNewsSection:, can not have more than 32 items");
+         assert(menuItems.count + 1 < 32 && "loadNewsSection:, menu can not have more than 32 items");
          
          UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
          containerView.clipsToBounds = YES;
@@ -136,7 +136,7 @@ using CernAPP::ItemStyle;
    
    if (experimentNames.count) {
       //
-      assert(menuItems.count + 1 < 32 && "loadLIVESection:, cannot have more than 32 items");
+      assert(menuItems.count + 1 < 32 && "loadLIVESection:, menu cannot have more than 32 items");
       //
       UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
       containerView.clipsToBounds = YES;
@@ -178,6 +178,29 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadSeparator : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadSeparator:, parameter 'desc' is nil");
+   
+   id objBase = [desc objectForKey : @"Category name"];
+   assert(objBase != nil && [objBase isKindOfClass : [NSString class]] &&
+          "loadSeparator:, 'Category name' either not found or has a wrong type");
+   
+   if ([(NSString *)objBase isEqualToString : @"Separator"]) {
+      assert(menuItems.count + 1 < 32 && "loadSeparator:, menu can not have more than 32 items");
+      MenuSeparator * const separator = [[MenuSeparator alloc] init];
+      MenuItemView * const separatorView = [[MenuItemView alloc] initWithFrame:CGRect() item : nil style : ItemStyle::separator controller : self];
+      separator.itemView = separatorView;
+      [scrollView addSubview : separatorView];
+      [menuItems addObject : separator];
+      
+      return YES;
+   }
+   
+   return NO;
+}
+
+//________________________________________________________________________________________
 - (void) loadMenuContents
 {
    menuItems = [[NSMutableArray alloc] init];
@@ -206,6 +229,9 @@ using CernAPP::ItemStyle;
       if ([self loadLIVESection : (NSDictionary *)entryBase])
          continue;
       
+      if ([self loadSeparator : (NSDictionary *)entryBase])
+         continue;
+
       //Static info (about CERN);
       //Latest photos;
       //Latest videos;
@@ -288,6 +314,15 @@ using CernAPP::ItemStyle;
          const CGFloat addY = [self layoutMenuGroup : i frameHint : currentFrame];
          currentFrame.origin.y += addY;
          totalHeight += addY;   
+      } else {
+         //That's a single item.
+         assert([item respondsToSelector:@selector(itemView)] &&
+                "layoutMenu, single menu item must respond to 'itemView' selector");
+         
+         MenuItemView * const view = item.itemView;
+         currentFrame.size.height = CernAPP::childMenuItemHeight;
+         view.frame = currentFrame;
+         currentFrame.origin.y += CernAPP::childMenuItemHeight;
       }
    }
    
@@ -419,7 +454,7 @@ using CernAPP::ItemStyle;
             }
          } else
             currentFrame.origin.y += group.containerView.frame.size.height;
-      } else if ([itemBase isKindOfClass : [MenuItem class]]) {
+      } else if ([itemBase isKindOfClass : [MenuItem class]] || [itemBase isKindOfClass : [MenuSeparator class]]) {
          currentFrame.origin.y += CernAPP::childMenuItemHeight;
       } else {
          assert(0 && "presetViewsYs, implement me!!!");
