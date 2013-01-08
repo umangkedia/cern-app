@@ -115,6 +115,15 @@
 }
 
 //________________________________________________________________________________________
+- (void) viewWillAppear : (BOOL) animated
+{
+   [super viewWillAppear : animated];
+   
+   if(self.navigationController.viewControllers.count == 1)//??? Kind of a hack.
+      CernAPP::ResetMenuButton(self);
+}
+
+//________________________________________________________________________________________
 - (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) interfaceOrientation
 {
    //This is iPhone ONLY view/controller and it works ONLY with
@@ -354,6 +363,7 @@
 //________________________________________________________________________________________
 - (IBAction) revealMenu : (id) sender
 {
+#pragma unused(sender)
    [self.slidingViewController anchorTopViewTo : ECRight];
 }
 

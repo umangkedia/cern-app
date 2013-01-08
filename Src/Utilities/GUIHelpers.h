@@ -10,5 +10,6 @@ extern const CGFloat navBarHeight;
 extern const CGFloat groupMenuItemHeight;
 extern const CGFloat childMenuItemHeight;
 
+void ResetMenuButton(UIViewController *controller);
 
 }

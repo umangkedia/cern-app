@@ -5,6 +5,7 @@
 #import "StoryboardIdentifiers.h"
 #import "LiveTableViewCell.h"
 #import "ContentProviders.h"
+#import "GUIHelpers.h"
 
 #pragma mark - ExperimentLiveControllerIPHONE.
 
@@ -147,6 +148,9 @@
    //controller is poped from the stack, table ... will lost
    //cell's background. Why does Apple suck ALL THE TIME???
    [self.tableView reloadData];
+   
+      
+   CernAPP::ResetMenuButton(self);
 }
 
 //________________________________________________________________________________________
