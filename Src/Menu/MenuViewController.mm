@@ -349,7 +349,9 @@ using CernAPP::ItemStyle;
    self.slidingViewController.underLeftWidthLayout = ECFullWidth;
    
    //We additionally setup a table view here.
-   scrollView.backgroundColor = [UIColor colorWithRed : 0.447f green : 0.462f blue : 0.525f alpha : 1.f];
+   using CernAPP::menuBackgroundColor;
+   scrollView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] green : menuBackgroundColor[1]
+                                         blue : menuBackgroundColor[2] alpha : 1.f];
    scrollView.showsHorizontalScrollIndicator = NO;
    scrollView.showsVerticalScrollIndicator = NO;
    

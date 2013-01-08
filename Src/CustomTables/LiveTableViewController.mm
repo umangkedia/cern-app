@@ -139,7 +139,10 @@
   // self.navigationController.navigationBarHidden = NO;
    self.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    
-   self.tableView.backgroundColor = [UIColor colorWithRed : 0.447f green : 0.462f blue : 0.525f alpha : 1.f];
+   using CernAPP::menuBackgroundColor;
+   
+   self.tableView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] green : menuBackgroundColor[1]
+                                             blue : menuBackgroundColor[2] alpha : 1.f];
    self.tableView.separatorColor = [UIColor clearColor];
 
    [self readLIVEData];
@@ -243,8 +246,12 @@
          forRowAtIndexPath : (NSIndexPath *) indexPath
 {
 #pragma unused(aTableView, indexPath)
-   cell.textLabel.textColor = [UIColor blackColor];
-   cell.textLabel.font = [UIFont fontWithName : @"PT Sans" size : 16.f];
+
+   using CernAPP::childMenuFontName;
+   using CernAPP::childTextColor;
+
+   cell.textLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
+   cell.textLabel.font = [UIFont fontWithName : childMenuFontName size : 14.f];
 }
 
 //________________________________________________________________________________________

@@ -18,7 +18,11 @@ enum class ItemStyle {
    separator
 };
 
+void DrawFrame(CGContextRef ctx, const CGRect &rect);
+
 }
+
+@class MenuViewController;
 
 @interface MenuItemView : UIView
 
@@ -31,8 +35,6 @@ enum class ItemStyle {
 @property (nonatomic) BOOL isSelected;
 
 @end
-
-@class MenuViewController;
 
 //This is a group title.
 @interface MenuItemsGroupView : UIView

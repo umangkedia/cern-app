@@ -21,7 +21,6 @@
 const CGFloat groupMenuItemFontSize = 17.f;
 const CGFloat childMenuItemFontSize = 13.f;
 NSString * const groupMenuFontName = @"PTSans-Bold";
-NSString * const childMenuFontName = @"PTSans-Caption";
 const CGSize menuTextShadowOffset = CGSizeMake(2.f, 2.f);
 const CGFloat menuTextShadowAlpha = 0.5f;
 const CGFloat menuItemImageSize = 24.f;//must be square image.
@@ -32,20 +31,43 @@ const CGFloat childMenuItemTextHeight = 20.f;
 const CGFloat discloseTriangleSize = 14.f;
 const CGFloat groupMenuItemLeftMargin = 80.f;
 
-const CGFloat childMenuFillColor[] = {0.215f, 0.231f, 0.29f};
 const CGFloat groupMenuFillColor[][4] = {{0.247f, 0.29f, 0.36f, 1.f}, {0.242f, 0.258f, 0.321f, 1.f}};
 const CGFloat frameTopLineColor[] = {0.258f, 0.278f, 0.33f};
 const CGFloat frameBottomLineColor[] = {0.165f, 0.18f, 0.227f};
 
-const CGFloat childTextColor[] = {0.772f, 0.796f, 0.847f};
 const CGFloat groupTextColor[] = {0.615f, 0.635f, 0.69f};
 
 using CernAPP::ItemStyle;
 
+namespace CernAPP {
+
+//________________________________________________________________________________________
+void DrawFrame(CGContextRef ctx, const CGRect &rect)
+{
+   assert(ctx != nullptr && "DrawFrame, parameter 'ctx' is null");
+
+   CGContextSetAllowsAntialiasing(ctx, false);
+   //Bright line at the top.
+   CGContextSetRGBStrokeColor(ctx, frameTopLineColor[0], frameTopLineColor[1], frameTopLineColor[2], 1.f);
+   CGContextMoveToPoint(ctx, 0.f, 1.f);
+   CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
+   CGContextStrokePath(ctx);
+   
+   //Dark line at the bottom.
+   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
+   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+   CGContextStrokePath(ctx);
+   
+   CGContextSetAllowsAntialiasing(ctx, true);
+}
+
+}
+
 namespace {
 
 //________________________________________________________________________________________
-void GradientFillRect(CGContextRef ctx, CGRect rect, const CGFloat *gradientColor)
+void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradientColor)
 {
    //Simple gradient, two colors only.
 
@@ -104,7 +126,7 @@ void GradientFillRect(CGContextRef ctx, CGRect rect, const CGFloat *gradientColo
          itemLabel = [[UILabel alloc] initWithFrame : CGRect()];
          itemLabel.text = menuItem.itemText;
 
-         UIFont * const font = [UIFont fontWithName : childMenuFontName size : childMenuItemFontSize];
+         UIFont * const font = [UIFont fontWithName : CernAPP::childMenuFontName size : childMenuItemFontSize];
          assert(font != nil && "initWithFrame:item:style:controller:, font not found");
          itemLabel.font = font;
       
@@ -112,6 +134,8 @@ void GradientFillRect(CGContextRef ctx, CGRect rect, const CGFloat *gradientColo
          itemLabel.numberOfLines = 1;
          itemLabel.clipsToBounds = YES;
          itemLabel.backgroundColor = [UIColor clearColor];
+         
+         using CernAPP::childTextColor;
          itemLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
 
          [self addSubview : itemLabel];
@@ -124,27 +148,6 @@ void GradientFillRect(CGContextRef ctx, CGRect rect, const CGFloat *gradientColo
 }
 
 //________________________________________________________________________________________
-- (void) drawFrame : (CGRect) rect withContext : (CGContextRef) ctx
-{
-   assert(ctx != nullptr && "drawFrame:withContext, parameter 'ctx' is null");
-
-   CGContextSetAllowsAntialiasing(ctx, false);
-   //Bright line at the top.
-   CGContextSetRGBStrokeColor(ctx, frameTopLineColor[0], frameTopLineColor[1], frameTopLineColor[2], 1.f);
-   CGContextMoveToPoint(ctx, 0.f, 1.f);
-   CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
-   CGContextStrokePath(ctx);
-   
-   //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
-   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
-   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
-   CGContextStrokePath(ctx);
-   
-   CGContextSetAllowsAntialiasing(ctx, true);
-}
-
-//________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
@@ -154,11 +157,11 @@ void GradientFillRect(CGContextRef ctx, CGRect rect, const CGFloat *gradientColo
       GradientFillRect(ctx, rect, groupMenuFillColor[0]);
    } else {   
       if (!isSelected) {
-         CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
+         using CernAPP::childMenuFillColor;
          CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
          CGContextFillRect(ctx, rect);
          
-         [self drawFrame : rect withContext : ctx];         
+         CernAPP::DrawFrame(ctx, rect);
       } else {
          const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
          GradientFillRect(ctx, rect, colors[0]);
