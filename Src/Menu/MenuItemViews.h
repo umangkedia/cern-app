@@ -43,7 +43,7 @@ enum class ItemStyle {
 
 - (void) layoutText;
 
-- (MenuItemsGroup *) getMenuItemsGroup;
+- (MenuItemsGroup *) menuItemsGroup;
 
 @end
 

@@ -229,7 +229,7 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (MenuItemsGroup *) getMenuItemsGroup
+- (MenuItemsGroup *) menuItemsGroup
 {
    return groupItem;
 }
@@ -238,7 +238,7 @@ using CernAPP::ItemStyle;
 - (void) handleTap
 {
    //Collapse or expand.
-   NSLog(@"collapse or expand!");
+   [menuController groupViewWasTapped : self];
 }
 
 @end

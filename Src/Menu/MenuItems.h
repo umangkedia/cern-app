@@ -60,13 +60,14 @@
 
 @interface MenuItemsGroup : NSObject<MenuItemProtocol>
 
-- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items;
+- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
 @property (nonatomic) BOOL collapsed;
 
+- (NSUInteger) index;
 - (NSUInteger) nItems;
 - (MenuItem *) item : (NSUInteger) item;
 

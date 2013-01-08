@@ -101,12 +101,14 @@
    NSString *title;
    UIImage *image;
    BOOL collapsed;
+   
+   NSUInteger indexInMenu;
 }
 
 @synthesize collapsed;
 
 //________________________________________________________________________________________
-- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems
+- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems index : (NSUInteger) index
 {
    assert(aTitle != nil && "initWithTitle:image:items, parameter 'aTitle' is nil");
    //image can be nil.
@@ -118,6 +120,7 @@
       image = anImage;
       items = anItems;
       collapsed = NO;//Opened by default.
+      indexInMenu = index;
    }
    
    return self;
@@ -133,6 +136,12 @@
 - (UIImage *) itemImage
 {
    return image;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) index
+{
+   return indexInMenu;
 }
 
 //________________________________________________________________________________________

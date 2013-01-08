@@ -3,6 +3,7 @@
 //for CERN.app - to load our own menu we need.
 
 #import <cassert>
+#import <limits>
 
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
@@ -16,6 +17,13 @@ using CernAPP::ItemStyle;
 @implementation MenuViewController {
    NSMutableArray *menuItems;
    MenuItemView *selectedItemView;
+   
+   //For the moment, the number of 'top-level' (non-nested) menu items is limited by number of bits in unsigned :))
+   //Yeah, it's lame, I'll use a bitset later :)
+   unsigned menuState;
+   
+   BOOL inAnimation;
+   int newOpen;
 }
 
 //________________________________________________________________________________________
@@ -61,6 +69,8 @@ using CernAPP::ItemStyle;
              "loadNewsSection:, 'Feeds' must have a NSArray type");
       NSArray * const feeds = (NSArray *)objBase;
       if (feeds.count) {
+         assert(menuItems.count + 1 < 32 && "loadNewsSection:, can not have more than 32 items");
+         
          UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
          containerView.clipsToBounds = YES;
          UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
@@ -85,7 +95,7 @@ using CernAPP::ItemStyle;
 
 
          MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : sectionName
-                                         image : [self loadItemImage : desc] items : items];
+                                         image : [self loadItemImage : desc] items : items index : menuItems.count];
          MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame:CGRect()
                                                      item : group controller : self];
          [scrollView addSubview : menuGroupView];
@@ -94,6 +104,7 @@ using CernAPP::ItemStyle;
          group.containerView = containerView;
          group.groupView = groupView;
          
+         menuState |= 1 << menuItems.count;
          [menuItems addObject : group];
       }
    }
@@ -123,6 +134,9 @@ using CernAPP::ItemStyle;
    NSArray * const experimentNames = (NSArray *)objBase;
    
    if (experimentNames.count) {
+      //
+      assert(menuItems.count + 1 < 32 && "loadLIVESection:, cannot have more than 32 items");
+      //
       UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
       containerView.clipsToBounds = YES;
       UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
@@ -146,7 +160,7 @@ using CernAPP::ItemStyle;
 
 
       MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"LIVE"
-                                      image : [self loadItemImage : desc] items : items];
+                                      image : [self loadItemImage : desc] items : items index : menuItems.count];
       MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
                                                   item : group controller : self];
       [scrollView addSubview : menuGroupView];
@@ -154,7 +168,8 @@ using CernAPP::ItemStyle;
       group.titleView = menuGroupView;
       group.containerView = containerView;
       group.groupView = groupView;
-         
+      
+      menuState |= 1 << menuItems.count;//At the beginning, this menu is open.
       [menuItems addObject : group];
    }
 
@@ -167,6 +182,7 @@ using CernAPP::ItemStyle;
    menuItems = [[NSMutableArray alloc] init];
 
    //Read menu contents from the 'MENU.plist'.
+   //Create menu items and corresponding views.
    NSString * const path = [[NSBundle mainBundle] pathForResource : @"MENU" ofType : @"plist"];
    NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
    assert(plistDict != nil && "loadMenuContents:, no dictionary or MENU.plist found");
@@ -198,48 +214,78 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (CGFloat) layoutMenuGroup : (NSUInteger) groupIndex frameHint : (CGRect) hint
+{
+   assert(groupIndex < menuItems.count &&
+          "layoutMenuGroup:frameHint:, parameter 'groupIndex' is out of bounds");
+
+   NSObject<MenuItemProtocol> * const itemBase = menuItems[groupIndex];
+   assert([itemBase isKindOfClass : [MenuItemsGroup class]] &&
+          "layoutMenuGroup:frameHint:, item to layout is not a menu group");
+
+   MenuItemsGroup * group = (MenuItemsGroup *)itemBase;
+   CGFloat totalHeight = 0.f;
+   //
+   hint.size.height = CernAPP::groupMenuItemHeight;
+   group.titleView.frame = hint;
+   [group.titleView layoutText];
+   
+   totalHeight += CernAPP::groupMenuItemHeight;
+   hint.origin.y += CernAPP::groupMenuItemHeight;
+         //
+   CGRect containerFrame = hint;
+   containerFrame.size.height = group.nItems * CernAPP::childMenuItemHeight;
+   group.containerView.frame = containerFrame;
+   containerFrame.origin = CGPoint();
+   group.groupView.frame = containerFrame;
+
+   totalHeight += containerFrame.size.height;         
+         
+   CGRect childFrame(hint);
+   childFrame.origin.y = 0.f;
+   
+   for (NSUInteger i = 0, e = group.nItems; i < e; ++i) {
+      //Let's place children views.
+      childFrame.size.height = CernAPP::childMenuItemHeight;
+            
+      NSObject<MenuItemProtocol> * const childItem = [group item : i];
+            
+      assert([childItem respondsToSelector : @selector(itemView)] &&
+             "layoutMenu, child item does not have the 'itemView' selector");
+            
+      MenuItemView * const childView = childItem.itemView;
+      childView.frame = childFrame;
+      [childView layoutText];
+
+      childFrame.origin.y += CernAPP::childMenuItemHeight;
+   }
+
+   if ((1 << groupIndex) & menuState) {
+      //Group is expanded now.
+   } else {
+      //Group is collapsed.
+      group.groupView.alpha = 0.f;
+      CGRect newFrame = group.groupView.frame;
+      newFrame.origin.y -= newFrame.size.height;
+      group.groupView.frame = newFrame;
+      totalHeight = CernAPP::groupMenuItemHeight;
+   }
+   
+   return totalHeight;
+}
+
+//________________________________________________________________________________________
 - (void) layoutMenu
 {
    CGRect currentFrame = {0.f, 0.f, scrollView.frame.size.width};
    CGFloat totalHeight = 0.f;
    
-   for (NSObject<MenuItemProtocol> * item in menuItems) {
+   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
+      NSObject<MenuItemProtocol> * const item = menuItems[i];
       if ([item isKindOfClass : [MenuItemsGroup class]]) {
-         MenuItemsGroup * const group = (MenuItemsGroup *)item;
-         //
-         currentFrame.size.height = CernAPP::groupMenuItemHeight;
-         group.titleView.frame = currentFrame;
-         [group.titleView layoutText];
-         totalHeight += CernAPP::groupMenuItemHeight;
-         currentFrame.origin.y += CernAPP::groupMenuItemHeight;
-         //
-         CGRect containerFrame = currentFrame;
-         containerFrame.size.height = group.nItems * CernAPP::childMenuItemHeight;
-         group.containerView.frame = containerFrame;
-         containerFrame.origin = CGPoint();
-         group.groupView.frame = containerFrame;
-
-         totalHeight += containerFrame.size.height;         
-         
-         CGRect childFrame = currentFrame;
-         childFrame.origin.y = 0.f;
-         for (NSUInteger i = 0, e = group.nItems; i < e; ++i) {
-            //Let's place children views.
-            childFrame.size.height = CernAPP::childMenuItemHeight;
-            
-            NSObject<MenuItemProtocol> * const childItem = [group item : i];
-            
-            assert([childItem respondsToSelector : @selector(itemView)] &&
-                   "layoutMenu, child item does not have the 'itemView' selector");
-            
-            MenuItemView * const childView = childItem.itemView;
-            childView.frame = childFrame;
-            [childView layoutText];
-
-            childFrame.origin.y += CernAPP::childMenuItemHeight;
-         }
-         
-         currentFrame.origin.y += containerFrame.size.height;
+         const CGFloat addY = [self layoutMenuGroup : i frameHint : currentFrame];
+         currentFrame.origin.y += addY;
+         totalHeight += addY;   
       }
    }
    
@@ -247,10 +293,20 @@ using CernAPP::ItemStyle;
    scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 }
 
+#pragma mark - View lifecycle's management.
+
+//________________________________________________________________________________________
+- (void) awakeFromNib
+{
+   inAnimation = NO;
+   newOpen = -1;
+}
+
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   
    [self.slidingViewController setAnchorRightRevealAmount : 280.f];
    self.slidingViewController.underLeftWidthLayout = ECFullWidth;
    
@@ -260,7 +316,8 @@ using CernAPP::ItemStyle;
    scrollView.showsVerticalScrollIndicator = NO;
    
    selectedItemView = nil;
-   
+
+   static_assert(std::numeric_limits<unsigned>::digits >= 32, "bad number of bits in unsigned");   
    [self loadMenuContents];
 }
 
@@ -269,6 +326,8 @@ using CernAPP::ItemStyle;
 {
    [self layoutMenu];
 }
+
+#pragma mark - Menu animations.
 
 //________________________________________________________________________________________
 - (void) itemViewWasSelected : (MenuItemView *) view
@@ -283,6 +342,165 @@ using CernAPP::ItemStyle;
    selectedItemView = view;
    selectedItemView.isSelected = YES;
    [selectedItemView setNeedsDisplay];
+}
+
+//________________________________________________________________________________________
+- (void) groupViewWasTapped : (MenuItemsGroupView *) view
+{
+   assert(view != nil && "groupViewWasTapped:, parameter 'view' is nil");
+
+   if (inAnimation)
+      return;
+   
+   MenuItemsGroup * const group = view.menuItemsGroup;
+   newOpen = -1;
+
+   //When we expand/collapse a sub-menu, we have to also adjust our
+   //scrollview - scroll to this sub-menu (if it's opened) or another
+   //opened sub-menu (above or below the selected sub-menu).
+   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
+      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[i];
+      if (![itemBase isKindOfClass : [MenuItemsGroup class]])
+         continue;//We scroll only to open sub-menus.
+
+      MenuItemsGroup * const currGroup = (MenuItemsGroup *)itemBase;
+      if (currGroup != group) {
+         if (menuState & (1 << i))
+            newOpen = i;//Index of open sub-menu above our selected sub-menu.
+      } else {
+         menuState ^= (1 << i);//we change a state of our sub-menu.
+         if (menuState & (1 << i))
+            newOpen = i;//It's our sub-menu who's open.
+         else if (menuState) {//Do we have any open sub-menus at all?
+            if (newOpen == -1) {//Nothing was open above our sub-menu. Search for the first open below.
+               for (NSUInteger j = i + 1; j < e; ++j) {
+                  if ([menuItems[j] isKindOfClass : [MenuItemsGroup class]]) {
+                     if (menuState & (1 << j)) {
+                        newOpen = j;
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+         
+         [self animateMenu];
+         break;
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) presetViewsYs
+{
+   //These are coordinates before an animation started.
+   CGRect currentFrame = scrollView.frame;
+
+   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
+      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[i];
+      
+      if ([itemBase isKindOfClass : [MenuItemsGroup class]]) {
+         //Set sub-menu title.
+         MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
+         currentFrame.origin.y += CernAPP::groupMenuItemHeight;
+         
+         if (group.containerView.hidden) {//This sub-menu is becoming visible now.
+            if (menuState & (1 << i)) {
+               CGRect frame = group.groupView.frame;
+               frame.origin.y = currentFrame.origin.y;
+               group.containerView.frame = frame;
+               frame.origin.y = -frame.size.height;
+               //Sub-menu will move into container from 'nowhere'.
+               group.groupView.frame = frame;
+               
+               break;
+            }
+         } else
+            currentFrame.origin.y += group.containerView.frame.size.height;
+      } else if ([itemBase isKindOfClass : [MenuItem class]]) {
+         currentFrame.origin.y += CernAPP::childMenuItemHeight;
+      } else {
+         assert(0 && "presetViewsYs, implement me!!!");
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) setViewsYs
+{
+   //These are menu items positions at the end of animation.
+   [self layoutMenu];
+}
+
+//________________________________________________________________________________________
+- (void) setViewsAlphaAndVisibility
+{
+   //During animation, if view will appear it's alpha changes from 0.f to 1.f,
+   //and if it's going to disappear - from 1.f to 0.f.
+   //Also, I have to animate small triangle, which
+   //shows group's state (expanded/collapsed).
+
+   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
+      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[i];
+      if ([itemBase isKindOfClass : [MenuItemsGroup class]]) {
+         MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
+         const bool isVisible = menuState & (1 << i);
+         if (group.containerView.hidden) {
+            if (isVisible) {
+               group.containerView.hidden = NO;
+               group.groupView.alpha = 1.f;
+               //Triangle animation.
+            }
+         } else if (!isVisible) {
+            group.groupView.alpha = 0.f;
+            //Triangle animation.
+         }
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) adjustMenu
+{
+   inAnimation = NO;
+   
+   //TODO: Adjust a scrollview.
+}
+
+//________________________________________________________________________________________
+- (void) hideGroupViews
+{
+   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
+      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[i];
+      if ([itemBase isKindOfClass : [MenuItemsGroup class]]) {
+         MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
+         if (!(menuState & (1 << i)))
+            group.containerView.hidden = YES;
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) animateMenu
+{
+   assert(inAnimation == NO && "animateMenu, called during active animation");
+
+   inAnimation = YES;
+
+   [self presetViewsYs];
+   
+   [UIView beginAnimations : nil context : nil];
+   [UIView setAnimationDuration : 0.25];
+   [UIView setAnimationCurve : UIViewAnimationCurveEaseOut];
+ 
+   [self setViewsYs];
+   [self setViewsAlphaAndVisibility];
+
+   [UIView commitAnimations];
+ 
+   //Do not hide the views immediately, so user can see animation.
+   [NSTimer scheduledTimerWithTimeInterval : 0.15 target : self selector : @selector(hideGroupViews) userInfo : nil repeats : NO];
+   [NSTimer scheduledTimerWithTimeInterval : 0.3 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
 }
 
 @end
