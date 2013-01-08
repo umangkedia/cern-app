@@ -18,9 +18,10 @@
 //It's a C++, all these constants have
 //internal linkage without any 'static',
 //and no need for unnamed namespace.
-const CGFloat groupMenuItemFontSize = 18.f;
-const CGFloat childMenuItemFontSize = 14.f;
-NSString * const menuFontName = @"PT Sans";
+const CGFloat groupMenuItemFontSize = 17.f;
+const CGFloat childMenuItemFontSize = 13.f;
+NSString * const groupMenuFontName = @"PTSans-Bold";
+NSString * const childMenuFontName = @"PTSans-Caption";
 const CGSize menuTextShadowOffset = CGSizeMake(2.f, 2.f);
 const CGFloat menuTextShadowAlpha = 0.5f;
 const CGFloat menuItemImageSize = 24.f;//must be square image.
@@ -31,7 +32,42 @@ const CGFloat childMenuItemTextHeight = 20.f;
 const CGFloat discloseTriangleSize = 14.f;
 const CGFloat groupMenuItemLeftMargin = 80.f;
 
+const CGFloat childMenuFillColor[] = {0.215f, 0.231f, 0.29f};
+const CGFloat groupMenuFillColor[][4] = {{0.247f, 0.29f, 0.36f, 1.f}, {0.242f, 0.258f, 0.321f, 1.f}};
+const CGFloat frameTopLineColor[] = {0.258f, 0.278f, 0.33f};
+const CGFloat frameBottomLineColor[] = {0.165f, 0.18f, 0.227f};
+
+const CGFloat childTextColor[] = {0.772f, 0.796f, 0.847f};
+const CGFloat groupTextColor[] = {0.615f, 0.635f, 0.69f};
+
 using CernAPP::ItemStyle;
+
+namespace {
+
+//________________________________________________________________________________________
+void GradientFillRect(CGContextRef ctx, CGRect rect, const CGFloat *gradientColor)
+{
+   //Simple gradient, two colors only.
+
+   assert(ctx != nullptr && "GradientFillRect, parameter 'ctx' is null");
+   assert(gradientColor != nullptr && "GradientFillRect, parameter 'gradientColor' is null");
+   
+   const CGPoint startPoint = CGPointZero;
+   const CGPoint endPoint = CGPointMake(0.f, rect.size.height);
+      
+   //Create a gradient.
+   CGColorSpaceRef baseSpace(CGColorSpaceCreateDeviceRGB());
+   const CGFloat positions[] = {0.f, 1.f};//Always fixed.
+
+   CGGradientRef gradient(CGGradientCreateWithColorComponents(baseSpace, gradientColor, positions, 2));//fixed, 2 colors only.
+   CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
+      
+   CGGradientRelease(gradient);
+   CGColorSpaceRelease(baseSpace);
+}
+
+}
+
 
 @implementation MenuItemView {
    ItemStyle itemStyle;
@@ -68,7 +104,7 @@ using CernAPP::ItemStyle;
          itemLabel = [[UILabel alloc] initWithFrame : CGRect()];
          itemLabel.text = menuItem.itemText;
 
-         UIFont * const font = [UIFont fontWithName : menuFontName size : childMenuItemFontSize];
+         UIFont * const font = [UIFont fontWithName : childMenuFontName size : childMenuItemFontSize];
          assert(font != nil && "initWithFrame:item:style:controller:, font not found");
          itemLabel.font = font;
       
@@ -76,6 +112,7 @@ using CernAPP::ItemStyle;
          itemLabel.numberOfLines = 1;
          itemLabel.clipsToBounds = YES;
          itemLabel.backgroundColor = [UIColor clearColor];
+         itemLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
 
          [self addSubview : itemLabel];
       }
@@ -87,40 +124,19 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (void) fill : (CGRect) rect withContext : (CGContextRef) ctx withGradient : (const CGFloat *) gradientColor
-{
-   assert(ctx != nullptr && "fill:withContext:withGradient:, parameter 'ctx' is null");
-   assert(gradientColor != nullptr && "fill:withContext:withGradient:, parameter 'gradientColor' is null");
-
-   CGPoint startPoint = CGPointZero;
-   CGPoint endPoint = CGPointMake(0.f, rect.size.height);
-      
-   //Create a gradient.
-   CGColorSpaceRef baseSpace(CGColorSpaceCreateDeviceRGB());
-   CGFloat positions[] = {0.f, 1.f};
-   //      CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
-
-   CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, gradientColor, positions, 2);
-   CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
-      
-   CGGradientRelease(gradient);
-   CGColorSpaceRelease(baseSpace);
-}
-
-//________________________________________________________________________________________
 - (void) drawFrame : (CGRect) rect withContext : (CGContextRef) ctx
 {
    assert(ctx != nullptr && "drawFrame:withContext, parameter 'ctx' is null");
 
    CGContextSetAllowsAntialiasing(ctx, false);
    //Bright line at the top.
-   CGContextSetRGBStrokeColor(ctx, 0.458f, 0.478f, 0.533f, 1.f);
+   CGContextSetRGBStrokeColor(ctx, frameTopLineColor[0], frameTopLineColor[1], frameTopLineColor[2], 1.f);
    CGContextMoveToPoint(ctx, 0.f, 1.f);
    CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
    CGContextStrokePath(ctx);
    
    //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.427f, 1.f);
+   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
    CGContextMoveToPoint(ctx, 0.f, rect.size.height);
    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
    CGContextStrokePath(ctx);
@@ -135,18 +151,17 @@ using CernAPP::ItemStyle;
    
    //For a separator - simply fill a rectangle with a gradient.
    if (itemStyle == ItemStyle::separator) {
-      const CGFloat colors[][4] = {{0.447f, 0.462f, 0.525f, 1.f}, {0.215f, 0.231f, 0.29f, 1.f}};
-      [self fill : rect withContext : ctx withGradient : colors[0]];
-    //  [self drawFrame : rect withContext : ctx];
+      GradientFillRect(ctx, rect, groupMenuFillColor[0]);
    } else {   
       if (!isSelected) {
          CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
+         CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
          CGContextFillRect(ctx, rect);
          
          [self drawFrame : rect withContext : ctx];         
       } else {
          const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
-         [self fill:rect withContext : ctx withGradient : colors[0]];
+         GradientFillRect(ctx, rect, colors[0]);
       }
    }
 }
@@ -201,7 +216,7 @@ using CernAPP::ItemStyle;
       itemLabel = [[UILabel alloc] initWithFrame:CGRect()];
       [self addSubview : itemLabel];
       itemLabel.text = item.itemText;
-      UIFont * const font = [UIFont fontWithName : menuFontName size : groupMenuItemFontSize];
+      UIFont * const font = [UIFont fontWithName : groupMenuFontName size : groupMenuItemFontSize];
       assert(font != nil && "initWithFrame:item:controller:, font not found");
       itemLabel.font = font;
       
@@ -209,7 +224,7 @@ using CernAPP::ItemStyle;
       itemLabel.numberOfLines = 1;
       itemLabel.clipsToBounds = YES;
       itemLabel.backgroundColor = [UIColor clearColor];
-      itemLabel.textColor = [UIColor whiteColor];
+      itemLabel.textColor = [UIColor colorWithRed : groupTextColor[0] green : groupTextColor[1] blue : groupTextColor[2] alpha : 1.f];
 
       itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
       itemLabel.layer.shadowOffset = menuTextShadowOffset;
@@ -229,12 +244,10 @@ using CernAPP::ItemStyle;
 - (void) drawRect : (CGRect) rect
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
-   
-   CGContextSetRGBFillColor(ctx, 0.447f, 0.462f, 0.525f, 1.f);
-   CGContextFillRect(ctx, rect);
-   
+
+   GradientFillRect(ctx, rect, groupMenuFillColor[0]);   
    //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.527f, 1.f);
+   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
    CGContextMoveToPoint(ctx, 0.f, rect.size.height);
    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
    CGContextStrokePath(ctx);
