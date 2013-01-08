@@ -108,34 +108,42 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (void) drawFrame : (CGRect) rect withContext : (CGContextRef) ctx
+{
+   assert(ctx != nullptr && "drawFrame:withContext, parameter 'ctx' is null");
+
+   CGContextSetAllowsAntialiasing(ctx, false);
+   //Bright line at the top.
+   CGContextSetRGBStrokeColor(ctx, 0.458f, 0.478f, 0.533f, 1.f);
+   CGContextMoveToPoint(ctx, 0.f, 1.f);
+   CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
+   CGContextStrokePath(ctx);
+   
+   //Dark line at the bottom.
+   CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.427f, 1.f);
+   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+   CGContextStrokePath(ctx);
+   
+   CGContextSetAllowsAntialiasing(ctx, true);
+}
+
+//________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
    
    //For a separator - simply fill a rectangle with a gradient.
    if (itemStyle == ItemStyle::separator) {
-      const CGFloat colors[][4] = {{0.415f, 0.431f, 0.49f, 1.f}, {0.447f, 0.462f, 0.525f, 1.f}};
-      [self fill:rect withContext : ctx withGradient : colors[0]];
+      const CGFloat colors[][4] = {{0.447f, 0.462f, 0.525f, 1.f}, {0.215f, 0.231f, 0.29f, 1.f}};
+      [self fill : rect withContext : ctx withGradient : colors[0]];
+      [self drawFrame : rect withContext : ctx];
    } else {   
       if (!isSelected) {
          CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor
          CGContextFillRect(ctx, rect);
          
-         CGContextSetAllowsAntialiasing(ctx, false);
-
-         //Bright line at the top.
-         CGContextSetRGBStrokeColor(ctx, 0.458f, 0.478f, 0.533f, 1.f);
-         CGContextMoveToPoint(ctx, 0.f, 1.f);
-         CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
-         CGContextStrokePath(ctx);
-         
-         //Dark line at the bottom.
-         CGContextSetRGBStrokeColor(ctx, 0.365f, 0.38f, 0.427f, 1.f);
-         CGContextMoveToPoint(ctx, 0.f, rect.size.height);
-         CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
-         CGContextStrokePath(ctx);
-         
-         CGContextSetAllowsAntialiasing(ctx, true);
+         [self drawFrame : rect withContext : ctx];         
       } else {
          const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
          [self fill:rect withContext : ctx withGradient : colors[0]];
