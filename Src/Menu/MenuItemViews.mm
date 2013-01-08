@@ -137,7 +137,7 @@ using CernAPP::ItemStyle;
    if (itemStyle == ItemStyle::separator) {
       const CGFloat colors[][4] = {{0.447f, 0.462f, 0.525f, 1.f}, {0.215f, 0.231f, 0.29f, 1.f}};
       [self fill : rect withContext : ctx withGradient : colors[0]];
-      [self drawFrame : rect withContext : ctx];
+    //  [self drawFrame : rect withContext : ctx];
    } else {   
       if (!isSelected) {
          CGContextSetRGBFillColor(ctx, 0.415f, 0.431f, 0.49f, 1.f);//CernAPP::childMenuItemFillColor

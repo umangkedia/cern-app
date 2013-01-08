@@ -323,6 +323,7 @@ using CernAPP::ItemStyle;
          currentFrame.size.height = CernAPP::childMenuItemHeight;
          view.frame = currentFrame;
          currentFrame.origin.y += CernAPP::childMenuItemHeight;
+         totalHeight += CernAPP::childMenuItemHeight;
       }
    }
    
@@ -390,6 +391,7 @@ using CernAPP::ItemStyle;
       return;
    
    MenuItemsGroup * const group = view.menuItemsGroup;
+   group.collapsed = !group.collapsed;
    newOpen = -1;
 
    //When we expand/collapse a sub-menu, we have to also adjust our
@@ -501,9 +503,42 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (void) adjustMenu
 {
-   inAnimation = NO;
-   
+   assert(inAnimation == YES && "adjustMenu, can be called only during an animation");
+
    //TODO: Adjust a scrollview.
+   CGFloat totalHeight = 0.f;
+   
+   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
+      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[i];
+      if ([itemBase isKindOfClass : [MenuItemsGroup class]]) {
+         MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
+         totalHeight += group.titleView.frame.size.height;
+         if (!group.collapsed)
+            totalHeight += group.containerView.frame.size.height;
+      } else {
+         assert([itemBase respondsToSelector : @selector(itemView)] &&
+                "adjustMenu, non-group menu item must respong to 'itemView' selector");
+         totalHeight += itemBase.itemView.frame.size.height;
+      }
+   }
+   
+   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
+
+   CGRect frameToShow = CGRectMake(0.f, 0.f, scrollView.frame.size.width, CernAPP::groupMenuItemHeight);
+
+   if (newOpen != -1) {
+      assert(newOpen >= 0 && newOpen < menuItems.count && "adjustMenu, newOpen is out of bounds");
+      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[newOpen];
+      assert([itemBase isKindOfClass : [MenuItemsGroup class]] &&
+             "adjustMenu, newOpen must be a menu group");
+      MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
+      frameToShow = group.containerView.frame;
+      frameToShow.origin.y -= CernAPP::groupMenuItemHeight;
+      frameToShow.size.height += CernAPP::groupMenuItemHeight;
+   }
+   
+   [scrollView scrollRectToVisible : frameToShow animated : YES];
+   inAnimation = NO;
 }
 
 //________________________________________________________________________________________
