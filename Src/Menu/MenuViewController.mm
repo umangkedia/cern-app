@@ -55,6 +55,7 @@ using CernAPP::ItemStyle;
    assert(!val || val == 1 && "setStateForGroup:from:, 'Expanded' must have a value either 0 or 1");
    
    if (!val) {
+      group.collapsed = YES;
       group.containerView.hidden = YES;
       group.titleView.discloseImageView.transform = CGAffineTransformMakeRotation(-M_PI / 2);
    } else
