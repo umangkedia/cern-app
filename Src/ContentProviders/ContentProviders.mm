@@ -81,7 +81,8 @@
    using namespace CernAPP;
 
    NewsTableViewController * const nc = (NewsTableViewController *)[navController.storyboard instantiateViewControllerWithIdentifier : NewsTableViewControllerID];
-   [nc.aggregator addFeedForURL:[NSURL URLWithString : feed]];
+   [nc.aggregator addFeedForURL : [NSURL URLWithString : feed]];
+   nc.navigationItem.title = feedName;
    
    [navController pushViewController : nc animated : YES];
 }
@@ -306,6 +307,7 @@
       [navController pushViewController : evc animated : YES];
    } else {
       LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : LiveEventTableControllerID];
+      eventViewController.navigationItem.title = categoryName;
       [eventViewController setTableContents : liveEvents experimentName : experimentName];
       eventViewController.provider = self;
       eventViewController.navController = navController;
