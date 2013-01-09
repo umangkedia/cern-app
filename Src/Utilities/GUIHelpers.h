@@ -14,6 +14,4 @@ extern const CGFloat childTextColor[3];
 extern const CGFloat childMenuFillColor[3];
 extern const CGFloat menuBackgroundColor[4];
 
-void ResetMenuButton(UIViewController *controller);
-
 }

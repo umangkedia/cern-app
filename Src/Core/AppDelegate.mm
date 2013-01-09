@@ -6,8 +6,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-   [[UINavigationBar appearance] setTintColor : [UIColor clearColor]];
-   [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics:UIBarMetricsDefault];
+ //  [[UINavigationBar appearance] setTintColor : [UIColor colorWithPatternImage:[UIImage imageNamed :@"navbarback.png"]]];
+//   [[UINavigationBar appearance] setBackgroundImage : [UIImage imageNamed : @"navbarback.png"] forBarMetrics : UIBarMetricsDefault];
+
+   [[UIBarButtonItem appearance] setTintColor:[UIColor colorWithRed:0.f green:83.f/255.f blue:161.f/255.f alpha:1.f]];
 
    return YES;
 }

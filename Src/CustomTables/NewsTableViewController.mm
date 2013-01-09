@@ -119,8 +119,8 @@
 {
    [super viewWillAppear : animated];
    
-   if(self.navigationController.viewControllers.count == 1)//??? Kind of a hack.
-      CernAPP::ResetMenuButton(self);
+//   if(self.navigationController.viewControllers.count == 1)//??? Kind of a hack.
+//      CernAPP::ResetMenuButton(self);
 }
 
 //________________________________________________________________________________________

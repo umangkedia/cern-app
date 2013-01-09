@@ -151,9 +151,6 @@
    //controller is poped from the stack, table ... will lost
    //cell's background. Why does Apple suck ALL THE TIME???
    [self.tableView reloadData];
-   
-      
-   CernAPP::ResetMenuButton(self);
 }
 
 //________________________________________________________________________________________
