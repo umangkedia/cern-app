@@ -5,6 +5,8 @@
 	<key>Menu Contents</key>
 	<array>
 		<dict>
+			<key>Expanded</key>
+			<integer>1</integer>
 			<key>Image name</key>
 			<string>news.png</string>
 			<key>Feeds</key>
@@ -58,6 +60,8 @@
 			<string>News</string>
 		</dict>
 		<dict>
+			<key>Expanded</key>
+			<integer>0</integer>
 			<key>Image name</key>
 			<string>about.png</string>
 			<key>Entries</key>
@@ -65,26 +69,18 @@
 				<dict>
 					<key>Name</key>
 					<string>History</string>
-					<key>Category name</key>
-					<string>DirectLoader</string>
 				</dict>
 				<dict>
-					<key>Category name</key>
-					<string>DirectLoader</string>
 					<key>Name</key>
 					<string>Physics</string>
 				</dict>
 				<dict>
 					<key>Name</key>
 					<string>Accelerators</string>
-					<key>Category name</key>
-					<string>TableLoader</string>
 				</dict>
 				<dict>
 					<key>Name</key>
 					<string>Experiments</string>
-					<key>Category name</key>
-					<string>TableLoader</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -93,6 +89,8 @@
 			<string>StaticInfo</string>
 		</dict>
 		<dict>
+			<key>Expanded</key>
+			<integer>1</integer>
 			<key>Image name</key>
 			<string>live.png</string>
 			<key>Experiments</key>

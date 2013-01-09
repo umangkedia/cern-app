@@ -1,7 +1,3 @@
-//This code is based on a code sample by Michael Enriquez (EdgeCase).
-//Code was further developed/modified (and probably broken) by Timur Pocheptsov
-//for CERN.app - to load our own menu we need.
-
 #import <cassert>
 #import <limits>
 #import <cmath>
@@ -41,6 +37,30 @@ using CernAPP::ItemStyle;
    
    return nil;
 }
+
+//________________________________________________________________________________________
+- (void) setStateForGroup : (NSUInteger) groupIndex from : (NSDictionary *) desc
+{
+   assert(groupIndex < menuItems.count && "setStateForGroup:from:, parameter 'groupIndex' is out of bounds");
+   assert([menuItems[groupIndex] isKindOfClass : [MenuItemsGroup class]] &&
+          "setStateForGroup:from:, state can be set only for a sub-menu");
+   assert(desc != nil && "setStateForGroup:from:, parameter 'desc' is nil");
+
+   MenuItemsGroup * const group = (MenuItemsGroup *)menuItems[groupIndex];
+   
+   assert([[desc objectForKey : @"Expanded"] isKindOfClass : [NSNumber class]] &&
+          "setStateForGroup:from:, 'Expanded' is not found or has a wrong type");
+   
+   const NSInteger val = [(NSNumber *)[desc objectForKey : @"Expanded"] integerValue];
+   assert(!val || val == 1 && "setStateForGroup:from:, 'Expanded' must have a value either 0 or 1");
+   
+   if (!val) {
+      group.containerView.hidden = YES;
+      group.titleView.discloseImageView.transform = CGAffineTransformMakeRotation(-M_PI / 2);
+   } else
+      menuState |= 1 << groupIndex;
+}
+
 
 //TODO: the following 3 functions do almost exactly the same work, so it's not bad to refactor them
 //into a generic function?
@@ -108,8 +128,8 @@ using CernAPP::ItemStyle;
          group.containerView = containerView;
          group.groupView = groupView;
          
-         menuState |= 1 << menuItems.count;
          [menuItems addObject : group];
+         [self setStateForGroup : menuItems.count - 1 from : desc];
       }
    }
 
@@ -172,9 +192,9 @@ using CernAPP::ItemStyle;
       group.titleView = menuGroupView;
       group.containerView = containerView;
       group.groupView = groupView;
-      
-      menuState |= 1 << menuItems.count;//At the beginning, this menu is open.
+
       [menuItems addObject : group];
+      [self setStateForGroup : menuItems.count - 1 from : desc];
    }
 
    return YES;
@@ -221,22 +241,10 @@ using CernAPP::ItemStyle;
          assert([objBase isKindOfClass : [NSDictionary class]] &&
                 "loadStaticInfo:, NSDictionary expected");
 
-         NSDictionary * const item = (NSDictionary *)objBase;
-         objBase = [item objectForKey : @"Category name"];
+         objBase = [(NSDictionary *)objBase objectForKey : @"Name"];
          assert([objBase isKindOfClass : [NSString class]] &&
-                "loadStatiInfo:, 'Category name' either not found or has a wrong type");
-   
-         NSObject<MenuItemProtocol> *newItem = nil;
-         if ([(NSString *)objBase isEqualToString : @"DirectLoader"] || [(NSString *)objBase isEqualToString : @"TableLoader"]) {
-            //
-            objBase = [item objectForKey : @"Name"];
-            assert([objBase isKindOfClass : [NSString class]] &&
-                   "loadStaticInfo:, 'Name' either not found or has a wrong string");
-            newItem = [[MenuItemStaticInfo alloc] initWithKey: (NSString *)objBase];
-         } else {
-            //TODO:
-            assert(0 && "loadStaticInfo:, entry with unknown type");
-         }
+                "loadStaticInfo:, 'Name' either not found or has a wrong string");
+         NSObject<MenuItemProtocol> * const newItem = [[MenuItemStaticInfo alloc] initWithKey: (NSString *)objBase];
          
          MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : newItem
                                           style : ItemStyle::child controller : self];
@@ -256,9 +264,9 @@ using CernAPP::ItemStyle;
       group.titleView = menuGroupView;
       group.containerView = containerView;
       group.groupView = groupView;
-      
-      menuState |= 1 << menuItems.count;//At the beginning, this menu is open.
-      [menuItems addObject : group];      
+
+      [menuItems addObject : group];
+      [self setStateForGroup : menuItems.count - 1 from : desc];
    }
    
    
@@ -606,7 +614,7 @@ using CernAPP::ItemStyle;
       if ([itemBase isKindOfClass : [MenuItemsGroup class]]) {
          MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
          totalHeight += group.titleView.frame.size.height;
-         if (!group.collapsed)
+         if (!group.containerView.hidden)
             totalHeight += group.containerView.frame.size.height;
       } else {
          assert([itemBase respondsToSelector : @selector(itemView)] &&
