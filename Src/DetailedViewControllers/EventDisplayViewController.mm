@@ -122,7 +122,7 @@ using CernAPP::NetworkStatus;
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
    [internetReach startNotifier];
-   
+
    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem : UIBarButtonSystemItemRefresh target : self action : @selector(reloadPageFromRefreshControl)];
    //
 }
