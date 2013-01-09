@@ -18,7 +18,7 @@ enum class ItemStyle {
    separator
 };
 
-void DrawFrame(CGContextRef ctx, const CGRect &rect);
+void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift);
 
 }
 

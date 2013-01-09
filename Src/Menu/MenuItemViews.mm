@@ -42,19 +42,19 @@ using CernAPP::ItemStyle;
 namespace CernAPP {
 
 //________________________________________________________________________________________
-void DrawFrame(CGContextRef ctx, const CGRect &rect)
+void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
 {
    assert(ctx != nullptr && "DrawFrame, parameter 'ctx' is null");
 
    CGContextSetAllowsAntialiasing(ctx, false);
    //Bright line at the top.
-   CGContextSetRGBStrokeColor(ctx, frameTopLineColor[0], frameTopLineColor[1], frameTopLineColor[2], 1.f);
+   CGContextSetRGBStrokeColor(ctx, frameTopLineColor[0] + rgbShift, frameTopLineColor[1] + rgbShift, frameTopLineColor[2] + rgbShift, 1.f);
    CGContextMoveToPoint(ctx, 0.f, 1.f);
    CGContextAddLineToPoint(ctx, rect.size.width, 1.f);
    CGContextStrokePath(ctx);
    
    //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
+   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0] + rgbShift, frameBottomLineColor[1] + rgbShift, frameBottomLineColor[2] + rgbShift, 1.f);
    CGContextMoveToPoint(ctx, 0.f, rect.size.height);
    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
    CGContextStrokePath(ctx);
@@ -161,7 +161,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
          CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
          CGContextFillRect(ctx, rect);
          
-         CernAPP::DrawFrame(ctx, rect);
+         CernAPP::DrawFrame(ctx, rect, 0.f);
       } else {
          const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
          GradientFillRect(ctx, rect, colors[0]);

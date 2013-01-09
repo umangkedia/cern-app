@@ -10,6 +10,12 @@
 #import "MenuItemViews.h"
 #import "GUIHelpers.h"
 
+namespace CernAPP {
+
+const CGFloat liveTableRgbShift = 0.15f;
+
+}
+
 @implementation LiveTableViewCell
 
 //________________________________________________________________________________________
@@ -31,11 +37,12 @@
    CGContextRef ctx = UIGraphicsGetCurrentContext();
 
    using CernAPP::childMenuFillColor;
+   using CernAPP::liveTableRgbShift;
  
-   CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
+   CGContextSetRGBFillColor(ctx, childMenuFillColor[0] + liveTableRgbShift, childMenuFillColor[1] + liveTableRgbShift, childMenuFillColor[2] + liveTableRgbShift, 1.f);
    CGContextFillRect(ctx, rect);
    
-   CernAPP::DrawFrame(ctx, rect);
+   CernAPP::DrawFrame(ctx, rect, liveTableRgbShift);
 }
 
 @end

@@ -140,9 +140,10 @@
    self.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    
    using CernAPP::menuBackgroundColor;
+   using CernAPP::liveTableRgbShift;
    
-   self.tableView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] green : menuBackgroundColor[1]
-                                             blue : menuBackgroundColor[2] alpha : 1.f];
+   self.tableView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] + liveTableRgbShift green : menuBackgroundColor[1] + liveTableRgbShift
+                                             blue : menuBackgroundColor[2] + liveTableRgbShift alpha : 1.f];
    self.tableView.separatorColor = [UIColor clearColor];
 
    [self readLIVEData];
