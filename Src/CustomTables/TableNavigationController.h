@@ -10,7 +10,7 @@
 
 @interface TableNavigationController : UINavigationController
 
-- (void) addFeed : (NSString *) feed;
+- (void) addFeed : (NSString *) feed withName : (NSString *) feedName;
 - (void) setExperiment : (CernAPP::LHCExperiment) experiment;
 
 @end

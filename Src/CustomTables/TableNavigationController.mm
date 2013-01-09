@@ -45,14 +45,16 @@
 }
 
 //________________________________________________________________________________________
-- (void) addFeed : (NSString *) feed
+- (void) addFeed : (NSString *) feed withName : (NSString *) feedName
 {
    assert(feed != nil && "addFeed:, parameter 'feed' is nil");
+   assert(feedName != nil && "addFeed:, parameter 'feedName' is nil");
    assert([self.topViewController isKindOfClass : [NewsTableViewController class]] &&
           "addFeed:, topViewController is either nil, or has a wrong type - not a NewsTableViewController");
 
    NewsTableViewController * const nt = (NewsTableViewController *)self.topViewController;
-   [nt.aggregator addFeedForURL:[NSURL URLWithString:feed]];
+   nt.navigationItem.title = feedName;
+   [nt.aggregator addFeedForURL : [NSURL URLWithString:feed]];
 }
 
 //________________________________________________________________________________________

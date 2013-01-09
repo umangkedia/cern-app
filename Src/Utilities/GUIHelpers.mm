@@ -25,7 +25,7 @@ const CGFloat childMenuFillColor[] = {0.215f, 0.231f, 0.29f};
 const CGFloat menuBackgroundColor[4] = {0.242f, 0.258f, 0.321f, 1.f};
 
 
-const CGRect menuButtonFrame = CGRectMake(0.f, 0.f, 35.f, 35.f);
+const CGRect menuButtonFrame = CGRectMake(0.f, 0.f, 39.f, 31.f);
 
 
 //________________________________________________________________________________________

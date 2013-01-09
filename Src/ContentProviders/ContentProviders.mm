@@ -62,7 +62,7 @@
    TableNavigationController * const topController =
          (TableNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
  
-   [topController addFeed : feed];
+   [topController addFeed : feed withName : feedName];
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;

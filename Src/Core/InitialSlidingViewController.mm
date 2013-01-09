@@ -41,7 +41,7 @@
                                                                          CernAPP::TableNavigationControllerNewsID];
 
    //Now, let's ask for the first (from the top of MENU.plist) news feed.
-   [top addFeed : @"http://cms.web.cern.ch/news/category/265/rss.xml"];
+   [top addFeed : @"http://cms.web.cern.ch/news/category/265/rss.xml" withName : @"CMS News"];
    
    self.topViewController = top;
 }
