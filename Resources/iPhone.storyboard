@@ -261,7 +261,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="menu.png" width="27" height="22"/>
+        <image name="menu.png" width="20" height="20"/>
     </resources>
     <classes>
         <class className="ArticleDetailViewController" superclassName="UIViewController">

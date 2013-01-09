@@ -37,8 +37,6 @@ using CernAPP::NetworkStatus;
    
    Reachability *internetReach;
    MBProgressHUD *noConnectionHUD;
-   
-   UIButton *refreshButton;
 }
 
 //________________________________________________________________________________________
@@ -125,19 +123,7 @@ using CernAPP::NetworkStatus;
    internetReach = [Reachability reachabilityForInternetConnection];
    [internetReach startNotifier];
    
-   //
-   refreshButton = [UIButton buttonWithType : UIButtonTypeCustom];
-   refreshButton.backgroundColor = [UIColor clearColor];
-   const CGSize &btnSize = CernAPP::navBarBackButtonSize;
-
-   refreshButton.frame = CGRectMake(self.view.frame.size.width - btnSize.width - 5,
-                                    (CernAPP::navBarHeight - btnSize.height) / 2.f,
-                                    btnSize.width, btnSize.height);
-   [refreshButton setImage : [UIImage imageNamed : @"reload.png"] forState : UIControlStateNormal];
-   refreshButton.alpha = 0.9f;
-   [refreshButton addTarget : self action : @selector(reloadPageFromRefreshControl)
-                  forControlEvents : UIControlEventTouchUpInside];
-   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView : refreshButton];
+   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem : UIBarButtonSystemItemRefresh target : self action : @selector(reloadPageFromRefreshControl)];
    //
 }
 
@@ -172,6 +158,12 @@ using CernAPP::NetworkStatus;
       [currentConnection cancel];
 
    [super viewWillDisappear : animated];
+}
+
+//________________________________________________________________________________________
+- (void) viewWillAppear : (BOOL) animated
+{
+   [super viewWillAppear : animated];
 }
 
 //________________________________________________________________________________________
@@ -305,7 +297,7 @@ using CernAPP::NetworkStatus;
    
    if ([sources count]) {
       [self addSpinnerToPage : self.pageControl.currentPage];
-      refreshButton.enabled = NO;
+      self.navigationItem.rightBarButtonItem.enabled = NO;
       self.downloadedResults = [NSMutableArray array];
       NSDictionary * const source = [sources objectAtIndex : 0];
       NSURL * const url = [source objectForKey : sourceURL];
@@ -330,49 +322,49 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) synchronouslyDownloadImageForSource : (NSDictionary *) source
 {
-    // Download the image from the specified source
-    NSURL *url = [source objectForKey : sourceURL];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] init];
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    UIImage *image = [UIImage imageWithData : data];
-    
-    NSDate *updated = [self lastModifiedDateFromHTTPResponse:response];
+   // Download the image from the specified source
+   NSURL *url = [source objectForKey : sourceURL];
+   NSURLRequest *request = [NSURLRequest requestWithURL:url];
+   NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] init];
+   NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+   UIImage *image = [UIImage imageWithData : data];
 
-    // Just set the date in the nav bar to the date of the first image, because they should all be pretty much the same anyway
-    if (self.downloadedResults.count == 0) {
-        self.dateLabel.text = [self timeAgoStringFromDate:updated];
-    }
-    
-    // If the downloaded image needs to be divided into several smaller images, do that now and add each
-    // smaller image to the results array.
-    NSArray *boundaryRects = [source objectForKey:sourceBoundaryRects];
-    if (boundaryRects) {
-        for (NSDictionary *boundaryInfo in boundaryRects) {
-            NSValue *rectValue = [boundaryInfo objectForKey:@"Rect"];
-            CGRect boundaryRect = [rectValue CGRectValue];
-            CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, boundaryRect);
-            UIImage *partialImage = [UIImage imageWithCGImage:imageRef];
-            CGImageRelease(imageRef);
-            NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-            [imageInfo setValue:partialImage forKey:resultImage];
-            [imageInfo setValue:[boundaryInfo objectForKey:sourceDescription] forKey:sourceDescription];
-            [imageInfo setValue:updated forKey:resultLastUpdate];
-            [self.downloadedResults addObject:imageInfo];
-            [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
-        }
-    } else {    // Otherwise if the image does not need to be divided, just add the image to the results array.
-        NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-        [imageInfo setValue:image forKey:resultImage];
-        [imageInfo setValue:[source objectForKey:sourceDescription] forKey : sourceDescription];
-        [imageInfo setValue:updated forKey:resultLastUpdate];
-        [self.downloadedResults addObject:imageInfo];
-        [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
-    }
-    
-    if (self.downloadedResults.count == numPages) {
-        refreshButton.enabled = YES;
-    }
+   NSDate *updated = [self lastModifiedDateFromHTTPResponse:response];
+
+   // Just set the date in the nav bar to the date of the first image, because they should all be pretty much the same anyway
+   if (self.downloadedResults.count == 0) {
+      self.dateLabel.text = [self timeAgoStringFromDate:updated];
+   }
+
+   // If the downloaded image needs to be divided into several smaller images, do that now and add each
+   // smaller image to the results array.
+   NSArray *boundaryRects = [source objectForKey:sourceBoundaryRects];
+   if (boundaryRects) {
+      for (NSDictionary *boundaryInfo in boundaryRects) {
+         NSValue *rectValue = [boundaryInfo objectForKey:@"Rect"];
+         CGRect boundaryRect = [rectValue CGRectValue];
+         CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, boundaryRect);
+         UIImage *partialImage = [UIImage imageWithCGImage:imageRef];
+         CGImageRelease(imageRef);
+         NSDictionary *imageInfo = [NSMutableDictionary dictionary];
+         [imageInfo setValue:partialImage forKey:resultImage];
+         [imageInfo setValue:[boundaryInfo objectForKey:sourceDescription] forKey:sourceDescription];
+         [imageInfo setValue:updated forKey:resultLastUpdate];
+         [self.downloadedResults addObject:imageInfo];
+         [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
+      }
+   } else {    // Otherwise if the image does not need to be divided, just add the image to the results array.
+      NSDictionary *imageInfo = [NSMutableDictionary dictionary];
+      [imageInfo setValue:image forKey:resultImage];
+      [imageInfo setValue:[source objectForKey:sourceDescription] forKey : sourceDescription];
+      [imageInfo setValue:updated forKey:resultLastUpdate];
+      [self.downloadedResults addObject:imageInfo];
+      [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
+   }
+
+   if (self.downloadedResults.count == numPages) {
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+   }
 }
 
 //________________________________________________________________________________________
@@ -547,7 +539,7 @@ using CernAPP::NetworkStatus;
       imageData = nil;
       loadingSource = 0;
       pageLoaded = YES;
-      refreshButton.enabled = YES;
+      self.navigationItem.rightBarButtonItem.enabled = YES;
       [self removeSpinners];
    }
 }
@@ -567,7 +559,7 @@ using CernAPP::NetworkStatus;
       imageData = nil;
       loadingSource = 0;
       pageLoaded = YES;
-      refreshButton.enabled = YES;
+      self.navigationItem.rightBarButtonItem.enabled = YES;
    }
 }
 
