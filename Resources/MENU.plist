@@ -59,6 +59,41 @@
 		</dict>
 		<dict>
 			<key>Image name</key>
+			<string>about.png</string>
+			<key>Entries</key>
+			<array>
+				<dict>
+					<key>Name</key>
+					<string>History</string>
+					<key>Category name</key>
+					<string>DirectLoader</string>
+				</dict>
+				<dict>
+					<key>Category name</key>
+					<string>DirectLoader</string>
+					<key>Name</key>
+					<string>Physics</string>
+				</dict>
+				<dict>
+					<key>Name</key>
+					<string>Accelerators</string>
+					<key>Category name</key>
+					<string>TableLoader</string>
+				</dict>
+				<dict>
+					<key>Name</key>
+					<string>Experiments</string>
+					<key>Category name</key>
+					<string>TableLoader</string>
+				</dict>
+			</array>
+			<key>Name</key>
+			<string>About CERN</string>
+			<key>Category name</key>
+			<string>StaticInfo</string>
+		</dict>
+		<dict>
+			<key>Image name</key>
 			<string>live.png</string>
 			<key>Experiments</key>
 			<array>

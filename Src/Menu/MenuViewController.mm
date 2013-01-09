@@ -42,6 +42,9 @@ using CernAPP::ItemStyle;
    return nil;
 }
 
+//TODO: the following 3 functions do almost exactly the same work, so it's not bad to refactor them
+//into a generic function?
+
 //________________________________________________________________________________________
 - (BOOL) loadNewsSection : (NSDictionary *) desc
 {
@@ -178,6 +181,91 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadStaticInfo : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadStaticInfo, parameter 'desc' is nil");
+   
+   id objBase = [desc objectForKey : @"Category name"];
+   assert([objBase isKindOfClass : [NSString class]] &&
+          "loadStaticInfo:, 'Category name' either not found or has a wrong type");
+   
+   if (![(NSString *)objBase isEqualToString : @"StaticInfo"])
+      return NO;
+
+   
+   objBase = [desc objectForKey : @"Name"];
+   assert([objBase isKindOfClass : [NSString class]] &&
+          "loadStaticInfo:, 'Name' either not found or has a wrong type");
+   
+   NSString * const sectionName = (NSString *)objBase;
+   
+   objBase = [desc objectForKey : @"Entries"];
+   //It must be an NSArray ...
+   assert([objBase isKindOfClass : [NSArray class]] &&
+          "loadStaticInfo:, 'Entries' either not found or has a wrong type");
+   
+   NSArray * const staticInfoEntries = (NSArray *)objBase;
+   
+   if (staticInfoEntries.count) {
+      assert(menuItems.count + 1 < 32 && "loadStaticInfo:, menu cannot have more than 32 items");
+      //
+      UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
+      containerView.clipsToBounds = YES;
+      UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
+      [containerView addSubview : groupView];
+      [scrollView addSubview : containerView];
+      
+      NSMutableArray * const items = [[NSMutableArray alloc] init];
+      for (objBase in staticInfoEntries) {
+         //... of NSDictionary object.
+         assert([objBase isKindOfClass : [NSDictionary class]] &&
+                "loadStaticInfo:, NSDictionary expected");
+
+         NSDictionary * const item = (NSDictionary *)objBase;
+         objBase = [item objectForKey : @"Category name"];
+         assert([objBase isKindOfClass : [NSString class]] &&
+                "loadStatiInfo:, 'Category name' either not found or has a wrong type");
+   
+         NSObject<MenuItemProtocol> *newItem = nil;
+         if ([(NSString *)objBase isEqualToString : @"DirectLoader"] || [(NSString *)objBase isEqualToString : @"TableLoader"]) {
+            //
+            objBase = [item objectForKey : @"Name"];
+            assert([objBase isKindOfClass : [NSString class]] &&
+                   "loadStaticInfo:, 'Name' either not found or has a wrong string");
+            newItem = [[MenuItemStaticInfo alloc] initWithKey: (NSString *)objBase];
+         } else {
+            //TODO:
+            assert(0 && "loadStaticInfo:, entry with unknown type");
+         }
+         
+         MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : newItem
+                                          style : ItemStyle::child controller : self];
+         newItem.itemView = itemView;
+         [groupView addSubview : itemView];
+         
+         [items addObject : newItem];
+      }
+      
+      //Now, lets create a group item.
+      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : sectionName
+                                      image : [self loadItemImage : desc] items : items index : menuItems.count];
+      MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
+                                                  item : group controller : self];
+      [scrollView addSubview : menuGroupView];
+         
+      group.titleView = menuGroupView;
+      group.containerView = containerView;
+      group.groupView = groupView;
+      
+      menuState |= 1 << menuItems.count;//At the beginning, this menu is open.
+      [menuItems addObject : group];      
+   }
+   
+   
+   return YES;
+}
+
+//________________________________________________________________________________________
 - (BOOL) loadSeparator : (NSDictionary *) desc
 {
    assert(desc != nil && "loadSeparator:, parameter 'desc' is nil");
@@ -227,6 +315,9 @@ using CernAPP::ItemStyle;
          continue;
       
       if ([self loadLIVESection : (NSDictionary *)entryBase])
+         continue;
+      
+      if ([self loadStaticInfo : (NSDictionary *)entryBase])
          continue;
       
       if ([self loadSeparator : (NSDictionary *)entryBase])

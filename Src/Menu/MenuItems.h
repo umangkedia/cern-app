@@ -57,6 +57,19 @@
 
 @end
 
+@interface MenuItemStaticInfo : NSObject<MenuItemProtocol>
+
+- (id) initWithKey : (NSString *) key;
+
+- (NSString *) itemText;
+- (UIImage *) itemImage;
+
+- (void) itemPressedIn : (UIViewController *) controller;
+
+@property (nonatomic) __weak MenuItemView *itemView;
+
+@end
+
 
 @interface MenuItemsGroup : NSObject<MenuItemProtocol>
 
