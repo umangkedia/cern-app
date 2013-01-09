@@ -438,5 +438,17 @@ using CernAPP::NetworkStatus;
    }   
 }
 
+#pragma mark - Hack to remove empty rows
+
+//________________________________________________________________________________________
+- (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
+{
+   //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
+   if (!section)
+      return [[UIView alloc] init];
+
+   return nil;
+}
+
 
 @end

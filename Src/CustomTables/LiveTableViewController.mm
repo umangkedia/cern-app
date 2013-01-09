@@ -291,8 +291,6 @@
 - (UIView *) tableView : (UITableView *)tableView viewForFooterInSection : (NSInteger) section
 {
    //Many thanks to J. Costa for this trick. (http://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview-in-iphone-sdk)
-   //Does Apple really have to suck all the time like this???
-   //Why does stupid table view show EMPTY rows???
    if (!section)
       return [[UIView alloc] init];
 
