@@ -11,11 +11,11 @@
 namespace CernAPP {
 
 //We use the same rgb, as menu, but make a table slightly brighter.
-extern const CGFloat liveTableRgbShift;
+extern const CGFloat menuTableRgbShift;
 
 }
 
-@interface LiveTableViewCell : UITableViewCell
+@interface MenuViewCell : UITableViewCell
 
 - (void) drawRect : (CGRect) rect;
 

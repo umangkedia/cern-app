@@ -6,17 +6,17 @@
 //  Copyright (c) 2013 CERN. All rights reserved.
 //
 
-#import "LiveTableViewCell.h"
 #import "MenuItemViews.h"
+#import "MenuViewCell.h"
 #import "GUIHelpers.h"
 
 namespace CernAPP {
 
-const CGFloat liveTableRgbShift = 0.15f;
+const CGFloat menuTableRgbShift = 0.15f;
 
 }
 
-@implementation LiveTableViewCell
+@implementation MenuViewCell
 
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewCellStyle) style reuseIdentifier : (NSString *) reuseIdentifier
@@ -37,12 +37,12 @@ const CGFloat liveTableRgbShift = 0.15f;
    CGContextRef ctx = UIGraphicsGetCurrentContext();
 
    using CernAPP::childMenuFillColor;
-   using CernAPP::liveTableRgbShift;
+   using CernAPP::menuTableRgbShift;
  
-   CGContextSetRGBFillColor(ctx, childMenuFillColor[0] + liveTableRgbShift, childMenuFillColor[1] + liveTableRgbShift, childMenuFillColor[2] + liveTableRgbShift, 1.f);
+   CGContextSetRGBFillColor(ctx, childMenuFillColor[0] + menuTableRgbShift, childMenuFillColor[1] + menuTableRgbShift, childMenuFillColor[2] + menuTableRgbShift, 1.f);
    CGContextFillRect(ctx, rect);
    
-   CernAPP::DrawFrame(ctx, rect, liveTableRgbShift);
+   CernAPP::DrawFrame(ctx, rect, menuTableRgbShift);
 }
 
 @end

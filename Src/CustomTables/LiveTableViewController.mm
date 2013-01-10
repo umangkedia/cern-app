@@ -3,8 +3,8 @@
 #import "LiveTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
-#import "LiveTableViewCell.h"
 #import "ContentProviders.h"
+#import "MenuViewCell.h"
 #import "GUIHelpers.h"
 
 #pragma mark - ExperimentLiveControllerIPHONE.
@@ -140,10 +140,10 @@
    self.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
    
    using CernAPP::menuBackgroundColor;
-   using CernAPP::liveTableRgbShift;
+   using CernAPP::menuTableRgbShift;
    
-   self.tableView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] + liveTableRgbShift green : menuBackgroundColor[1] + liveTableRgbShift
-                                             blue : menuBackgroundColor[2] + liveTableRgbShift alpha : 1.f];
+   self.tableView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] + menuTableRgbShift green : menuBackgroundColor[1] + menuTableRgbShift
+                                             blue : menuBackgroundColor[2] + menuTableRgbShift alpha : 1.f];
    self.tableView.separatorColor = [UIColor clearColor];
 
    [self readLIVEData];
@@ -191,12 +191,12 @@
    NSString * const cellIdentifier = @"LiveCell";
 
    UITableViewCell *cellBase = [tableView dequeueReusableCellWithIdentifier : cellIdentifier];
-   assert([cellBase isKindOfClass : [LiveTableViewCell class]] &&
+   assert(!cellBase || [cellBase isKindOfClass : [MenuViewCell class]] &&
           "tableView:cellForRowAtIndexPath:, reusable cell has a bad type");
    
-   LiveTableViewCell *cell = (LiveTableViewCell *)cellBase;
+   MenuViewCell *cell = (MenuViewCell *)cellBase;
    if (!cell)
-      cell = [[LiveTableViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : cellIdentifier];
+      cell = [[MenuViewCell alloc] initWithStyle : UITableViewCellStyleDefault reuseIdentifier : cellIdentifier];
 
    if (experiment == LHCExperiment::ALICE) {
       //I hate this. Special case again.
