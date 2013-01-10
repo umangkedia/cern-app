@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import "MWPhotoBrowser.h"
 
-@interface StaticInfoItemViewController : UIViewController {
+#import "MWPhotoBrowser.h"
+
+@interface StaticInfoItemViewController : UIViewController <MWPhotoBrowserDelegate> {
    IBOutlet UIScrollView *scrollView;
    IBOutlet UIImageView *imageView;
    IBOutlet UILabel *descriptionLabel;

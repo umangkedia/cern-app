@@ -83,31 +83,29 @@
    const CGPoint touchLocation = [recognizer locationInView : self.view];
    // If the photo was tapped, display it fullscreen
    if (CGRectContainsPoint(imageView.frame, touchLocation)) {
-      /*
-      MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate:self];
-      UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browser];
+   
+
+      MWPhotoBrowser * const browser = [[MWPhotoBrowser alloc] initWithDelegate : self];
+      UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController : browser];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
 
-      [self presentViewController : navigationController animated : YES completion : nil];*/
-      NSLog(@"lalala");
+      [self presentViewController : navigationController animated : YES completion : nil];
    }
 }
 
-/*
 #pragma mark - MWPhotoBrowserDelegate methods
 
 //________________________________________________________________________________________
 - (NSUInteger) numberOfPhotosInPhotoBrowser : (MWPhotoBrowser *) photoBrowser
 {
-    return 1;
+   return 1;
 }
 
 //________________________________________________________________________________________
 - (MWPhoto *) photoBrowser : (MWPhotoBrowser *) photoBrowser photoAtIndex : (NSUInteger) index
 {
-    UIImage *photo = [UIImage imageNamed:[self.staticInfo objectForKey:@"Image"]];
-    return [MWPhoto photoWithImage:photo];
+   return [MWPhoto photoWithImage : [UIImage imageNamed : [staticInfo objectForKey : @"Image"]]];
 }
-*/
+
 
 @end
