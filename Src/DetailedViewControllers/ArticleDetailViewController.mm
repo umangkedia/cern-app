@@ -227,12 +227,5 @@ using CernAPP::NetworkStatus;
    }
    */
 }
-/*
-//________________________________________________________________________________________
-- (void) backButtonPressed
-{
-   [self.navigationController popViewControllerAnimated : YES];
-}
-*/
 
 @end

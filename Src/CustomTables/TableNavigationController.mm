@@ -1,5 +1,6 @@
 #import <cassert>
 
+#import "StaticInfoScrollViewController.h"
 #import "TableNavigationController.h"
 #import "NewsTableViewController.h"
 #import "LiveTableViewController.h"
@@ -65,6 +66,16 @@
 
    LiveTableViewController * const lt = (LiveTableViewController *)self.topViewController;
    lt.experiment = experiment;
+}
+
+//________________________________________________________________________________________
+- (void) setStaticInfo : (NSArray *) staticInfo withTitle : (NSString *) sectionName
+{
+   assert([self.topViewController isKindOfClass:[StaticInfoScrollViewController class]] &&
+          "setStaticInfo:withTitle:, topViewController is either nil, or has a wrong type - not a StaticInfoScrollViewController");
+   
+   StaticInfoScrollViewController * const st = (StaticInfoScrollViewController *)self.topViewController;
+   st.dataSource = staticInfo;
 }
 
 @end

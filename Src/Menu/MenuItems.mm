@@ -1,5 +1,6 @@
 #import <cassert>
 
+#import "StaticInfoScrollViewController.h"
 #import "TableNavigationController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
@@ -96,9 +97,23 @@
 
 @end
 
+namespace {
+
+enum class StaticInfoEntryType : char {
+   unknown,
+   linear,
+   nested
+};
+
+}
+
 @implementation MenuItemStaticInfo {
    NSString *itemName;
    NSDictionary *info;
+
+   __weak NSArray *items;
+   
+   StaticInfoEntryType type;
 }
 
 @synthesize itemView;
@@ -112,6 +127,9 @@
       assert([[dict objectForKey : @"Title"] isKindOfClass : [NSString class]] &&
              "initWithDictionary:, 'Title' is not found or has a wrong type");
       itemName = (NSString *)[dict objectForKey : @"Title"];
+      info = dict;
+      
+      type = StaticInfoEntryType::unknown;
    }
    
    return self;
@@ -134,6 +152,41 @@
 - (void) itemPressedIn : (UIViewController *) controller
 {
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
+   
+   if (type == StaticInfoEntryType::unknown) {
+      id objBase = [info objectForKey : @"Items"];
+      assert([objBase isKindOfClass : [NSArray class]] &&
+             "itemPressedIn:, 'Items' is not found or has a wrong type");
+      
+      items = (NSArray *)objBase;
+      assert(items.count != 0 && "itemPressedIn:, no static info found");
+
+      assert([items[0] isKindOfClass : [NSDictionary class]] &&
+             "itemPressedIn:, array of dictionaries expected");
+      
+      NSDictionary * const firstItem = (NSDictionary *)items[0];
+      if ([firstItem objectForKey : @"Items"])
+         type = StaticInfoEntryType::nested;
+      else
+         type = StaticInfoEntryType::linear;
+   }
+   
+   using namespace CernAPP;
+   
+   if (type == StaticInfoEntryType::linear) {
+      //
+      TableNavigationController * const topController = [controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
+      [topController setStaticInfo : items withTitle : itemName];
+
+      [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+         CGRect frame = controller.slidingViewController.topViewController.view.frame;
+         controller.slidingViewController.topViewController = topController;
+         controller.slidingViewController.topViewController.view.frame = frame;
+         [controller.slidingViewController resetTopView];
+      }];
+   } else {
+      //Load a table first.
+   }
 }
 
 @end
@@ -196,13 +249,6 @@
 {
    assert(item < items.count && "viewForItem:, parameter 'item' is out of bounds");
    return items[item];
-}
-
-//________________________________________________________________________________________
-- (void) itemPressedIn : (UIViewController *) controller
-{
-   //Either collapse or expand a group.
-   NSLog(@"collapse or expand a group");
 }
 
 @end
