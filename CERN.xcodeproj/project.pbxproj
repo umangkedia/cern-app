@@ -147,7 +147,6 @@
 		707B137C169AEB6300180E02 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137A169AEB6300180E02 /* AppDelegate.mm */; };
 		707B137D169AEB6300180E02 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137B169AEB6300180E02 /* main.mm */; };
 		707B1380169AEC4700180E02 /* InitialSlidingViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137E169AEC4700180E02 /* InitialSlidingViewController.mm */; };
-		707B1384169AEC6F00180E02 /* MenuNavigationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B1383169AEC6F00180E02 /* MenuNavigationController.mm */; };
 		707B1387169AEC9000180E02 /* LiveTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B1385169AEC9000180E02 /* LiveTableViewController.mm */; };
 		707B138D169AECE800180E02 /* MenuItems.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B138A169AECE800180E02 /* MenuItems.mm */; };
 		707B138E169AECE800180E02 /* MenuViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B138C169AECE800180E02 /* MenuViewController.mm */; };
@@ -187,6 +186,7 @@
 		70C0E94A169C85FA0004ED1E /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C0E949169C85FA0004ED1E /* menu.png */; };
 		70CC55E8169EE70100292332 /* StaticInfoItemViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55E7169EE70100292332 /* StaticInfoItemViewController.mm */; };
 		70CC55EC169EEB3400292332 /* StaticInfoScrollViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55EB169EEB3400292332 /* StaticInfoScrollViewController.mm */; };
+		70CC55EF169EF80600292332 /* MenuNavigationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55ED169EF80500292332 /* MenuNavigationController.mm */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -361,8 +361,6 @@
 		707B137B169AEB6300180E02 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		707B137E169AEC4700180E02 /* InitialSlidingViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InitialSlidingViewController.mm; sourceTree = "<group>"; };
 		707B137F169AEC4700180E02 /* InitialSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitialSlidingViewController.h; sourceTree = "<group>"; };
-		707B1382169AEC6F00180E02 /* MenuNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuNavigationController.h; sourceTree = "<group>"; };
-		707B1383169AEC6F00180E02 /* MenuNavigationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuNavigationController.mm; sourceTree = "<group>"; };
 		707B1385169AEC9000180E02 /* LiveTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiveTableViewController.mm; sourceTree = "<group>"; };
 		707B1386169AEC9000180E02 /* LiveTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveTableViewController.h; sourceTree = "<group>"; };
 		707B1389169AECE800180E02 /* MenuItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItems.h; sourceTree = "<group>"; };
@@ -436,6 +434,8 @@
 		70CC55E7169EE70100292332 /* StaticInfoItemViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoItemViewController.mm; sourceTree = "<group>"; };
 		70CC55EA169EEB3400292332 /* StaticInfoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoScrollViewController.h; sourceTree = "<group>"; };
 		70CC55EB169EEB3400292332 /* StaticInfoScrollViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoScrollViewController.mm; sourceTree = "<group>"; };
+		70CC55ED169EF80500292332 /* MenuNavigationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuNavigationController.mm; sourceTree = "<group>"; };
+		70CC55EE169EF80600292332 /* MenuNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuNavigationController.h; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -757,8 +757,6 @@
 				707B13A7169AF1B200180E02 /* PageControllerProtocol.h */,
 				707B1385169AEC9000180E02 /* LiveTableViewController.mm */,
 				707B1386169AEC9000180E02 /* LiveTableViewController.h */,
-				707B1382169AEC6F00180E02 /* MenuNavigationController.h */,
-				707B1383169AEC6F00180E02 /* MenuNavigationController.mm */,
 				70086232169B745F001C7BB5 /* LiveTableViewCell.h */,
 				70086233169B745F001C7BB5 /* LiveTableViewCell.mm */,
 			);
@@ -768,6 +766,8 @@
 		707B1388169AECE800180E02 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
+				70CC55ED169EF80500292332 /* MenuNavigationController.mm */,
+				70CC55EE169EF80600292332 /* MenuNavigationController.h */,
 				7008622F169B56F2001C7BB5 /* MenuItemViews.h */,
 				70086230169B56F2001C7BB5 /* MenuItemViews.mm */,
 				707B1389169AECE800180E02 /* MenuItems.h */,
@@ -1122,7 +1122,6 @@
 				707B137C169AEB6300180E02 /* AppDelegate.mm in Sources */,
 				707B137D169AEB6300180E02 /* main.mm in Sources */,
 				707B1380169AEC4700180E02 /* InitialSlidingViewController.mm in Sources */,
-				707B1384169AEC6F00180E02 /* MenuNavigationController.mm in Sources */,
 				707B1387169AEC9000180E02 /* LiveTableViewController.mm in Sources */,
 				707B138D169AECE800180E02 /* MenuItems.mm in Sources */,
 				707B138E169AECE800180E02 /* MenuViewController.mm in Sources */,
@@ -1156,6 +1155,7 @@
 				70086234169B745F001C7BB5 /* LiveTableViewCell.mm in Sources */,
 				70CC55E8169EE70100292332 /* StaticInfoItemViewController.mm in Sources */,
 				70CC55EC169EEB3400292332 /* StaticInfoScrollViewController.mm in Sources */,
+				70CC55EF169EF80600292332 /* MenuNavigationController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
