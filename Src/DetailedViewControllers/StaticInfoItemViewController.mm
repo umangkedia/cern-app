@@ -85,16 +85,16 @@
    if (CGRectContainsPoint(imageView.frame, touchLocation)) {
    
 
-  /*    MWPhotoBrowser * const browser = [[MWPhotoBrowser alloc] initWithDelegate : self];
+      MWPhotoBrowser * const browser = [[MWPhotoBrowser alloc] initWithDelegate : self];
       UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController : browser];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
 
-      [self presentViewController : navigationController animated : YES completion : nil];*/
+      [self presentViewController : navigationController animated : YES completion : nil];
    }
 }
 
 #pragma mark - MWPhotoBrowserDelegate methods
-/*
+
 //________________________________________________________________________________________
 - (NSUInteger) numberOfPhotosInPhotoBrowser : (MWPhotoBrowser *) photoBrowser
 {
@@ -107,5 +107,4 @@
    return [MWPhoto photoWithImage : [UIImage imageNamed : [staticInfo objectForKey : @"Image"]]];
 }
 
-*/
 @end

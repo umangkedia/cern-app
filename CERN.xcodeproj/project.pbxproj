@@ -195,6 +195,12 @@
 		70CC561F169F095400292332 /* SDWebImagePrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5614169F095400292332 /* SDWebImagePrefetcher.m */; };
 		70CC5620169F095400292332 /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5616169F095400292332 /* UIButton+WebCache.m */; };
 		70CC5621169F095400292332 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5618169F095400292332 /* UIImageView+WebCache.m */; };
+		70CC5648169F111E00292332 /* MWCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC563C169F111E00292332 /* MWCaptionView.m */; };
+		70CC5649169F111E00292332 /* MWPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC563E169F111E00292332 /* MWPhoto.m */; };
+		70CC564A169F111E00292332 /* MWPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5640169F111E00292332 /* MWPhotoBrowser.m */; };
+		70CC564B169F111E00292332 /* MWTapDetectingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5643169F111E00292332 /* MWTapDetectingImageView.m */; };
+		70CC564C169F111E00292332 /* MWTapDetectingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5645169F111E00292332 /* MWTapDetectingView.m */; };
+		70CC564D169F111E00292332 /* MWZoomingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70CC5647169F111E00292332 /* MWZoomingScrollView.m */; };
 		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
@@ -463,6 +469,19 @@
 		70CC5616169F095400292332 /* UIButton+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+WebCache.m"; sourceTree = "<group>"; };
 		70CC5617169F095400292332 /* UIImageView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+WebCache.h"; sourceTree = "<group>"; };
 		70CC5618169F095400292332 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
+		70CC563B169F111E00292332 /* MWCaptionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWCaptionView.h; sourceTree = "<group>"; };
+		70CC563C169F111E00292332 /* MWCaptionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWCaptionView.m; sourceTree = "<group>"; };
+		70CC563D169F111E00292332 /* MWPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWPhoto.h; sourceTree = "<group>"; };
+		70CC563E169F111E00292332 /* MWPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWPhoto.m; sourceTree = "<group>"; };
+		70CC563F169F111E00292332 /* MWPhotoBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWPhotoBrowser.h; sourceTree = "<group>"; };
+		70CC5640169F111E00292332 /* MWPhotoBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWPhotoBrowser.m; sourceTree = "<group>"; };
+		70CC5641169F111E00292332 /* MWPhotoProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWPhotoProtocol.h; sourceTree = "<group>"; };
+		70CC5642169F111E00292332 /* MWTapDetectingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWTapDetectingImageView.h; sourceTree = "<group>"; };
+		70CC5643169F111E00292332 /* MWTapDetectingImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWTapDetectingImageView.m; sourceTree = "<group>"; };
+		70CC5644169F111E00292332 /* MWTapDetectingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWTapDetectingView.h; sourceTree = "<group>"; };
+		70CC5645169F111E00292332 /* MWTapDetectingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWTapDetectingView.m; sourceTree = "<group>"; };
+		70CC5646169F111E00292332 /* MWZoomingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWZoomingScrollView.h; sourceTree = "<group>"; };
+		70CC5647169F111E00292332 /* MWZoomingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MWZoomingScrollView.m; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -685,6 +704,7 @@
 		707B1343169AE8C900180E02 /* 3rd party */ = {
 			isa = PBXGroup;
 			children = (
+				70CC563A169F111E00292332 /* MWPhotoBrowser */,
 				70CC5604169F095400292332 /* SDWebImage */,
 				707B13B4169AF45D00180E02 /* MWFeedParser */,
 				707B13AE169AF39800180E02 /* MBProgressHUD */,
@@ -932,6 +952,26 @@
 				70CC5618169F095400292332 /* UIImageView+WebCache.m */,
 			);
 			path = SDWebImage;
+			sourceTree = "<group>";
+		};
+		70CC563A169F111E00292332 /* MWPhotoBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				70CC563B169F111E00292332 /* MWCaptionView.h */,
+				70CC563C169F111E00292332 /* MWCaptionView.m */,
+				70CC563D169F111E00292332 /* MWPhoto.h */,
+				70CC563E169F111E00292332 /* MWPhoto.m */,
+				70CC563F169F111E00292332 /* MWPhotoBrowser.h */,
+				70CC5640169F111E00292332 /* MWPhotoBrowser.m */,
+				70CC5641169F111E00292332 /* MWPhotoProtocol.h */,
+				70CC5642169F111E00292332 /* MWTapDetectingImageView.h */,
+				70CC5643169F111E00292332 /* MWTapDetectingImageView.m */,
+				70CC5644169F111E00292332 /* MWTapDetectingView.h */,
+				70CC5645169F111E00292332 /* MWTapDetectingView.m */,
+				70CC5646169F111E00292332 /* MWZoomingScrollView.h */,
+				70CC5647169F111E00292332 /* MWZoomingScrollView.m */,
+			);
+			path = MWPhotoBrowser;
 			sourceTree = "<group>";
 		};
 		E1F7B67B156EDC7C0092367F = {
@@ -1218,6 +1258,12 @@
 				70CC561F169F095400292332 /* SDWebImagePrefetcher.m in Sources */,
 				70CC5620169F095400292332 /* UIButton+WebCache.m in Sources */,
 				70CC5621169F095400292332 /* UIImageView+WebCache.m in Sources */,
+				70CC5648169F111E00292332 /* MWCaptionView.m in Sources */,
+				70CC5649169F111E00292332 /* MWPhoto.m in Sources */,
+				70CC564A169F111E00292332 /* MWPhotoBrowser.m in Sources */,
+				70CC564B169F111E00292332 /* MWTapDetectingImageView.m in Sources */,
+				70CC564C169F111E00292332 /* MWTapDetectingView.m in Sources */,
+				70CC564D169F111E00292332 /* MWZoomingScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
