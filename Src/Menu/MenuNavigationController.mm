@@ -75,6 +75,7 @@
           "setStaticInfo:withTitle:, topViewController is either nil, or has a wrong type - not a StaticInfoScrollViewController");
    
    StaticInfoScrollViewController * const st = (StaticInfoScrollViewController *)self.topViewController;
+   st.navigationItem.title = sectionName;
    st.dataSource = staticInfo;
 }
 

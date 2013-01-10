@@ -7,18 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "StaticInfoItemViewController.h"
 
-@interface StaticInfoScrollViewController : UIViewController {
+@interface StaticInfoScrollViewController : UIViewController <UIScrollViewDelegate> {
    IBOutlet UIScrollView *scrollView;
    IBOutlet UIPageControl *pageControl;
 }
 
 @property (nonatomic) __weak NSArray *dataSource;
 
-- (void)refresh;
-- (StaticInfoItemViewController *)viewControllerForPage:(int)page;
+- (IBAction) revealMenu : (id) sender;
 
-
-- (IBAction)revealMenu : (id) sender;
 @end

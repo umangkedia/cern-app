@@ -10,8 +10,9 @@
 
 
 #import "StaticInfoScrollViewController.h"
+#import "StaticInfoItemViewController.h"
 #import "ECSlidingViewController.h"
-#import "DeviceCheck.h"
+#import "StoryboardIdentifiers.h"
 
 
 @implementation StaticInfoScrollViewController
@@ -21,92 +22,58 @@
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
-    if (self = [super initWithCoder : aDecoder]) {
-      //
-    }
-
-    return self;
+   return self = [super initWithCoder : aDecoder];
 }
 
 //________________________________________________________________________________________
-- (StaticInfoItemViewController *) viewControllerForPage : (int) page
+- (StaticInfoItemViewController *) viewControllerForPage : (NSUInteger) page
 {
-  /* UIStoryboard *mainStoryboard = nil;
-   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-      mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle : nil];
-   else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-      mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle : nil];
+   using namespace CernAPP;
 
-   assert(mainStoryboard != nil && "viewControllerForPage:, no storyboard found");
+   assert(page < dataSource.count && "viewControllerForPage:, parameter 'page' is out of bounds");
 
-   StaticInfoItemViewController *detailViewController = [mainStoryboard instantiateViewControllerWithIdentifier:kStaticInfoItemViewController];
-   assert(detailViewController != nil && "viewControllerForPage:, no StaticInfoItemViewController found in a storyboard");
-   
-   detailViewController.staticInfo = [self.dataSource objectAtIndex:page];
+   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+   StaticInfoItemViewController * const detailViewController = [mainStoryboard instantiateViewControllerWithIdentifier : StaticInfoItemViewControllerID];
+   detailViewController.staticInfo = [dataSource objectAtIndex : page];
     
-   return detailViewController;*/
-   return nil;
+   return detailViewController;
 }
 
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
    [super viewDidLoad];
-   [self refresh];
-}
 
-//________________________________________________________________________________________
-- (void) viewWillAppear : (BOOL) animated
-{
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [UIApplication sharedApplication].statusBarHidden = YES;
-    }
-
-   //TP: on iPhone devices, this is a BAD time to call positionChildrenWithDuration:,
-   //view's geometry is totally screwed up by UIKit.
-   if ([DeviceCheck deviceIsiPad])
-      [self positionChildrenWithDuration : 0.f];
-}
-
-//________________________________________________________________________________________
-- (void) viewDidAppear : (BOOL) animated
-{
-   //Call this only on iPhones, now view's geometry is at least correct(?)
-   if (![DeviceCheck deviceIsiPad])
-      [self positionChildrenWithDuration : 0.0];
-}
-
-//________________________________________________________________________________________
-- (void) viewWillDisappear : (BOOL) animated
-{
-   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-      [UIApplication sharedApplication].statusBarHidden = NO;   
-}
-
-//________________________________________________________________________________________
-- (void) viewDidUnload
-{
-   [super viewDidUnload];
+   //Create children views for static info entries and add them into the scroll view.
+   assert(dataSource != nil && dataSource.count != 0 &&
+          "viewDidLoad:, dataSource is either nil or empty");
    
-   for (UIViewController *childViewController in self.childViewControllers) {
-      [childViewController.view removeFromSuperview];
-      [childViewController removeFromParentViewController];
+   pageControl.numberOfPages = dataSource.count;
+   scrollView.backgroundColor = [UIColor clearColor];
+   self.view.backgroundColor = [UIColor blackColor];
+
+   for (NSUInteger i = 0, e = dataSource.count; i < e; ++i) {
+      StaticInfoItemViewController *detailViewController = [self viewControllerForPage: i ];
+      [self addChildViewController : detailViewController];
+      [scrollView addSubview : detailViewController.view];
+      [detailViewController didMoveToParentViewController : self];
    }
 }
 
 //________________________________________________________________________________________
-- (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) interfaceOrientation
+- (void) viewDidLayoutSubviews
 {
-   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-      return YES;
-   else
-      return interfaceOrientation == UIInterfaceOrientationPortrait;
-}
+   //Now layout static info item views in a scrollview.
+   const CGFloat deviceViewWidth = scrollView.frame.size.width;
 
-//________________________________________________________________________________________
-- (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
-{
-   [self positionChildrenWithDuration:duration];
+   for (NSUInteger i = 0, e = self.childViewControllers.count; i < e; ++i) {
+      StaticInfoItemViewController *detailViewController = (StaticInfoItemViewController *)[self.childViewControllers objectAtIndex : i];
+      const CGFloat detailViewX = i * deviceViewWidth;
+      detailViewController.view.frame = CGRectMake(detailViewX, 0.f, deviceViewWidth, scrollView.frame.size.height);
+      [detailViewController.view setNeedsDisplay];
+   }
+
+   scrollView.contentSize = CGSizeMake(deviceViewWidth * self.childViewControllers.count, scrollView.frame.size.height);
 }
 
 //________________________________________________________________________________________
@@ -116,75 +83,6 @@
    const int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
 
    pageControl.currentPage = page;
-}
-
-//________________________________________________________________________________________
-- (void) refresh
-{
- /*  for (UIViewController *childViewController in self.childViewControllers) {
-      [childViewController.view removeFromSuperview];
-      [childViewController removeFromParentViewController];
-   }
-   
-   pageControl.numberOfPages = self.dataSource.count;
-
-   for (int i=0; i<self.dataSource.count; i++) {
-      StaticInfoItemViewController *detailViewController = [self viewControllerForPage:i];
-      [self addChildViewController:detailViewController];
-      [scrollView addSubview : detailViewController.view];
-      [detailViewController didMoveToParentViewController:self];
-   }
-
-   [self positionChildrenWithDuration:0.0];*/
-}
-
-//________________________________________________________________________________________
-- (void) positionChildrenWithDuration : (NSTimeInterval) duration
-{
-   [UIView animateWithDuration : duration animations : ^{
-      if (![DeviceCheck deviceIsiPad]) {
-         const CGFloat deviceViewWidth = 320.f;
-
-         for (NSUInteger i = 0; i < self.childViewControllers.count; ++i) {
-            StaticInfoItemViewController *detailViewController = [self.childViewControllers objectAtIndex : i];
-            const CGFloat detailViewX = i * deviceViewWidth;
-            detailViewController.view.frame = CGRectMake(detailViewX, 0.f, deviceViewWidth, scrollView.frame.size.height);
-            [detailViewController.view setNeedsDisplay];
-         }
-   
-         scrollView.contentSize = CGSizeMake(deviceViewWidth * self.childViewControllers.count, scrollView.frame.size.height);
-      } else {
-     /*    CGFloat detailViewWidth = 0.0;
-         CGFloat detailViewHeight = 480.0;
-         CGFloat detailViewX = 0.0;
-
-         CGFloat detailViewY = self.scrollView.frame.size.height / 2 - detailViewHeight / 2;
-         //Ugly fix for ugly code.
-         if (detailViewY < 0.)
-            detailViewY = 0.;
-
-         CGFloat detailViewMargin = 0.0;
-
-         for (NSUInteger i = 0; i < self.childViewControllers.count; ++i) {
-            StaticInfoItemViewController *detailViewController = [self.childViewControllers objectAtIndex : i];
-            detailViewWidth = detailViewController.view.frame.size.width;
-            detailViewHeight = detailViewController.view.frame.size.height;
-
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                detailViewMargin = 0;
-            } else {
-                detailViewMargin = 50.0;
-            }
-
-            detailViewX = (detailViewWidth+(2*detailViewMargin))*i;
-
-            detailViewController.view.frame = CGRectMake(detailViewX+detailViewMargin, detailViewY, detailViewWidth, detailViewHeight);
-            [detailViewController.view setNeedsDisplay];
-         }
-      
-         self.scrollView.contentSize = CGSizeMake(detailViewX + detailViewWidth + 2 * detailViewMargin, 1.f);*/
-      }
-   }];
 }
 
 //________________________________________________________________________________________
