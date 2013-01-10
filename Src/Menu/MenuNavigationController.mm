@@ -74,7 +74,7 @@
 {
    assert(staticInfo != nil && "setStaticInfo:withTitle:, parameter 'staticInfo' is nil");
    assert(sectionName != nil && "setStaticInfo:withTitle:, parameter 'sectionName' is nil");
-   assert([self.topViewController isKindOfClass:[StaticInfoScrollViewController class]] &&
+   assert([self.topViewController isKindOfClass : [StaticInfoScrollViewController class]] &&
           "setStaticInfo:withTitle:, topViewController is either nil, or has a wrong type - not a StaticInfoScrollViewController");
    
    StaticInfoScrollViewController * const st = (StaticInfoScrollViewController *)self.topViewController;

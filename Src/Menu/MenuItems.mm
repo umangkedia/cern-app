@@ -182,7 +182,7 @@ enum class StaticInfoEntryType : char {
       topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoTableViewControllerID];
       [topController setTableStaticInfo : items withTitle : itemName];
    }
-   
+
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
          CGRect frame = controller.slidingViewController.topViewController.view.frame;
          controller.slidingViewController.topViewController = topController;

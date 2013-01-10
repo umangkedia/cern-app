@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface StaticInfoTableViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate>
+@interface StaticInfoTableViewController : UIViewController {
+   IBOutlet UIScrollView * scrollView;
+}
 
 @property (nonatomic) __weak NSArray *staticInfo;
 

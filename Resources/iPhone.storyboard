@@ -301,54 +301,52 @@
             </objects>
             <point key="canvasLocation" x="-379" y="-342"/>
         </scene>
-        <!--Static Info Table View Controller - Root View Controller-->
-        <scene sceneID="H5S-ZU-TaH">
-            <objects>
-                <tableViewController id="dVM-sS-qBr" customClass="StaticInfoTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="QsQ-51-vO8">
-                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MenuCell" id="sIb-8L-pwu" customClass="MenuViewCell">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                            </tableViewCell>
-                        </prototypes>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="UK2-go-Cgi">
-                        <barButtonItem key="leftBarButtonItem" image="menu.png" id="uz5-P3-epH">
-                            <connections>
-                                <action selector="revealMenu:" destination="dVM-sS-qBr" id="FuU-ac-iHr"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="uTF-OX-S6b" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-282" y="270"/>
-        </scene>
         <!--Menu Navigation Controller-->
-        <scene sceneID="u1R-3P-dQ2">
+        <scene sceneID="EiP-jy-wAG">
             <objects>
-                <navigationController restorationIdentifier="StaticInfoTableViewControllerID" storyboardIdentifier="StaticInfoTableViewControllerID" definesPresentationContext="YES" id="H5O-yq-w6i" customClass="MenuNavigationController" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="5oW-Ky-M3o">
+                <navigationController restorationIdentifier="StaticInfoTableViewControllerID" storyboardIdentifier="StaticInfoTableViewControllerID" definesPresentationContext="YES" id="5yd-zM-7iH" customClass="MenuNavigationController" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="woX-cJ-Vtu">
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="tintColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="dVM-sS-qBr" kind="relationship" relationship="rootViewController" id="qgR-Xi-A5w"/>
+                        <segue destination="vkc-HF-ZPo" kind="relationship" relationship="rootViewController" id="d16-De-an2"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YYs-sn-8no" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sHE-o5-IGb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-816" y="270"/>
+            <point key="canvasLocation" x="-824" y="327"/>
+        </scene>
+        <!--Static Info Table View Controller-->
+        <scene sceneID="g42-7g-FfB">
+            <objects>
+                <viewController id="vkc-HF-ZPo" customClass="StaticInfoTableViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="4ww-yS-HQT">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" id="Mnk-bz-DjM">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="416"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="nj1-6m-X0K">
+                        <barButtonItem key="leftBarButtonItem" image="menu.png" id="Nd1-g0-RhI">
+                            <connections>
+                                <action selector="revealMenu:" destination="vkc-HF-ZPo" id="RT0-ci-KxC"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="scrollView" destination="Mnk-bz-DjM" id="vFs-ey-cGb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zNI-dJ-DdF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-352" y="327"/>
         </scene>
         <!--Static Info Item View Controller-->
         <scene sceneID="2ch-LL-mzq">
@@ -482,10 +480,11 @@
                 <relationship kind="outlet" name="scrollView" candidateClass="UIScrollView"/>
             </relationships>
         </class>
-        <class className="StaticInfoTableViewController" superclassName="UITableViewController">
+        <class className="StaticInfoTableViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/StaticInfoTableViewController.h"/>
             <relationships>
                 <relationship kind="action" name="revealMenu:"/>
+                <relationship kind="outlet" name="scrollView" candidateClass="UIScrollView"/>
             </relationships>
         </class>
     </classes>

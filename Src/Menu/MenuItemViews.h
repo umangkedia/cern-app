@@ -50,3 +50,14 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift);
 
 @end
 
+//This is a table cell for a "fake table view"
+//which we use as the "second level menu".
+@interface MenuTableItemView : UIView
+
+- (id) initWithFrame : (CGRect) frame;
+
+@property (nonatomic) UIImageView *imageView;
+@property (nonatomic) UILabel *textLabel;
+
+@end
+

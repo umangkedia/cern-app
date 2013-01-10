@@ -6,19 +6,23 @@
 //  Copyright (c) 2013 CERN. All rights reserved.
 //
 
+#import <cassert>
+
 #import "StaticInfoTableViewController.h"
 #import "ECSlidingViewController.h"
-#import "MenuViewCell.h"
+#import "MenuItemViews.h"
 #import "GUIHelpers.h"
 
-@implementation StaticInfoTableViewController
+@implementation StaticInfoTableViewController {
+   NSMutableArray *views;
+}
 
 @synthesize staticInfo;
 
 //________________________________________________________________________________________
-- (id) initWithStyle : (UITableViewStyle) style
+- (void) dealloc
 {
-   return self = [super initWithStyle : style];
+   [views removeAllObjects];
 }
 
 //________________________________________________________________________________________
@@ -26,79 +30,60 @@
 {
    [super viewDidLoad];
 
-   using CernAPP::menuBackgroundColor;
-   using CernAPP::menuTableRgbShift;
-
-   self.tableView.backgroundColor = [UIColor colorWithRed : menuBackgroundColor[0] + menuTableRgbShift green : menuBackgroundColor[1] + menuTableRgbShift
-                                             blue : menuBackgroundColor[2] + menuTableRgbShift alpha : 1.f];
-   self.tableView.separatorColor = [UIColor clearColor];
-
+   assert(staticInfo && staticInfo.count > 0 && "viewDidLoad, staticInfo is either nil or is empty");
+   scrollView.backgroundColor = [UIColor colorWithRed : 0.827f green : 0.853f blue : 0.862f alpha : 1.f];
+   
+   views = [[NSMutableArray alloc] init];
+   
+   for (id obj in staticInfo) {
+      MenuTableItemView * const newView = [[MenuTableItemView alloc] initWithFrame : CGRectMake(0.f, 0.f, 100.f, 100.f)];
+      [scrollView addSubview : newView];
+      [views addObject : newView];
+   }
 }
 
 //________________________________________________________________________________________
-- (void)didReceiveMemoryWarning
+- (void) viewDidLayoutSubviews
+{
+   const CGRect frame = scrollView.frame;
+   
+   const CGFloat x = 10.f;
+   const CGFloat addY = 10.f;
+   CGFloat currentY = addY;
+   CGFloat totalHeight = 0.f;
+   
+   
+   for (MenuTableItemView * view in views) {
+      CGRect newFrame = frame;
+      newFrame.origin.y = currentY;
+      newFrame.origin.x = x;
+      newFrame.size.width -= 2 * x;
+      newFrame.size.height = 100.f;//just a test.
+      
+      view.frame = newFrame;
+      
+      view.layer.cornerRadius = 10.f;
+      view.layer.shadowColor = [UIColor darkGrayColor].CGColor;
+      view.layer.shadowOpacity = 0.2f;
+      view.layer.shadowOffset = CGSizeMake(0.5f, 0.5f);
+      
+      newFrame.origin = CGPointZero;
+      view.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect : newFrame cornerRadius : 10.f].CGPath;
+      view.layer.borderColor = [UIColor colorWithRed : 0.456f green : 0.472f blue : 0.492f alpha : 0.5f].CGColor;
+      view.layer.borderWidth = 1.f;
+      
+      currentY += newFrame.size.height + addY;
+      totalHeight = currentY;
+   }
+   
+   [scrollView setContentSize : CGSizeMake(frame.size.width, totalHeight)];
+}
+
+//________________________________________________________________________________________
+- (void) didReceiveMemoryWarning
 {
    [super didReceiveMemoryWarning];
    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - Table view data source
-
-//________________________________________________________________________________________
-- (NSInteger) numberOfSectionsInTableView : (UITableView *) tableView
-{
-#pragma unused(tableView)
-   return 1;
-}
-
-//________________________________________________________________________________________
-- (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
-{
-#pragma unused(tableView, section)
-
-   return staticInfo.count;
-}
-
-//________________________________________________________________________________________
-- (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(tableView)
-
-   assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
-   assert(indexPath.row >= 0 && indexPath.row < staticInfo.count &&
-          "tableView:cellForRowAtIndexPath:, index is out of bounds");
-
-   NSString * const cellIdentifier = @"MenuCell";
-   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : cellIdentifier forIndexPath : indexPath];
-   assert(!cell || [cell isKindOfClass : [MenuViewCell class]] &&
-          "tableView:cellForRowAtIndexPath:, reusable cell has a wrong type - MenuViewCell expected");
-   
-   cell.textLabel.backgroundColor = [UIColor clearColor];
-   //
-   cell.textLabel.text = @"LALA";
-   
-   return cell;
-}
-
-#pragma mark - Table view delegate
-
-//________________________________________________________________________________________
-- (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
-{
-   //We have to load a scroll view now.
-}
-
-//________________________________________________________________________________________
-- (void) tableView : (UITableView *) aTableView willDisplayCell : (UITableViewCell *) cell
-         forRowAtIndexPath : (NSIndexPath *) indexPath
-{
-#pragma unused(aTableView, indexPath)
-
-   using CernAPP::childMenuFontName;
-   using CernAPP::childTextColor;
-
-   cell.textLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
-   cell.textLabel.font = [UIFont fontWithName : childMenuFontName size : 14.f];
 }
 
 #pragma mark - Sliding menu.

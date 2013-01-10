@@ -301,3 +301,21 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 }
 
 @end
+
+
+@implementation MenuTableItemView
+
+@synthesize imageView, textLabel;
+
+//________________________________________________________________________________________
+- (id) initWithFrame : (CGRect) frame
+{
+   if (self = [super initWithFrame : frame]) {
+      //
+      self.backgroundColor = [UIColor whiteColor];
+   }
+   
+   return self;
+}
+
+@end
