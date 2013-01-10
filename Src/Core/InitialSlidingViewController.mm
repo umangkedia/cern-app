@@ -13,7 +13,7 @@
 #import <cassert>
 
 #import "InitialSlidingViewController.h"
-#import "TableNavigationController.h"
+#import "MenuNavigationController.h"
 #import "StoryboardIdentifiers.h"
 
 @implementation InitialSlidingViewController
@@ -37,7 +37,7 @@
    //Actually, feed info is in MENU.plist, but at this point menu is not created yet
    //(it'll be created by this first table navigation controller.
 
-   TableNavigationController * const top = (TableNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
+   MenuNavigationController * const top = (MenuNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
                                                                          CernAPP::TableNavigationControllerNewsID];
 
    //Now, let's ask for the first (from the top of MENU.plist) news feed.

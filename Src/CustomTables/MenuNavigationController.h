@@ -8,7 +8,7 @@
 
 #import "Experiments.h"
 
-@interface TableNavigationController : UINavigationController
+@interface MenuNavigationController : UINavigationController
 
 - (void) addFeed : (NSString *) feed withName : (NSString *) feedName;
 - (void) setExperiment : (CernAPP::LHCExperiment) experiment;

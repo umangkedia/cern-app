@@ -1,7 +1,7 @@
 #import <cassert>
 
 #import "EventDisplayViewController.h"
-#import "TableNavigationController.h"
+#import "MenuNavigationController.h"
 #import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
 #import "ECSlidingViewController.h"
@@ -59,8 +59,8 @@
 
    assert(controller != nil && "loadControllerTo:, parameter controller is nil");
    
-   TableNavigationController * const topController =
-         (TableNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
+   MenuNavigationController * const topController =
+         (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
  
    [topController addFeed : feed withName : feedName];
 

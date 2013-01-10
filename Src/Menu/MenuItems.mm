@@ -1,7 +1,7 @@
 #import <cassert>
 
 #import "StaticInfoScrollViewController.h"
-#import "TableNavigationController.h"
+#import "MenuNavigationController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "MenuItems.h"
@@ -82,8 +82,8 @@
 
    using namespace CernAPP;
 
-   TableNavigationController * const topController =
-         (TableNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerLiveID];
+   MenuNavigationController * const topController =
+         (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerLiveID];
  
    [topController setExperiment : CernAPP::ExperimentNameToEnum(experimentName)];
 
@@ -175,7 +175,7 @@ enum class StaticInfoEntryType : char {
    
    if (type == StaticInfoEntryType::linear) {
       //
-      TableNavigationController * const topController = [controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
+      MenuNavigationController * const topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
       [topController setStaticInfo : items withTitle : itemName];
 
       [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{

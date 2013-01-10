@@ -1,13 +1,13 @@
 #import <cassert>
 
 #import "StaticInfoScrollViewController.h"
-#import "TableNavigationController.h"
+#import "MenuNavigationController.h"
 #import "NewsTableViewController.h"
 #import "LiveTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "MenuViewController.h"
 
-@implementation TableNavigationController
+@implementation MenuNavigationController
 
 //________________________________________________________________________________________
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
