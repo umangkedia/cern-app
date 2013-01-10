@@ -1,6 +1,7 @@
 #import <cassert>
 
 #import "StaticInfoScrollViewController.h"
+#import "StaticInfoTableViewController.h"
 #import "MenuNavigationController.h"
 #import "NewsTableViewController.h"
 #import "LiveTableViewController.h"
@@ -71,12 +72,27 @@
 //________________________________________________________________________________________
 - (void) setStaticInfo : (NSArray *) staticInfo withTitle : (NSString *) sectionName
 {
+   assert(staticInfo != nil && "setStaticInfo:withTitle:, parameter 'staticInfo' is nil");
+   assert(sectionName != nil && "setStaticInfo:withTitle:, parameter 'sectionName' is nil");
    assert([self.topViewController isKindOfClass:[StaticInfoScrollViewController class]] &&
           "setStaticInfo:withTitle:, topViewController is either nil, or has a wrong type - not a StaticInfoScrollViewController");
    
    StaticInfoScrollViewController * const st = (StaticInfoScrollViewController *)self.topViewController;
    st.navigationItem.title = sectionName;
    st.dataSource = staticInfo;
+}
+
+//________________________________________________________________________________________
+- (void) setTableStaticInfo : (NSArray *) staticInfo withTitle : (NSString *) sectionName
+{
+   assert(staticInfo != nil && "setTableStaticInfo:withTitle:, parameter 'staticInfo' is nil");
+   assert(sectionName != nil && "setTableStaticInfo:withTitle:, parameter 'sectionName' is nil");
+   assert([self.topViewController isKindOfClass : [StaticInfoTableViewController class]] &&
+          "setTableStaticInfo:withTitle:, topViewController has a wrong type or is nil");
+   
+   StaticInfoTableViewController * const st = (StaticInfoTableViewController *)self.topViewController;
+   st.staticInfo = staticInfo;
+   st.navigationItem.title = sectionName;
 }
 
 @end

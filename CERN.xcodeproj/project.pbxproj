@@ -177,6 +177,7 @@
 		707B13F7169AF69300180E02 /* UIImage+SquareScaledImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */; };
 		707B13FA169AF6AE00180E02 /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */; };
 		70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */; };
+		70AEA101169F227D004E05E4 /* StaticInfoTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70AEA100169F227D004E05E4 /* StaticInfoTableViewController.mm */; };
 		70B6B0B9169DD2790058DADA /* live_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0B8169DD2790058DADA /* live_color.png */; };
 		70B6B0BC169DD48E0058DADA /* news_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BB169DD48E0058DADA /* news_color.png */; };
 		70B6B0BE169DD6BE0058DADA /* about_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BD169DD6BE0058DADA /* about_color.png */; };
@@ -436,6 +437,8 @@
 		707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StoryboardIdentifiers.mm; sourceTree = "<group>"; };
 		70AEA0FB169F204C004E05E4 /* MenuViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewCell.h; sourceTree = "<group>"; };
 		70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuViewCell.mm; sourceTree = "<group>"; };
+		70AEA0FF169F227D004E05E4 /* StaticInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoTableViewController.h; sourceTree = "<group>"; };
+		70AEA100169F227D004E05E4 /* StaticInfoTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoTableViewController.mm; sourceTree = "<group>"; };
 		70B6B0B8169DD2790058DADA /* live_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = live_color.png; sourceTree = "<group>"; };
 		70B6B0BB169DD48E0058DADA /* news_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = news_color.png; sourceTree = "<group>"; };
 		70B6B0BD169DD6BE0058DADA /* about_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = about_color.png; sourceTree = "<group>"; };
@@ -805,6 +808,8 @@
 				707B13A7169AF1B200180E02 /* PageControllerProtocol.h */,
 				707B1385169AEC9000180E02 /* LiveTableViewController.mm */,
 				707B1386169AEC9000180E02 /* LiveTableViewController.h */,
+				70AEA0FF169F227D004E05E4 /* StaticInfoTableViewController.h */,
+				70AEA100169F227D004E05E4 /* StaticInfoTableViewController.mm */,
 			);
 			path = CustomTables;
 			sourceTree = "<group>";
@@ -1264,6 +1269,7 @@
 				70CC564C169F111E00292332 /* MWTapDetectingView.m in Sources */,
 				70CC564D169F111E00292332 /* MWZoomingScrollView.m in Sources */,
 				70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */,
+				70AEA101169F227D004E05E4 /* StaticInfoTableViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

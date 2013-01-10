@@ -11,5 +11,6 @@ NSString * const EventDisplayControllerID = @"EventDisplayControllerID";
 NSString * const StaticInfoItemViewControllerID = @"StaticInfoItemViewControllerID";
 NSString * const StaticInfoScrollViewControllerID = @"StaticInfoScrollViewControllerID";
 NSString * const StaticInfoNavigationControllerID = @"StaticInfoNavigationControllerID";
+NSString * const StaticInfoTableViewControllerID = @"StaticInfoTableViewControllerID";
 
 }

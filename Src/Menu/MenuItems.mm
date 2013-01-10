@@ -173,20 +173,22 @@ enum class StaticInfoEntryType : char {
    
    using namespace CernAPP;
    
-   if (type == StaticInfoEntryType::linear) {
-      //
-      MenuNavigationController * const topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
-      [topController setStaticInfo : items withTitle : itemName];
+   MenuNavigationController *topController = nil;
 
-      [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+   if (type == StaticInfoEntryType::linear) {
+      topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
+      [topController setStaticInfo : items withTitle : itemName];
+   } else {
+      topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoTableViewControllerID];
+      [topController setTableStaticInfo : items withTitle : itemName];
+   }
+   
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
          CGRect frame = controller.slidingViewController.topViewController.view.frame;
          controller.slidingViewController.topViewController = topController;
          controller.slidingViewController.topViewController.view.frame = frame;
          [controller.slidingViewController resetTopView];
-      }];
-   } else {
-      //Load a table first.
-   }
+   }];
 }
 
 @end
