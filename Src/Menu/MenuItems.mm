@@ -96,6 +96,48 @@
 
 @end
 
+@implementation MenuItemStaticInfo {
+   NSString *itemName;
+   NSDictionary *info;
+}
+
+@synthesize itemView;
+
+//________________________________________________________________________________________
+- (id) initWithDictionary : (NSDictionary *) dict
+{
+   assert(dict != nil && "initWithDictionary:, parameter 'dict' is nil");
+
+   if (self = [super init]) {
+      assert([[dict objectForKey : @"Title"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Title' is not found or has a wrong type");
+      itemName = (NSString *)[dict objectForKey : @"Title"];
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (NSString *) itemText
+{
+   return itemName;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) itemImage
+{
+   //Noop at the moment.
+   return nil;
+}
+
+//________________________________________________________________________________________
+- (void) itemPressedIn : (UIViewController *) controller
+{
+   assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
+}
+
+@end
+
 @implementation MenuItemsGroup {
    NSArray *items;
    NSString *title;
@@ -180,55 +222,6 @@
 - (UIImage *) itemImage
 {
    return nil;
-}
-
-@end
-
-@implementation MenuItemStaticInfo {
-   NSString *itemKey;
-}
-/*
-@interface MenuItemStaticInfo : NSObject<MenuItemProtocol>
-
-- (id) initWithKey : (NSString *) key;
-
-- (NSString *) itemText;
-- (UIImage *) itemImage;
-
-- (void) itemPressedIn : (UIViewController *) controller;
-
-@property (nonatomic) __weak MenuItemView *itemView;
-
-@end*/
-
-@synthesize itemView;
-
-//________________________________________________________________________________________
-- (id) initWithKey : (NSString *) key
-{
-   if (self = [super init])
-      itemKey = key;
-   
-   return self;
-}
-
-//________________________________________________________________________________________
-- (NSString *) itemText
-{
-   return itemKey;
-}
-
-//________________________________________________________________________________________
-- (UIImage *) itemImage
-{
-   //Noop at the moment.
-   return nil;
-}
-
-//________________________________________________________________________________________
-- (void) itemPressedIn : (UIViewController *) controller
-{
-   assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
 }
 
 @end

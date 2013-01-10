@@ -64,27 +64,6 @@
 			<integer>0</integer>
 			<key>Image name</key>
 			<string>about_color.png</string>
-			<key>Entries</key>
-			<array>
-				<dict>
-					<key>Name</key>
-					<string>History</string>
-				</dict>
-				<dict>
-					<key>Name</key>
-					<string>Physics</string>
-				</dict>
-				<dict>
-					<key>Name</key>
-					<string>Accelerators</string>
-				</dict>
-				<dict>
-					<key>Name</key>
-					<string>Experiments</string>
-				</dict>
-			</array>
-			<key>Name</key>
-			<string>About CERN</string>
 			<key>Category name</key>
 			<string>StaticInfo</string>
 		</dict>

@@ -59,7 +59,7 @@
 
 @interface MenuItemStaticInfo : NSObject<MenuItemProtocol>
 
-- (id) initWithKey : (NSString *) key;
+- (id) initWithDictionary : (NSDictionary *) dict;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;

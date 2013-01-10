@@ -16,7 +16,7 @@ using CernAPP::ItemStyle;
    MenuItemView *selectedItemView;
    
    //For the moment, the number of 'top-level' (non-nested) menu items is limited by number of bits in unsigned :))
-   //Yeah, it's lame, I'll use a bitset later :)
+   //Yeah, it's lame, if needed, I'll use a bitset later :)
    unsigned menuState;
    
    BOOL inAnimation;
@@ -62,9 +62,45 @@ using CernAPP::ItemStyle;
       menuState |= 1 << groupIndex;
 }
 
+//________________________________________________________________________________________
+- (void) addMenuGroup : (NSString *) groupName withImage : (UIImage *) groupImage forItems : (NSMutableArray *) items
+{
+   assert(groupName != nil && "addMenuGroup:withImage:forItems:, parameter 'groupName' is nil");
+   //groupImage can be nil, it's ok.
+   assert(items != nil && "addMenuGroup:withImage:forItems:, parameter 'items' is nil");
 
-//TODO: the following 3 functions do almost exactly the same work, so it's not bad to refactor them
-//into a generic function?
+   UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
+   containerView.clipsToBounds = YES;
+   UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
+   [containerView addSubview : groupView];
+   [scrollView addSubview : containerView];
+
+         
+   for (NSObject<MenuItemProtocol> *item in items) {
+      MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : item
+                                       style : ItemStyle::child controller : self];
+  
+      assert([item respondsToSelector:@selector(itemView)] &&
+             "addMenuGroup:withImage:forItems:, child menu item must respond to 'itemView' selector");
+
+      item.itemView = itemView;
+      [groupView addSubview : itemView];
+   }
+
+
+   MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : groupName
+                                   image : groupImage items : items index : menuItems.count];
+   MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame:CGRect()
+                                               item : group controller : self];
+   [scrollView addSubview : menuGroupView];
+         
+   group.titleView = menuGroupView;
+   group.containerView = containerView;
+   group.groupView = groupView;
+         
+   [menuItems addObject : group];
+}
+
 
 //________________________________________________________________________________________
 - (BOOL) loadNewsSection : (NSDictionary *) desc
@@ -93,43 +129,22 @@ using CernAPP::ItemStyle;
       assert([objBase isKindOfClass:[NSArray class]] &&
              "loadNewsSection:, 'Feeds' must have a NSArray type");
       NSArray * const feeds = (NSArray *)objBase;
+
       if (feeds.count) {
          assert(menuItems.count + 1 < 32 && "loadNewsSection:, menu can not have more than 32 items");
-         
-         UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
-         containerView.clipsToBounds = YES;
-         UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
-         [containerView addSubview : groupView];
-         [scrollView addSubview : containerView];
 
+         //Read news feeds.
          NSMutableArray * const items = [[NSMutableArray alloc] init];
          for (id info in feeds) {
             assert([info isKindOfClass : [NSDictionary class]] &&
                    "loadNewsSection, feed info must be a dictionary");
             NSDictionary * const feedInfo = (NSDictionary *)info;
             FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
-
             MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
             [items addObject : newItem];
-            
-            MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : newItem
-                                             style : ItemStyle::child controller : self];
-            newItem.itemView = itemView;
-            [groupView addSubview : itemView];
          }
-
-
-         MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : sectionName
-                                         image : [self loadItemImage : desc] items : items index : menuItems.count];
-         MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame:CGRect()
-                                                     item : group controller : self];
-         [scrollView addSubview : menuGroupView];
          
-         group.titleView = menuGroupView;
-         group.containerView = containerView;
-         group.groupView = groupView;
-         
-         [menuItems addObject : group];
+         [self addMenuGroup : sectionName withImage : [self loadItemImage:desc] forItems : items];
          [self setStateForGroup : menuItems.count - 1 from : desc];
       }
    }
@@ -162,12 +177,6 @@ using CernAPP::ItemStyle;
       //
       assert(menuItems.count + 1 < 32 && "loadLIVESection:, menu cannot have more than 32 items");
       //
-      UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
-      containerView.clipsToBounds = YES;
-      UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
-      [containerView addSubview : groupView];
-      [scrollView addSubview : containerView];
-      
       NSMutableArray * const items = [[NSMutableArray alloc] init];
       for (id expBase in experimentNames) {
          //This is just an array of strings.
@@ -176,25 +185,9 @@ using CernAPP::ItemStyle;
          
          MenuItemLIVE * liveItem = [[MenuItemLIVE alloc] initWithExperiment : (NSString *)expBase];
          [items addObject : liveItem];
-            
-         MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : liveItem
-                                          style : ItemStyle::child controller : self];
-         liveItem.itemView = itemView;
-         [groupView addSubview : itemView];
       }
 
-
-      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"LIVE"
-                                      image : [self loadItemImage : desc] items : items index : menuItems.count];
-      MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
-                                                  item : group controller : self];
-      [scrollView addSubview : menuGroupView];
-         
-      group.titleView = menuGroupView;
-      group.containerView = containerView;
-      group.groupView = groupView;
-
-      [menuItems addObject : group];
+      [self addMenuGroup : @"LIVE" withImage : [self loadItemImage : desc] forItems : items];
       [self setStateForGroup : menuItems.count - 1 from : desc];
    }
 
@@ -205,7 +198,7 @@ using CernAPP::ItemStyle;
 - (BOOL) loadStaticInfo : (NSDictionary *) desc
 {
    assert(desc != nil && "loadStaticInfo, parameter 'desc' is nil");
-   
+
    id objBase = [desc objectForKey : @"Category name"];
    assert([objBase isKindOfClass : [NSString class]] &&
           "loadStaticInfo:, 'Category name' either not found or has a wrong type");
@@ -213,63 +206,31 @@ using CernAPP::ItemStyle;
    if (![(NSString *)objBase isEqualToString : @"StaticInfo"])
       return NO;
 
+   NSString * const path = [[NSBundle mainBundle] pathForResource : @"StaticInformation" ofType : @"plist"];
+   NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
+   assert(plistDict != nil && "loadStaticInfo:, no dictionary or StaticInformation.plist found");
+
+   objBase = [plistDict objectForKey : @"Root"];
+   assert([objBase isKindOfClass : [NSArray class]] && "loadStaticInfo:, 'Root' not found or has a wrong type");
    
-   objBase = [desc objectForKey : @"Name"];
-   assert([objBase isKindOfClass : [NSString class]] &&
-          "loadStaticInfo:, 'Name' either not found or has a wrong type");
+
+   NSArray * const entries = (NSArray *)objBase;
    
-   NSString * const sectionName = (NSString *)objBase;
-   
-   objBase = [desc objectForKey : @"Entries"];
-   //It must be an NSArray ...
-   assert([objBase isKindOfClass : [NSArray class]] &&
-          "loadStaticInfo:, 'Entries' either not found or has a wrong type");
-   
-   NSArray * const staticInfoEntries = (NSArray *)objBase;
-   
-   if (staticInfoEntries.count) {
+   if (entries.count) {
       assert(menuItems.count + 1 < 32 && "loadStaticInfo:, menu cannot have more than 32 items");
-      //
-      UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
-      containerView.clipsToBounds = YES;
-      UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
-      [containerView addSubview : groupView];
-      [scrollView addSubview : containerView];
       
       NSMutableArray * const items = [[NSMutableArray alloc] init];
-      for (objBase in staticInfoEntries) {
-         //... of NSDictionary object.
+      for (objBase in entries) {
+         //It must be a dictionary.
          assert([objBase isKindOfClass : [NSDictionary class]] &&
                 "loadStaticInfo:, NSDictionary expected");
-
-         objBase = [(NSDictionary *)objBase objectForKey : @"Name"];
-         assert([objBase isKindOfClass : [NSString class]] &&
-                "loadStaticInfo:, 'Name' either not found or has a wrong string");
-         NSObject<MenuItemProtocol> * const newItem = [[MenuItemStaticInfo alloc] initWithKey: (NSString *)objBase];
-         
-         MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : newItem
-                                          style : ItemStyle::child controller : self];
-         newItem.itemView = itemView;
-         [groupView addSubview : itemView];
-         
+         MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary : (NSDictionary *)objBase];
          [items addObject : newItem];
       }
       
-      //Now, lets create a group item.
-      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : sectionName
-                                      image : [self loadItemImage : desc] items : items index : menuItems.count];
-      MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
-                                                  item : group controller : self];
-      [scrollView addSubview : menuGroupView];
-         
-      group.titleView = menuGroupView;
-      group.containerView = containerView;
-      group.groupView = groupView;
-
-      [menuItems addObject : group];
+      [self addMenuGroup : @"About CERN" withImage : [self loadItemImage : desc] forItems : items];
       [self setStateForGroup : menuItems.count - 1 from : desc];
    }
-   
    
    return YES;
 }
