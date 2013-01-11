@@ -145,7 +145,7 @@
 
    selected = (MenuTableItemView *)tapRecognizer.view;
    
-   [UIView animateWithDuration : 0.2 animations : ^ {
+   [UIView animateWithDuration : 0.1 animations : ^ {
       CernAPP::HiglightCell(selected, true);
    } completion : ^ (BOOL) {
       [self selectRow : selected.rowIndex];
