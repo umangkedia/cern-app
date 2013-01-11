@@ -12,5 +12,6 @@ extern NSString * const StaticInfoItemViewControllerID;
 extern NSString * const StaticInfoScrollViewControllerID;
 extern NSString * const StaticInfoNavigationControllerID;
 extern NSString * const StaticInfoTableViewControllerID;
+extern NSString * const StaticInfoScrollViewControllerNoRootID;
 
 }

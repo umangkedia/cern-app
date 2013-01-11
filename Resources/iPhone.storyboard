@@ -342,6 +342,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="scrollView" destination="Mnk-bz-DjM" id="vFs-ey-cGb"/>
+                        <segue destination="ey6-wg-0ld" kind="push" id="QSl-fY-7FA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zNI-dJ-DdF" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -407,6 +408,39 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BIB-pv-C48" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1152" y="-1619"/>
+        </scene>
+        <!--Static Info Scroll View Controller-->
+        <scene sceneID="iZI-wg-UFd">
+            <objects>
+                <viewController storyboardIdentifier="StaticInfoScrollViewControllerNoRootID" id="ey6-wg-0ld" customClass="StaticInfoScrollViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AiR-7u-OVT">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="1qi-ds-07x">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="416"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="delegate" destination="ey6-wg-0ld" id="8js-yO-hhY"/>
+                                </connections>
+                            </scrollView>
+                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" id="sOi-Wp-vDx">
+                                <rect key="frame" x="141" y="370" width="38" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                            </pageControl>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Zhz-HJ-igJ"/>
+                    <connections>
+                        <outlet property="pageControl" destination="sOi-Wp-vDx" id="nSt-sP-GlS"/>
+                        <outlet property="scrollView" destination="1qi-ds-07x" id="TAC-bW-ojx"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="y7r-ze-Gcj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="130" y="322"/>
         </scene>
     </scenes>
     <resources>

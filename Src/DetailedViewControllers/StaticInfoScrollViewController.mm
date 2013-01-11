@@ -43,7 +43,7 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
-
+   
    //Create children views for static info entries and add them into the scroll view.
    assert(dataSource != nil && dataSource.count != 0 &&
           "viewDidLoad:, dataSource is either nil or empty");
@@ -81,6 +81,7 @@
 {
    const CGFloat pageWidth = scrollView.frame.size.width;
    const int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+   assert(page >= 0 && page < self.childViewControllers.count && "scrollViewDidScroll:, page is out of bounds");
 
    pageControl.currentPage = page;
 }

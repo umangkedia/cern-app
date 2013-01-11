@@ -15,7 +15,7 @@
 
 @implementation StaticInfoItemViewController
 
-@synthesize staticInfo;
+@synthesize staticInfo, imageView;
 
 //________________________________________________________________________________________
 - (id)initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
@@ -48,6 +48,7 @@
    
    assert([[staticInfo objectForKey:@"Image"] isKindOfClass:[NSString class]] &&
           "setAndPositionInformation, 'Image' is either not found or has a wrong type");
+
 
    imageView.image = [UIImage imageNamed : (NSString *)[self.staticInfo objectForKey : @"Image"]];
    imageView.contentMode = UIViewContentModeScaleAspectFill;

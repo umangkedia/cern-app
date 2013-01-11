@@ -184,10 +184,10 @@ enum class StaticInfoEntryType : char {
    }
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
-         CGRect frame = controller.slidingViewController.topViewController.view.frame;
-         controller.slidingViewController.topViewController = topController;
-         controller.slidingViewController.topViewController.view.frame = frame;
-         [controller.slidingViewController resetTopView];
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = topController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
    }];
 }
 

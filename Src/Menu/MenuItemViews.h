@@ -52,12 +52,34 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift);
 
 //This is a table cell for a "fake table view"
 //which we use as the "second level menu".
+
+@class MenuTableItemView;
+
+namespace CernAPP {
+
+enum class CellAppearance {
+   withWideImage,
+   withSquareImage
+};
+
+void HiglightCell(MenuTableItemView *cell, bool highlight);
+void SetCellLayout(MenuTableItemView *cell, const CGRect &frameHint, CGFloat currentY);
+void SetCellLayer(MenuTableItemView * cell);
+
+}
+
 @interface MenuTableItemView : UIView
 
 - (id) initWithFrame : (CGRect) frame;
 
+@property (nonatomic) CernAPP::CellAppearance appearance;
+
+//As these views are in a child-parent tree, properties are __weak.
 @property (nonatomic) UIImageView *imageView;
+@property (nonatomic) UIView *frameView;
 @property (nonatomic) UILabel *textLabel;
+@property (nonatomic) NSUInteger rowIndex;
 
 @end
+
 

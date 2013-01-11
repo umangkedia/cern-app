@@ -12,11 +12,11 @@
 
 @interface StaticInfoItemViewController : UIViewController <MWPhotoBrowserDelegate> {
    IBOutlet UIScrollView *scrollView;
-   IBOutlet UIImageView *imageView;
    IBOutlet UILabel *descriptionLabel;
    IBOutlet UILabel *titleLabel;
 }
 
+@property (nonatomic) IBOutlet UIImageView *imageView;
 @property (nonatomic) __weak NSDictionary *staticInfo;
 
 - (void) setAndPositionInformation;
