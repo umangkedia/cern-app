@@ -342,7 +342,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="scrollView" destination="Mnk-bz-DjM" id="vFs-ey-cGb"/>
-                        <segue destination="ey6-wg-0ld" kind="push" id="QSl-fY-7FA"/>
+                        <segue destination="ey6-wg-0ld" kind="push" identifier="DummyName" id="QSl-fY-7FA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zNI-dJ-DdF" userLabel="First Responder" sceneMemberID="firstResponder"/>

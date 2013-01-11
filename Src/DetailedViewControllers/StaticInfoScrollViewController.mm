@@ -13,6 +13,7 @@
 #import "StaticInfoItemViewController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "KeyVal.h"
 
 
 @implementation StaticInfoScrollViewController
@@ -34,6 +35,9 @@
 
    UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
    StaticInfoItemViewController * const detailViewController = [mainStoryboard instantiateViewControllerWithIdentifier : StaticInfoItemViewControllerID];
+   if (page > 2)
+      detailViewController.delayImageLoad = YES;
+   
    detailViewController.staticInfo = [dataSource objectAtIndex : page];
     
    return detailViewController;
@@ -53,7 +57,7 @@
    self.view.backgroundColor = [UIColor blackColor];
 
    for (NSUInteger i = 0, e = dataSource.count; i < e; ++i) {
-      StaticInfoItemViewController *detailViewController = [self viewControllerForPage: i ];
+      StaticInfoItemViewController *detailViewController = [self viewControllerForPage: i];
       [self addChildViewController : detailViewController];
       [scrollView addSubview : detailViewController.view];
       [detailViewController didMoveToParentViewController : self];
@@ -74,6 +78,53 @@
    }
 
    scrollView.contentSize = CGSizeMake(deviceViewWidth * self.childViewControllers.count, scrollView.frame.size.height);
+   
+   for (NSUInteger i = 2, e = dataSource.count; i < e; ++i)
+      [self performSelectorInBackground : @selector(loadImageInBackgroundThread:)
+            withObject : [NSNumber numberWithInteger : NSInteger(i)]];
+}
+
+//________________________________________________________________________________________
+- (void) loadImageInBackgroundThread : (id) obj
+{
+   assert([obj isKindOfClass : [NSNumber class]] &&
+          "loadImageInBackgroundThread:, parameter 'obj' is either nil or has a wrong type");
+   
+   const NSInteger index = [(NSNumber *)obj integerValue];
+   assert(index < dataSource.count && "loadImageInBackgroundThread:, index is out of bounds");
+   assert([dataSource[index] isKindOfClass : [NSDictionary class]] &&
+          "loadImageInBackgroundThread:, NSDictionary expected");
+
+   NSDictionary * const imageDict = (NSDictionary *)dataSource[index];
+
+   assert([imageDict[@"Image"] isKindOfClass : [NSString class]] &&
+          "loadImageInBackgroundThread:, 'Image' not found or has a wrong type");
+   
+   UIImage * const newImage = [UIImage imageNamed : (NSString *)imageDict[@"Image"]];
+   KeyVal * const retPair = [[KeyVal alloc] init];
+   retPair.key = obj;
+   retPair.val = newImage;
+   
+   [self performSelectorOnMainThread : @selector(setItemImage:) withObject : retPair waitUntilDone : NO];
+}
+
+//________________________________________________________________________________________
+- (void) setItemImage : (id) obj
+{
+   assert([obj isKindOfClass:[KeyVal class]] &&
+          "setItemImage:, parameter 'obj' is either nil or has a wrong type");
+   
+   KeyVal * const pair = (KeyVal *)obj;
+   assert([pair.key isKindOfClass : [NSNumber class]] &&
+          "setItemImage:, pair.key is either nil or has a wrong type");
+   assert([pair.val isKindOfClass : [UIImage class]] &&
+          "setItemImage:, pair.val is etiher nil or has a wrong type");
+   
+   const NSInteger index = [(NSNumber *)pair.key integerValue];
+   assert(index < dataSource.count && "setItemImage:, pair.key is out of bounds");
+   
+   StaticInfoItemViewController * const controller = (StaticInfoItemViewController *)self.childViewControllers[index];
+   controller.imageView.image = (UIImage *)pair.val;
 }
 
 //________________________________________________________________________________________

@@ -18,6 +18,7 @@
 
 @property (nonatomic) IBOutlet UIImageView *imageView;
 @property (nonatomic) __weak NSDictionary *staticInfo;
+@property (nonatomic) BOOL delayImageLoad;
 
 - (void) setAndPositionInformation;
 

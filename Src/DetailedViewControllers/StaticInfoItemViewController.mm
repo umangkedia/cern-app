@@ -15,7 +15,7 @@
 
 @implementation StaticInfoItemViewController
 
-@synthesize staticInfo, imageView;
+@synthesize staticInfo, imageView, delayImageLoad;
 
 //________________________________________________________________________________________
 - (id)initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
@@ -46,11 +46,13 @@
    // Set the image, and position it right below the title label
    const CGRect baseFrame = scrollView.frame;
    
-   assert([[staticInfo objectForKey:@"Image"] isKindOfClass:[NSString class]] &&
-          "setAndPositionInformation, 'Image' is either not found or has a wrong type");
+   if (!delayImageLoad) {
+      assert([[staticInfo objectForKey:@"Image"] isKindOfClass:[NSString class]] &&
+             "setAndPositionInformation, 'Image' is either not found or has a wrong type");
 
+      imageView.image = [UIImage imageNamed : (NSString *)[self.staticInfo objectForKey : @"Image"]];
+   }
 
-   imageView.image = [UIImage imageNamed : (NSString *)[self.staticInfo objectForKey : @"Image"]];
    imageView.contentMode = UIViewContentModeScaleAspectFill;
    imageView.clipsToBounds = YES;
    imageView.frame = CGRectMake(0.f, 0.f, baseFrame.size.width, baseFrame.size.height / 2.);
