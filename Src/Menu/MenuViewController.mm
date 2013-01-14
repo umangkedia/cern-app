@@ -28,7 +28,7 @@ using CernAPP::ItemStyle;
 {
    assert(desc != nil && "loadItemImage:, parameter 'desc' is nil");
    
-   if (id objBase = [desc objectForKey : @"Image name"]) {
+   if (id objBase = desc[@"Image name"]) {
       assert([objBase isKindOfClass : [NSString class]] &&
              "loadItemImage:, 'Image name' must be a NSString");
       
@@ -48,18 +48,24 @@ using CernAPP::ItemStyle;
 
    MenuItemsGroup * const group = (MenuItemsGroup *)menuItems[groupIndex];
    
-   assert([[desc objectForKey : @"Expanded"] isKindOfClass : [NSNumber class]] &&
+   assert([desc[@"Expanded"] isKindOfClass : [NSNumber class]] &&
           "setStateForGroup:from:, 'Expanded' is not found or has a wrong type");
    
-   const NSInteger val = [(NSNumber *)[desc objectForKey : @"Expanded"] integerValue];
-   assert(!val || val == 1 && "setStateForGroup:from:, 'Expanded' must have a value either 0 or 1");
+   const NSInteger val = [(NSNumber *)desc[@"Expanded"] integerValue];
+   assert(!val || val == 1 || val == 2 && "setStateForGroup:from:, 'Expanded' can have a vlue only 0, 1 or 2");
    
    if (!val) {
       group.collapsed = YES;
       group.containerView.hidden = YES;
       group.titleView.discloseImageView.transform = CGAffineTransformMakeRotation(-M_PI / 2);
-   } else
+   } else if (val == 1 || val == 2) {
       menuState |= 1 << groupIndex;
+      
+      if (val == 2) {
+         group.shrinkable = NO;
+         group.titleView.discloseImageView.image = [UIImage imageNamed : @"disclose_disabled.png"];
+      }
+   }
 }
 
 //________________________________________________________________________________________
@@ -87,7 +93,6 @@ using CernAPP::ItemStyle;
       [groupView addSubview : itemView];
    }
 
-
    MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : groupName
                                    image : groupImage items : items index : menuItems.count];
    MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame:CGRect()
@@ -108,7 +113,7 @@ using CernAPP::ItemStyle;
    assert(scrollView != nil && "loadNewSection:, scrollView is not loaded yet!");
    assert(desc != nil && "loadNewsSection:, parameter 'desc' is nil");
    
-   id objBase = [desc objectForKey : @"Category name"];
+   id objBase = desc[@"Category name"];
    assert([objBase isKindOfClass : [NSString class]] &&
           "loadNewsSection:, either 'Category Name' not found, or it's not a NSString");
    
@@ -117,14 +122,14 @@ using CernAPP::ItemStyle;
       return NO;
    
    //Find a section name, it's a required property.
-   objBase = [desc objectForKey : @"Name"];
+   objBase = desc[@"Name"];
    assert([objBase isKindOfClass : [NSString class]] &&
           "loadNewsSection:, either 'Name' not found, or it's not a NSString");
    
    NSString * const sectionName = (NSString *)objBase;
    
    //Now, we need an array of either feeds or tweets.
-   objBase = [desc objectForKey : @"Feeds"];
+   objBase = desc[@"Feeds"];
    if (objBase) {
       assert([objBase isKindOfClass:[NSArray class]] &&
              "loadNewsSection:, 'Feeds' must have a NSArray type");
@@ -157,7 +162,7 @@ using CernAPP::ItemStyle;
 {
    assert(desc != nil && "loadLIVESection:, parameter 'desc' is nil");
    
-   id objBase = [desc objectForKey : @"Category name"];
+   id objBase = desc[@"Category name"];
    assert(objBase != nil && "loadLIVESection:, 'Category Name' not found");
    assert([objBase isKindOfClass : [NSString class]] &&
           "loadLIVESection:, 'Category Name' must have a NSString type");
@@ -166,7 +171,7 @@ using CernAPP::ItemStyle;
    if (![catName isEqualToString : @"LIVE"])
       return NO;
 
-   objBase = [desc objectForKey : @"Experiments"];
+   objBase = desc[@"Experiments"];
    assert(objBase != nil && "loadLIVESection:, 'Experiments' not found");
    assert([objBase isKindOfClass:[NSArray class]] &&
           "loadLIVESection:, 'Experiments' must have a NSArray type");
@@ -199,7 +204,7 @@ using CernAPP::ItemStyle;
 {
    assert(desc != nil && "loadStaticInfo, parameter 'desc' is nil");
 
-   id objBase = [desc objectForKey : @"Category name"];
+   id objBase = desc[@"Category name"];
    assert([objBase isKindOfClass : [NSString class]] &&
           "loadStaticInfo:, 'Category name' either not found or has a wrong type");
    
@@ -210,9 +215,8 @@ using CernAPP::ItemStyle;
    NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
    assert(plistDict != nil && "loadStaticInfo:, no dictionary or StaticInformation.plist found");
 
-   objBase = [plistDict objectForKey : @"Root"];
+   objBase = plistDict[@"Root"];
    assert([objBase isKindOfClass : [NSArray class]] && "loadStaticInfo:, 'Root' not found or has a wrong type");
-   
 
    NSArray * const entries = (NSArray *)objBase;
    
@@ -240,7 +244,7 @@ using CernAPP::ItemStyle;
 {
    assert(desc != nil && "loadSeparator:, parameter 'desc' is nil");
    
-   id objBase = [desc objectForKey : @"Category name"];
+   id objBase = desc[@"Category name"];
    assert(objBase != nil && [objBase isKindOfClass : [NSString class]] &&
           "loadSeparator:, 'Category name' either not found or has a wrong type");
    
@@ -258,6 +262,24 @@ using CernAPP::ItemStyle;
    return NO;
 }
 
+/*
+//________________________________________________________________________________________
+- (BOOL) loadTestSection : (NSDictionary *) section
+{
+   assert(section != nil && "loadTestSection:, parameter 'section' is nil");
+   
+   assert([section[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadTestSection:, 'Category name' not found or has a wrong type");
+   
+   if (![(NSString *)section[@"Category name"] isEqualToString : @"Test section"])
+      return NO;
+   
+   NSLog(@"GOT A TEST SECTION!");
+   
+   return YES;
+}
+*/
+
 //________________________________________________________________________________________
 - (void) loadMenuContents
 {
@@ -269,7 +291,7 @@ using CernAPP::ItemStyle;
    NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
    assert(plistDict != nil && "loadMenuContents:, no dictionary or MENU.plist found");
 
-   id objBase = [plistDict objectForKey:@"Menu Contents"];
+   id objBase = plistDict[@"Menu Contents"];
    assert(objBase != nil && "loadMenuContents:, object for the key 'Menu Contents was not found'");
    assert([objBase isKindOfClass : [NSArray class]] &&
           "loadMenuContents, menu contents must be of a NSArray type");
@@ -293,6 +315,8 @@ using CernAPP::ItemStyle;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;
 
+      //if ([self loadTestSection : (NSDictionary *)entryBase])
+      //   continue;
       //Static info (about CERN);
       //Latest photos;
       //Latest videos;

@@ -79,6 +79,7 @@
 - (UIImage *) itemImage;
 
 @property (nonatomic) BOOL collapsed;
+@property (nonatomic) BOOL shrinkable;
 
 - (NSUInteger) index;
 - (NSUInteger) nItems;

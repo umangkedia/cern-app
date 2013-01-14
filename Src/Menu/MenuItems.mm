@@ -35,7 +35,7 @@
 - (UIImage *) itemImage
 {
    //No images at the moment.
-   return nil;
+   return contentProvider.categoryImage;
 }
 
 //________________________________________________________________________________________
@@ -201,7 +201,7 @@ enum class StaticInfoEntryType : char {
    NSUInteger indexInMenu;
 }
 
-@synthesize collapsed, titleView, containerView, groupView;
+@synthesize collapsed, shrinkable, titleView, containerView, groupView;
 
 //________________________________________________________________________________________
 - (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems index : (NSUInteger) index
@@ -217,6 +217,8 @@ enum class StaticInfoEntryType : char {
       items = anItems;
       collapsed = NO;//Opened by default.
       indexInMenu = index;
+      
+      shrinkable = YES;
    }
    
    return self;

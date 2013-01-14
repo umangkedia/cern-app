@@ -12,6 +12,7 @@
 @implementation FeedProvider {
    NSString *feedName;
    NSString *feed;
+   UIImage *feedImage;
 }
 
 //________________________________________________________________________________________
@@ -29,6 +30,9 @@
       assert(base != nil && [base isKindOfClass : [NSString class]] && "initWith:, object for 'Url' was not found or is not of string type");
       
       feed = (NSString *)base;
+      
+      if ([feedInfo[@"Image"] isKindOfClass : [NSString class]])
+         feedImage = [UIImage imageNamed:(NSString *)feedInfo[@"Image"]];
    }
    
    return self;
@@ -49,7 +53,7 @@
 //________________________________________________________________________________________
 - (UIImage *) categoryImage
 {
-   return nil;
+   return feedImage;
 }
 
 //________________________________________________________________________________________

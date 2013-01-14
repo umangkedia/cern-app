@@ -24,12 +24,13 @@ NSString * const groupMenuFontName = @"PTSans-Bold";
 const CGSize menuTextShadowOffset = CGSizeMake(2.f, 2.f);
 const CGFloat menuTextShadowAlpha = 0.5f;
 const CGFloat menuItemImageSize = 24.f;//must be square image.
-const CGFloat groupMenuItemTextIdent = 10.f;
+const CGFloat groupMenuItemTextIndent = 10.f;
 const CGFloat groupMenuItemTextHeight = 20.f;
-const CGFloat childMenuItemTextIdent = 20.f;
+const CGFloat childMenuItemTextIndent = 20.f;
 const CGFloat childMenuItemTextHeight = 20.f;
 const CGFloat discloseTriangleSize = 14.f;
 const CGFloat groupMenuItemLeftMargin = 80.f;
+const CGFloat childMenuItemImageSize = 15.f;
 
 const CGFloat groupMenuFillColor[][4] = {{0.247f, 0.29f, 0.36f, 1.f}, {0.242f, 0.258f, 0.321f, 1.f}};
 const CGFloat frameTopLineColor[] = {0.258f, 0.278f, 0.33f};
@@ -166,6 +167,14 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
          const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
          GradientFillRect(ctx, rect, colors[0]);
       }
+      
+      if (menuItem.itemImage) {
+         const CGSize imageSize = menuItem.itemImage.size;
+         const CGFloat ratio = imageSize.width / imageSize.height;
+      
+         [menuItem.itemImage drawInRect:CGRectMake(childMenuItemTextIndent, self.frame.size.height / 2 - childMenuItemImageSize / 2,
+                                                   childMenuItemImageSize * ratio, childMenuItemImageSize)];
+      }
    }
 }
 
@@ -176,13 +185,22 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       return;
 
    CGRect frame = self.frame;
-   frame.origin.x = childMenuItemTextIdent;
+   frame.origin.x = childMenuItemTextIndent;
+   
    frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
-   frame.size.width -= 2 * childMenuItemTextIdent;
+   frame.size.width -= 2 * childMenuItemTextIndent;
+   
+   if (menuItem.itemImage) {
+      const CGSize imageSize = menuItem.itemImage.size;
+      const CGFloat addW = (imageSize.width / imageSize.height) * childMenuItemImageSize;
+   
+      frame.origin.x += addW + 4.f;
+      frame.size.width -= addW + 4.f;
+   }
+   
    frame.size.height = childMenuItemTextHeight;
 
    itemLabel.frame = frame;
-
 }
 
 //________________________________________________________________________________________
@@ -270,7 +288,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
    if (groupItem.itemImage)
       frame.origin.x = menuItemImageSize + 8.f;
    else
-      frame.origin.x = groupMenuItemTextIdent;
+      frame.origin.x = groupMenuItemTextIndent;
    
    frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;//Not very smart, but ok.
    frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
@@ -297,7 +315,8 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 - (void) handleTap
 {
    //Collapse or expand.
-   [menuController groupViewWasTapped : self];
+   if (groupItem.shrinkable)
+      [menuController groupViewWasTapped : self];
 }
 
 @end

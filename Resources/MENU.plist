@@ -18,12 +18,16 @@
 					<string>General</string>
 				</dict>
 				<dict>
+					<key>Image</key>
+					<string>140-gradhat.png</string>
 					<key>Url</key>
 					<string>http://home.web.cern.ch/students-educators/updates/feed</string>
 					<key>Name</key>
 					<string>For students</string>
 				</dict>
 				<dict>
+					<key>Image</key>
+					<string>163-glasses-1.png</string>
 					<key>Url</key>
 					<string>http://home.web.cern.ch/scientists/updates/feed</string>
 					<key>Name</key>
@@ -36,12 +40,16 @@
 					<string>For staff</string>
 				</dict>
 				<dict>
+					<key>Image</key>
+					<string>18-puzzle@2x.png</string>
 					<key>Url</key>
 					<string>http://home.web.cern.ch/cern-people/opinion/feed</string>
 					<key>Name</key>
 					<string>Opinion pieces</string>
 				</dict>
 				<dict>
+					<key>Image</key>
+					<string>124-bullhorn@2x.png</string>
 					<key>Url</key>
 					<string>http://home.web.cern.ch/cern-people/official-communications/feed</string>
 					<key>Name</key>
@@ -58,6 +66,10 @@
 			<string>News</string>
 			<key>Category name</key>
 			<string>News</string>
+		</dict>
+		<dict>
+			<key>Category name</key>
+			<string>Test section</string>
 		</dict>
 		<dict>
 			<key>Expanded</key>
