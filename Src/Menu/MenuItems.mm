@@ -250,10 +250,12 @@ using CernAPP::ItemStyle;
           "itemPressedIn:, 'Items' not found or has a wrong type");
 
    using namespace CernAPP;
-   
-   MenuNavigationController *topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
+   MenuNavigationController * const topController =
+                  (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
+                                                                     StaticInfoNavigationControllerID];
+
    [topController setStaticInfo : (NSArray *)info[@"Items"] withTitle : (NSString *)info[@"Title"]];
-   
+
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
       controller.slidingViewController.topViewController = topController;
