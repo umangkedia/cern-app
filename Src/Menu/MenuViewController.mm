@@ -198,17 +198,46 @@ using CernAPP::ItemStyle;
 
    objBase = plistDict[@"Root"];
    assert([objBase isKindOfClass : [NSArray class]] && "loadStaticInfo:, 'Root' not found or has a wrong type");
-
+   //We have an array of dictionaries.
    NSArray * const entries = (NSArray *)objBase;
    
    if (entries.count) {
+      //Items for a new group.
       NSMutableArray * const items = [[NSMutableArray alloc] init];
       for (objBase in entries) {
-         //It must be a dictionary.
          assert([objBase isKindOfClass : [NSDictionary class]] &&
-                "loadStaticInfo:, NSDictionary expected");
-         MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary : (NSDictionary *)objBase];
-         [items addObject : newItem];
+                "loadStaticInfo:, array of dictionaries expected");
+         NSDictionary * const itemDict = (NSDictionary *)objBase;
+         assert([itemDict[@"Items"] isKindOfClass : [NSArray class]] &&
+                "loadStaticInfo:, 'Items' is either nil or has a wrong type");
+         NSArray * const staticInfo = (NSArray *)itemDict[@"Items"];
+         //Again, this must be an array of dictionaries.
+         assert([staticInfo[0] isKindOfClass : [NSDictionary class]] &&
+                "loadStaticInfo:, 'Items' must be an array of dictionaries");
+         
+         //Now we check, what do we have inside.
+         NSDictionary * const firstItem = (NSDictionary *)staticInfo[0];
+         if (firstItem[@"Items"]) {
+            NSMutableArray * const subMenu = [[NSMutableArray alloc] init];
+            for (id dictBase in staticInfo) {
+               assert([dictBase isKindOfClass : [NSDictionary class]] &&
+                      "loadStaticInfo:, array of dictionaries expected");
+               MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary :
+                                                     (NSDictionary *)dictBase];
+               [subMenu addObject : newItem];
+              
+            }
+
+            assert([itemDict[@"Title"] isKindOfClass : [NSString class]] &&
+                   "loadStaticInfo:, 'Title' is either nil or has a wrong type");
+            MenuItemsGroup * const newGroup = [[MenuItemsGroup alloc] initWithTitle : (NSString *)itemDict[@"Title"]
+                                               image : [self loadItemImage : itemDict] items : subMenu];
+            [items addObject : newGroup];
+
+         } else {
+            MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary:itemDict];
+            [items addObject : newItem];
+         }
       }
       
       [self addMenuGroup : @"About CERN" withImage : [self loadItemImage : desc] forItems : items];
@@ -235,57 +264,6 @@ using CernAPP::ItemStyle;
    }
    
    return NO;
-}
-
-//________________________________________________________________________________________
-- (BOOL) loadTestSection : (NSDictionary *) section
-{
-   assert(section != nil && "loadTestSection:, parameter 'section' is nil");
-   
-   assert([section[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadTestSection:, 'Category name' not found or has a wrong type");
-   
-   if (![(NSString *)section[@"Category name"] isEqualToString : @"Test section"])
-      return NO;
-   //
-   //Create a test group with several items and nested sub-group between them
-
-   assert(scrollView != nil && "loadTestSection:, scrollView is not loaded yet!");
-   
-   NSMutableArray * const items = [[NSMutableArray alloc] init];
-   //First, let's add simple item.
-   NSDictionary * const fakeFeed1 = @{@"Name" : @"History", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed"};
-   FeedProvider * const provider1 = [[FeedProvider alloc] initWith : fakeFeed1];
-   MenuItem * const newItem1 = [[MenuItem alloc] initWithContentProvider : provider1];
-   [items addObject:newItem1];
-   
-   //In between two children items we can put a sub-group.
-   {
-      NSMutableArray * const subItems = [[NSMutableArray alloc] init];
-      
-      NSString * names[] = {@"ALICE", @"ATLAS"};
-      
-      for (unsigned i = 0; i < 2; ++i) {
-         NSDictionary * const feed = @{@"Name" : names[i], @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed"};
-         FeedProvider * const provider = [[FeedProvider alloc] initWith : feed];
-         MenuItem * const item = [[MenuItem alloc] initWithContentProvider : provider];
-         [subItems addObject : item];
-      }
-      
-      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"Experiments" image : [UIImage imageNamed : @"webcasts.png"] items : subItems];//
-      [items addObject : group];
-   }
-   //
-   
-   NSDictionary * const fakeFeed2 = @{@"Name" : @"Test feed", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed"};
-   FeedProvider * const provider2 = [[FeedProvider alloc] initWith : fakeFeed2];
-   MenuItem * const newItem2 = [[MenuItem alloc] initWithContentProvider : provider2];
-   [items addObject : newItem2];
-
-   [self addMenuGroup : @"About CERN (test)" withImage : [UIImage imageNamed : @"bulletin.png"] forItems : items];
-   [self setStateForGroup : menuItems.count - 1 from : @{@"Expanded" : @1}];
-
-   return YES;
 }
 
 //________________________________________________________________________________________
@@ -323,9 +301,6 @@ using CernAPP::ItemStyle;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;
 
-      if ([self loadTestSection : (NSDictionary *)entryBase])
-         continue;
-      //Static info (about CERN);
       //Latest photos;
       //Latest videos;
       //Jobs;

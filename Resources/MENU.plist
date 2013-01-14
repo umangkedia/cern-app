@@ -68,10 +68,6 @@
 			<string>News</string>
 		</dict>
 		<dict>
-			<key>Category name</key>
-			<string>Test section</string>
-		</dict>
-		<dict>
 			<key>Expanded</key>
 			<integer>1</integer>
 			<key>Image name</key>
