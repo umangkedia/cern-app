@@ -73,7 +73,7 @@
 		</dict>
 		<dict>
 			<key>Expanded</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>Image name</key>
 			<string>about_color.png</string>
 			<key>Category name</key>

@@ -69,10 +69,27 @@ using CernAPP::ItemStyle;
    //groupImage can be nil, it's ok.
    assert(items != nil && "addMenuGroup:withImage:forItems:, parameter 'items' is nil");
 
-   MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : groupName
-                                   image : groupImage items : items index : menuItems.count];
+   MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : groupName image : groupImage items : items];
+   
+   for (NSObject<MenuItemProtocol> *menuItem in items) {
+      if ([menuItem isKindOfClass : [MenuItemsGroup class]]) {
+         MenuItemsGroup *const nestedGroup = (MenuItemsGroup *)menuItem;
+         nestedGroup.parentGroup = group;
+         nestedGroup.collapsed = YES;//By default, nested sub-menu is closed.
+      }
+   }
+   
    [group addMenuItemViewInto : scrollView controller : self];
    [menuItems addObject : group];
+   
+   for (NSObject<MenuItemProtocol> *menuItem in items) {
+      if ([menuItem isKindOfClass : [MenuItemsGroup class]]) {
+         MenuItemsGroup *const nestedGroup = (MenuItemsGroup *)menuItem;
+         MenuItemsGroupView * const view = nestedGroup.titleView;
+         nestedGroup.containerView.hidden = YES;
+         view.discloseImageView.transform = CGAffineTransformMakeRotation(-M_PI / 2);
+      }
+   }
 }
 
 
@@ -220,7 +237,6 @@ using CernAPP::ItemStyle;
    return NO;
 }
 
-/*
 //________________________________________________________________________________________
 - (BOOL) loadTestSection : (NSDictionary *) section
 {
@@ -236,9 +252,6 @@ using CernAPP::ItemStyle;
 
    assert(scrollView != nil && "loadTestSection:, scrollView is not loaded yet!");
    
-   NSString * const sectionName = @"Test menu";
-   UIImage * const sectionImage = [UIImage imageNamed : @"bulletin.png"];
-
    NSMutableArray * const items = [[NSMutableArray alloc] init];
    //First, let's add simple item.
    NSDictionary * const fakeFeed1 = @{@"Name" : @"Test feed1", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
@@ -259,7 +272,7 @@ using CernAPP::ItemStyle;
          [subItems addObject : item];
       }
       
-      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle:@"Nested" image:[UIImage imageNamed : @"webcasts.png"] items : subItems index : 2];//
+      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"Nested" image : [UIImage imageNamed : @"webcasts.png"] items : subItems];//
       [items addObject : group];
    }
    //
@@ -268,14 +281,13 @@ using CernAPP::ItemStyle;
                                       @"Image" : @"124-bullhorn@2x.png"};
    FeedProvider * const provider2 = [[FeedProvider alloc] initWith : fakeFeed2];
    MenuItem * const newItem2 = [[MenuItem alloc] initWithContentProvider : provider2];
-   [items addObject:newItem2];
-   
-   [self addMenuGroup : sectionName withImage : sectionImage forItems : items];
+   [items addObject : newItem2];
+
+   [self addMenuGroup : @"Test menu" withImage : [UIImage imageNamed : @"bulletin.png"] forItems : items];
    [self setStateForGroup : menuItems.count - 1 from : @{@"Expanded" : @1}];
 
    return YES;
 }
-*/
 
 //________________________________________________________________________________________
 - (void) loadMenuContents
@@ -312,8 +324,8 @@ using CernAPP::ItemStyle;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;
 
-     // if ([self loadTestSection : (NSDictionary *)entryBase])
-     //    continue;
+      if ([self loadTestSection : (NSDictionary *)entryBase])
+         continue;
       //Static info (about CERN);
       //Latest photos;
       //Latest videos;
@@ -497,12 +509,18 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (void) hideGroupViews
 {
-   for (NSUInteger i = 0, e = menuItems.count; i < e; ++i) {
-      NSObject<MenuItemProtocol> * const itemBase = (NSObject<MenuItemProtocol> *)menuItems[i];
+   for (NSObject<MenuItemProtocol> *itemBase in menuItems) {
       if ([itemBase isKindOfClass : [MenuItemsGroup class]]) {
          MenuItemsGroup * const group = (MenuItemsGroup *)itemBase;
-         if (group.collapsed)
-            group.containerView.hidden = YES;
+         for (NSUInteger i = 0, e = group.nItems; i < e; ++i) {
+            NSObject<MenuItemProtocol> * const nested = [group item : i];
+            if ([nested isKindOfClass : [MenuItemsGroup class]]) {
+               MenuItemsGroup * const nestedGroup = (MenuItemsGroup *)nested;
+               nestedGroup.containerView.hidden = nestedGroup.collapsed;
+            }
+         }
+
+         group.containerView.hidden = group.collapsed;
       }
    }
 }
@@ -522,25 +540,14 @@ using CernAPP::ItemStyle;
    //Now, change the state of menu item.
    groupItem.collapsed = !groupItem.collapsed;
    
-   [UIView beginAnimations : nil context : nil];
-   [UIView setAnimationDuration : 0.25];
-   [UIView setAnimationCurve : UIViewAnimationCurveEaseOut];
- 
-   [self layoutMenu];//Layout menu again, but with different positions for groupItem (and it's children).
-   [self setAlphaAndVisibilityForGroup : groupItem];
-
-   [UIView commitAnimations];
- 
-   //Do not hide the views immediately, so user can see animation.
-   [NSTimer scheduledTimerWithTimeInterval : 0.15 target : self selector : @selector(hideGroupViews) userInfo : nil repeats : NO];
-   [NSTimer scheduledTimerWithTimeInterval : 0.3 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
-}
-
-//________________________________________________________________________________________
-- (void) subGroupViewWasTapped : (MenuItemsGroupView *) view
-{
-   assert(view != nil && "subGroupViewWasTapped:, parameter 'view' is nil");
-   //
+   [UIView animateWithDuration : 0.25f animations : ^ {
+      [self layoutMenu];//Layout menu again, but with different positions for groupItem (and it's children).
+      [self setAlphaAndVisibilityForGroup : groupItem];
+   } completion : ^ (BOOL) {
+      [self hideGroupViews];
+//      [self adjustMenu];
+      [NSTimer scheduledTimerWithTimeInterval : 0.1 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
+   }];
 }
 
 @end

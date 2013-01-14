@@ -17,7 +17,7 @@ using CernAPP::ItemStyle;
    NSObject<ContentProvider> *contentProvider;
 }
 
-@synthesize itemView;
+@synthesize itemView, menuGroup;
 
 //________________________________________________________________________________________
 - (id) initWithContentProvider : (NSObject<ContentProvider> *) provider
@@ -90,7 +90,7 @@ using CernAPP::ItemStyle;
    NSString *experimentName;
 }
 
-@synthesize itemView;
+@synthesize itemView, menuGroup;
 
 //________________________________________________________________________________________
 - (id) initWithExperiment : (NSString *) name
@@ -187,7 +187,7 @@ enum class StaticInfoEntryType : char {
    StaticInfoEntryType type;
 }
 
-@synthesize itemView;
+@synthesize itemView, menuGroup;
 
 //________________________________________________________________________________________
 - (id) initWithDictionary : (NSDictionary *) dict
@@ -240,7 +240,7 @@ enum class StaticInfoEntryType : char {
    frameHint.size.height = CernAPP::childMenuItemHeight;
    itemView.frame = frameHint;
    
-   [itemView layoutText];
+ //  [itemView layoutText];
 
    return CernAPP::childMenuItemHeight;
 }
@@ -300,14 +300,12 @@ enum class StaticInfoEntryType : char {
    NSArray *items;
    NSString *title;
    UIImage *image;
-   
-   NSUInteger indexInMenu;
 }
 
 @synthesize collapsed, shrinkable, nestedItemState, titleView, containerView, groupView, parentGroup;
 
 //________________________________________________________________________________________
-- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems index : (NSUInteger) index
+- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems
 {
    assert(aTitle != nil && "initWithTitle:image:items:, parameter 'aTitle' is nil");
    //image can be nil.
@@ -318,26 +316,10 @@ enum class StaticInfoEntryType : char {
       title = aTitle;
       image = anImage;
       items = anItems;
-      collapsed = NO;//Opened by default.
-      indexInMenu = index;
-      
+      collapsed = NO;//Opened by default.      
       shrinkable = YES;
+      parentGroup = nil;
    }
-   
-   return self;
-}
-
-//________________________________________________________________________________________
-- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) groupItems
-       index : (NSUInteger) index parentGroup : (MenuItemsGroup *) parent
-{
-   assert(aTitle != nil && "initWithTitle:image:items:parentGroup, parameter 'aTitle' is nil");
-   //image can be nil.
-   assert(groupItems != nil && "initWithTitle:image:items:parentGroup, parameter 'groupItems' is nil");
-   assert(parent != nil && "initWithTitle:image:items:parentGroup, parameter 'parent' is nil");
-
-   if ([self initWithTitle : aTitle image : anImage items : groupItems index : index])
-      parentGroup = parent;
 
    return self;
 }
@@ -347,7 +329,7 @@ enum class StaticInfoEntryType : char {
 {
    assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
    assert(controller != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
-   //
+   
    UIView * const newContainerView = [[UIView alloc] initWithFrame : CGRect()];
    newContainerView.clipsToBounds = YES;
    UIView * const newGroupView = [[UIView alloc] initWithFrame : CGRect()];
@@ -357,7 +339,11 @@ enum class StaticInfoEntryType : char {
    for (NSObject<MenuItemProtocol> *item in items) {
       assert([item respondsToSelector:@selector(addMenuItemViewInto:controller:)] &&
              "addMenuItemViewInto:controller:, child item must reposng to 'addMenuItemViewInto:controller: method'");
+
       [item addMenuItemViewInto : newGroupView controller : controller];
+      
+      if ([item respondsToSelector:@selector(menuGroup)])
+         item.menuGroup = self;
    }
 
    MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
@@ -404,6 +390,7 @@ enum class StaticInfoEntryType : char {
    
    //Layout sub-views.
    hint.origin = CGPoint();
+   
    for (NSObject<MenuItemProtocol> *menuItem in items) {
       const CGFloat add = [menuItem layoutItemViewWithHint : hint];
       hint.origin.y += add;
@@ -457,12 +444,6 @@ enum class StaticInfoEntryType : char {
 - (UIImage *) itemImage
 {
    return image;
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) index
-{
-   return indexInMenu;
 }
 
 //________________________________________________________________________________________

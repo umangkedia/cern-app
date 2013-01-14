@@ -26,7 +26,6 @@ const CGFloat menuTextShadowAlpha = 0.5f;
 const CGFloat menuItemImageSize = 24.f;//must be square image.
 const CGFloat groupMenuItemTextIndent = 10.f;
 const CGFloat groupMenuItemTextHeight = 20.f;
-const CGFloat childMenuItemTextIndent = 20.f;
 const CGFloat childMenuItemTextHeight = 20.f;
 const CGFloat discloseTriangleSize = 14.f;
 const CGFloat groupMenuItemLeftMargin = 80.f;
@@ -172,7 +171,13 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
          const CGSize imageSize = menuItem.itemImage.size;
          const CGFloat ratio = imageSize.width / imageSize.height;
       
-         [menuItem.itemImage drawInRect:CGRectMake(childMenuItemTextIndent, self.frame.size.height / 2 - childMenuItemImageSize / 2,
+         using CernAPP::childMenuItemTextIndent;
+         
+         CGFloat x = childMenuItemTextIndent;
+         if (menuItem.menuGroup.parentGroup)
+            x += childMenuItemTextIndent;
+         
+         [menuItem.itemImage drawInRect:CGRectMake(x, self.frame.size.height / 2 - childMenuItemImageSize / 2,
                                                    childMenuItemImageSize * ratio, childMenuItemImageSize)];
       }
    }
@@ -184,11 +189,18 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
    if (itemStyle == ItemStyle::separator)
       return;
 
+   using CernAPP::childMenuItemTextIndent;
+
    CGRect frame = self.frame;
    frame.origin.x = childMenuItemTextIndent;
    
    frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
    frame.size.width -= 2 * childMenuItemTextIndent;
+   
+   if (menuItem.menuGroup.parentGroup) {
+      frame.origin.x = 2 * childMenuItemTextIndent;
+      frame.size.width -= childMenuItemTextIndent * 2;
+   }
    
    if (menuItem.itemImage) {
       const CGSize imageSize = menuItem.itemImage.size;
@@ -293,7 +305,14 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       CernAPP::DrawFrame(ctx, rect, 0.f);
       
       if (groupItem.itemImage) {
-         //
+         const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
+         const CGSize imageSize = groupItem.itemImage.size;
+         const CGFloat ratio = imageSize.width / imageSize.height;
+         const CGRect imageRect = {CernAPP::childMenuItemTextIndent, frame.size.height / 2 - childMenuItemImageSize / 2,
+                                   childMenuItemImageSize * ratio, childMenuItemImageSize};
+         
+         [groupItem.itemImage drawInRect : imageRect];
+
       }
    } else {
       GradientFillRect(ctx, rect, groupMenuFillColor[0]);
@@ -328,7 +347,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
       frame.size.height = groupMenuItemTextHeight;
    } else {
-      frame.origin.x = childMenuItemTextIndent;
+      frame.origin.x = CernAPP::childMenuItemTextIndent;
       
       if (groupItem.itemImage) {
          const CGSize imageSize = groupItem.itemImage.size;
@@ -337,7 +356,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       }
       
       frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;
-      frame.origin.y = frame.size.height / 2 - childMenuItemTextIndent / 2;
+      frame.origin.y = frame.size.height / 2 - CernAPP::childMenuItemTextIndent / 2;
       frame.size.height = childMenuItemTextHeight;
    }
    
@@ -361,13 +380,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 - (void) handleTap
 {
    //Collapse or expand.
-   if (groupItem.parentGroup) {
-      //That's a special case of a nested menu group.
-      //It's always shrinkable/can be opened.
-      
-      //
-   } else if (groupItem.shrinkable)
-      [menuController groupViewWasTapped : self];
+   [menuController groupViewWasTapped : self];
 }
 
 @end

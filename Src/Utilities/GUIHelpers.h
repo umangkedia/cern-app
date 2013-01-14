@@ -9,6 +9,7 @@ extern const CGFloat navBarHeight;
 //Menu.
 extern const CGFloat groupMenuItemHeight;
 extern const CGFloat childMenuItemHeight;
+extern const CGFloat childMenuItemTextIndent;
 extern NSString * const childMenuFontName;
 extern const CGFloat childTextColor[3];
 extern const CGFloat childMenuFillColor[3];

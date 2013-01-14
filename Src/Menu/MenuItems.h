@@ -7,6 +7,7 @@
 
 @class MenuViewController;
 @class MenuItemsGroupView;
+@class MenuItemsGroup;
 @class MenuItemView;
 
 //Protocol for menu items (not a class, not to
@@ -25,6 +26,7 @@
 - (void) itemPressedIn : (UIViewController *) controller;
 
 //Since itemView also has a reference to menu item, reference is weak.
+@property (nonatomic) __weak MenuItemsGroup *menuGroup;
 @property (nonatomic) __weak MenuItemView *itemView;
 
 @end
@@ -45,7 +47,7 @@
 
 - (void) itemPressedIn : (UIViewController *) controller;
 
-
+@property (nonatomic) __weak MenuItemsGroup *menuGroup;
 @property (nonatomic) __weak MenuItemView *itemView;
 
 @end
@@ -67,6 +69,7 @@
 
 - (void) itemPressedIn : (UIViewController *) controller;
 
+@property (nonatomic) __weak MenuItemsGroup *menuGroup;
 @property (nonatomic) __weak MenuItemView *itemView;
 
 @end
@@ -84,15 +87,14 @@
 
 - (void) itemPressedIn : (UIViewController *) controller;
 
+@property (nonatomic) __weak MenuItemsGroup *menuGroup;
 @property (nonatomic) __weak MenuItemView *itemView;
 
 @end
 
-
 @interface MenuItemsGroup : NSObject<MenuItemProtocol>
 
-- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index;
-- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index parentGroup : (MenuItemsGroup *) parent;
+- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items;
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
@@ -107,7 +109,6 @@
 //Menu group can contain expanding sub-groups.
 @property (nonatomic) unsigned nestedItemState;
 
-- (NSUInteger) index;
 - (NSUInteger) nItems;
 - (MenuItem *) item : (NSUInteger) item;
 

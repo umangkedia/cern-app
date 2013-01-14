@@ -19,6 +19,7 @@ const CGFloat navBarHeight = 44.f;
 //Menu.
 const CGFloat groupMenuItemHeight = 44.f;
 const CGFloat childMenuItemHeight = 30.f;
+const CGFloat childMenuItemTextIndent = 20.f;
 NSString * const childMenuFontName = @"PTSans-Caption";
 const CGFloat childTextColor[] = {0.772f, 0.796f, 0.847f};
 const CGFloat childMenuFillColor[] = {0.215f, 0.231f, 0.29f};
