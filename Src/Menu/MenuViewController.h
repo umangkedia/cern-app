@@ -9,5 +9,6 @@
 
 - (void) itemViewWasSelected : (MenuItemView *) view;
 - (void) groupViewWasTapped : (MenuItemsGroupView *) view;
+- (void) subGroupViewWasTapped : (MenuItemsGroupView *) view;
 
 @end

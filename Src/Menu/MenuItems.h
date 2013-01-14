@@ -74,12 +74,16 @@
 @interface MenuItemsGroup : NSObject<MenuItemProtocol>
 
 - (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index;
+- (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index parentGroup : (MenuItemsGroup *) parent;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
 @property (nonatomic) BOOL collapsed;
 @property (nonatomic) BOOL shrinkable;
+
+//Menu group can contain expanding sub-groups.
+@property (nonatomic) unsigned nestedItemState;
 
 - (NSUInteger) index;
 - (NSUInteger) nItems;
@@ -88,6 +92,9 @@
 @property (nonatomic) __weak MenuItemsGroupView *titleView;
 @property (nonatomic) __weak UIView *containerView;
 @property (nonatomic) __weak UIView *groupView;
+
+//Menu group can contain expanding sub-groups.
+@property (nonatomic) __weak MenuItemsGroup *parentGroup;
 
 @end
 

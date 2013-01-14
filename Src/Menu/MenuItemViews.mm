@@ -223,8 +223,8 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect)frame item : (MenuItemsGroup *) item controller : (MenuViewController *) controller
 {
-   assert(item != nil && "initWithFrame:item:controller, parameter 'item' is nil");
-   assert(controller != nil && "initWithFrame:item:controller, parameter 'controller' is nil");
+   assert(item != nil && "initWithFrame:item:controller:, parameter 'item' is nil");
+   assert(controller != nil && "initWithFrame:item:controller:, parameter 'controller' is nil");
    
    if (self = [super initWithFrame : frame]) {
       groupItem = item;
@@ -237,21 +237,38 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       itemLabel = [[UILabel alloc] initWithFrame:CGRect()];
       [self addSubview : itemLabel];
       itemLabel.text = item.itemText;
-      UIFont * const font = [UIFont fontWithName : groupMenuFontName size : groupMenuItemFontSize];
+      
+      UIFont *font = nil;
+      if (!groupItem.parentGroup)
+         font = [UIFont fontWithName : groupMenuFontName size : groupMenuItemFontSize];
+      else
+         font = [UIFont fontWithName : CernAPP::childMenuFontName size : childMenuItemFontSize];
+
       assert(font != nil && "initWithFrame:item:controller:, font not found");
       itemLabel.font = font;
+
       
       itemLabel.textAlignment = NSTextAlignmentLeft;
       itemLabel.numberOfLines = 1;
       itemLabel.clipsToBounds = YES;
       itemLabel.backgroundColor = [UIColor clearColor];
-      itemLabel.textColor = [UIColor colorWithRed : groupTextColor[0] green : groupTextColor[1] blue : groupTextColor[2] alpha : 1.f];
+      
+      if (!groupItem.parentGroup)
+         itemLabel.textColor = [UIColor colorWithRed : groupTextColor[0] green : groupTextColor[1] blue : groupTextColor[2] alpha : 1.f];
+      else {
+         using CernAPP::childTextColor;
+         itemLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
+      }
 
       itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
       itemLabel.layer.shadowOffset = menuTextShadowOffset;
       itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
       
-      discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
+      if (groupItem.parentGroup)//Nested group.
+         discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose_child.png"]];
+      else
+         discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
+
       discloseImageView.clipsToBounds = YES;
       discloseImageView.contentMode = UIViewContentModeScaleAspectFill;
       
@@ -266,18 +283,33 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 {
    CGContextRef ctx = UIGraphicsGetCurrentContext();
 
-   GradientFillRect(ctx, rect, groupMenuFillColor[0]);   
-   //Dark line at the bottom.
-   CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
-   CGContextMoveToPoint(ctx, 0.f, rect.size.height);
-   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
-   CGContextStrokePath(ctx);
-   
-   if (groupItem.itemImage) {
-      const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
-      const CGRect imageRect = CGRectMake(4.f, frame.size.height / 2 - menuItemImageSize / 2,
-                                          menuItemImageSize, menuItemImageSize);
-      [groupItem.itemImage drawInRect : imageRect];
+   if (groupItem.parentGroup) {
+      //We have a different look & fill for a nested group:
+      //it looks like a child menu item, but with a disclose arrow
+      //and with a shifted image (if any) and title.
+      using CernAPP::childMenuFillColor;
+      CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
+      CGContextFillRect(ctx, rect);
+      CernAPP::DrawFrame(ctx, rect, 0.f);
+      
+      if (groupItem.itemImage) {
+         //
+      }
+   } else {
+      GradientFillRect(ctx, rect, groupMenuFillColor[0]);
+      //Dark line at the bottom.
+      CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
+      CGContextMoveToPoint(ctx, 0.f, rect.size.height);
+      CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
+      CGContextStrokePath(ctx);
+      
+      if (groupItem.itemImage) {
+         const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
+         const CGRect imageRect = CGRectMake(4.f, frame.size.height / 2 - menuItemImageSize / 2,
+                                             menuItemImageSize, menuItemImageSize);
+         [groupItem.itemImage drawInRect : imageRect];
+      }
+      
    }
 }
 
@@ -285,17 +317,31 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 - (void) layoutText
 {
    CGRect frame = self.frame;
-   if (groupItem.itemImage)
-      frame.origin.x = menuItemImageSize + 8.f;
-   else
-      frame.origin.x = groupMenuItemTextIndent;
    
-   frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;//Not very smart, but ok.
-   frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
-   frame.size.height = groupMenuItemTextHeight;
-
+   if (!groupItem.parentGroup) {
+      if (groupItem.itemImage)
+         frame.origin.x = menuItemImageSize + 8.f;
+      else
+         frame.origin.x = groupMenuItemTextIndent;
+      
+      frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;//Not very smart, but ok.
+      frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
+      frame.size.height = groupMenuItemTextHeight;
+   } else {
+      frame.origin.x = childMenuItemTextIndent;
+      
+      if (groupItem.itemImage) {
+         const CGSize imageSize = groupItem.itemImage.size;
+         const CGFloat addW = (imageSize.width / imageSize.height) * childMenuItemImageSize;
+         frame.origin.x += addW + 4.f;
+      }
+      
+      frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;
+      frame.origin.y = frame.size.height / 2 - childMenuItemTextIndent / 2;
+      frame.size.height = childMenuItemTextHeight;
+   }
+   
    itemLabel.frame = frame;
-   
    discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width, self.frame.size.height / 2 - discloseTriangleSize / 2, discloseTriangleSize, discloseTriangleSize);
 }
 
@@ -315,7 +361,12 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 - (void) handleTap
 {
    //Collapse or expand.
-   if (groupItem.shrinkable)
+   if (groupItem.parentGroup) {
+      //That's a special case of a nested menu group.
+      //It's always shrinkable/can be opened.
+      
+      //
+   } else if (groupItem.shrinkable)
       [menuController groupViewWasTapped : self];
 }
 

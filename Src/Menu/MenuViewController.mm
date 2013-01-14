@@ -664,4 +664,11 @@ using CernAPP::ItemStyle;
    [NSTimer scheduledTimerWithTimeInterval : 0.3 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
 }
 
+//________________________________________________________________________________________
+- (void) subGroupViewWasTapped : (MenuItemsGroupView *) view
+{
+   assert(view != nil && "subGroupViewWasTapped:, parameter 'view' is nil");
+   //
+}
+
 @end

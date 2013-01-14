@@ -201,15 +201,15 @@ enum class StaticInfoEntryType : char {
    NSUInteger indexInMenu;
 }
 
-@synthesize collapsed, shrinkable, titleView, containerView, groupView;
+@synthesize collapsed, shrinkable, nestedItemState, titleView, containerView, groupView, parentGroup;
 
 //________________________________________________________________________________________
 - (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems index : (NSUInteger) index
 {
-   assert(aTitle != nil && "initWithTitle:image:items, parameter 'aTitle' is nil");
+   assert(aTitle != nil && "initWithTitle:image:items:, parameter 'aTitle' is nil");
    //image can be nil.
-   assert(anItems != nil && "initWithTitle:image:items, parameter 'anItems' is nil");
-   assert(anItems.count != 0 && "initWithTitle:image:items, number of items must be > 0");
+   assert(anItems != nil && "initWithTitle:image:items:, parameter 'anItems' is nil");
+   assert(anItems.count != 0 && "initWithTitle:image:items:, number of items must be > 0");
    
    if (self = [super init]) {
       title = aTitle;
@@ -221,6 +221,21 @@ enum class StaticInfoEntryType : char {
       shrinkable = YES;
    }
    
+   return self;
+}
+
+//________________________________________________________________________________________
+- (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) groupItems
+       index : (NSUInteger) index parentGroup : (MenuItemsGroup *) parent
+{
+   assert(aTitle != nil && "initWithTitle:image:items:parentGroup, parameter 'aTitle' is nil");
+   //image can be nil.
+   assert(groupItems != nil && "initWithTitle:image:items:parentGroup, parameter 'groupItems' is nil");
+   assert(parent != nil && "initWithTitle:image:items:parentGroup, parameter 'parent' is nil");
+
+   if ([self initWithTitle : aTitle image : anImage items : groupItems index : index])
+      parentGroup = parent;
+
    return self;
 }
 
