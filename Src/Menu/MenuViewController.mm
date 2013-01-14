@@ -473,7 +473,6 @@ using CernAPP::ItemStyle;
    }
 
    CGRect frameToShow = CGRectMake(0.f, 0.f, scrollView.frame.size.width, CernAPP::groupMenuItemHeight);
-   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 
    if (newOpen != nil) {
       frameToShow = newOpen.containerView.frame;
@@ -485,8 +484,13 @@ using CernAPP::ItemStyle;
          frameToShow.size.height += CernAPP::childMenuItemHeight;
       }
    }
+   
+   [UIView animateWithDuration : 0.15f animations : ^ {
+      scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
+   } completion : ^ (BOOL) {
+      [scrollView scrollRectToVisible : frameToShow animated : YES];
+   }];
 
-   [scrollView scrollRectToVisible : frameToShow animated : YES];
    inAnimation = NO;
 }
 
