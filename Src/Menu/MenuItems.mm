@@ -168,23 +168,8 @@ using CernAPP::ItemStyle;
 
 @end
 
-namespace {
-
-enum class StaticInfoEntryType : char {
-   unknown,
-   linear,
-   nested
-};
-
-}
-
 @implementation MenuItemStaticInfo {
-   NSString *itemName;
    NSDictionary *info;
-
-   __weak NSArray *items;
-   
-   StaticInfoEntryType type;
 }
 
 @synthesize itemView, menuGroup;
@@ -195,12 +180,11 @@ enum class StaticInfoEntryType : char {
    assert(dict != nil && "initWithDictionary:, parameter 'dict' is nil");
 
    if (self = [super init]) {
-      assert([[dict objectForKey : @"Title"] isKindOfClass : [NSString class]] &&
+      assert([dict[@"Title"] isKindOfClass : [NSString class]] &&
              "initWithDictionary:, 'Title' is not found or has a wrong type");
-      itemName = (NSString *)[dict objectForKey : @"Title"];
+      assert([dict[@"Items"] isKindOfClass : [NSArray class]] &&
+             "initWithDictionary:, 'Items' is not found or has a wrong type");
       info = dict;
-      
-      type = StaticInfoEntryType::unknown;
    }
    
    return self;
@@ -209,7 +193,11 @@ enum class StaticInfoEntryType : char {
 //________________________________________________________________________________________
 - (NSString *) itemText
 {
-   return itemName;
+   assert(info != nil && "itemText, info is nil");//With Obj-C you can skip "constructor".
+   assert([info[@"Title"] isKindOfClass : [NSString class]] &&
+           "initWithDictionary:, 'Title' is not found or has a wrong type");
+
+   return (NSString *)info[@"Title"];
 }
 
 //________________________________________________________________________________________
@@ -255,37 +243,17 @@ enum class StaticInfoEntryType : char {
 - (void) itemPressedIn : (UIViewController *) controller
 {
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
-   
-   if (type == StaticInfoEntryType::unknown) {
-      id objBase = [info objectForKey : @"Items"];
-      assert([objBase isKindOfClass : [NSArray class]] &&
-             "itemPressedIn:, 'Items' is not found or has a wrong type");
-      
-      items = (NSArray *)objBase;
-      assert(items.count != 0 && "itemPressedIn:, no static info found");
+   assert(info != nil && "itemPressedIn:, info is nil");
+   assert([info[@"Title"] isKindOfClass : [NSString class]] &&
+          "itemPressedIn:, 'Title' not found or has a wrong type");
+   assert([info[@"Items"] isKindOfClass : [NSArray class]] &&
+          "itemPressedIn:, 'Items' not found or has a wrong type");
 
-      assert([items[0] isKindOfClass : [NSDictionary class]] &&
-             "itemPressedIn:, array of dictionaries expected");
-      
-      NSDictionary * const firstItem = (NSDictionary *)items[0];
-      if ([firstItem objectForKey : @"Items"])
-         type = StaticInfoEntryType::nested;
-      else
-         type = StaticInfoEntryType::linear;
-   }
-   
    using namespace CernAPP;
    
-   MenuNavigationController *topController = nil;
-
-   if (type == StaticInfoEntryType::linear) {
-      topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
-      [topController setStaticInfo : items withTitle : itemName];
-   } else {
-      topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoTableViewControllerID];
-      [topController setTableStaticInfo : items withTitle : itemName];
-   }
-
+   MenuNavigationController *topController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : StaticInfoNavigationControllerID];
+   [topController setStaticInfo : (NSArray *)info[@"Items"] withTitle : (NSString *)info[@"Title"]];
+   
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
       controller.slidingViewController.topViewController = topController;

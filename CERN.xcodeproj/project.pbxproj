@@ -183,7 +183,6 @@
 		707B13F7169AF69300180E02 /* UIImage+SquareScaledImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */; };
 		707B13FA169AF6AE00180E02 /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */; };
 		70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */; };
-		70AEA101169F227D004E05E4 /* StaticInfoTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70AEA100169F227D004E05E4 /* StaticInfoTableViewController.mm */; };
 		70B10A4316A0145C00CB8BC6 /* PREV_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4116A0145C00CB8BC6 /* PREV_about.png */; };
 		70B10A4416A0145C00CB8BC6 /* LHC_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4216A0145C00CB8BC6 /* LHC_about.png */; };
 		70B10A4816A04A4C00CB8BC6 /* ATLAS_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4616A04A4C00CB8BC6 /* ATLAS_about.png */; };
@@ -455,8 +454,6 @@
 		707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StoryboardIdentifiers.mm; sourceTree = "<group>"; };
 		70AEA0FB169F204C004E05E4 /* MenuViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewCell.h; sourceTree = "<group>"; };
 		70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuViewCell.mm; sourceTree = "<group>"; };
-		70AEA0FF169F227D004E05E4 /* StaticInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoTableViewController.h; sourceTree = "<group>"; };
-		70AEA100169F227D004E05E4 /* StaticInfoTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoTableViewController.mm; sourceTree = "<group>"; };
 		70B10A4116A0145C00CB8BC6 /* PREV_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PREV_about.png; sourceTree = "<group>"; };
 		70B10A4216A0145C00CB8BC6 /* LHC_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LHC_about.png; sourceTree = "<group>"; };
 		70B10A4616A04A4C00CB8BC6 /* ATLAS_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATLAS_about.png; sourceTree = "<group>"; };
@@ -844,8 +841,6 @@
 				707B13A7169AF1B200180E02 /* PageControllerProtocol.h */,
 				707B1385169AEC9000180E02 /* LiveTableViewController.mm */,
 				707B1386169AEC9000180E02 /* LiveTableViewController.h */,
-				70AEA0FF169F227D004E05E4 /* StaticInfoTableViewController.h */,
-				70AEA100169F227D004E05E4 /* StaticInfoTableViewController.mm */,
 			);
 			path = CustomTables;
 			sourceTree = "<group>";
@@ -1317,7 +1312,6 @@
 				70CC564C169F111E00292332 /* MWTapDetectingView.m in Sources */,
 				70CC564D169F111E00292332 /* MWZoomingScrollView.m in Sources */,
 				70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */,
-				70AEA101169F227D004E05E4 /* StaticInfoTableViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
