@@ -309,7 +309,7 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (void) layoutMenu : (BOOL) setOffset
+- (void) layoutMenuResetOffset : (BOOL) resetOffset resetContentSize : (BOOL) resetContentSize
 {
    CGRect currentFrame = {0.f, 0.f, scrollView.frame.size.width};
    CGFloat totalHeight = 0.f;
@@ -319,10 +319,12 @@ using CernAPP::ItemStyle;
       totalHeight += add;
       currentFrame.origin.y += add;
    }
-   
-   if (setOffset)
+
+   if (resetOffset)
       scrollView.contentOffset = CGPoint();
-   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
+
+   if (resetContentSize)
+      scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 }
 
 #pragma mark - View lifecycle's management.
@@ -356,7 +358,7 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (void) viewDidLayoutSubviews
 {
-   [self layoutMenu : YES];
+   [self layoutMenuResetOffset : YES resetContentSize : YES];
 }
 
 #pragma mark - Menu animations.
@@ -510,13 +512,13 @@ using CernAPP::ItemStyle;
 
    inAnimation = YES;
 
-   [self layoutMenu : NO];//Set menu items before the animation.
+   [self layoutMenuResetOffset : NO resetContentSize : YES];//Set menu items before the animation.
 
    //Now, change the state of menu item.
    groupItem.collapsed = !groupItem.collapsed;
    
    [UIView animateWithDuration : 0.25f animations : ^ {
-      [self layoutMenu : NO];//Layout menu again, but with different positions for groupItem (and it's children).
+      [self layoutMenuResetOffset : NO resetContentSize : NO];//Layout menu again, but with different positions for groupItem (and it's children).
       [self setAlphaAndVisibilityForGroup : groupItem];
    } completion : ^ (BOOL) {
       [self hideGroupViews];
