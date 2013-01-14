@@ -254,8 +254,7 @@ using CernAPP::ItemStyle;
    
    NSMutableArray * const items = [[NSMutableArray alloc] init];
    //First, let's add simple item.
-   NSDictionary * const fakeFeed1 = @{@"Name" : @"Test feed1", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
-                                      @"Image" : @"163-glasses-1.png"};
+   NSDictionary * const fakeFeed1 = @{@"Name" : @"History", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed"};
    FeedProvider * const provider1 = [[FeedProvider alloc] initWith : fakeFeed1];
    MenuItem * const newItem1 = [[MenuItem alloc] initWithContentProvider : provider1];
    [items addObject:newItem1];
@@ -264,26 +263,26 @@ using CernAPP::ItemStyle;
    {
       NSMutableArray * const subItems = [[NSMutableArray alloc] init];
       
-      for (unsigned i = 0; i < 3; ++i) {
-         NSDictionary * const feed = @{@"Name" : @"Nested item", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
-                                       @"Image" : @"163-glasses-1.png"};
+      NSString * names[] = {@"ALICE", @"ATLAS"};
+      
+      for (unsigned i = 0; i < 2; ++i) {
+         NSDictionary * const feed = @{@"Name" : names[i], @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed"};
          FeedProvider * const provider = [[FeedProvider alloc] initWith : feed];
          MenuItem * const item = [[MenuItem alloc] initWithContentProvider : provider];
          [subItems addObject : item];
       }
       
-      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"Nested" image : [UIImage imageNamed : @"webcasts.png"] items : subItems];//
+      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : @"Experiments" image : [UIImage imageNamed : @"webcasts.png"] items : subItems];//
       [items addObject : group];
    }
    //
    
-   NSDictionary * const fakeFeed2 = @{@"Name" : @"Test feed2", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
-                                      @"Image" : @"124-bullhorn@2x.png"};
+   NSDictionary * const fakeFeed2 = @{@"Name" : @"Test feed", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed"};
    FeedProvider * const provider2 = [[FeedProvider alloc] initWith : fakeFeed2];
    MenuItem * const newItem2 = [[MenuItem alloc] initWithContentProvider : provider2];
    [items addObject : newItem2];
 
-   [self addMenuGroup : @"Test menu" withImage : [UIImage imageNamed : @"bulletin.png"] forItems : items];
+   [self addMenuGroup : @"About CERN (test)" withImage : [UIImage imageNamed : @"bulletin.png"] forItems : items];
    [self setStateForGroup : menuItems.count - 1 from : @{@"Expanded" : @1}];
 
    return YES;
