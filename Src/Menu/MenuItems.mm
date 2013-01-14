@@ -11,7 +11,7 @@
 
 using CernAPP::ItemStyle;
 
-//This item can activate some data provider.
+//Single menu item, can be standalone or a group member.
 @implementation MenuItem {
    NSString *itemTitle;
    NSObject<ContentProvider> *contentProvider;
@@ -86,6 +86,7 @@ using CernAPP::ItemStyle;
 
 @end
 
+//Single item, can be standalone or a group member.
 @implementation MenuItemLIVE {
    NSString *experimentName;
 }
@@ -168,6 +169,8 @@ using CernAPP::ItemStyle;
 
 @end
 
+//Single item with static info, can be standalone or
+//a group member.
 @implementation MenuItemStaticInfo {
    NSDictionary *info;
 }
@@ -266,13 +269,20 @@ using CernAPP::ItemStyle;
 
 @end
 
+
+//
+//A group of items, can be collapsed/expanded,
+//can be at the top level of a menu or a
+//nested sub-group in another group.
+//
+
 @implementation MenuItemsGroup {
    NSArray *items;
    NSString *title;
    UIImage *image;
 }
 
-@synthesize collapsed, shrinkable, nestedItemState, titleView, containerView, groupView, parentGroup;
+@synthesize collapsed, shrinkable, titleView, containerView, groupView, parentGroup;
 
 //________________________________________________________________________________________
 - (id) initWithTitle : (NSString *) aTitle image : (UIImage *) anImage items : (NSArray *) anItems
@@ -431,6 +441,9 @@ using CernAPP::ItemStyle;
 
 @end
 
+//
+//Item separator.
+//
 
 @implementation MenuSeparator
 

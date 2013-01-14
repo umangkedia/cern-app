@@ -74,6 +74,9 @@
 
 @end
 
+//
+//Different items in the "About CERN" sub-menu.
+//
 @interface MenuItemStaticInfo : NSObject<MenuItemProtocol>
 
 - (id) initWithDictionary : (NSDictionary *) dict;
@@ -92,6 +95,9 @@
 
 @end
 
+//
+// Menu group - collapsing/expanding group of items.
+//
 @interface MenuItemsGroup : NSObject<MenuItemProtocol>
 
 - (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items;
@@ -106,9 +112,6 @@
 @property (nonatomic) BOOL collapsed;
 @property (nonatomic) BOOL shrinkable;
 
-//Menu group can contain expanding sub-groups.
-@property (nonatomic) unsigned nestedItemState;
-
 - (NSUInteger) nItems;
 - (MenuItem *) item : (NSUInteger) item;
 
@@ -120,6 +123,11 @@
 @property (nonatomic) __weak MenuItemsGroup *parentGroup;
 
 @end
+
+//
+//Simple non-interactive item without any title or image,
+//just to separate different items.
+//
 
 @interface MenuSeparator : NSObject<MenuItemProtocol>
 
