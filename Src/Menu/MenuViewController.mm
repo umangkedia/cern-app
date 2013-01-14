@@ -240,8 +240,6 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (BOOL) loadTestSection : (NSDictionary *) section
 {
-   return NO;
-
    assert(section != nil && "loadTestSection:, parameter 'section' is nil");
    
    assert([section[@"Category name"] isKindOfClass : [NSString class]] &&
@@ -337,7 +335,7 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (void) layoutMenu
+- (void) layoutMenu : (BOOL) setOffset
 {
    CGRect currentFrame = {0.f, 0.f, scrollView.frame.size.width};
    CGFloat totalHeight = 0.f;
@@ -348,7 +346,8 @@ using CernAPP::ItemStyle;
       currentFrame.origin.y += add;
    }
    
-   scrollView.contentOffset = CGPoint();
+   if (setOffset)
+      scrollView.contentOffset = CGPoint();
    scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 }
 
@@ -383,7 +382,7 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (void) viewDidLayoutSubviews
 {
-   [self layoutMenu];
+   [self layoutMenu : YES];
 }
 
 #pragma mark - Menu animations.
@@ -537,18 +536,17 @@ using CernAPP::ItemStyle;
 
    inAnimation = YES;
 
-   [self layoutMenu];//Set menu items before the animation.
+   [self layoutMenu : NO];//Set menu items before the animation.
 
    //Now, change the state of menu item.
    groupItem.collapsed = !groupItem.collapsed;
    
    [UIView animateWithDuration : 0.25f animations : ^ {
-      [self layoutMenu];//Layout menu again, but with different positions for groupItem (and it's children).
+      [self layoutMenu : NO];//Layout menu again, but with different positions for groupItem (and it's children).
       [self setAlphaAndVisibilityForGroup : groupItem];
    } completion : ^ (BOOL) {
       [self hideGroupViews];
       [self adjustMenu];
-//      [NSTimer scheduledTimerWithTimeInterval : 0.1 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
    }];
 }
 
