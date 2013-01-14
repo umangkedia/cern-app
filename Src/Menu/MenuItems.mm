@@ -59,12 +59,13 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint
+- (CGFloat) layoutItemViewWithHint : (CGRect) hint
 {
    assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
 
-   frameHint.size.height = CernAPP::childMenuItemHeight;
-   itemView.frame = frameHint;
+   hint.size.height = CernAPP::childMenuItemHeight;
+   itemView.frame = hint;   
+   [itemView layoutText];
 
    return CernAPP::childMenuItemHeight;
 }
@@ -128,13 +129,12 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint
+- (CGFloat) layoutItemViewWithHint : (CGRect) hint
 {
    assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
 
-   frameHint.size.height = CernAPP::childMenuItemHeight;
-   itemView.frame = frameHint;
-   
+   hint.size.height = CernAPP::childMenuItemHeight;
+   itemView.frame = hint;
    [itemView layoutText];
 
    return CernAPP::childMenuItemHeight;
@@ -377,7 +377,6 @@ enum class StaticInfoEntryType : char {
    assert(groupView != nil && "layouItemViewWithHint:, containerView is nil");
    
    CGFloat totalHeight = 0.f;
-   //
    
    if (!parentGroup)
       hint.size.height = CernAPP::groupMenuItemHeight;
@@ -397,7 +396,7 @@ enum class StaticInfoEntryType : char {
       hint.origin = CGPoint();
       titleView.discloseImageView.transform = CGAffineTransformMakeRotation(0.f);
    } else {
-      hint.origin.y -= hint.size.height;
+      hint.origin.y = -hint.size.height;
       groupView.alpha = 0.f;//well, this is not a layout actually, but ok.
    }
 
