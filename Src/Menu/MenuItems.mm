@@ -6,6 +6,7 @@
 #import "StoryboardIdentifiers.h"
 #import "MenuViewController.h"
 #import "MenuItemViews.h"
+#import "GUIHelpers.h"
 #import "MenuItems.h"
 
 using CernAPP::ItemStyle;
@@ -58,6 +59,23 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint
+{
+   assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
+
+   frameHint.size.height = CernAPP::childMenuItemHeight;
+   itemView.frame = frameHint;
+
+   return CernAPP::childMenuItemHeight;
+}
+
+//________________________________________________________________________________________
+- (CGFloat) requiredHeight
+{
+   return CernAPP::childMenuItemHeight;
+}
+
+//________________________________________________________________________________________
 - (void) itemPressedIn : (UIViewController *) controller
 {
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
@@ -107,6 +125,25 @@ using CernAPP::ItemStyle;
      
    itemView = newView;
    [parentView addSubview : newView];
+}
+
+//________________________________________________________________________________________
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint
+{
+   assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
+
+   frameHint.size.height = CernAPP::childMenuItemHeight;
+   itemView.frame = frameHint;
+   
+   [itemView layoutText];
+
+   return CernAPP::childMenuItemHeight;
+}
+
+//________________________________________________________________________________________
+- (CGFloat) requiredHeight
+{
+   return CernAPP::childMenuItemHeight;
 }
 
 //________________________________________________________________________________________
@@ -193,6 +230,25 @@ enum class StaticInfoEntryType : char {
      
    itemView = newView;
    [parentView addSubview : newView];
+}
+
+//________________________________________________________________________________________
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint
+{
+   assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
+
+   frameHint.size.height = CernAPP::childMenuItemHeight;
+   itemView.frame = frameHint;
+   
+   [itemView layoutText];
+
+   return CernAPP::childMenuItemHeight;
+}
+
+//________________________________________________________________________________________
+- (CGFloat) requiredHeight
+{
+   return CernAPP::childMenuItemHeight;
 }
 
 //________________________________________________________________________________________
@@ -314,6 +370,85 @@ enum class StaticInfoEntryType : char {
 }
 
 //________________________________________________________________________________________
+- (CGFloat) layoutItemViewWithHint : (CGRect) hint
+{
+   assert(titleView != nil && "layoutItemViewWithHint:, titleView is nil");
+   assert(containerView != nil && "layoutItemViewWithHint:, containerView is nil");
+   assert(groupView != nil && "layouItemViewWithHint:, containerView is nil");
+   
+   CGFloat totalHeight = 0.f;
+   //
+   
+   if (!parentGroup)
+      hint.size.height = CernAPP::groupMenuItemHeight;
+   else
+      hint.size.height = CernAPP::childMenuItemHeight;
+   
+   titleView.frame = hint;
+   [titleView layoutText];
+   
+   totalHeight += hint.size.height;
+   hint.origin.y += hint.size.height;
+
+   hint.size.height = [self requiredHeight];
+   containerView.frame = hint;
+
+   if (!collapsed) {
+      hint.origin = CGPoint();
+      titleView.discloseImageView.transform = CGAffineTransformMakeRotation(0.f);
+   } else {
+      hint.origin.y -= hint.size.height;
+      groupView.alpha = 0.f;//well, this is not a layout actually, but ok.
+   }
+
+   groupView.frame = hint;
+   
+   //Layout sub-views.
+   hint.origin = CGPoint();
+   for (NSObject<MenuItemProtocol> *menuItem in items) {
+      const CGFloat add = [menuItem layoutItemViewWithHint : hint];
+      hint.origin.y += add;
+      totalHeight += add;
+   }
+
+   if (collapsed) {
+      if (parentGroup)
+         return CernAPP::childMenuItemHeight;
+      else
+         return CernAPP::groupMenuItemHeight;
+   }
+
+   return totalHeight;
+}
+
+//________________________________________________________________________________________
+- (CGFloat) requiredHeight
+{
+   //The height required by this menu as it's in open state now.
+   CGFloat totalHeight = 0.f;
+
+   if (!parentGroup)
+      totalHeight = CernAPP::groupMenuItemHeight;
+   else
+      totalHeight = CernAPP::childMenuItemHeight;
+   
+   //If it's open, also calculate the height of sub-items.
+   for (NSObject<MenuItemProtocol> *menuItem in items) {
+      if ([menuItem isKindOfClass : [MenuItemsGroup class]]) {
+         //For the nested sub-group, we calculate its total height only if its open.
+         MenuItemsGroup * const subGroup = (MenuItemsGroup *)menuItem;
+         if (!subGroup.collapsed)
+            totalHeight += [menuItem requiredHeight];
+         else
+            totalHeight += CernAPP::childMenuItemHeight;
+      } else
+         totalHeight += [menuItem requiredHeight];
+   }
+   
+   return totalHeight;
+}
+
+//________________________________________________________________________________________
 - (NSString *) itemText
 {
    return title;
@@ -360,6 +495,23 @@ enum class StaticInfoEntryType : char {
    MenuItemView * const separatorView = [[MenuItemView alloc] initWithFrame:CGRect() item : nil style : ItemStyle::separator controller : controller];
    itemView = separatorView;
    [parentView addSubview : separatorView];
+}
+
+//________________________________________________________________________________________
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint
+{
+   assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
+
+   frameHint.size.height = CernAPP::childMenuItemHeight;
+   itemView.frame = frameHint;
+
+   return CernAPP::childMenuItemHeight;
+}
+
+//________________________________________________________________________________________
+- (CGFloat) requiredHeight
+{
+   return CernAPP::childMenuItemHeight;
 }
 
 //________________________________________________________________________________________

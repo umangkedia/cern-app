@@ -18,6 +18,8 @@
 - (UIImage *) itemImage;
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
+- (CGFloat) requiredHeight;
 
 @optional
 - (void) itemPressedIn : (UIViewController *) controller;
@@ -38,6 +40,9 @@
 - (UIImage *) itemImage;
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
+- (CGFloat) requiredHeight;
+
 - (void) itemPressedIn : (UIViewController *) controller;
 
 
@@ -57,6 +62,9 @@
 - (UIImage *) itemImage;
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
+- (CGFloat) requiredHeight;
+
 - (void) itemPressedIn : (UIViewController *) controller;
 
 @property (nonatomic) __weak MenuItemView *itemView;
@@ -71,6 +79,9 @@
 - (UIImage *) itemImage;
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
+- (CGFloat) requiredHeight;
+
 - (void) itemPressedIn : (UIViewController *) controller;
 
 @property (nonatomic) __weak MenuItemView *itemView;
@@ -84,6 +95,8 @@
 - (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index parentGroup : (MenuItemsGroup *) parent;
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
+- (CGFloat) requiredHeight;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
@@ -110,6 +123,8 @@
 @interface MenuSeparator : NSObject<MenuItemProtocol>
 
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
+- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
+- (CGFloat) requiredHeight;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
