@@ -4,13 +4,19 @@
 #import "MenuNavigationController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "MenuViewController.h"
+#import "MenuItemViews.h"
 #import "MenuItems.h"
+
+using CernAPP::ItemStyle;
 
 //This item can activate some data provider.
 @implementation MenuItem {
    NSString *itemTitle;
    NSObject<ContentProvider> *contentProvider;
 }
+
+@synthesize itemView;
 
 //________________________________________________________________________________________
 - (id) initWithContentProvider : (NSObject<ContentProvider> *) provider
@@ -39,6 +45,19 @@
 }
 
 //________________________________________________________________________________________
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller
+{
+   assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
+   assert(controller != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
+   //
+   MenuItemView * const newView = [[MenuItemView alloc] initWithFrame : CGRect() item : self
+                                   style : ItemStyle::child controller : controller];
+     
+   itemView = newView;
+   [parentView addSubview : newView];
+}
+
+//________________________________________________________________________________________
 - (void) itemPressedIn : (UIViewController *) controller
 {
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
@@ -51,6 +70,8 @@
 @implementation MenuItemLIVE {
    NSString *experimentName;
 }
+
+@synthesize itemView;
 
 //________________________________________________________________________________________
 - (id) initWithExperiment : (NSString *) name
@@ -76,6 +97,19 @@
 }
 
 //________________________________________________________________________________________
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller
+{
+   assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
+   assert(controller != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
+   //
+   MenuItemView * const newView = [[MenuItemView alloc] initWithFrame : CGRect() item : self
+                                   style : ItemStyle::child controller : controller];
+     
+   itemView = newView;
+   [parentView addSubview : newView];
+}
+
+//________________________________________________________________________________________
 - (void) itemPressedIn : (UIViewController *) controller
 {
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
@@ -87,7 +121,7 @@
  
    [topController setExperiment : CernAPP::ExperimentNameToEnum(experimentName)];
 
-   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete : ^ {
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
       controller.slidingViewController.topViewController = topController;
       controller.slidingViewController.topViewController.view.frame = frame;
@@ -146,6 +180,19 @@ enum class StaticInfoEntryType : char {
 {
    //Noop at the moment.
    return nil;
+}
+
+//________________________________________________________________________________________
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller
+{
+   assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
+   assert(controller != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
+   //
+   MenuItemView * const newView = [[MenuItemView alloc] initWithFrame : CGRect() item : self
+                                   style : ItemStyle::child controller : controller];
+     
+   itemView = newView;
+   [parentView addSubview : newView];
 }
 
 //________________________________________________________________________________________
@@ -240,6 +287,33 @@ enum class StaticInfoEntryType : char {
 }
 
 //________________________________________________________________________________________
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller
+{
+   assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
+   assert(controller != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
+   //
+   UIView * const newContainerView = [[UIView alloc] initWithFrame : CGRect()];
+   newContainerView.clipsToBounds = YES;
+   UIView * const newGroupView = [[UIView alloc] initWithFrame : CGRect()];
+   [newContainerView addSubview : newGroupView];
+   [parentView addSubview : newContainerView];
+         
+   for (NSObject<MenuItemProtocol> *item in items) {
+      assert([item respondsToSelector:@selector(addMenuItemViewInto:controller:)] &&
+             "addMenuItemViewInto:controller:, child item must reposng to 'addMenuItemViewInto:controller: method'");
+      [item addMenuItemViewInto : newGroupView controller : controller];
+   }
+
+   MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame : CGRect()
+                                               item : self controller : controller];
+   [parentView addSubview : menuGroupView];
+         
+   titleView = menuGroupView;
+   containerView = newContainerView;
+   groupView = newGroupView;
+}
+
+//________________________________________________________________________________________
 - (NSString *) itemText
 {
    return title;
@@ -276,6 +350,17 @@ enum class StaticInfoEntryType : char {
 @implementation MenuSeparator
 
 @synthesize itemView;
+
+//________________________________________________________________________________________
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller
+{
+   assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
+   assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
+   
+   MenuItemView * const separatorView = [[MenuItemView alloc] initWithFrame:CGRect() item : nil style : ItemStyle::separator controller : controller];
+   itemView = separatorView;
+   [parentView addSubview : separatorView];
+}
 
 //________________________________________________________________________________________
 - (NSString *) itemText

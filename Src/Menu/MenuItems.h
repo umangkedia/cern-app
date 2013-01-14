@@ -5,6 +5,7 @@
 
 #import "ContentProviders.h"
 
+@class MenuViewController;
 @class MenuItemsGroupView;
 @class MenuItemView;
 
@@ -15,6 +16,8 @@
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
+
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 
 @optional
 - (void) itemPressedIn : (UIViewController *) controller;
@@ -34,7 +37,9 @@
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 - (void) itemPressedIn : (UIViewController *) controller;
+
 
 @property (nonatomic) __weak MenuItemView *itemView;
 
@@ -51,6 +56,7 @@
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 - (void) itemPressedIn : (UIViewController *) controller;
 
 @property (nonatomic) __weak MenuItemView *itemView;
@@ -64,6 +70,7 @@
 - (NSString *) itemText;
 - (UIImage *) itemImage;
 
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 - (void) itemPressedIn : (UIViewController *) controller;
 
 @property (nonatomic) __weak MenuItemView *itemView;
@@ -75,6 +82,8 @@
 
 - (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index;
 - (id) initWithTitle : (NSString *) title image : (UIImage *) image items : (NSArray *) items index : (NSUInteger) index parentGroup : (MenuItemsGroup *) parent;
+
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
@@ -99,6 +108,8 @@
 @end
 
 @interface MenuSeparator : NSObject<MenuItemProtocol>
+
+- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;

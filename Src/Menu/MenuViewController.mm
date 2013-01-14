@@ -75,34 +75,9 @@ using CernAPP::ItemStyle;
    //groupImage can be nil, it's ok.
    assert(items != nil && "addMenuGroup:withImage:forItems:, parameter 'items' is nil");
 
-   UIView * const containerView = [[UIView alloc] initWithFrame : CGRect()];
-   containerView.clipsToBounds = YES;
-   UIView * const groupView = [[UIView alloc] initWithFrame : CGRect()];
-   [containerView addSubview : groupView];
-   [scrollView addSubview : containerView];
-
-         
-   for (NSObject<MenuItemProtocol> *item in items) {
-      MenuItemView * const itemView = [[MenuItemView alloc] initWithFrame:CGRect() item : item
-                                       style : ItemStyle::child controller : self];
-  
-      assert([item respondsToSelector:@selector(itemView)] &&
-             "addMenuGroup:withImage:forItems:, child menu item must respond to 'itemView' selector");
-
-      item.itemView = itemView;
-      [groupView addSubview : itemView];
-   }
-
    MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle : groupName
                                    image : groupImage items : items index : menuItems.count];
-   MenuItemsGroupView * const menuGroupView = [[MenuItemsGroupView alloc] initWithFrame:CGRect()
-                                               item : group controller : self];
-   [scrollView addSubview : menuGroupView];
-         
-   group.titleView = menuGroupView;
-   group.containerView = containerView;
-   group.groupView = groupView;
-         
+   [group addMenuItemViewInto : scrollView controller : self];
    [menuItems addObject : group];
 }
 
@@ -251,11 +226,8 @@ using CernAPP::ItemStyle;
    if ([(NSString *)objBase isEqualToString : @"Separator"]) {
       assert(menuItems.count + 1 < 32 && "loadSeparator:, menu can not have more than 32 items");
       MenuSeparator * const separator = [[MenuSeparator alloc] init];
-      MenuItemView * const separatorView = [[MenuItemView alloc] initWithFrame:CGRect() item : nil style : ItemStyle::separator controller : self];
-      separator.itemView = separatorView;
-      [scrollView addSubview : separatorView];
-      [menuItems addObject : separator];
-      
+      [separator addMenuItemViewInto : scrollView controller : self];
+      [menuItems addObject : separator];      
       return YES;
    }
    
@@ -273,9 +245,48 @@ using CernAPP::ItemStyle;
    
    if (![(NSString *)section[@"Category name"] isEqualToString : @"Test section"])
       return NO;
+   //
+   //Create a test group with several items and nested sub-group between them
+
+   assert(scrollView != nil && "loadTestSection:, scrollView is not loaded yet!");
    
-   NSLog(@"GOT A TEST SECTION!");
+   NSString * const sectionName = @"Test menu";
+   UIImage * const sectionImage = [UIImage imageNamed : @"bulletin.png"];
+
+   NSMutableArray * const items = [[NSMutableArray alloc] init];
+   //First, let's add simple item.
+   NSDictionary * const fakeFeed1 = @{@"Name" : @"Test feed1", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
+                                      @"Image" : @"163-glasses-1.png"};
+   FeedProvider * const provider1 = [[FeedProvider alloc] initWith : fakeFeed1];
+   MenuItem * const newItem1 = [[MenuItem alloc] initWithContentProvider : provider1];
+   [items addObject:newItem1];
    
+   //In between two children items we can put a sub-group.
+   {
+      NSMutableArray * const subItems = [[NSMutableArray alloc] init];
+      
+      for (unsigned i = 0; i < 3; ++i) {
+         NSDictionary * const feed = @{@"Name" : @"Nested item", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
+                                       @"Image" : @"163-glasses-1.png"};
+         FeedProvider * const provider = [[FeedProvider alloc] initWith : feed];
+         MenuItem * const item = [[MenuItem alloc] initWithContentProvider : provider];
+         [subItems addObject : item];
+      }
+      
+      MenuItemsGroup * const group = [[MenuItemsGroup alloc] initWithTitle:@"Nested" image:[UIImage imageNamed : @"webcasts.png"] items : subItems index : 2];//
+      [items addObject : group];
+   }
+   //
+   
+   NSDictionary * const fakeFeed2 = @{@"Name" : @"Test feed2", @"Url" : @"http://home.web.cern.ch/students-educators/updates/feed",
+                                      @"Image" : @"124-bullhorn@2x.png"};
+   FeedProvider * const provider2 = [[FeedProvider alloc] initWith : fakeFeed2];
+   MenuItem * const newItem2 = [[MenuItem alloc] initWithContentProvider : provider2];
+   [items addObject:newItem2];
+   
+   [self addMenuGroup : sectionName withImage : sectionImage forItems : items];
+   [self setStateForGroup : menuItems.count - 1 from : @{@"Expanded" : @1}];
+
    return YES;
 }
 */
@@ -315,8 +326,8 @@ using CernAPP::ItemStyle;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;
 
-      //if ([self loadTestSection : (NSDictionary *)entryBase])
-      //   continue;
+     // if ([self loadTestSection : (NSDictionary *)entryBase])
+     //    continue;
       //Static info (about CERN);
       //Latest photos;
       //Latest videos;
