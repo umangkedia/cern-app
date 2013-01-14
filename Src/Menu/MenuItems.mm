@@ -240,7 +240,7 @@ enum class StaticInfoEntryType : char {
    frameHint.size.height = CernAPP::childMenuItemHeight;
    itemView.frame = frameHint;
    
- //  [itemView layoutText];
+   [itemView layoutText];
 
    return CernAPP::childMenuItemHeight;
 }

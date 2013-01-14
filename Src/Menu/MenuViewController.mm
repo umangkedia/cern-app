@@ -240,6 +240,8 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (BOOL) loadTestSection : (NSDictionary *) section
 {
+   return NO;
+
    assert(section != nil && "loadTestSection:, parameter 'section' is nil");
    
    assert([section[@"Category name"] isKindOfClass : [NSString class]] &&
@@ -545,8 +547,8 @@ using CernAPP::ItemStyle;
       [self setAlphaAndVisibilityForGroup : groupItem];
    } completion : ^ (BOOL) {
       [self hideGroupViews];
-//      [self adjustMenu];
-      [NSTimer scheduledTimerWithTimeInterval : 0.1 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
+      [self adjustMenu];
+//      [NSTimer scheduledTimerWithTimeInterval : 0.1 target : self selector : @selector(adjustMenu) userInfo : nil repeats : NO];
    }];
 }
 
