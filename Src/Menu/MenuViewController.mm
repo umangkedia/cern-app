@@ -461,11 +461,19 @@ using CernAPP::ItemStyle;
    //Content view size.
    CGFloat totalHeight = 0.f;
 
-   for (NSObject<MenuItemProtocol> *menuItem in menuItems)
-      totalHeight += [menuItem requiredHeight];
+   for (NSObject<MenuItemProtocol> *menuItem in menuItems) {
+      if ([menuItem isKindOfClass:[MenuItemsGroup class]]) {
+         if (((MenuItemsGroup *)menuItem).collapsed) {
+            totalHeight += CernAPP::groupMenuItemHeight;
+            continue;
+         }
+      }
 
-   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
+      totalHeight += [menuItem requiredHeight];
+   }
+
    CGRect frameToShow = CGRectMake(0.f, 0.f, scrollView.frame.size.width, CernAPP::groupMenuItemHeight);
+   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 
    if (newOpen != nil) {
       frameToShow = newOpen.containerView.frame;
@@ -477,9 +485,8 @@ using CernAPP::ItemStyle;
          frameToShow.size.height += CernAPP::childMenuItemHeight;
       }
    }
-   
-   [scrollView scrollRectToVisible : frameToShow animated : YES];
 
+   [scrollView scrollRectToVisible : frameToShow animated : YES];
    inAnimation = NO;
 }
 
