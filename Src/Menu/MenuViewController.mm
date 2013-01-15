@@ -258,7 +258,7 @@ using CernAPP::ItemStyle;
    if ([(NSString *)objBase isEqualToString : @"Separator"]) {
       MenuSeparator * const separator = [[MenuSeparator alloc] init];
       [separator addMenuItemViewInto : scrollView controller : self];
-      [menuItems addObject : separator];      
+      [menuItems addObject : separator];
       return YES;
    }
    

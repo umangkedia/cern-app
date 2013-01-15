@@ -91,6 +91,10 @@
 			<key>Category name</key>
 			<string>LIVE</string>
 		</dict>
+		<dict>
+			<key>Category name</key>
+			<string>Separator</string>
+		</dict>
 	</array>
 </dict>
 </plist>
