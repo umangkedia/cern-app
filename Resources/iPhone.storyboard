@@ -331,6 +331,44 @@
             </objects>
             <point key="canvasLocation" x="-342" y="994"/>
         </scene>
+        <!--Menu Navigation Controller-->
+        <scene sceneID="IEF-6V-VUd">
+            <objects>
+                <navigationController restorationIdentifier="PhotoGridControllerNavID" storyboardIdentifier="PhotoGridControllerNavID" definesPresentationContext="YES" id="YUT-nR-VZg" customClass="MenuNavigationController" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="aYY-6n-r8Y">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="3Uz-qv-2n0" kind="relationship" relationship="rootViewController" id="Hmr-iI-VHS"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GMj-To-Jeq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-820" y="1648"/>
+        </scene>
+        <!--Photos Grid View Controller-->
+        <scene sceneID="wAz-sl-Aoo">
+            <objects>
+                <viewController id="3Uz-qv-2n0" customClass="PhotosGridViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zsX-tV-plF">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="frz-he-cRx">
+                        <barButtonItem key="leftBarButtonItem" image="menu.png" id="Yk6-mV-q68">
+                            <connections>
+                                <action selector="revealMenu:" destination="3Uz-qv-2n0" id="poO-ex-E9t"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YBk-7Q-1Ig" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-299" y="1648"/>
+        </scene>
         <!--Event Display View Controller-->
         <scene sceneID="bMf-lI-XM8">
             <objects>
@@ -445,6 +483,9 @@
         <image name="menu.png" width="20" height="20"/>
     </resources>
     <classes>
+        <class className="AQGridViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/AQGridViewController.h"/>
+        </class>
         <class className="ArticleDetailViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ArticleDetailViewController.h"/>
             <relationships>
@@ -472,12 +513,6 @@
                 <relationship kind="action" name="revealMenu:"/>
             </relationships>
         </class>
-        <class className="LiveTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/LiveTableViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="revealMenu:"/>
-            </relationships>
-        </class>
         <class className="MenuNavigationController" superclassName="UINavigationController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/MenuNavigationController.h"/>
         </class>
@@ -495,6 +530,12 @@
         </class>
         <class className="NewsTableViewController" superclassName="UITableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NewsTableViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="revealMenu:"/>
+            </relationships>
+        </class>
+        <class className="PhotosGridViewController" superclassName="AQGridViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/PhotosGridViewController.h"/>
             <relationships>
                 <relationship kind="action" name="revealMenu:"/>
             </relationships>

@@ -14,5 +14,6 @@ NSString * const StaticInfoItemViewControllerID = @"StaticInfoItemViewController
 NSString * const StaticInfoScrollViewControllerID = @"StaticInfoScrollViewControllerID";
 NSString * const StaticInfoNavigationControllerID = @"StaticInfoNavigationControllerID";
 NSString * const StaticInfoScrollViewControllerNoRootID = @"StaticInfoScrollViewControllerNoRootID";
+NSString * const PhotoGridControllerNavID = @"PhotoGridControllerNavID";
 
 }

@@ -11,10 +11,13 @@
 #import "MWPhotoBrowser.h"
 #import "MBProgressHUD.h"
 
-@interface PhotosGridViewController : AQGridViewController<AQGridViewDataSource, AQGridViewDelegate, MWPhotoBrowserDelegate, PhotoDownloaderDelegate, MBProgressHUDDelegate>
+@interface PhotosGridViewController : AQGridViewController<AQGridViewDataSource, AQGridViewDelegate, MWPhotoBrowserDelegate,
+                                                           PhotoDownloaderDelegate, MBProgressHUDDelegate>
 
 @property (nonatomic, strong) PhotoDownloader *photoDownloader;
 
 - (void) refresh;
+
+- (IBAction) revealMenu : (id) sender;
 
 @end

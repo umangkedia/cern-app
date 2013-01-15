@@ -2,6 +2,7 @@
 
 #import "EventDisplayViewController.h"
 #import "MenuNavigationController.h"
+#import "PhotosGridViewController.h"
 #import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
 #import "ECSlidingViewController.h"
@@ -115,6 +116,8 @@
    assert(anInfo != nil && "initWithDictionary:, parameter 'anInfo' is nil");
 
    if (self = [super init]) {
+      assert([anInfo[@"Url"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Url' is not found or has a wrong type");
       assert([anInfo[@"Name"] isKindOfClass : [NSString class]] &&
              "initWithDictionary:, 'Name' is not found or has a wrong type");
       categoryName = (NSString *)anInfo[@"Name"];
@@ -124,6 +127,8 @@
                 "initWithDictionary:, 'Image name' is nil or has a wrong type");
          categoryImage = [UIImage imageNamed : (NSString *)anInfo[@"Image name"]];
       }
+      
+      info = anInfo;
    }
    
    return self;
@@ -139,6 +144,25 @@
 - (void) loadControllerTo : (UIViewController *) controller
 {
    assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+   
+   using namespace CernAPP;
+   
+   MenuNavigationController * const navController =
+         (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : PhotoGridControllerNavID];
+ 
+   assert([navController.topViewController isKindOfClass : [PhotosGridViewController class]] &&
+          "loadControllerTo:, top view controller is either nil or has a wrong type");
+   
+   PhotosGridViewController * const topController = (PhotosGridViewController *)navController.topViewController;
+   topController.photoDownloader.url = [NSURL URLWithString : (NSString *)info[@"Url"]];
+
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = navController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
+   }];
+
 }
 
 //________________________________________________________________________________________
@@ -441,7 +465,6 @@
 
 @end
 
-//
 @implementation LiveImageData
 
 @synthesize imageName, url, image,bounds;

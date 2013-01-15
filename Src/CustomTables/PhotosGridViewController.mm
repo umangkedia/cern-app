@@ -7,6 +7,7 @@
 //
 
 #import "PhotosGridViewController.h"
+#import "ECSlidingViewController.h"
 #import "CernMediaMARCParser.h"
 #import "PhotoGridViewCell.h"
 #import "ApplicationErrors.h"
@@ -203,6 +204,15 @@
 - (void) backButtonPressed
 {
    [self.navigationController popViewControllerAnimated : YES];
+}
+
+#pragma mark - Sliding view.
+
+//________________________________________________________________________________________
+- (IBAction) revealMenu : (id) sender
+{
+#pragma unused(sender)
+   [self.slidingViewController anchorTopViewTo : ECRight];
 }
 
 @end
