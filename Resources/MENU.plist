@@ -12,6 +12,8 @@
 			<key>Feeds</key>
 			<array>
 				<dict>
+					<key>Image</key>
+					<string>180-stickynote@2x.png</string>
 					<key>Url</key>
 					<string>http://home.web.cern.ch/about/updates/feed</string>
 					<key>Name</key>
@@ -34,6 +36,8 @@
 					<string>For scientists</string>
 				</dict>
 				<dict>
+					<key>Image</key>
+					<string>112-group@2x.png</string>
 					<key>Url</key>
 					<string>http://home.web.cern.ch/cern-people/updates/feed</string>
 					<key>Name</key>
@@ -56,6 +60,8 @@
 					<string>Official communications</string>
 				</dict>
 				<dict>
+					<key>Image</key>
+					<string>389-flash@2x.png</string>
 					<key>Url</key>
 					<string>http://feeds.feedburner.com/CernCourier</string>
 					<key>Name</key>
