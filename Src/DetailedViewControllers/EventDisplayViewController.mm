@@ -14,9 +14,9 @@
 #import <cassert>
 
 #import "EventDisplayViewController.h"
+#import "ECSlidingViewController.h"
 #import "ApplicationErrors.h"
 #import "Reachability.h"
-//#import "DeviceCheck.h"
 #import "GUIHelpers.h"
 
 //We compile as Objective-C++, in C++ const have internal linkage ==
@@ -562,5 +562,14 @@ using CernAPP::NetworkStatus;
       self.navigationItem.rightBarButtonItem.enabled = YES;
    }
 }
+
+#pragma mark - Sliding view controller.
+//________________________________________________________________________________________
+- (void) revealMenu : (id) sender
+{
+#pragma unused(sender)
+   [self.slidingViewController anchorTopViewTo : ECRight];
+}
+
 
 @end

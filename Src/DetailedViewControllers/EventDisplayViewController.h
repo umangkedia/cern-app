@@ -50,4 +50,7 @@
 
 - (void) scrollToPage : (NSInteger) page;
 
+//For sliding menu.
+- (IBAction) revealMenu : (id) sender;
+
 @end
