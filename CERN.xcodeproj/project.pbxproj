@@ -182,6 +182,8 @@
 		707B13F7169AF69300180E02 /* UIImage+SquareScaledImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */; };
 		707B13FA169AF6AE00180E02 /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */; };
 		709CE65B16A58162006D524E /* 86-camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709CE65A16A58162006D524E /* 86-camera@2x.png */; };
+		709CE66816A59A3B006D524E /* CernMediaMARCParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709CE66716A59A3B006D524E /* CernMediaMARCParser.mm */; };
+		709CE66B16A59B11006D524E /* PhotoDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709CE66A16A59B11006D524E /* PhotoDownloader.mm */; };
 		70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */; };
 		70B10A4316A0145C00CB8BC6 /* PREV_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4116A0145C00CB8BC6 /* PREV_about.png */; };
 		70B10A4416A0145C00CB8BC6 /* LHC_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4216A0145C00CB8BC6 /* LHC_about.png */; };
@@ -451,6 +453,10 @@
 		707B13F8169AF6AE00180E02 /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryboardIdentifiers.h; sourceTree = "<group>"; };
 		707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StoryboardIdentifiers.mm; sourceTree = "<group>"; };
 		709CE65A16A58162006D524E /* 86-camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "86-camera@2x.png"; sourceTree = "<group>"; };
+		709CE66616A59A3B006D524E /* CernMediaMARCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CernMediaMARCParser.h; sourceTree = "<group>"; };
+		709CE66716A59A3B006D524E /* CernMediaMARCParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CernMediaMARCParser.mm; sourceTree = "<group>"; };
+		709CE66916A59B11006D524E /* PhotoDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoDownloader.h; sourceTree = "<group>"; };
+		709CE66A16A59B11006D524E /* PhotoDownloader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhotoDownloader.mm; sourceTree = "<group>"; };
 		70AEA0FB169F204C004E05E4 /* MenuViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewCell.h; sourceTree = "<group>"; };
 		70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuViewCell.mm; sourceTree = "<group>"; };
 		70B10A4116A0145C00CB8BC6 /* PREV_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PREV_about.png; sourceTree = "<group>"; };
@@ -717,6 +723,7 @@
 		707B1342169AE8C900180E02 /* Src */ = {
 			isa = PBXGroup;
 			children = (
+				709CE66516A59A3B006D524E /* Parsers */,
 				70BE54AE169AFC2900A3E1B6 /* PCH */,
 				707B13BF169AF4FA00180E02 /* RSS */,
 				707B139D169AF07D00180E02 /* Utilities */,
@@ -889,6 +896,8 @@
 		707B139D169AF07D00180E02 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				709CE66916A59B11006D524E /* PhotoDownloader.h */,
+				709CE66A16A59B11006D524E /* PhotoDownloader.mm */,
 				707B13F8169AF6AE00180E02 /* StoryboardIdentifiers.h */,
 				707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */,
 				707B13DD169AF69300180E02 /* DeviceCheck.h */,
@@ -952,6 +961,15 @@
 				707B13C5169AF4FA00180E02 /* RSSFeed.mm */,
 			);
 			path = RSS;
+			sourceTree = "<group>";
+		};
+		709CE66516A59A3B006D524E /* Parsers */ = {
+			isa = PBXGroup;
+			children = (
+				709CE66616A59A3B006D524E /* CernMediaMARCParser.h */,
+				709CE66716A59A3B006D524E /* CernMediaMARCParser.mm */,
+			);
+			path = Parsers;
 			sourceTree = "<group>";
 		};
 		70BE54AE169AFC2900A3E1B6 /* PCH */ = {
@@ -1310,6 +1328,8 @@
 				70CC564C169F111E00292332 /* MWTapDetectingView.m in Sources */,
 				70CC564D169F111E00292332 /* MWZoomingScrollView.m in Sources */,
 				70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */,
+				709CE66816A59A3B006D524E /* CernMediaMARCParser.mm in Sources */,
+				709CE66B16A59B11006D524E /* PhotoDownloader.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
