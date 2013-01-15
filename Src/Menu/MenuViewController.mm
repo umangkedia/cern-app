@@ -233,7 +233,6 @@ using CernAPP::ItemStyle;
             MenuItemsGroup * const newGroup = [[MenuItemsGroup alloc] initWithTitle : (NSString *)itemDict[@"Title"]
                                                image : [self loadItemImage : itemDict] items : subMenu];
             [items addObject : newGroup];
-
          } else {
             MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary:itemDict];
             [items addObject : newItem];
@@ -472,25 +471,21 @@ using CernAPP::ItemStyle;
       totalHeight += [menuItem requiredHeight];
    }
 
+   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
+   
    CGRect frameToShow = CGRectMake(0.f, 0.f, scrollView.frame.size.width, CernAPP::groupMenuItemHeight);
 
    if (newOpen != nil) {
-      frameToShow = newOpen.containerView.frame;
-      if (!newOpen.parentGroup) {
-         frameToShow.origin.y -= CernAPP::groupMenuItemHeight;
-         frameToShow.size.height += CernAPP::groupMenuItemHeight;
-      } else {
-         frameToShow.origin.y -= CernAPP::childMenuItemHeight;
-         frameToShow.size.height += CernAPP::childMenuItemHeight;
-      }
+      if (!newOpen.parentGroup)
+         frameToShow = newOpen.containerView.frame;
+      else
+         frameToShow = newOpen.parentGroup.containerView.frame;
+      
+      frameToShow.origin.y -= CernAPP::groupMenuItemHeight;
+      frameToShow.size.height += CernAPP::groupMenuItemHeight;
    }
-   
-   [UIView animateWithDuration : 0.15f animations : ^ {
-      scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
-   } completion : ^ (BOOL) {
-      [scrollView scrollRectToVisible : frameToShow animated : YES];
-   }];
 
+   [scrollView scrollRectToVisible : frameToShow animated : YES];
    inAnimation = NO;
 }
 
@@ -523,13 +518,13 @@ using CernAPP::ItemStyle;
 
    inAnimation = YES;
 
-   [self layoutMenuResetOffset : NO resetContentSize : YES];//Set menu items before the animation.
+   [self layoutMenuResetOffset : NO resetContentSize : NO];//Set menu items before the animation.
 
    //Now, change the state of menu item.
    groupItem.collapsed = !groupItem.collapsed;
-   
+
    [UIView animateWithDuration : 0.25f animations : ^ {
-      [self layoutMenuResetOffset : NO resetContentSize : NO];//Layout menu again, but with different positions for groupItem (and it's children).
+      [self layoutMenuResetOffset : NO resetContentSize : YES];//Layout menu again, but with different positions for groupItem (and it's children).
       [self setAlphaAndVisibilityForGroup : groupItem];
    } completion : ^ (BOOL) {
       [self hideGroupViews];

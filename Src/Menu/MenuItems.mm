@@ -356,6 +356,11 @@ using CernAPP::ItemStyle;
    hint.origin.y += hint.size.height;
 
    hint.size.height = [self requiredHeight];
+   if (!parentGroup)
+      hint.size.height -= CernAPP::groupMenuItemHeight;
+   else
+      hint.size.height -= CernAPP::childMenuItemHeight;
+
    containerView.frame = hint;
 
    if (!collapsed) {
@@ -371,11 +376,10 @@ using CernAPP::ItemStyle;
    //Layout sub-views.
    hint.origin = CGPoint();
    
-   for (NSObject<MenuItemProtocol> *menuItem in items) {
-      const CGFloat add = [menuItem layoutItemViewWithHint : hint];
-      hint.origin.y += add;
-      totalHeight += add;
-   }
+   for (NSObject<MenuItemProtocol> *menuItem in items)
+      hint.origin.y += [menuItem layoutItemViewWithHint : hint];
+   
+   totalHeight += hint.size.height;
 
    if (collapsed) {
       if (parentGroup)
