@@ -87,6 +87,16 @@
 			<key>Category name</key>
 			<string>Separator</string>
 		</dict>
+		<dict>
+			<key>Image name</key>
+			<string>86-camera@2x.png</string>
+			<key>Url</key>
+			<string>http://cdsweb.cern.ch/search?ln=en&amp;cc=Photos&amp;p=&amp;f=&amp;action_search=Search&amp;c=Photos&amp;c=&amp;sf=&amp;so=d&amp;rm=&amp;rg=10&amp;sc=1&amp;of=xm</string>
+			<key>Category name</key>
+			<string>Photos</string>
+			<key>Name</key>
+			<string>Latest photos</string>
+		</dict>
 	</array>
 </dict>
 </plist>

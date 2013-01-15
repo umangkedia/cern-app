@@ -33,6 +33,7 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift);
 - (void) layoutText;
 
 @property (nonatomic) BOOL isSelected;
+@property (nonatomic) CernAPP::ItemStyle itemStyle;
 
 @end
 

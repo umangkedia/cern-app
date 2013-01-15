@@ -32,6 +32,19 @@
 
 @end
 
+@interface PhotoSetProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (UIImage *) categoryImage;
+
+- (void) loadControllerTo : (UIViewController *) controller;
+- (void) pushViewControllerInto : (UINavigationController *) navController;
+
+@end
+
 //
 //This is class to keep references and names for Live Events.
 //
@@ -46,7 +59,6 @@
 - (void) loadControllerTo : (UIViewController *) controller;
 - (void) pushViewControllerInto : (UINavigationController *) navController;
 - (void) pushEventDisplayInto : (UINavigationController *) controller selectedImage : (NSInteger) selected;
-
 
 @end
 

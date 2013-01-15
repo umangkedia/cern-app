@@ -160,29 +160,6 @@ using CernAPP::ItemStyle;
       return NO;
 
    [self readLIVEData : desc];
-   /*
-   objBase = desc[@"Experiments"];
-   assert(objBase != nil && "loadLIVESection:, 'Experiments' not found");
-   assert([objBase isKindOfClass : [NSArray class]] &&
-          "loadLIVESection:, 'Experiments' must have a NSArray type");
-   
-   NSArray * const experimentNames = (NSArray *)objBase;
-   
-   if (experimentNames.count) {
-      NSMutableArray * const items = [[NSMutableArray alloc] init];
-      for (id expBase in experimentNames) {
-         //This is just an array of strings.
-         assert([expBase isKindOfClass : [NSString class]] &&
-                "loadLIVESection:, experiment's name must have a NSString type");
-         
-         MenuItemLIVE * liveItem = [[MenuItemLIVE alloc] initWithExperiment : (NSString *)expBase];
-         [items addObject : liveItem];
-      }
-
-      [self addMenuGroup : @"LIVE" withImage : [self loadItemImage : desc] forItems : items];
-      [self setStateForGroup : menuItems.count - 1 from : desc];
-   }
-   */
 
    return YES;
 }
@@ -273,6 +250,25 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadPhotos : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadPhotos:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadPhotos:, 'Category name' either not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"Photos"])
+      return NO;
+
+   PhotoSetProvider * const provider = [[PhotoSetProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [menuItems addObject : menuItem];
+   [menuItem addMenuItemViewInto : scrollView controller : self];
+   menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+
+   return YES;
+}
+
+//________________________________________________________________________________________
 - (void) loadMenuContents
 {
    menuItems = [[NSMutableArray alloc] init];
@@ -292,7 +288,7 @@ using CernAPP::ItemStyle;
    assert(menuContents.count != 0 && "loadMenuContents, menu arrays is empty");
    
    for (id entryBase in menuContents) {
-      assert([entryBase isKindOfClass:[NSDictionary class]] &&
+      assert([entryBase isKindOfClass : [NSDictionary class]] &&
              "loadMenuContents, NSDictionary expected for menu item(s)");
       
       if ([self loadNewsSection : (NSDictionary *)entryBase])
@@ -307,7 +303,8 @@ using CernAPP::ItemStyle;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;
 
-      //Latest photos;
+      if ([self loadPhotos : (NSDictionary *)entryBase])
+         continue;
       //Latest videos;
       //Jobs;
       //Webcasts.

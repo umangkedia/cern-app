@@ -18,6 +18,7 @@
 //It's a C++, all these constants have
 //internal linkage without any 'static',
 //and no need for unnamed namespace.
+const CGFloat groupMenuLeftMargin = 4.f;
 const CGFloat groupMenuItemFontSize = 17.f;
 const CGFloat childMenuItemFontSize = 13.f;
 NSString * const groupMenuFontName = @"PTSans-Bold";
@@ -92,8 +93,6 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
 
 
 @implementation MenuItemView {
-   ItemStyle itemStyle;
-
    //Weak, we do not have to control life time of these objects.
    __weak NSObject<MenuItemProtocol> *menuItem;
    __weak MenuViewController *controller;
@@ -101,7 +100,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
    UILabel *itemLabel;
 }
 
-@synthesize isSelected;
+@synthesize isSelected, itemStyle;
 
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) anItem
@@ -173,9 +172,15 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       
          using CernAPP::childMenuItemTextIndent;
          
-         CGFloat x = childMenuItemTextIndent;
-         if (menuItem.menuGroup.parentGroup)
-            x += childMenuItemTextIndent;
+         CGFloat x = 0.f;
+         
+         if (itemStyle == CernAPP::ItemStyle::standalone) {
+            x = groupMenuLeftMargin;
+         } else {
+            x = childMenuItemTextIndent;
+            if (menuItem.menuGroup.parentGroup)
+               x += childMenuItemTextIndent;
+         }
          
          [menuItem.itemImage drawInRect:CGRectMake(x, self.frame.size.height / 2 - childMenuItemImageSize / 2,
                                                    childMenuItemImageSize * ratio, childMenuItemImageSize)];
@@ -192,10 +197,18 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
    using CernAPP::childMenuItemTextIndent;
 
    CGRect frame = self.frame;
-   frame.origin.x = childMenuItemTextIndent;
+   
+   if (itemStyle == ItemStyle::child)
+      frame.origin.x = childMenuItemTextIndent;
+   else
+      frame.origin.x = groupMenuItemTextIndent;
    
    frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
-   frame.size.width -= 2 * childMenuItemTextIndent;
+   
+   if (itemStyle == ItemStyle::child)
+      frame.size.width -= 2 * childMenuItemTextIndent;
+   else
+      frame.size.width -= 2 * groupMenuItemTextIndent;//why 2??? ;)
    
    if (menuItem.menuGroup.parentGroup) {
       frame.origin.x = 2 * childMenuItemTextIndent;
@@ -206,12 +219,11 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       const CGSize imageSize = menuItem.itemImage.size;
       const CGFloat addW = (imageSize.width / imageSize.height) * childMenuItemImageSize;
    
-      frame.origin.x += addW + 4.f;
-      frame.size.width -= addW + 4.f;
+      frame.origin.x += addW + groupMenuLeftMargin;
+      frame.size.width -= addW + groupMenuLeftMargin;
    }
    
    frame.size.height = childMenuItemTextHeight;
-
    itemLabel.frame = frame;
 }
 
@@ -325,7 +337,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       
       if (groupItem.itemImage) {
          const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
-         const CGRect imageRect = CGRectMake(4.f, frame.size.height / 2 - menuItemImageSize / 2,
+         const CGRect imageRect = CGRectMake(groupMenuLeftMargin, frame.size.height / 2 - menuItemImageSize / 2,
                                              menuItemImageSize, menuItemImageSize);
          [groupItem.itemImage drawInRect : imageRect];
       }

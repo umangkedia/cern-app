@@ -93,6 +93,62 @@
 
 @end
 
+/*
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (void) loadControllerTo : (UIViewController *) controller;
+- (void) pushViewControllerInto : (UINavigationController *) navController;
+*/
+
+@implementation PhotoSetProvider {
+   NSDictionary *info;
+   UIImage *categoryImage;
+}
+
+@synthesize categoryName;
+
+//________________________________________________________________________________________
+- (id) initWithDictionary : (NSDictionary *) anInfo
+{
+   assert(anInfo != nil && "initWithDictionary:, parameter 'anInfo' is nil");
+
+   if (self = [super init]) {
+      assert([anInfo[@"Name"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Name' is not found or has a wrong type");
+      categoryName = (NSString *)anInfo[@"Name"];
+      
+      if (anInfo[@"Image name"]) {
+         assert([anInfo[@"Image name"] isKindOfClass : [NSString class]] &&
+                "initWithDictionary:, 'Image name' is nil or has a wrong type");
+         categoryImage = [UIImage imageNamed : (NSString *)anInfo[@"Image name"]];
+      }
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) categoryImage
+{
+   return categoryImage;
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UIViewController *) controller
+{
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+}
+
+//________________________________________________________________________________________
+- (void) pushViewControllerInto : (UINavigationController *) navController
+{
+   assert(navController != nil && "pushViewControllerInto:, parameter 'navController' is nil");
+}
+
+@end
+
 @implementation LiveEventsProvider {
    NSMutableArray *liveEvents;
    CernAPP::LHCExperiment experiment;
