@@ -43,6 +43,7 @@
 
 - (UIImage *) categoryImage;
 
+- (void) loadControllerTo : (UIViewController *) controller;
 - (void) pushViewControllerInto : (UINavigationController *) navController;
 - (void) pushEventDisplayInto : (UINavigationController *) controller selectedImage : (NSInteger) selected;
 

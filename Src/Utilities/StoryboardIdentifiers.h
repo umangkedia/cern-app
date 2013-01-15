@@ -8,6 +8,8 @@ extern NSString * const ArticleDetailViewControllerID;
 extern NSString * const NewsTableViewControllerID;
 extern NSString * const LiveEventTableControllerID;
 extern NSString * const EventDisplayControllerID;
+extern NSString * const EventDisplayControllerNavID;
+extern NSString * const EventDisplayControllerFromTableID;
 extern NSString * const StaticInfoItemViewControllerID;
 extern NSString * const StaticInfoScrollViewControllerID;
 extern NSString * const StaticInfoNavigationControllerID;

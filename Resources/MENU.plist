@@ -80,14 +80,6 @@
 			<integer>1</integer>
 			<key>Image name</key>
 			<string>live_color.png</string>
-			<key>Experiments</key>
-			<array>
-				<string>CMS</string>
-				<string>ATLAS</string>
-				<string>ALICE</string>
-				<string>LHCb</string>
-				<string>LHC</string>
-			</array>
 			<key>Category name</key>
 			<string>LIVE</string>
 		</dict>

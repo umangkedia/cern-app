@@ -9,6 +9,7 @@
 #import <cassert>
 
 #import "LiveEventTableController.h"
+#import "ECSlidingViewController.h"
 #import "ApplicationErrors.h"
 #import "NewsTableViewCell.h"
 #import "ContentProviders.h"
@@ -450,5 +451,14 @@ using CernAPP::NetworkStatus;
    return nil;
 }
 
+
+#pragma mark - Sliding view.
+
+//________________________________________________________________________________________
+- (void) revealMenu : (id) sender
+{
+#pragma unused(sender)
+   [self.slidingViewController anchorTopViewTo : ECRight];
+}
 
 @end

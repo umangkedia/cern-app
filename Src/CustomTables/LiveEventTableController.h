@@ -29,4 +29,6 @@
 @property (nonatomic) __weak LiveEventsProvider *provider;
 @property (nonatomic) __weak UINavigationController *navController;
 
+- (IBAction) revealMenu : (id) sender;
+
 @end

@@ -4,7 +4,9 @@
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "MenuViewController.h"
+#import "ContentProviders.h"
 #import "MenuItemViews.h"
+#import "Experiments.h"
 #import "GUIHelpers.h"
 #import "MenuItems.h"
 
@@ -16,6 +18,8 @@ using CernAPP::ItemStyle;
    
    BOOL inAnimation;
    __weak MenuItemsGroup *newOpen;
+   
+   NSMutableArray *liveData;
 }
 
 //________________________________________________________________________________________
@@ -155,9 +159,11 @@ using CernAPP::ItemStyle;
    if (![catName isEqualToString : @"LIVE"])
       return NO;
 
+   [self readLIVEData : desc];
+   /*
    objBase = desc[@"Experiments"];
    assert(objBase != nil && "loadLIVESection:, 'Experiments' not found");
-   assert([objBase isKindOfClass:[NSArray class]] &&
+   assert([objBase isKindOfClass : [NSArray class]] &&
           "loadLIVESection:, 'Experiments' must have a NSArray type");
    
    NSArray * const experimentNames = (NSArray *)objBase;
@@ -176,6 +182,7 @@ using CernAPP::ItemStyle;
       [self addMenuGroup : @"LIVE" withImage : [self loadItemImage : desc] forItems : items];
       [self setStateForGroup : menuItems.count - 1 from : desc];
    }
+   */
 
    return YES;
 }
@@ -530,6 +537,130 @@ using CernAPP::ItemStyle;
       [self hideGroupViews];
       [self adjustMenu];
    }];
+}
+
+#pragma mark - Code to read CERNLive.plist.
+
+//This code is taken from CERN.app v.1. It somehow duplicates
+//loadNewsSection. This part can be TODO: refactored.
+
+//________________________________________________________________________________________
+- (bool) readLIVENewsFeeds : (NSArray *) feeds
+{
+   assert(feeds != nil && "readNewsFeeds:, parameter 'feeds' is nil");
+
+   bool result = false;
+   
+   for (id info in feeds) {
+      assert([info isKindOfClass : [NSDictionary class]] && "readNewsFeed, feed info must be a dictionary");
+      NSDictionary * const feedInfo = (NSDictionary *)info;
+      FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
+      [liveData addObject : provider];
+      result = true;
+   }
+   
+   return result;
+}
+
+//________________________________________________________________________________________
+- (bool) readLIVENews : (NSDictionary *) dataEntry
+{
+   assert(dataEntry != nil && "readNews:, parameter 'dataEntry' is nil");
+
+   id base = [dataEntry objectForKey : @"Category name"];
+   assert(base != nil && [base isKindOfClass : [NSString class]] && "readNews:, string key 'Category name' was not found");
+
+   bool result = false;
+   
+   NSString *catName = (NSString *)base;
+   if ([catName isEqualToString : @"News"]) {
+      if ((base = [dataEntry objectForKey : @"Feeds"])) {
+         assert([base isKindOfClass : [NSArray class]] && "readNews:, object for 'Feeds' key must be of an array type");
+         result = [self readLIVENewsFeeds : (NSArray *)base];
+      }
+
+      if ((base = [dataEntry objectForKey : @"Tweets"])) {
+         assert([base isKindOfClass : [NSArray class]] && "readNews:, object for 'Tweets' key must be of an array type");
+         result |= [self readLIVENewsFeeds : (NSArray *)base];
+      }
+   }
+   
+   return result;
+}
+
+//________________________________________________________________________________________
+- (bool) readLIVEImages : (NSDictionary *) dataEntry experiment : (CernAPP::LHCExperiment) experiment
+{
+   assert(dataEntry != nil && "readLIVEImages, parameter 'dataEntry' is nil");
+
+   if (dataEntry[@"Images"]) {
+      assert([dataEntry[@"Images"] isKindOfClass : [NSArray class]] &&
+             "readLIVEImages:, object for 'Images' key must be of NSArray type");
+      NSArray *images = (NSArray *)dataEntry[@"Images"];
+      assert(images.count && "readLIVEImages, array of images is empty");
+      
+      LiveEventsProvider * const provider = [[LiveEventsProvider alloc] initWith : images forExperiment : experiment];
+      [liveData addObject : provider];
+      
+      if (dataEntry[@"Category name"]) {
+         assert([dataEntry[@"Category name"] isKindOfClass : [NSString class]] &&
+                "readLIVEImages, 'Category Name' for the data entry is not of NSString type");
+         provider.categoryName = (NSString *)dataEntry[@"Category name"];
+      }
+
+      return true;
+   }
+   
+   return false;
+}
+
+//________________________________________________________________________________________
+- (void) readLIVEData : (NSDictionary *) desc
+{
+   assert(desc != nil && "readLIVEData:, parameter 'desc' is nil");
+
+   NSString * const path = [[NSBundle mainBundle] pathForResource : @"CERNLive" ofType : @"plist"];
+   NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
+   assert(plistDict != nil && "readLIVEData:, no dictionary or CERNLive.plist found");
+
+   NSEnumerator * const keyEnumerator = [plistDict keyEnumerator];
+   NSMutableArray * const menuGroups = [[NSMutableArray alloc] init];
+
+   for (id key in keyEnumerator) {
+      NSString * const experimentName = (NSString *)key;
+      const CernAPP::LHCExperiment experiment = CernAPP::ExperimentNameToEnum(experimentName);
+
+      id base = plistDict[key];
+      assert([base isKindOfClass : [NSArray class]] && "readLIVEData:, entry for experiment must have NSArray type");
+
+      NSArray * const dataSource = (NSArray *)base;
+      
+      liveData = [[NSMutableArray alloc] init];
+      for (id arrayItem in dataSource) {
+         assert([arrayItem isKindOfClass : [NSDictionary class]] && "readLIVEData:, array of dictionaries expected");
+         NSDictionary * const data = (NSDictionary *)arrayItem;
+         
+         if ([self readLIVENews : data])
+            continue;
+         
+         if ([self readLIVEImages : data experiment : experiment])
+            continue;
+         
+         //someting else can be here.
+      }
+      
+      NSMutableArray * const liveMenuItems = [[NSMutableArray alloc] init];
+      for (NSObject<ContentProvider> *provider in liveData) {
+         MenuItem * newItem = [[MenuItem alloc] initWithContentProvider : provider];
+         [liveMenuItems addObject : newItem];
+      }
+      
+      MenuItemsGroup * newGroup = [[MenuItemsGroup alloc] initWithTitle : experimentName image : nil items : liveMenuItems];
+      [menuGroups addObject : newGroup];
+   }
+   
+   [self addMenuGroup : @"LIVE" withImage : [self loadItemImage : desc] forItems : menuGroups];
+   [self setStateForGroup : menuItems.count - 1 from : desc];
 }
 
 @end
