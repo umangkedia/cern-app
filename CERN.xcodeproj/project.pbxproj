@@ -152,7 +152,6 @@
 		707B137C169AEB6300180E02 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137A169AEB6300180E02 /* AppDelegate.mm */; };
 		707B137D169AEB6300180E02 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137B169AEB6300180E02 /* main.mm */; };
 		707B1380169AEC4700180E02 /* InitialSlidingViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137E169AEC4700180E02 /* InitialSlidingViewController.mm */; };
-		707B1387169AEC9000180E02 /* LiveTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B1385169AEC9000180E02 /* LiveTableViewController.mm */; };
 		707B138D169AECE800180E02 /* MenuItems.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B138A169AECE800180E02 /* MenuItems.mm */; };
 		707B138E169AECE800180E02 /* MenuViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B138C169AECE800180E02 /* MenuViewController.mm */; };
 		707B1394169AEDA000180E02 /* ContentProviders.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B1391169AEDA000180E02 /* ContentProviders.mm */; };
@@ -391,8 +390,6 @@
 		707B137B169AEB6300180E02 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		707B137E169AEC4700180E02 /* InitialSlidingViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InitialSlidingViewController.mm; sourceTree = "<group>"; };
 		707B137F169AEC4700180E02 /* InitialSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitialSlidingViewController.h; sourceTree = "<group>"; };
-		707B1385169AEC9000180E02 /* LiveTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiveTableViewController.mm; sourceTree = "<group>"; };
-		707B1386169AEC9000180E02 /* LiveTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveTableViewController.h; sourceTree = "<group>"; };
 		707B1389169AECE800180E02 /* MenuItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItems.h; sourceTree = "<group>"; };
 		707B138A169AECE800180E02 /* MenuItems.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItems.mm; sourceTree = "<group>"; };
 		707B138B169AECE800180E02 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
@@ -839,8 +836,6 @@
 				707B13A5169AF1B200180E02 /* NewsTableViewCell.h */,
 				707B13A6169AF1B200180E02 /* NewsTableViewCell.mm */,
 				707B13A7169AF1B200180E02 /* PageControllerProtocol.h */,
-				707B1385169AEC9000180E02 /* LiveTableViewController.mm */,
-				707B1386169AEC9000180E02 /* LiveTableViewController.h */,
 			);
 			path = CustomTables;
 			sourceTree = "<group>";
@@ -1265,7 +1260,6 @@
 				707B137C169AEB6300180E02 /* AppDelegate.mm in Sources */,
 				707B137D169AEB6300180E02 /* main.mm in Sources */,
 				707B1380169AEC4700180E02 /* InitialSlidingViewController.mm in Sources */,
-				707B1387169AEC9000180E02 /* LiveTableViewController.mm in Sources */,
 				707B138D169AECE800180E02 /* MenuItems.mm in Sources */,
 				707B138E169AECE800180E02 /* MenuViewController.mm in Sources */,
 				707B1394169AEDA000180E02 /* ContentProviders.mm in Sources */,

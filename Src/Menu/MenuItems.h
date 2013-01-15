@@ -53,28 +53,6 @@
 @end
 
 //
-//Menu item to select an experiment in the "LIVE" section of a menu.
-//Loads nested table view controller.
-//
-@interface MenuItemLIVE : NSObject<MenuItemProtocol>
-
-- (id) initWithExperiment : (NSString *) name;
-
-- (NSString *) itemText;
-- (UIImage *) itemImage;
-
-- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
-- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
-- (CGFloat) requiredHeight;
-
-- (void) itemPressedIn : (UIViewController *) controller;
-
-@property (nonatomic) __weak MenuItemsGroup *menuGroup;
-@property (nonatomic) __weak MenuItemView *itemView;
-
-@end
-
-//
 //Different items in the "About CERN" sub-menu.
 //
 @interface MenuItemStaticInfo : NSObject<MenuItemProtocol>

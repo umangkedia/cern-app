@@ -3,7 +3,6 @@
 #import "StaticInfoScrollViewController.h"
 #import "MenuNavigationController.h"
 #import "NewsTableViewController.h"
-#import "LiveTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "MenuViewController.h"
 
@@ -56,16 +55,6 @@
    NewsTableViewController * const nt = (NewsTableViewController *)self.topViewController;
    nt.navigationItem.title = feedName;
    [nt.aggregator addFeedForURL : [NSURL URLWithString:feed]];
-}
-
-//________________________________________________________________________________________
-- (void) setExperiment : (CernAPP::LHCExperiment) experiment
-{
-   assert([self.topViewController isKindOfClass:[LiveTableViewController class]] &&
-          "setExperiment:, topViewController is either nil, or has a wrong type - not a LiveTableViewController");
-
-   LiveTableViewController * const lt = (LiveTableViewController *)self.topViewController;
-   lt.experiment = experiment;
 }
 
 //________________________________________________________________________________________

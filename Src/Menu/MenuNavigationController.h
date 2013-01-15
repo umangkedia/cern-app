@@ -11,7 +11,6 @@
 @interface MenuNavigationController : UINavigationController
 
 - (void) addFeed : (NSString *) feed withName : (NSString *) feedName;
-- (void) setExperiment : (CernAPP::LHCExperiment) experiment;
 - (void) setStaticInfo : (NSArray *) staticInfo withTitle : (NSString *) sectionName;
 
 @end
