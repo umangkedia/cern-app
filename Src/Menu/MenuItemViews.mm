@@ -271,15 +271,16 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
          using CernAPP::childTextColor;
          itemLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
       }
-
-      itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
-      itemLabel.layer.shadowOffset = menuTextShadowOffset;
-      itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
       
-      if (groupItem.parentGroup)//Nested group.
+      if (groupItem.parentGroup) //Nested group.
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose_child.png"]];
-      else
+      else {
+         itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+         itemLabel.layer.shadowOffset = menuTextShadowOffset;
+         itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
+
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
+      }
 
       discloseImageView.clipsToBounds = YES;
       discloseImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -357,11 +358,12 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       
       frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;
       frame.origin.y = frame.size.height / 2 - CernAPP::childMenuItemTextIndent / 2;
-      frame.size.height = childMenuItemTextHeight;
+      frame.size.height = childMenuItemTextHeight;      
    }
    
    itemLabel.frame = frame;
    discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width, self.frame.size.height / 2 - discloseTriangleSize / 2, discloseTriangleSize, discloseTriangleSize);
+
 }
 
 //________________________________________________________________________________________
