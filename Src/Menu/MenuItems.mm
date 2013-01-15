@@ -376,7 +376,7 @@ using CernAPP::ItemStyle;
    assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'parentView' is nil");
    assert(parentView != nil && "addMenuItemViewInto:controller:, parameter 'controller' is nil");
    
-   MenuItemView * const separatorView = [[MenuItemView alloc] initWithFrame:CGRect() item : nil style : ItemStyle::separator controller : controller];
+   MenuItemView * const separatorView = [[MenuItemView alloc] initWithFrame : CGRect() item : nil style : ItemStyle::separator controller : controller];
    itemView = separatorView;
    [parentView addSubview : separatorView];
 }
@@ -386,16 +386,16 @@ using CernAPP::ItemStyle;
 {
    assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
 
-   frameHint.size.height = CernAPP::childMenuItemHeight;
+   frameHint.size.height = CernAPP::separatorItemHeight;
    itemView.frame = frameHint;
 
-   return CernAPP::childMenuItemHeight;
+   return CernAPP::separatorItemHeight;
 }
 
 //________________________________________________________________________________________
 - (CGFloat) requiredHeight
 {
-   return CernAPP::childMenuItemHeight;
+   return CernAPP::separatorItemHeight;
 }
 
 //________________________________________________________________________________________
