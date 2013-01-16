@@ -15,6 +15,8 @@
 
 @implementation PhotosGridViewController {
    MBProgressHUD *noConnectionHUD;
+   
+   NSUInteger selectedSection;
 }
 
 @synthesize photoDownloader;
@@ -48,15 +50,14 @@
    [super didReceiveMemoryWarning];
 
    if (!self.photoDownloader.isDownloading) {
-      self.photoDownloader.urls = nil;
-      self.photoDownloader.thumbnails = nil;
+      //TODO:!!!
    }
 }
 
 //________________________________________________________________________________________
 - (void) refresh
 {
-   if (self.photoDownloader.urls.count == 0 && !self.photoDownloader.isDownloading) {
+   if (photoDownloader.numberOfPhotoSets == 0 && !photoDownloader.isDownloading) {
       [noConnectionHUD hide : YES];
       [MBProgressHUD showHUDAddedTo : self.view animated : YES];
       [self.photoDownloader parse];
@@ -70,8 +71,6 @@
       if (!photoDownloader.hasConnection)
          CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
       else {
-         self.photoDownloader.urls = nil;
-         self.photoDownloader.thumbnails = nil;
          [self refresh];
       }
    }
@@ -79,17 +78,18 @@
 
 #pragma mark - UICollectionViewDataSource
 
+//________________________________________________________________________________________
 - (NSInteger) numberOfSectionsInCollectionView : (UICollectionView *) collectionView
 {
 #pragma unused(collectionView)
-   return 1;//Actually, we can have several sections?
+   return [photoDownloader numberOfPhotoSets];//Actually, we can have several sections?
 }
 
 //________________________________________________________________________________________
 - (NSInteger) collectionView : (UICollectionView *) collectionView numberOfItemsInSection : (NSInteger) section
 {
 #pragma unused(collectionView, section)
-   return photoDownloader.urls.count;
+   return [photoDownloader numberOfImagesInSet : section];
 }
 
 //________________________________________________________________________________________
@@ -106,7 +106,7 @@
       cell = [[PhotoGridViewCell alloc] initWithFrame : CGRect()];
    
    PhotoGridViewCell * const photoCell = (PhotoGridViewCell *)cell;
-   photoCell.imageView.image = [photoDownloader.thumbnails objectForKey : [NSNumber numberWithInt : indexPath.row]];
+   photoCell.imageView.image = [photoDownloader tuhmbnailForIndex : indexPath.row fromPhotoset : indexPath.section];
    
    return photoCell;
 }
@@ -118,7 +118,11 @@
 {
    assert(collectionView != nil && "collectionView:didSelectItemAtIndexPath:, parameter 'collectionView' is nil");
    assert(indexPath != nil && "collectionView:didSelectItemAtIndexPath:, parameter 'indexPath' is nil");
-   
+   assert(indexPath.section >= 0 && "collectionView:didSelectItemAtIndexPath:, indexPath.section is negative");
+
+   selectedSection = indexPath.section;
+   assert(selectedSection < photoDownloader.numberOfPhotoSets && "collectionView:didSelectItemAtIndexPath:, section is out of bounds");
+
    MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate : self];
    browser.displayActionButton = YES;
    [browser setInitialPageIndex : indexPath.row];
@@ -134,16 +138,37 @@
 //________________________________________________________________________________________
 - (void) photoDownloaderDidFinish : (PhotoDownloader *) photoDownloader
 {
-   [MBProgressHUD hideHUDForView:self.view animated:YES];
+   [MBProgressHUD hideHUDForView : self.view animated : YES];
    [self.collectionView reloadData];
 }
 
 //________________________________________________________________________________________
-- (void) photoDownloader : (PhotoDownloader *) photoDownloader didDownloadThumbnailForIndex : (int) index
+- (void) photoDownloader : (PhotoDownloader *) photoDownloader didDownloadThumbnail : (NSUInteger) imageIndex forSet : (NSUInteger) setIndex
 {
-   const NSUInteger path[2] = {0, NSUInteger(index)};
-   NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
+   NSIndexPath * const indexPath = [NSIndexPath indexPathForRow : imageIndex inSection : setIndex];
+
    [self.collectionView reloadItemsAtIndexPaths : @[indexPath]];
+}
+
+
+//________________________________________________________________________________________
+- (void) photoDownloader : (PhotoDownloader *) photoDownloader didFailWithError : (NSError *) error
+{
+#pragma unused(error)
+   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+   noConnectionHUD.delegate = self;
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"Load error";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
+}
+
+//________________________________________________________________________________________
+- (void) photoDownloaderDidFinishLoadingThumbnails : (PhotoDownloader *) aPhotoDownloader
+{
+#pragma unused(aPhotoDownloader)
+   [photoDownloader compactData];
+   [self.collectionView reloadData];
 }
 
 #pragma mark - MWPhotoBrowserDelegate methods
@@ -151,32 +176,23 @@
 //________________________________________________________________________________________
 - (NSUInteger) numberOfPhotosInPhotoBrowser : (MWPhotoBrowser *) photoBrowser
 {
-   return self.photoDownloader.urls.count;
+#pragma unused(photoBrowser)
+
+   assert(selectedSection < photoDownloader.numberOfPhotoSets &&
+          "numberOfPhotosInPhotoBrowser:, selectedSection is out of bounds");
+
+   return [photoDownloader numberOfImagesInSet : selectedSection];
 }
 
 //________________________________________________________________________________________
 - (MWPhoto *) photoBrowser : (MWPhotoBrowser *) photoBrowser photoAtIndex : (NSUInteger) index
 {
-   if (index < self.photoDownloader.urls.count) {
-      NSString * const photoSize = @"jpgA5";
-      NSURL *url = [[self.photoDownloader.urls objectAtIndex:index] objectForKey:photoSize];
-      return [MWPhoto photoWithURL:url];
-   }
+#pragma unused(photoBrowser)
+   assert(selectedSection < photoDownloader.numberOfPhotoSets &&
+          "photoBrowser:photoAtIndex:, selectedSection is out of bounds");
 
-   return nil;
-}
-
-//________________________________________________________________________________________
-- (void) photoDownloader : (PhotoDownloader *) photoDownloader didFailWithError : (NSError *) error
-{
-#pragma unused(error)
-
-   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
-   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : YES];
-   noConnectionHUD.delegate = self;
-   noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"Load error";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;
+   NSURL * const url = [photoDownloader imageURLForIndex:index fromPhotoset:selectedSection forType : @"jpgA5"];
+   return [MWPhoto photoWithURL : url];
 }
 
 //________________________________________________________________________________________

@@ -16,23 +16,129 @@
 
 using CernAPP::NetworkStatus;
 
+
+//If I do not have a thumbnail (load error) - I do not show this item in a collection view.
+//TODO: better logic can be used for such errors.
+
+
+@interface PhotoSet : NSObject {
+   NSMutableArray *images;
+}
+
+@property (nonatomic) NSString *title;
+
+
+- (void) addImageData : (NSDictionary *) dict;
+- (UIImage *) getThumbnailImageForIndex : (NSUInteger) index;
+- (void) setThumbnailImage : (UIImage *) image withIndex : (NSUInteger) index;
+- (NSURL *) getImageURLWithIndex : (NSUInteger) index forType : (NSString *) type;
+
+- (NSUInteger) nImages;
+- (void) compactPhotoSet;
+
+@end
+
+///////
+
+@implementation PhotoSet
+
+@synthesize title;
+
+//________________________________________________________________________________________
+- (id) init
+{
+   if (self = [super init])
+      images = [[NSMutableArray alloc] init];
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (void) addImageData : (NSDictionary *) dict
+{
+   assert(dict != nil && "addImageRecord:, parameter 'dict' is nil");
+
+   //TODO: remove this check!
+   id copy = [dict mutableCopy];
+   assert([copy isKindOfClass : [NSDictionary class]] && "addImageData:, bad assumption about type :)");
+   
+   [images addObject : copy];
+}
+
+//________________________________________________________________________________________
+- (UIImage *) getThumbnailImageForIndex : (NSUInteger) index
+{
+   assert(index < images.count && "getThumbnailImageForIndex, parameter 'index' is out of bounds");
+   
+   NSDictionary * const imageData = (NSDictionary *)images[index];
+   return (UIImage *)imageData[@"Thumbnail"];
+}
+
+//________________________________________________________________________________________
+- (void) setThumbnailImage : (UIImage *) image withIndex : (NSUInteger) index
+{
+   assert(image != nil && "setThumbnailImage:withIndex:, parameter 'image' is nil");
+   assert(index < images.count && "setThumbnailImage:withIndex:, parameter 'index' is out of bounds");
+   
+   NSMutableDictionary * const imageDict = (NSMutableDictionary *)images[index];
+   [imageDict setObject : image forKey : @"Thumbnail"];
+}
+
+//________________________________________________________________________________________
+- (NSURL *) getImageURLWithIndex : (NSUInteger) index forType : (NSString *) type
+{
+   assert(index < images.count && "getImageURLWithIndex:forType:, parameter 'index' is out of bounds");
+   assert(type != nil && "getImageURLWithIndex:forType:, parameter 'type' is nil");
+   
+   NSDictionary * const imageData = images[index];
+   assert(imageData[type] != nil &&
+          "getImageURLWithIndex:forType:, no url for resource type found");
+   
+   return (NSURL *)imageData[type];
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) nImages
+{
+   return images.count;
+}
+
+//________________________________________________________________________________________
+- (void) compactPhotoSet
+{
+   if (images.count) {
+      //Wow!
+      NSPredicate * const predicate = [NSPredicate predicateWithBlock : ^ BOOL (id evaluatedObject, NSDictionary *bindings) {
+         assert([evaluatedObject isKindOfClass : [NSDictionary class]]);
+         return [(NSDictionary *)evaluatedObject objectForKey : @"Thumbnail"] != nil;
+      }];
+
+      [images filterUsingPredicate : predicate];
+   }
+}
+
+@end
+
 @implementation PhotoDownloader {
    CernMediaMARCParser *parser;
+
+   NSMutableArray *photoSets;
+   NSUInteger photoSetToLoad;
+   NSUInteger imageToLoad;
    NSMutableData *thumbnailData;
    NSURLConnection *currentConnection;
-   NSUInteger imageToLoad;
-   
+
    Reachability *internetReach;
 }
 
-@synthesize urls, thumbnails, delegate, isDownloading;
+@synthesize delegate, isDownloading;
 
 #pragma mark - Reachability.
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
-   #pragma unused(current)
+#pragma unused(current)
    
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       if (currentConnection) {
@@ -87,6 +193,7 @@ using CernAPP::NetworkStatus;
       [currentConnection cancel];
       currentConnection = nil;
       thumbnailData = nil;
+      photoSetToLoad = 0;
       imageToLoad = 0;
    }
    
@@ -104,17 +211,17 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) setUrl : (NSURL *) url;
+- (void) setUrl : (NSURL *) url
 {
+   assert(url != nil && "setUrl:, parameter 'url' is nil");
    parser.url = url;
 }
 
 //________________________________________________________________________________________
 - (void) parse
 {
-   self.isDownloading = YES;
-   urls = [[NSMutableArray alloc] init];
-   thumbnails = [NSMutableDictionary dictionary];
+   isDownloading = YES;
+   photoSets = [[NSMutableArray alloc] init];
    [parser parse];
 }
 
@@ -122,17 +229,16 @@ using CernAPP::NetworkStatus;
 - (void) downloadNextThumbnail
 {
    assert(isDownloading == YES && "downloadNextThumbnail, not downloading at the moment");
-   assert(imageToLoad < [urls count] && "downloadNextThumbnail, imageToLoad is out of bounds");
+   
+   assert(photoSetToLoad < photoSets.count && "downloadNextThumbnail, photoSetToLoad is out of bounds");
+   PhotoSet * const currentSet = (PhotoSet *)photoSets[photoSetToLoad];
+   
+   assert(imageToLoad < [currentSet nImages] && "downloadNextThumbnail, imageToLoad is out of bounds");
 
-   NSDictionary * const photoData = (NSDictionary *)[urls objectAtIndex : imageToLoad];
-   if (id urlBase = [photoData objectForKey : @"jpgIcon"]) {
-      assert([urlBase isKindOfClass:[NSURL class]] &&
-             "downloadNextThumbnail, photo data must be a dictionary");
-      
-      thumbnailData = [[NSMutableData alloc] init];
-      currentConnection = [NSURLConnection connectionWithRequest : [NSURLRequest requestWithURL:(NSURL *)urlBase] delegate : self];
-      //ok, poehali.
-   }
+   NSURL * const url = [currentSet getImageURLWithIndex : imageToLoad forType : @"jpgIcon"];
+   thumbnailData = [[NSMutableData alloc] init];
+   currentConnection = [NSURLConnection connectionWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
+   //ok, poehali.
 }
 
 #pragma mark CernMediaMARCParserDelegate methods
@@ -140,10 +246,12 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) parser : (CernMediaMARCParser *) aParser didParseRecord : (NSDictionary *) record
 {
-   //From Eamon:
+   assert(isDownloading == YES && "parser:didParseRecord:, not downloading at the moment");
+
+   //Eamon:
    // "we will assume that each array in the dictionary has the same number of photo urls".
    
-   //From me:
+   //Me:
    // No, this assumption does not work :( some images can be omitted - for example, 'jpgIcon'.
 
    assert(aParser != nil && "parser:didParseRecord:, parameter 'aParser' is null");
@@ -151,10 +259,10 @@ using CernAPP::NetworkStatus;
    
    //Now, we do some magic to fix bad assumptions.
 
-   NSDictionary * const resources = (NSDictionary *)[record objectForKey : @"resources"];
+   NSDictionary * const resources = (NSDictionary *)record[@"resources"];
    assert(resources != nil && "parser:didParseRecord:, no object for the key 'resources' was found");
    
-   const NSUInteger nPhotos = ((NSArray *)[resources objectForKey : [aParser.resourceTypes objectAtIndex : 0]]).count;
+   const NSUInteger nPhotos = ((NSArray *)resources[aParser.resourceTypes[0]]).count;
    for (NSUInteger i = 1, e = aParser.resourceTypes.count; i < e; ++i) {
       NSArray * const typedData = (NSArray *)[resources objectForKey : [aParser.resourceTypes objectAtIndex : i]];
       if (typedData.count != nPhotos) {
@@ -163,19 +271,18 @@ using CernAPP::NetworkStatus;
       }
    }
 
+   PhotoSet * const newSet = [[PhotoSet alloc] init];
+
+   NSArray * const a4Data = (NSArray *)resources[@"jpgA4"];
+   NSArray * const a5Data = (NSArray *)resources[@"jpgA5"];
+   NSArray * const iconData = (NSArray *)resources[@"jpgIcon"];
+
    for (NSUInteger i = 0; i < nPhotos; i++) {
-      NSMutableDictionary * const photo = [NSMutableDictionary dictionary];
-      NSArray * const resourceTypes = parser.resourceTypes;
-      
-      const NSUInteger numResourceTypes = resourceTypes.count;
-      for (NSUInteger j = 0; j < numResourceTypes; j++) {
-         NSString * const currentResourceType = [resourceTypes objectAtIndex : j];
-         NSURL * const url = [[resources objectForKey : currentResourceType] objectAtIndex : i];
-         [photo setObject : url forKey : currentResourceType];
-      }
-   
-      [self.urls addObject : photo];
+      NSDictionary * const newImageData = @{@"jpgA4" : a4Data[i], @"jpgA5" : a5Data[i], @"jpgIcon" : iconData[i]};
+      [newSet addImageData:newImageData];
    }
+   
+   [photoSets addObject : newSet];
 }
 
 //________________________________________________________________________________________
@@ -188,12 +295,13 @@ using CernAPP::NetworkStatus;
    if (delegate && [delegate respondsToSelector : @selector(photoDownloaderDidFinish:)])
       [delegate photoDownloaderDidFinish : self];
 
-   if (urls.count) {
+   if (photoSets.count) {
       if (!self.hasConnection) {
          //We lost a connection during parsing??? :)
          if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
             [self.delegate photoDownloader : self didFailWithError : nil];
       } else {
+         photoSetToLoad = 0;
          imageToLoad = 0;
          [self downloadNextThumbnail];
       }
@@ -203,7 +311,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) parser : (CernMediaMARCParser *) aParser didFailWithError : (NSError *) error
 {
-   #pragma unused(aParser)
+#pragma unused(aParser)
 
    if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloader:didFailWithError:)])
       [self.delegate photoDownloader : self didFailWithError : error];
@@ -224,13 +332,26 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) connection : (NSURLConnection *) connection didFailWithError : (NSError *) error
 {
-   assert(isDownloading == YES && "connection:didFailWithError:, not downloading at the moment");
-   
-   #pragma unused(error)
+#pragma unused(error)
 
-   if (imageToLoad + 1 == urls.count) {
+   assert(isDownloading == YES && "connection:didFailWithError:, not downloading at the moment");
+   assert(photoSetToLoad < photoSets.count && "connection:didFailWithError:, photoSetToLoad is out of bounds");
+
+   PhotoSet * const currentSet = photoSets[photoSetToLoad];
+
+   if (imageToLoad + 1 == [currentSet nImages]) {
       imageToLoad = 0;
-      self.isDownloading = NO;
+      
+      if (photoSetToLoad + 1 == photoSets.count) {
+         self.isDownloading = NO;
+         
+         if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloaderDidFinishLoadingThumbnails:)])
+            [self.delegate photoDownloaderDidFinishLoadingThumbnails : self];
+      } else {
+         //Still continue.
+         ++photoSetToLoad;
+         [self downloadNextThumbnail];
+      }
    } else {
       ++imageToLoad;
       [self downloadNextThumbnail];
@@ -240,29 +361,98 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) connectionDidFinishLoading : (NSURLConnection *) connection
 {
+#pragma unused(connection)
+
    assert(isDownloading == YES && "connectionDidFinishLoading:, not downloading at the moment");
    assert(thumbnailData != nil && "connectionDidFinishLoading:, thumbnailData is nil");
 
-   #pragma unused(connection)
+   assert(photoSetToLoad < photoSets.count && "connectionDidFinishLoading:, photoSetToLoad is out of bounds");
+   PhotoSet * const currentSet = photoSets[photoSetToLoad];
+   assert(imageToLoad < [currentSet nImages] && "connectionDidFinishLoading:, imageToLoad is out of bounds");
    
    if (thumbnailData.length) {
       if (UIImage *newImage = [UIImage imageWithData : thumbnailData]) {
-         [self.thumbnails setObject : newImage forKey : [NSNumber numberWithInt : imageToLoad]];
+         [currentSet setThumbnailImage:newImage withIndex:imageToLoad];
 
-         if (delegate && [delegate respondsToSelector : @selector(photoDownloader:didDownloadThumbnailForIndex:)])
-            [delegate photoDownloader : self didDownloadThumbnailForIndex : imageToLoad];
+         if (delegate && [delegate respondsToSelector : @selector(photoDownloader:didDownloadThumbnail:forSet:)])
+            [delegate photoDownloader : self didDownloadThumbnail : imageToLoad forSet : photoSetToLoad];
       }
    }
    
-   if (imageToLoad + 1 < urls.count) {
+   if (imageToLoad + 1 < [currentSet nImages]) {
       ++imageToLoad;
       [self downloadNextThumbnail];
    } else {
-      self.isDownloading = NO;
+      imageToLoad = 0;
       currentConnection = nil;
       thumbnailData = nil;
-      imageToLoad = 0;
+      
+      if (photoSetToLoad + 1 < photoSets.count) {
+         ++photoSetToLoad;
+         [self downloadNextThumbnail];
+      } else {
+         photoSetToLoad = 0;
+         self.isDownloading = NO;
+
+         if (self.delegate && [self.delegate respondsToSelector : @selector(photoDownloaderDidFinishLoadingThumbnails:)])
+            [self.delegate photoDownloaderDidFinishLoadingThumbnails : self];      
+      }
    }
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfPhotoSets
+{
+   return photoSets.count;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfImagesInSet : (NSUInteger) index
+{
+   assert(index < photoSets.count && "numberOfImageInSet:, parameter 'index' is out of bounds");
+   return [(PhotoSet *)photoSets[index] nImages];
+}
+
+//________________________________________________________________________________________
+- (NSString *) titleForSet : (NSUInteger) index
+{
+   return @"None at the moment";
+}
+
+//________________________________________________________________________________________
+- (UIImage *) tuhmbnailForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex
+{
+   assert(setIndex < photoSets.count && "thumbnailForIndex:fromPhotoset:, parameter 'setIndex' is out of bounds");
+   PhotoSet * const set = (PhotoSet *)photoSets[setIndex];
+   if (imageIndex >= [set nImages]) {
+      NSLog(@"FUCKUP!!! index %lu, N %lu", imageIndex, [set nImages]);
+   }
+   assert(imageIndex < [set nImages] && "thumbnailForIndex:fromPhotoset:, parameter 'imageIndex' is out of bounds");
+   
+   return [set getThumbnailImageForIndex : imageIndex];
+}
+
+//________________________________________________________________________________________
+- (NSURL *) imageURLForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex forType : (NSString *) imageType
+{
+   assert(setIndex < photoSets.count && "imageURLForIndex:fromPhotoset:forType:, parameter 'setIndex' is out of bounds");
+   PhotoSet * const set = (PhotoSet *)photoSets[setIndex];
+   assert(imageIndex < [set nImages] && "imageURLForIndex:fromPhotoset:forType:, parameter 'imageIndex' is out of bounds");
+   
+   return [set getImageURLWithIndex : imageIndex forType : imageType];
+}
+
+//________________________________________________________________________________________
+- (void) compactData
+{
+   for (PhotoSet * set in photoSets)
+      [set compactPhotoSet];
+   
+   NSPredicate * const predicate = [NSPredicate predicateWithBlock : ^ BOOL (id evaluatedObject, NSDictionary *bindings) {
+      return [(PhotoSet *)evaluatedObject nImages] != 0;
+   }];
+
+   [photoSets filterUsingPredicate : predicate];
 }
 
 @end
