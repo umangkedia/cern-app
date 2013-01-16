@@ -424,9 +424,6 @@ using CernAPP::NetworkStatus;
 {
    assert(setIndex < photoSets.count && "thumbnailForIndex:fromPhotoset:, parameter 'setIndex' is out of bounds");
    PhotoSet * const set = (PhotoSet *)photoSets[setIndex];
-   if (imageIndex >= [set nImages]) {
-      NSLog(@"FUCKUP!!! index %lu, N %lu", imageIndex, [set nImages]);
-   }
    assert(imageIndex < [set nImages] && "thumbnailForIndex:fromPhotoset:, parameter 'imageIndex' is out of bounds");
    
    return [set getThumbnailImageForIndex : imageIndex];
