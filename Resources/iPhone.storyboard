@@ -393,6 +393,7 @@
                     </collectionView>
                     <navigationItem key="navigationItem" id="kDS-NN-NBk">
                         <barButtonItem key="leftBarButtonItem" image="menu.png" id="ZjV-C7-2RT">
+                            <color key="tintColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="revealMenu:" destination="eju-X2-ebY" id="Clj-WY-mwh"/>
                             </connections>
@@ -635,6 +636,9 @@
         </class>
         <class className="UICollectionViewFlowLayout" superclassName="UICollectionViewLayout">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewFlowLayout.h"/>
+        </class>
+        <class className="UICollectionViewLayout" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewLayout.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
