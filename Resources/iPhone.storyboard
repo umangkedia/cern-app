@@ -397,6 +397,11 @@
                                 <action selector="revealMenu:" destination="eju-X2-ebY" id="Clj-WY-mwh"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="X0i-0g-Zhb">
+                            <connections>
+                                <action selector="reloadImages:" destination="eju-X2-ebY" id="ZNm-su-AIw"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Xw-7y-X4F" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -598,6 +603,7 @@
         <class className="PhotosGridViewController" superclassName="UICollectionViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PhotosGridViewController.h"/>
             <relationships>
+                <relationship kind="action" name="reloadImages:"/>
                 <relationship kind="action" name="revealMenu:"/>
             </relationships>
         </class>

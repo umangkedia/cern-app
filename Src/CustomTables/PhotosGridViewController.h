@@ -16,6 +16,8 @@
 @property (nonatomic, strong) PhotoDownloader *photoDownloader;
 
 - (void) refresh;
+
+- (IBAction) reloadImages : (id) sender;
 - (IBAction) revealMenu : (id) sender;
 
 @end

@@ -155,6 +155,7 @@
    
    PhotosGridViewController * const topController = (PhotosGridViewController *)navController.topViewController;
    topController.photoDownloader.url = [NSURL URLWithString : (NSString *)info[@"Url"]];
+   topController.navigationItem.title = categoryName;
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;

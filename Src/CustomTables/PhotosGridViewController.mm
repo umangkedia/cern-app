@@ -45,7 +45,8 @@
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
-   [self refresh];
+   if (!photoDownloader.numberOfPhotoSets)
+      [self refresh];
 }
 
 //________________________________________________________________________________________
@@ -61,7 +62,7 @@
 //________________________________________________________________________________________
 - (void) refresh
 {
-   if (photoDownloader.numberOfPhotoSets == 0 && !photoDownloader.isDownloading) {
+   if (!photoDownloader.isDownloading) {
       [noConnectionHUD hide : YES];
       [MBProgressHUD showHUDAddedTo : self.view animated : YES];
       [self.photoDownloader parse];
@@ -69,8 +70,10 @@
 }
 
 //________________________________________________________________________________________
-- (void) reloadImages
+- (IBAction) reloadImages : (id) sender
 {
+#pragma unused(sender)
+
    if (!self.photoDownloader.isDownloading) {
       if (!photoDownloader.hasConnection)
          CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
