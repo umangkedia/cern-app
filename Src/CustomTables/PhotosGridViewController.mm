@@ -6,12 +6,16 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "PhotosGridViewController.h"
 #import "ECSlidingViewController.h"
 #import "CernMediaMARCParser.h"
 #import "PhotoGridViewCell.h"
 #import "ApplicationErrors.h"
+#import "PhotoSetInfoView.h"
 #import "MBProgressHUD.h"
+#import "GUIHelpers.h"
 
 @implementation PhotosGridViewController {
    MBProgressHUD *noConnectionHUD;
@@ -109,6 +113,52 @@
    photoCell.imageView.image = [photoDownloader tuhmbnailForIndex : indexPath.row fromPhotoset : indexPath.section];
    
    return photoCell;
+}
+
+//________________________________________________________________________________________
+- (UICollectionReusableView *) collectionView : (UICollectionView *) collectionView
+                               viewForSupplementaryElementOfKind : (NSString *) kind atIndexPath : (NSIndexPath *) indexPath
+{
+   assert(collectionView != nil &&
+          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'collectionView' is nil");
+   assert(indexPath != nil &&
+          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'indexPath' is nil");
+   assert(indexPath.section < photoDownloader.numberOfPhotoSets &&
+         "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, indexPath.section is out of bounds");
+
+   UICollectionReusableView *view = nil;
+
+   if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+      //
+      view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
+                             withReuseIdentifier : @"SetInfoView" forIndexPath : indexPath];
+
+      assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
+             "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
+
+      PhotoSetInfoView * infoView = (PhotoSetInfoView *)view;
+      infoView.descriptionLabel.text = [photoDownloader titleForSet : indexPath.section];
+      
+      UIFont * const font = [UIFont fontWithName : CernAPP::childMenuFontName size : 12.f];
+      assert(font != nil && "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, font not found");
+      infoView.descriptionLabel.font = font;
+      
+      //infoView.layer.borderColor = [UIColor whiteColor].CGColor;
+      //infoView.layer.borderWidth = 1.f;
+   } else {
+      //Footer.
+      view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
+                             withReuseIdentifier : @"SetFooter" forIndexPath : indexPath];
+
+      assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
+             "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
+
+      //PhotoSetInfoView * infoView = (PhotoSetInfoView *)view;
+      //infoView.layer.borderWidth = 0.f;
+      //infoView.layer.borderColor = [UIColor clearColor].CGColor;
+   }
+   
+   return view;
 }
 
 #pragma mark - UICollectionViewDelegate

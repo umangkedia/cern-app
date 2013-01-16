@@ -655,7 +655,7 @@ using CernAPP::ItemStyle;
       if (experiment == CernAPP::LHCExperiment::ALICE) {
          //We do not have real live events for ALICE, we just have a set
          //of good looking images :)
-         NSDictionary * const photoSet = @{@"Name" : @"Live Events", @"Url" : @"https://cdsweb.cern.ch/record/1305399/export/xm?ln=en"};
+         NSDictionary * const photoSet = @{@"Name" : @"Events", @"Url" : @"https://cdsweb.cern.ch/record/1305399/export/xm?ln=en"};
          PhotoSetProvider * const edProvider = [[PhotoSetProvider alloc] initWithDictionary : photoSet];
          MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : edProvider];
          [liveMenuItems addObject : newItem];

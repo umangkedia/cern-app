@@ -282,6 +282,8 @@ using CernAPP::NetworkStatus;
       [newSet addImageData:newImageData];
    }
    
+   newSet.title = record[@"title"];
+   
    [photoSets addObject : newSet];
 }
 
@@ -416,7 +418,9 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (NSString *) titleForSet : (NSUInteger) index
 {
-   return @"None at the moment";
+   assert(index < photoSets.count && "titleForSet:, parameter 'index' is out of bounds");
+
+   return ((PhotoSet *)photoSets[index]).title;
 }
 
 //________________________________________________________________________________________
