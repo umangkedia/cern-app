@@ -39,89 +39,15 @@
 #import "PhotoGridViewCell.h"
 
 @implementation PhotoGridViewCell
-@synthesize index;//, imageView = _imageView;
 
-- (id) initWithFrame: (CGRect) frame reuseIdentifier: (NSString *) aReuseIdentifier
+@synthesize imageView, imageTitle;
+
+- (id) initWithCoder : (NSCoder *) aDecoder
 {
-    self = [super initWithFrame: frame reuseIdentifier: aReuseIdentifier];
-    if ( self == nil )
-        return ( nil );
-    self.contentView.clipsToBounds = YES;
-    self.imageView = [[UIImageView alloc] initWithFrame:frame];
-    self.imageView.contentMode = UIViewContentModeCenter;
- //   _downloadedThumbnailCache = [NSMutableDictionary dictionary];
-    [self.contentView addSubview:self.imageView];
-    
-    return self;
+   if (self = [super initWithCoder : aDecoder]) {
+   }
+
+   return self;
 }
 
-/*- (CALayer *) glowSelectionLayer
-{
-    return ( self.imageView.layer );
-}*/
-
-/*
-- (UIImage *) image
-{
-    return ( _imageView.image );
-}
-
-- (void) setImage: (UIImage *) anImage
-{
-    _imageView.image = anImage;
-    [self setNeedsLayout];
-}
-
-- (void) layoutSubviews
-{
-    [super layoutSubviews];
-    
-    CGSize imageSize = _imageView.image.size;
-    CGRect frame = _imageView.frame;
-    CGRect bounds = self.contentView.bounds;
-    
-    if ( (imageSize.width <= bounds.size.width) &&
-         (imageSize.height <= bounds.size.height) )
-    {
-        return;
-    }
-    
-    // scale it down to fit
-    CGFloat hRatio = bounds.size.width / imageSize.width;
-    CGFloat vRatio = bounds.size.height / imageSize.height;
-    CGFloat ratio = MAX(hRatio, vRatio);
-    
-    frame.size.width = floorf(imageSize.width * ratio);
-    frame.size.height = floorf(imageSize.height * ratio);
-    frame.origin.x = floorf((bounds.size.width - frame.size.width) * 0.5);
-    frame.origin.y = floorf((bounds.size.height - frame.size.height) * 0.5);
-    _imageView.frame = frame;
-}
-*/
-/*
-- (void)setImageFromURL:(NSURL *)url
-{
-    UIImage *cachedImage = [_downloadedThumbnailCache objectForKey:url];
-    if (cachedImage) {
-        self.image = cachedImage;
-    } else {
-        _thumbnailURL = url;
-        NSURLRequest *request = [NSURLRequest requestWithURL:url];
-        _asyncThumbnailData = [[NSMutableData alloc] init];
-        //[NSURLConnection connectionWithRequest:request delegate:self];
-    }
-}
-*/
-/*
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    [_asyncThumbnailData appendData:data];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    UIImage *thumbnail = [UIImage imageWithData:_asyncThumbnailData];
-    //[_downloadedThumbnailCache setObject:thumbnail forKey:_thumbnailURL];
-    self.image = thumbnail;
-}
-*/
 @end

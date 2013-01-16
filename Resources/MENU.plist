@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>Expanded</key>
-			<integer>1</integer>
+			<integer>0</integer>
 			<key>Image name</key>
 			<string>news_color.png</string>
 			<key>Feeds</key>
@@ -83,7 +83,7 @@
 		</dict>
 		<dict>
 			<key>Expanded</key>
-			<integer>1</integer>
+			<integer>0</integer>
 			<key>Image name</key>
 			<string>live_color.png</string>
 			<key>Category name</key>
