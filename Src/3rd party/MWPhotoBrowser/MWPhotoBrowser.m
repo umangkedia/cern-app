@@ -835,7 +835,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	// Update nav when page changes
-//	[self updateNavigation];
+	[self updateNavigation];
 }
 
 #pragma mark - Navigation

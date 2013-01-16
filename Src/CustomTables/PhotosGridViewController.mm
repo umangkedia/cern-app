@@ -178,6 +178,7 @@
 
    MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate : self];
    browser.displayActionButton = YES;
+   NSLog(@"initial page index is %d", indexPath.row);
    [browser setInitialPageIndex : indexPath.row];
 
    UINavigationController * const navController = [[UINavigationController alloc] initWithRootViewController : browser];
