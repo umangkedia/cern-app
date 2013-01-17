@@ -192,6 +192,7 @@
 		709CE6CA16A5C287006D524E /* 180-stickynote@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709CE6C916A5C287006D524E /* 180-stickynote@2x.png */; };
 		70AEA0FD169F204C004E05E4 /* MenuViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */; };
 		70B0F11016A825750037907B /* BulletinTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F10F16A825750037907B /* BulletinTableViewController.mm */; };
+		70B0F11416A846850037907B /* BulletinViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F11316A846850037907B /* BulletinViewCell.mm */; };
 		70B10A4316A0145C00CB8BC6 /* PREV_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4116A0145C00CB8BC6 /* PREV_about.png */; };
 		70B10A4416A0145C00CB8BC6 /* LHC_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4216A0145C00CB8BC6 /* LHC_about.png */; };
 		70B10A4816A04A4C00CB8BC6 /* ATLAS_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4616A04A4C00CB8BC6 /* ATLAS_about.png */; };
@@ -477,6 +478,8 @@
 		70AEA0FC169F204C004E05E4 /* MenuViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuViewCell.mm; sourceTree = "<group>"; };
 		70B0F10E16A825750037907B /* BulletinTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinTableViewController.h; sourceTree = "<group>"; };
 		70B0F10F16A825750037907B /* BulletinTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinTableViewController.mm; sourceTree = "<group>"; };
+		70B0F11216A846850037907B /* BulletinViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinViewCell.h; sourceTree = "<group>"; };
+		70B0F11316A846850037907B /* BulletinViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinViewCell.mm; sourceTree = "<group>"; };
 		70B10A4116A0145C00CB8BC6 /* PREV_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PREV_about.png; sourceTree = "<group>"; };
 		70B10A4216A0145C00CB8BC6 /* LHC_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LHC_about.png; sourceTree = "<group>"; };
 		70B10A4616A04A4C00CB8BC6 /* ATLAS_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ATLAS_about.png; sourceTree = "<group>"; };
@@ -877,6 +880,8 @@
 				70E06EAE16A800B400FE17D1 /* ConnectionController.h */,
 				70B0F10E16A825750037907B /* BulletinTableViewController.h */,
 				70B0F10F16A825750037907B /* BulletinTableViewController.mm */,
+				70B0F11216A846850037907B /* BulletinViewCell.h */,
+				70B0F11316A846850037907B /* BulletinViewCell.mm */,
 			);
 			path = CustomTables;
 			sourceTree = "<group>";
@@ -1368,6 +1373,7 @@
 				709CE67116A59C8E006D524E /* PhotoGridViewCell.mm in Sources */,
 				700FAD5D16A7068200FED28D /* PhotoSetInfoView.mm in Sources */,
 				70B0F11016A825750037907B /* BulletinTableViewController.mm in Sources */,
+				70B0F11416A846850037907B /* BulletinViewCell.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,16 +7,16 @@
 //
 
 #import "BulletinTableViewController.h"
-#import "NewsTableViewCell.h"
+#import "BulletinViewCell.h"
 
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
 }
 
 //________________________________________________________________________________________
-- (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
+- (id) initWithCoder : (NSCoder *) aDecoder
 {
-   if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
+   if (self = [super initWithCoder : aDecoder]) {
    }
 
    return self;
@@ -26,6 +26,7 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   self.tableView.backgroundColor = [UIColor darkGrayColor];
 	//Do any additional setup after loading the view.
 }
 
@@ -86,6 +87,12 @@
    return bulletins.count;
 }
 
+//________________________________________________________________________________________
+- (void) tableView : (UITableView *) tableView willDisplayCell : (UITableViewCell *)cell forRowAtIndexPath : (NSIndexPath *) indexPath
+{
+   cell.backgroundColor = [UIColor whiteColor];
+}
+
 
 //________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
@@ -93,24 +100,18 @@
    assert(tableView != nil && "tableView:cellForRowAtIndexPath:, parameter 'tableView' is nil");
    assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
 
-   //Find feed item first.
- /*  if (resetSeparatorColor) {
-      resetSeparatorColor = NO;
-      self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
-   }*/
-   
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < bulletins.count && "tableView:cellForRowAtIndexPath:, index is out of bounds");
 
    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : @"BulletinCell"];
-   assert(!cell || [cell isKindOfClass : [NewsTableViewCell class]] &&
+   assert(!cell || [cell isKindOfClass : [BulletinViewCell class]] &&
           "tableView:cellForRowAtIndexPath:, reusable cell has a wrong type");
 
    if (!cell)
-      cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+      cell = [[BulletinViewCell alloc] initWithFrame : CGRectMake(0, 0, self.tableView.frame.size.width, 100.f)];
 
-   NewsTableViewCell * const newsCell = (NewsTableViewCell *)cell;
-   [newsCell setCellData : [self titleForIssue : row] source : @"" image : nil imageOnTheRight : NO];
+   BulletinViewCell * const newsCell = (BulletinViewCell *)cell;
+   newsCell.cellLabel.text = [self titleForIssue : row];
 
    return cell;
 }
@@ -125,7 +126,7 @@
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < bulletins.count && "tableView:heightForRowAtIndexPath:, index is out of bounds");
 
-   return [NewsTableViewCell calculateCellHeightForText : [self titleForIssue : row] source : @"" image : nil imageOnTheRight : NO];
+   return 100.f;
 }
 
 #pragma mark - RSSAggregatorDelegate methods
@@ -138,8 +139,6 @@
    [spinner stopAnimating];
    [spinner setHidden : YES];
    [self.refreshControl endRefreshing];
-   
-   self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
 
    //
    //Split articles into groups using week number.
