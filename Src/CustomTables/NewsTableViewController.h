@@ -10,10 +10,13 @@
 #import <UIKit/UIKit.h>
 
 #import "PageControllerProtocol.h"
+#import "ConnectionController.h"
 #import "RSSAggregator.h"
 #import "MBProgressHUD.h"
 
-@interface NewsTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, RSSAggregatorDelegate, PageController>
+@interface NewsTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate,
+                                                           RSSAggregatorDelegate, PageController,
+                                                           ConnectionController>
 
 //From PageController protocol:
 - (void) reloadPage;

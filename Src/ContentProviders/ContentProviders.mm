@@ -7,8 +7,22 @@
 #import "NewsTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "ConnectionController.h"
 #import "ContentProviders.h"
 #import "KeyVal.h"
+
+namespace {
+
+//________________________________________________________________________________________
+void CancelConnections(UIViewController *controller)
+{
+   assert(controller != nil && "CancelConnections, parameter 'controller' is nil");
+
+   if ([controller respondsToSelector : @selector(cancelAnyConnections)])
+      [controller performSelector : @selector(cancelAnyConnections)];
+}
+
+}
 
 @implementation FeedProvider {
    NSString *feedName;
@@ -68,6 +82,9 @@
          (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
  
    [topController addFeed : feed withName : feedName];
+
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
@@ -156,6 +173,9 @@
    PhotosGridViewController * const topController = (PhotosGridViewController *)navController.topViewController;
    topController.photoDownloader.url = [NSURL URLWithString : (NSString *)info[@"Url"]];
    topController.navigationItem.title = categoryName;
+   
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
@@ -405,6 +425,9 @@
       eventViewController.navController = navController;
       eventViewController.title = experimentName;
    }
+   
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
    
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;

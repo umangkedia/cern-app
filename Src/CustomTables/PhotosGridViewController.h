@@ -6,12 +6,14 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import "ConnectionController.h"
 #import "PhotoDownloader.h"
 #import "MWPhotoBrowser.h"
 #import "MBProgressHUD.h"
 
 @interface PhotosGridViewController : UICollectionViewController <PhotoDownloaderDelegate, MBProgressHUDDelegate, MWPhotoBrowserDelegate,
-                                                                  UICollectionViewDataSource, UICollectionViewDelegate>
+                                                                  UICollectionViewDataSource, UICollectionViewDelegate,
+                                                                  ConnectionController>
 
 @property (nonatomic, strong) PhotoDownloader *photoDownloader;
 

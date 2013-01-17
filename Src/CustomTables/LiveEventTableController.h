@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 
 #import "PageControllerProtocol.h"
+#import "ConnectionController.h"
 
 @class LiveEventsProvider;
 
@@ -9,7 +10,8 @@
 //Images to be reused by EventDisplayViewController later (if they were loaded already,
 //if not - they have to be loaded by EventDisplayViewController.
 
-@interface LiveEventTableController : UITableViewController<NSURLConnectionDelegate, UITableViewDataSource, UITableViewDelegate, PageController>
+@interface LiveEventTableController : UITableViewController<NSURLConnectionDelegate, UITableViewDataSource, UITableViewDelegate,
+                                                            PageController, ConnectionController>
 
 //These are the keys to be used when setting table's data -
 //array of dictionaries.

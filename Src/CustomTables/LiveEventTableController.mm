@@ -322,8 +322,18 @@ using CernAPP::NetworkStatus;
 #pragma mark - NSURLConnection delegate
 
 //________________________________________________________________________________________
-- (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *)data
+- (void) connection : (NSURLConnection *) urlConnection didReceiveData : (NSData *)data
 {
+   assert(urlConnection != nil && "connection:didReceiveData:, parameter 'connection' is nil");
+   
+   if (urlConnection != connection) {//Connection was cancelled.
+      //This is not possible, but sometimes .. I have crashes and also search google about this.
+      NSLog(@"connection:didReceiveData: was called for a cancelled connection");
+      return;
+   }
+
+   assert(imageData != nil && "connection:didReceiveData:, imageData is nil");
+
    [imageData appendData : data];
 }
 
@@ -333,8 +343,15 @@ using CernAPP::NetworkStatus;
    assert(imageData != nil && "connectionDidFinishLoading:, imageData is nil");
    assert(tableData != nil && [tableData count] && "connectionDidFinishLoading:, tableData is either nil or empty");
    assert(tableEntryToLoad < [tableData count] && "connectionDidFinishLoading:, tableEntryToLoad is out of bounds");
-   
-   (void) urlConnection;
+
+   assert(urlConnection != nil && "connectionDidFinishLoading:, parameter 'urlConnection' is nil");
+
+   if (urlConnection != connection) {//Connection was cancelled.
+      //This is not possible, but sometimes .. I have crashes and also search google about this.
+      NSLog(@"connectionDidFinishLoading: was called for a cancelled connection");
+      return;
+   }
+
 
    //Woo-hoo! We've got an image!(??)
    UIImage *newImage = nil;
@@ -409,11 +426,18 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
 {
+#pragma unused(error)
+
+   assert(urlConnection != nil && "connection:didFailWithError:, parameter 'urlConnection' is nil");
+   
+   if (urlConnection != connection) {//Connection was cancelled.
+      //This is not possible, but sometimes .. I have crashes and also search google about this.
+      NSLog(@"connection:didFailWithError: was called for a cancelled connection");
+      return;
+   }
+
    assert(tableData != nil && [tableData count] && "connection:didFailWithError:, tableData is either nil or empty");
    assert(tableEntryToLoad < [tableData count] && "connection:didFailWithError:, imageToLoad index is out of bounds");
-
-   (void) urlConnection;
-   (void) error;
    
    ++tableEntryToLoad;
    
@@ -460,5 +484,16 @@ using CernAPP::NetworkStatus;
 #pragma unused(sender)
    [self.slidingViewController anchorTopViewTo : ECRight];
 }
+
+#pragma mark - Connection controller.
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   if (connection) {
+      [connection cancel];
+      connection = nil;
+   }
+}
+
 
 @end

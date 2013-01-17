@@ -264,4 +264,11 @@
    [self.slidingViewController anchorTopViewTo : ECRight];
 }
 
+#pragma mark - Connection controller.
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   [photoDownloader stop];
+}
+
 @end

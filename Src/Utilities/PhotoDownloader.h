@@ -49,7 +49,6 @@
 - (NSURL *) imageURLForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex forType : (NSString *) imageType;
 - (void) compactData;
 
-
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic) __weak id<PhotoDownloaderDelegate> delegate;
 @property (nonatomic, assign) BOOL isDownloading;

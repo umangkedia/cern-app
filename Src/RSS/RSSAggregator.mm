@@ -299,6 +299,11 @@
 //________________________________________________________________________________________
 - (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *)data
 {
+   assert(connection != nil && "connection:didReceiveData:, parameter 'connection' is nil");
+
+   if (currentConnection != connection)//Aggregator was stopped.
+      return;
+
    assert(data != nil && "connection:didReceiveData:, parameter 'data' is nil");
    assert(loadingImages == YES && "connection:didReceiveData:, can be called only while loading images");
    assert(imageData != nil && "connection:didReceiveData:, imageData is nil");
@@ -309,6 +314,11 @@
 //________________________________________________________________________________________
 - (void) connectionDidFinishLoading : (NSURLConnection *) urlConnection
 {
+   assert(urlConnection != nil && "connectionDidFinitshLoading:, parameter 'urlConnection' is nil");
+   
+   if (currentConnection != urlConnection)//Aggregator was stopped.
+      return;
+
    assert(loadingImages == YES &&
           "connectionDidFinishLoading:, can be called only while loading images");
    assert(imageData != nil &&
@@ -340,6 +350,11 @@
 //________________________________________________________________________________________
 - (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
 {
+   assert(urlConnection != nil && "connection:didFailWithError:, parameter 'urlConnection' is nil");
+   
+   if (urlConnection != currentConnection)//Aggregator was stopped already.
+      return;
+
    assert(loadingImages == YES &&
           "connection:didFailWithError:, can be called only while loading images");
    assert(imageForArticle < [allArticles count] &&

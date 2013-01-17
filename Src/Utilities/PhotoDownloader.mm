@@ -322,8 +322,14 @@ using CernAPP::NetworkStatus;
 #pragma mark - NSURLConnectionDelegate
 
 //________________________________________________________________________________________
-- (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *) data
+- (void) connection : (NSURLConnection *) urlConnection didReceiveData : (NSData *) data
 {
+   assert(urlConnection != nil && "connection:didReceiveData:, parameter 'urlConnection' is nil");
+   if (currentConnection != urlConnection) {
+      NSLog(@"connection:didReceiveData:, called from a cancelled connection");
+      return;
+   }
+
    assert(isDownloading == YES && "connection:didReceiveData:, not downloading at the moment");
    assert(thumbnailData != nil && "connection:didReceiveData:, thumbnailData is nil");
    assert(data != nil && "connection:didReceiveData:, parameter 'data' is nil");
@@ -332,9 +338,16 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) connection : (NSURLConnection *) connection didFailWithError : (NSError *) error
+- (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
 {
 #pragma unused(error)
+
+   assert(urlConnection != nil && "connection:didFailWithError:, parameter 'urlConnection' is nil");
+
+   if (currentConnection != urlConnection) {
+      NSLog(@"connection:didFailWithError:, called from a cancelled connection");
+      return;
+   }
 
    assert(isDownloading == YES && "connection:didFailWithError:, not downloading at the moment");
    assert(photoSetToLoad < photoSets.count && "connection:didFailWithError:, photoSetToLoad is out of bounds");
@@ -361,9 +374,13 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) connectionDidFinishLoading : (NSURLConnection *) connection
+- (void) connectionDidFinishLoading : (NSURLConnection *) urlConnection
 {
-#pragma unused(connection)
+   assert(urlConnection != nil && "connectionDidFinishLoading:, parameter 'urlConnection' is nil");
+   if (currentConnection != urlConnection) {
+      NSLog(@"connectionDidFinishLoading, called from a cancelled connection");
+      return;
+   }
 
    assert(isDownloading == YES && "connectionDidFinishLoading:, not downloading at the moment");
    assert(thumbnailData != nil && "connectionDidFinishLoading:, thumbnailData is nil");
