@@ -17,6 +17,11 @@
 @interface NewsTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate,
                                                            RSSAggregatorDelegate, PageController,
                                                            ConnectionController>
+{
+@protected
+   UIActivityIndicatorView *spinner;
+   MBProgressHUD *noConnectionHUD;
+}
 
 @property (nonatomic) BOOL refreshEnabled;
 

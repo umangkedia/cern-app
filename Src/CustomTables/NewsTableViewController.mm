@@ -45,11 +45,6 @@
    //it's a gray color.
    BOOL resetSeparatorColor;
    NSMutableArray *allArticles;
-   
-   //TODO: replace this with a standard indicator.
-   MBProgressHUD *noConnectionHUD;
-   
-   UIActivityIndicatorView *spinner;
 }
 
 @synthesize refreshEnabled, pageLoaded, aggregator;
@@ -139,17 +134,6 @@
 - (void) viewWillAppear : (BOOL) animated
 {
    [super viewWillAppear : animated];
-   
-//   if(self.navigationController.viewControllers.count == 1)//??? Kind of a hack.
-//      CernAPP::ResetMenuButton(self);
-}
-
-//________________________________________________________________________________________
-- (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) interfaceOrientation
-{
-   //This is iPhone ONLY view/controller and it works ONLY with
-   //a portrait orientation.
-   return NO;
 }
 
 //________________________________________________________________________________________
@@ -177,15 +161,6 @@
    aggregator = rssAggregator;
    aggregator.delegate = self;
    [self copyArticlesFromAggregator];
-}
-
-#pragma mark - Table view data source
-
-//________________________________________________________________________________________
-- (NSInteger) numberOfSectionsInTableView : (UITableView *) tableView
-{
-   //Table has only one section.
-   return 1;
 }
 
 //________________________________________________________________________________________
@@ -255,8 +230,17 @@
 #pragma mark - UITableViewDataSource.
 
 //________________________________________________________________________________________
+- (NSInteger) numberOfSectionsInTableView : (UITableView *) tableView
+{
+#pragma unused(tableView)
+   //Table has only one section.
+   return 1;
+}
+
+//________________________________________________________________________________________
 - (NSInteger) tableView : (UITableView *) tableView numberOfRowsInSection : (NSInteger) section
 {
+#pragma unused(tableView, section)
    // Return the number of rows in the section.
    return allArticles.count;
 }
@@ -264,6 +248,10 @@
 //________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
+#pragma unused(tableView)
+
+   assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
+
    //Find feed item first.
    if (resetSeparatorColor) {
       resetSeparatorColor = NO;
@@ -288,6 +276,10 @@
 //________________________________________________________________________________________
 - (CGFloat) tableView : (UITableView *) tableView heightForRowAtIndexPath : (NSIndexPath *) indexPath
 {
+#pragma unused(tableView)
+
+   assert(indexPath != nil && "tableView:heightForRowAtIndexPath:, parameter 'indexPath' is nil");
+
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < [allArticles count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
@@ -312,8 +304,10 @@
 }
 
 //________________________________________________________________________________________
-- (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSString *) error
+- (void) aggregator : (RSSAggregator *) anAggregator didFailWithError : (NSString *) error
 {
+#pragma unused(anAggregator)
+
    [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
    noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
 
@@ -359,6 +353,8 @@
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
+#pragma unused(tableView)
+
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
    if (self.navigationController && !self.aggregator.isLoadingData) {

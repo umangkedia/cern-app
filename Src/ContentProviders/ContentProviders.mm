@@ -526,6 +526,7 @@ void CancelConnections(UIViewController *controller)
 
 @implementation BulletinProvider {
    UIImage *menuImage;
+   NSString *url;
 }
 
 @synthesize categoryName;
@@ -543,6 +544,10 @@ void CancelConnections(UIViewController *controller)
                 "initWithDictionary:, value for the key 'Image' must be an NSString");
          menuImage = [UIImage imageNamed:(NSString *)info[@"Image"]];
       }
+      
+      assert([info[@"Url"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Url' not found or has a wrong type");
+      url = (NSString *)info[@"Url"];
    }
    
    return self;
@@ -569,7 +574,11 @@ void CancelConnections(UIViewController *controller)
           "loadControllerTo:, top view controller expected to be a BulletinTableViewController");
  
    navController.topViewController.navigationItem.title = @"Bulletin";
- 
+   
+   
+   BulletinTableViewController * const bc = (BulletinTableViewController *)navController.topViewController;
+   [bc.aggregator addFeedForURL : [NSURL URLWithString : url]];
+
    if (controller.slidingViewController.topViewController)
       CancelConnections(controller.slidingViewController.topViewController);
 
