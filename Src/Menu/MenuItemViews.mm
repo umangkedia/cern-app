@@ -21,7 +21,6 @@
 const CGFloat groupMenuLeftMargin = 4.f;
 const CGFloat groupMenuItemFontSize = 17.f;
 const CGFloat childMenuItemFontSize = 13.f;
-NSString * const groupMenuFontName = @"PTSans-Bold";
 const CGSize menuTextShadowOffset = CGSizeMake(2.f, 2.f);
 const CGFloat menuTextShadowAlpha = 0.5f;
 const CGFloat menuItemImageSize = 24.f;//must be square image.
@@ -40,7 +39,7 @@ const CGFloat groupTextColor[] = {0.615f, 0.635f, 0.69f};
 
 using CernAPP::ItemStyle;
 
-namespace CernAPP {
+namespace {
 
 //________________________________________________________________________________________
 void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
@@ -64,33 +63,6 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
 }
 
 }
-
-namespace {
-
-//________________________________________________________________________________________
-void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradientColor)
-{
-   //Simple gradient, two colors only.
-
-   assert(ctx != nullptr && "GradientFillRect, parameter 'ctx' is null");
-   assert(gradientColor != nullptr && "GradientFillRect, parameter 'gradientColor' is null");
-   
-   const CGPoint startPoint = CGPointZero;
-   const CGPoint endPoint = CGPointMake(0.f, rect.size.height);
-      
-   //Create a gradient.
-   CGColorSpaceRef baseSpace(CGColorSpaceCreateDeviceRGB());
-   const CGFloat positions[] = {0.f, 1.f};//Always fixed.
-
-   CGGradientRef gradient(CGGradientCreateWithColorComponents(baseSpace, gradientColor, positions, 2));//fixed, 2 colors only.
-   CGContextDrawLinearGradient(ctx, gradient, startPoint, endPoint, 0);
-      
-   CGGradientRelease(gradient);
-   CGColorSpaceRelease(baseSpace);
-}
-
-}
-
 
 @implementation MenuItemView {
    //Weak, we do not have to control life time of these objects.
@@ -153,18 +125,16 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
    
    //For a separator - simply fill a rectangle with a gradient.
    if (itemStyle == ItemStyle::separator) {
-      GradientFillRect(ctx, rect, groupMenuFillColor[0]);
+      CernAPP::GradientFillRect(ctx, rect, groupMenuFillColor[0]);
    } else {   
       if (!isSelected) {
          using CernAPP::childMenuFillColor;
          CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
          CGContextFillRect(ctx, rect);
          
-         CernAPP::DrawFrame(ctx, rect, 0.f);
-      } else {
-         const CGFloat colors[][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
-         GradientFillRect(ctx, rect, colors[0]);
-      }
+         DrawFrame(ctx, rect, 0.f);
+      } else
+         CernAPP::GradientFillRect(ctx, rect, CernAPP::menuItemHighlightColor[0]);
       
       if (menuItem.itemImage) {
          const CGSize imageSize = menuItem.itemImage.size;
@@ -264,7 +234,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       
       UIFont *font = nil;
       if (!groupItem.parentGroup)
-         font = [UIFont fontWithName : groupMenuFontName size : groupMenuItemFontSize];
+         font = [UIFont fontWithName : CernAPP::groupMenuFontName size : groupMenuItemFontSize];
       else
          font = [UIFont fontWithName : CernAPP::childMenuFontName size : childMenuItemFontSize];
 
@@ -315,7 +285,7 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
       using CernAPP::childMenuFillColor;
       CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
       CGContextFillRect(ctx, rect);
-      CernAPP::DrawFrame(ctx, rect, 0.f);
+      DrawFrame(ctx, rect, 0.f);
       
       if (groupItem.itemImage) {
          const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
@@ -325,10 +295,9 @@ void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradi
                                    childMenuItemImageSize * ratio, childMenuItemImageSize};
          
          [groupItem.itemImage drawInRect : imageRect];
-
       }
    } else {
-      GradientFillRect(ctx, rect, groupMenuFillColor[0]);
+      CernAPP::GradientFillRect(ctx, rect, groupMenuFillColor[0]);
       //Dark line at the bottom.
       CGContextSetRGBStrokeColor(ctx, frameBottomLineColor[0], frameBottomLineColor[1], frameBottomLineColor[2], 1.f);
       CGContextMoveToPoint(ctx, 0.f, rect.size.height);

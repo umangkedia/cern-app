@@ -13,3 +13,10 @@
 @property (nonatomic) IBOutlet UILabel *cellLabel;
 
 @end
+
+
+@interface BackgroundView : UIView
+
+@property (nonatomic) BOOL selectedView;
+
+@end

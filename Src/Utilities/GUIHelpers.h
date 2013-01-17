@@ -12,8 +12,13 @@ extern const CGFloat childMenuItemHeight;
 extern const CGFloat separatorItemHeight;
 extern const CGFloat childMenuItemTextIndent;
 extern NSString * const childMenuFontName;
+extern NSString * const groupMenuFontName;
 extern const CGFloat childTextColor[3];
 extern const CGFloat childMenuFillColor[3];
 extern const CGFloat menuBackgroundColor[4];
+
+extern const CGFloat menuItemHighlightColor[2][4];
+
+void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradientColor);
 
 }

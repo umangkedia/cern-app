@@ -10,6 +10,9 @@
 
 #import "BulletinTableViewController.h"
 #import "BulletinViewCell.h"
+#import "GUIHelpers.h"
+
+const CGFloat rowHeight = 100.f;
 
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
@@ -28,7 +31,6 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
-   self.tableView.backgroundColor = [UIColor darkGrayColor];
 	//Do any additional setup after loading the view.
 }
 
@@ -93,13 +95,34 @@
 - (void) tableView : (UITableView *) tableView willDisplayCell : (UITableViewCell *)cell forRowAtIndexPath : (NSIndexPath *) indexPath
 {
    cell.backgroundColor = [UIColor whiteColor];
-//   cell.layer
-   cell.layer.cornerRadius = 10;
-   cell.layer.borderWidth = 1.f;
-   cell.layer.borderColor = [UIColor darkGrayColor].CGColor;
 
+   cell.layer.cornerRadius = 10.f;
+   cell.layer.borderWidth = 1.f;
+   cell.layer.borderColor = [UIColor colorWithRed : 209.f / 255 green : 215.f / 255 blue : 227.f / 255 alpha : 1.f].CGColor;
+
+   cell.layer.shadowColor = [UIColor blackColor].CGColor;
+   cell.layer.shadowOffset = CGSizeMake(2.f, 2.f);
+   cell.layer.shadowOpacity = 0.5f;
+   
+   CGRect frame(cell.frame);
+   frame.origin = CGPoint();
+   cell.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect : frame cornerRadius : 10.f].CGPath;
+
+   cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
+   cell.backgroundView.backgroundColor = [UIColor clearColor];
+   
+   assert([cell isKindOfClass : [BulletinViewCell class]] &&
+          "tableView:willDisplayCell:forRowAtIndexPath:, cell has a wrong type");
+   
+   BulletinViewCell * const bc = (BulletinViewCell *)cell;
+   
+   CGRect labelFrame(bc.cellLabel.frame);
+   labelFrame.origin.y = frame.size.height / 2 - labelFrame.size.height / 2;
+   
+   bc.cellLabel.frame = labelFrame;
 }
 
+//- (void) ta
 
 //________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
@@ -115,10 +138,30 @@
           "tableView:cellForRowAtIndexPath:, reusable cell has a wrong type");
 
    if (!cell)
-      cell = [[BulletinViewCell alloc] initWithFrame : CGRectMake(0, 0, self.tableView.frame.size.width, 100.f)];
+      cell = [[BulletinViewCell alloc] initWithFrame : CGRectMake(0, 0, self.tableView.frame.size.width, rowHeight)];
+
+   if (![cell.selectedBackgroundView isKindOfClass : [BackgroundView class]]) {
+      BackgroundView * const sbv = [[BackgroundView alloc] initWithFrame:CGRect()];
+      sbv.selectedView = YES;
+      cell.selectedBackgroundView = sbv;
+      cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
+      
+  /*    BackgroundView * const bv = [[BackgroundView alloc] initWithFrame : CGRect()];
+      bv.selectedView = NO;
+      cell.backgroundView = bv;
+      bv.backgroundColor = [UIColor clearColor];*/
+   }
 
    BulletinViewCell * const newsCell = (BulletinViewCell *)cell;
    newsCell.cellLabel.text = [self titleForIssue : row];
+   
+   UIFont * const font = [UIFont fontWithName : CernAPP::groupMenuFontName size : 18.f];
+   assert(font != nil && "tableView:cellForRowAtIndexPath:, failed to create a font");
+   
+   cell.backgroundColor = [UIColor clearColor];
+   
+   newsCell.cellLabel.font = font;
+   newsCell.cellLabel.textColor = [UIColor colorWithRed : 87.f / 255 green : 107.f / 255 blue : 149.f/255 alpha : 1.f];
 
    return cell;
 }
@@ -133,7 +176,7 @@
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < bulletins.count && "tableView:heightForRowAtIndexPath:, index is out of bounds");
 
-   return 100.f;
+   return rowHeight;
 }
 
 #pragma mark - RSSAggregatorDelegate methods
@@ -245,9 +288,9 @@
       } else {
          CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
       }
-   }
+   }*/
    
-   [tableView deselectRowAtIndexPath : indexPath animated : NO];*/
+   [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 
 @end

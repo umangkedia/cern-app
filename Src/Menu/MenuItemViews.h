@@ -18,8 +18,6 @@ enum class ItemStyle {
    separator
 };
 
-void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift);
-
 }
 
 @class MenuViewController;
