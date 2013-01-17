@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 CERN. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "BulletinTableViewController.h"
 #import "BulletinViewCell.h"
 
@@ -91,6 +93,11 @@
 - (void) tableView : (UITableView *) tableView willDisplayCell : (UITableViewCell *)cell forRowAtIndexPath : (NSIndexPath *) indexPath
 {
    cell.backgroundColor = [UIColor whiteColor];
+//   cell.layer
+   cell.layer.cornerRadius = 10;
+   cell.layer.borderWidth = 1.f;
+   cell.layer.borderColor = [UIColor darkGrayColor].CGColor;
+
 }
 
 
