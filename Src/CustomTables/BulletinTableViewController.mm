@@ -94,22 +94,19 @@ const CGFloat rowHeight = 100.f;
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView willDisplayCell : (UITableViewCell *)cell forRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   cell.backgroundColor = [UIColor whiteColor];
+//   cell.backgroundColor = [UIColor whiteColor];
 
    cell.layer.cornerRadius = 10.f;
    cell.layer.borderWidth = 1.f;
    cell.layer.borderColor = [UIColor colorWithRed : 209.f / 255 green : 215.f / 255 blue : 227.f / 255 alpha : 1.f].CGColor;
 
    cell.layer.shadowColor = [UIColor blackColor].CGColor;
-   cell.layer.shadowOffset = CGSizeMake(2.f, 2.f);
+   cell.layer.shadowOffset = CGSizeMake(1.f, 1.f);
    cell.layer.shadowOpacity = 0.5f;
    
    CGRect frame(cell.frame);
    frame.origin = CGPoint();
    cell.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect : frame cornerRadius : 10.f].CGPath;
-
-   cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
-   cell.backgroundView.backgroundColor = [UIColor clearColor];
    
    assert([cell isKindOfClass : [BulletinViewCell class]] &&
           "tableView:willDisplayCell:forRowAtIndexPath:, cell has a wrong type");
@@ -146,10 +143,10 @@ const CGFloat rowHeight = 100.f;
       cell.selectedBackgroundView = sbv;
       cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
       
-  /*    BackgroundView * const bv = [[BackgroundView alloc] initWithFrame : CGRect()];
+      BackgroundView * const bv = [[BackgroundView alloc] initWithFrame : CGRect()];
       bv.selectedView = NO;
       cell.backgroundView = bv;
-      bv.backgroundColor = [UIColor clearColor];*/
+      bv.backgroundColor = [UIColor clearColor];
    }
 
    BulletinViewCell * const newsCell = (BulletinViewCell *)cell;
@@ -161,7 +158,6 @@ const CGFloat rowHeight = 100.f;
    cell.backgroundColor = [UIColor clearColor];
    
    newsCell.cellLabel.font = font;
-   newsCell.cellLabel.textColor = [UIColor colorWithRed : 87.f / 255 green : 107.f / 255 blue : 149.f/255 alpha : 1.f];
 
    return cell;
 }
