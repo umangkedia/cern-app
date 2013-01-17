@@ -8,7 +8,9 @@
 
 #import "BulletinTableViewController.h"
 
-@implementation BulletinTableViewController
+@implementation BulletinTableViewController {
+   NSMutableArray *bulletins;
+}
 
 //________________________________________________________________________________________
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
@@ -32,6 +34,38 @@
    [super didReceiveMemoryWarning];
    //Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Aux. functions.
+
+//________________________________________________________________________________________
+- (NSString *) titleForIssue : (NSUInteger) index
+{
+   assert(index < bulletins.count && "titleForIssue:, parameter 'index' is out of bounds");
+
+   NSArray * const articles = (NSArray *)bulletins[index];
+   assert(articles.count != 0 && "titleForIssue:, not articles found");
+
+   //Set the title for a bulletin - "Week " + date of the week beginning day for this article.
+   MWFeedItem * const latestArticle = (MWFeedItem *)articles[articles.count - 1];
+
+   //Formatter to create a string representation.
+   NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+   dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+
+   //Weekday of the article's date
+   NSDateComponents * const dateComponents = [[NSCalendar currentCalendar] components : NSWeekdayCalendarUnit fromDate : latestArticle.date];
+
+   NSString *issueDateString = nil;
+   if (dateComponents.weekday > 1) {
+      NSDate * const firstDay = [latestArticle.date dateByAddingTimeInterval : -(dateComponents.weekday - 1) * 24 * 60 * 60];
+      issueDateString = [dateFormatter stringFromDate:firstDay];
+   } else {
+      issueDateString = [dateFormatter stringFromDate : latestArticle.date];
+   }
+   
+   return [NSString stringWithFormat : @"Week %@", issueDateString];
+}
+
 
 #pragma mark - UITableViewDataSource.
 
@@ -94,18 +128,46 @@
 {
    assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
 
-//   [self copyArticlesFromAggregator];
-
    [spinner stopAnimating];
    [spinner setHidden : YES];
    [self.refreshControl endRefreshing];
 
    //
-   //Split articles into groups using week.
+   //Split articles into groups using week number.
    //
+   if (theAggregator.allArticles.count) {
+      bulletins = [[NSMutableArray alloc] init];
+   
+      NSArray * const articles = theAggregator.allArticles;//They are sorted by date (by an aggregator).
+   
+      NSMutableArray *weekData = [[NSMutableArray alloc] init];
+      MWFeedItem * const firstArticle = [articles objectAtIndex : 0];
+      [weekData addObject : firstArticle];
+   
+      NSCalendar * const calendar = [NSCalendar currentCalendar];
+      const NSUInteger requiredComponents = NSWeekCalendarUnit | NSYearCalendarUnit;
 
+      NSDateComponents *dateComponents = [calendar components : requiredComponents fromDate : firstArticle.date];
+      NSInteger currentWeek = dateComponents.week;
+      NSInteger currentYear = dateComponents.year;
+   
+      for (int i = 1; i < articles.count; i++) {
+         MWFeedItem * const article = (MWFeedItem *)articles[i];
+         dateComponents = [calendar components : requiredComponents fromDate : article.date];
 
-//   [self.tableView reloadData];
+         if (dateComponents.year != currentYear || dateComponents.week != currentWeek) {
+            [bulletins addObject : weekData];
+            currentWeek = dateComponents.week;
+            currentYear = dateComponents.year;
+            weekData = [[NSMutableArray alloc] init];
+         }
+         
+         [weekData addObject : article];
+      }
+      
+      [bulletins addObject : weekData];
+   }
+
    self.pageLoaded = YES;
 }
 
