@@ -7,6 +7,7 @@
 //
 
 #import "BulletinTableViewController.h"
+#import "NewsTableViewCell.h"
 
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
@@ -82,30 +83,34 @@
 {
 #pragma unused(tableView)
    // Return the number of rows in the section.
-   return 0;
+   return bulletins.count;
 }
 
-/*
+
 //________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
+   assert(tableView != nil && "tableView:cellForRowAtIndexPath:, parameter 'tableView' is nil");
+   assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
+
    //Find feed item first.
-   if (resetSeparatorColor) {
+ /*  if (resetSeparatorColor) {
       resetSeparatorColor = NO;
       self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
-   }
+   }*/
    
    const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [allArticles count]);
+   assert(row >= 0 && row < bulletins.count && "tableView:cellForRowAtIndexPath:, index is out of bounds");
 
-   MWFeedItem * const article = [allArticles objectAtIndex : row];
-   assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
+   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : @"BulletinCell"];
+   assert(!cell || [cell isKindOfClass : [NewsTableViewCell class]] &&
+          "tableView:cellForRowAtIndexPath:, reusable cell has a wrong type");
 
-   NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
    if (!cell)
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
-   [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
+   NewsTableViewCell * const newsCell = (NewsTableViewCell *)cell;
+   [newsCell setCellData : [self titleForIssue : row] source : @"" image : nil imageOnTheRight : NO];
 
    return cell;
 }
@@ -113,13 +118,15 @@
 //________________________________________________________________________________________
 - (CGFloat) tableView : (UITableView *) tableView heightForRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [allArticles count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
+#pragma unused(tableView)
 
-   MWFeedItem * const article = [allArticles objectAtIndex : row];
-   return [NewsTableViewCell calculateCellHeightForData : article imageOnTheRight : (indexPath.row % 4) == 3];
+   assert(indexPath != nil && "tableView:heightForRowAtIndexPath:, parameter 'indexPath' is nil");
+
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < bulletins.count && "tableView:heightForRowAtIndexPath:, index is out of bounds");
+
+   return [NewsTableViewCell calculateCellHeightForText : [self titleForIssue : row] source : @"" image : nil imageOnTheRight : NO];
 }
-*/
 
 #pragma mark - RSSAggregatorDelegate methods
 
@@ -131,6 +138,8 @@
    [spinner stopAnimating];
    [spinner setHidden : YES];
    [self.refreshControl endRefreshing];
+   
+   self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
 
    //
    //Split articles into groups using week number.
@@ -166,6 +175,8 @@
       }
       
       [bulletins addObject : weekData];
+      
+      [self.tableView reloadData];
    }
 
    self.pageLoaded = YES;
