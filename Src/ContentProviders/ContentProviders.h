@@ -75,3 +75,19 @@
 @property (nonatomic, readonly) CGRect bounds;
 
 @end
+
+//
+//CERN Bulletin.
+//
+@interface BulletinProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (UIImage *) categoryImage;
+
+- (void) loadControllerTo : (UIViewController *) controller;
+- (void) pushViewControllerInto : (UINavigationController *) navController;
+
+@end

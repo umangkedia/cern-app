@@ -18,6 +18,8 @@
                                                            RSSAggregatorDelegate, PageController,
                                                            ConnectionController>
 
+@property (nonatomic) BOOL refreshEnabled;
+
 //From PageController protocol:
 - (void) reloadPage;
 - (void) reloadPageFromRefreshControl;

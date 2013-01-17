@@ -1,5 +1,6 @@
 #import <cassert>
 
+#import "BulletinTableViewController.h"
 #import "EventDisplayViewController.h"
 #import "MenuNavigationController.h"
 #import "PhotosGridViewController.h"
@@ -504,6 +505,87 @@ void CancelConnections(UIViewController *controller)
    }
    
    return self;
+}
+
+@end
+
+/*
+@interface BulletinProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (UIImage *) categoryImage;
+
+- (void) loadControllerTo : (UIViewController *) controller;
+- (void) pushViewControllerInto : (UINavigationController *) navController;
+
+@end
+*/
+
+@implementation BulletinProvider {
+   UIImage *menuImage;
+}
+
+@synthesize categoryName;
+
+//________________________________________________________________________________________
+- (id) initWithDictionary : (NSDictionary *) info
+{
+   assert(info != nil && "initWithDictionary:, parameter 'info' is nil");
+
+   if (self = [super init]) {
+      categoryName = @"Bulletin";
+      
+      if (info[@"Image"]) {
+         assert([info[@"Image"] isKindOfClass : [NSString class]] &&
+                "initWithDictionary:, value for the key 'Image' must be an NSString");
+         menuImage = [UIImage imageNamed:(NSString *)info[@"Image"]];
+      }
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) categoryImage
+{
+   return menuImage;
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UIViewController *) controller
+{
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+
+   using namespace CernAPP;
+   
+   MenuNavigationController * const navController =
+         (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : BulletinTableViewControllerID];
+ 
+   //Set the Url here.
+   assert([navController.topViewController isKindOfClass : [BulletinTableViewController class]] &&
+          "loadControllerTo:, top view controller expected to be a BulletinTableViewController");
+ 
+   navController.topViewController.navigationItem.title = @"Bulletin";
+ 
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
+
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = navController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
+   }];
+
+}
+
+//________________________________________________________________________________________
+- (void) pushViewControllerInto : (UINavigationController *) navController
+{
+   assert(navController != nil && "pushViewControllerInto:, parameter 'navController' is nil");
 }
 
 @end

@@ -52,9 +52,24 @@
    UIActivityIndicatorView *spinner;
 }
 
-@synthesize pageLoaded, aggregator;
+@synthesize refreshEnabled, pageLoaded, aggregator;
 
 #pragma mark - Construction/destruction.
+
+//________________________________________________________________________________________
+- (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
+{
+   if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
+      pageLoaded = NO;
+      aggregator = [[RSSAggregator alloc] init];
+      aggregator.delegate = self;
+      
+      refreshEnabled = YES;
+   }
+
+   return self;
+}
+
 
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
@@ -63,6 +78,8 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
+      
+      refreshEnabled = YES;
    }
 
    return self;
@@ -75,6 +92,8 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
+      
+      refreshEnabled = YES;
    }
 
    return self;
@@ -101,8 +120,10 @@
    
    [spinner setHidden : YES];
    
-   self.refreshControl = [[UIRefreshControl alloc] init];
-   [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
+   if (refreshEnabled) {
+      self.refreshControl = [[UIRefreshControl alloc] init];
+      [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
+   }
 }
 
 //________________________________________________________________________________________

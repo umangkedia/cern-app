@@ -2,6 +2,7 @@
 
 namespace CernAPP {
 
+//TODO: does Apple promise anything about such object's lifetime at all (with ARC btw)???
 extern NSString * const TableNavigationControllerNewsID;
 extern NSString * const TableNavigationControllerLiveID;
 extern NSString * const ArticleDetailViewControllerID;
@@ -15,4 +16,6 @@ extern NSString * const StaticInfoScrollViewControllerID;
 extern NSString * const StaticInfoNavigationControllerID;
 extern NSString * const StaticInfoScrollViewControllerNoRootID;
 extern NSString * const PhotoGridControllerNavID;
+extern NSString * const BulletinTableViewControllerID;
+
 }

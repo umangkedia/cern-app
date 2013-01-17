@@ -269,6 +269,25 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadBulletin : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadBulletin:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadBulletin:, 'Category name' not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"Bulletin"])
+      return NO;
+   
+   BulletinProvider * const provider = [[BulletinProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [menuItems addObject : menuItem];
+   [menuItem addMenuItemViewInto : scrollView controller : self];
+   menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+   
+   return YES;
+}
+
+//________________________________________________________________________________________
 - (void) loadMenuContents
 {
    menuItems = [[NSMutableArray alloc] init];
@@ -304,6 +323,9 @@ using CernAPP::ItemStyle;
          continue;
 
       if ([self loadPhotos : (NSDictionary *)entryBase])
+         continue;
+      
+      if ([self loadBulletin : (NSDictionary *)entryBase])
          continue;
       //Latest videos;
       //Jobs;

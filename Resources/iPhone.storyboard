@@ -28,7 +28,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7Zx-U8-fIp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-722" y="-1619"/>
+            <point key="canvasLocation" x="-1070" y="-1591"/>
         </scene>
         <!--News Table View Controller - News-->
         <scene sceneID="wpa-mT-NfK">
@@ -61,7 +61,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zos-NZ-faG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-186" y="-2235"/>
+            <point key="canvasLocation" x="-606" y="-2251"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="Eg2-Wt-7fI">
@@ -78,7 +78,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eCe-p0-voL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-701" y="-2235"/>
+            <point key="canvasLocation" x="-1081" y="-2243"/>
         </scene>
         <!--Article Detail View Controller-->
         <scene sceneID="Rke-Ci-fMZ">
@@ -105,7 +105,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSo-NM-CIQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="256" y="-2235"/>
+            <point key="canvasLocation" x="-132" y="-2219"/>
         </scene>
         <!--Live Table View Controller - Root View Controller-->
         <scene sceneID="VMr-fg-6U0">
@@ -137,7 +137,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7G8-Ex-hPG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-379" y="-944"/>
+            <point key="canvasLocation" x="-575" y="-944"/>
         </scene>
         <!--News Table View Controller-->
         <scene sceneID="Otn-tR-aW1">
@@ -166,7 +166,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="95M-Mk-Dx9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-229" y="-1619"/>
+            <point key="canvasLocation" x="-601" y="-1591"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="2vi-ip-WSq">
@@ -183,7 +183,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rbc-hO-zSI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-861" y="-944"/>
+            <point key="canvasLocation" x="-1081" y="-944"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="U1H-Rc-XJC">
@@ -200,7 +200,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y9P-Fy-ba3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-861" y="-342"/>
+            <point key="canvasLocation" x="-1070" y="-322"/>
         </scene>
         <!--Static Info Scroll View Controller-->
         <scene sceneID="vwP-i7-DXE">
@@ -239,7 +239,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EqU-yb-XXz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-379" y="-342"/>
+            <point key="canvasLocation" x="-588" y="-322"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="h59-Rr-Nv9">
@@ -256,7 +256,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JvV-0w-xxb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-913" y="324"/>
+            <point key="canvasLocation" x="-1057" y="316"/>
         </scene>
         <!--Event Display View Controller-->
         <scene sceneID="fZD-3D-Rp7">
@@ -294,7 +294,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rOs-Rd-AS5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-467" y="322"/>
+            <point key="canvasLocation" x="-611" y="314"/>
         </scene>
         <!--Live Event Table Controller - Root View Controller-->
         <scene sceneID="x0V-lh-C4Z">
@@ -329,7 +329,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Syt-vz-o8c" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-342" y="994"/>
+            <point key="canvasLocation" x="-510" y="966"/>
         </scene>
         <!--Photos Grid View Controller-->
         <scene sceneID="CJx-uY-29B">
@@ -407,7 +407,56 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Xw-7y-X4F" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-300" y="1652"/>
+            <point key="canvasLocation" x="-512" y="1664"/>
+        </scene>
+        <!--Bulletin Table View Controller - Root View Controller-->
+        <scene sceneID="8aV-bc-V97">
+            <objects>
+                <tableViewController id="nlL-X2-qbW" customClass="BulletinTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="29H-5z-LPq">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="BulletinCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BulletinCell" id="Gi2-am-zNY" customClass="NewsTableViewCell">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </tableViewCell>
+                        </prototypes>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="jXF-9c-KgQ">
+                        <barButtonItem key="leftBarButtonItem" image="menu.png" id="dZc-uQ-pLT">
+                            <connections>
+                                <action selector="revealMenu:" destination="nlL-X2-qbW" id="a2J-IL-zMA"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5kp-Q1-IQE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-491" y="2249"/>
+        </scene>
+        <!--Menu Navigation Controller-->
+        <scene sceneID="QPu-eL-rHv">
+            <objects>
+                <navigationController restorationIdentifier="BulletinTableViewControllerID" storyboardIdentifier="BulletinTableViewControllerID" definesPresentationContext="YES" id="A6O-UZ-Iat" customClass="MenuNavigationController" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="TC2-1b-HgR">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="0.0" green="0.32549019610000002" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="nlL-X2-qbW" kind="relationship" relationship="rootViewController" id="nkR-yO-3hu"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PNS-kM-k7G" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1023" y="2249"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="IEF-6V-VUd">
@@ -424,7 +473,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GMj-To-Jeq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-820" y="1648"/>
+            <point key="canvasLocation" x="-1032" y="1660"/>
         </scene>
         <!--Event Display View Controller-->
         <scene sceneID="bMf-lI-XM8">
@@ -456,7 +505,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W5H-Qj-m8X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="141" y="996"/>
+            <point key="canvasLocation" x="-27" y="968"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="g9q-Si-fp6">
@@ -473,7 +522,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zLw-7R-kmY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-878" y="994"/>
+            <point key="canvasLocation" x="-1046" y="966"/>
         </scene>
         <!--Static Info Item View Controller-->
         <scene sceneID="2ch-LL-mzq">
@@ -519,7 +568,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SgE-fR-xik" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="71" y="-352"/>
+            <point key="canvasLocation" x="-138" y="-332"/>
         </scene>
         <!--Initial Sliding View Controller-->
         <scene sceneID="OC6-i3-9aC">
@@ -545,6 +594,9 @@
             <relationships>
                 <relationship kind="outlet" name="contentWebView" candidateClass="UIWebView"/>
             </relationships>
+        </class>
+        <class className="BulletinTableViewController" superclassName="NewsTableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/BulletinTableViewController.h"/>
         </class>
         <class className="ECSlidingViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ECSlidingViewController.h"/>
