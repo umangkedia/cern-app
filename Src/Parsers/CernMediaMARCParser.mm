@@ -168,7 +168,11 @@
             [currentUValue appendString : string];
             foundU = YES;
          } else if ([currentSubfieldCode isEqualToString : @"a"]) {
-            [currentRecord setObject : string forKey : @"title"];
+            if (NSString * const titleString = (NSString *)currentRecord[@"title"]) {
+               [currentRecord setObject : [titleString stringByAppendingString : string] forKey : @"title"];
+            } else {
+               [currentRecord setObject : string forKey : @"title"];
+            }
          } else if ([currentSubfieldCode isEqualToString : @"c"]) {
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             NSDate * date = [formatter dateFromStringOfUnknownFormat : string];
