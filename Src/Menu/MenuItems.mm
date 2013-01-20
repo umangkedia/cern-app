@@ -77,6 +77,16 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint
+{
+   assert(indent >= 0.f && "setIndent:imageHint:, parameter 'indent' is negative");
+   assert(itemView != nil && "setIndent:imageHint:, itemView is nil");
+
+   itemView.indent = indent;
+   itemView.imageHint = imageHint;
+}
+
+//________________________________________________________________________________________
 - (void) itemPressedIn : (UIViewController *) controller
 {
    assert(controller != nil && "itemPressedIn:, parameter 'controller' is nil");
@@ -235,6 +245,38 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint
+{
+   assert(indent >= 0.f && "setIndent:imageHint:, parameter 'indent' is negative");
+   assert(titleView != nil && "setIndent:imageHint:, titleView is nil");
+   
+   titleView.indent = indent;
+   titleView.imageHint = imageHint;
+   
+   CGFloat whRatio = 0.f;
+   for (NSObject<MenuItemProtocol> *menuItem in items) {
+      if (UIImage * const childImage = menuItem.itemImage) {
+         const CGSize sz = childImage.size;
+         assert(sz.width > 0.f && sz.height > 0.f &&
+                "setIndent:imageHeight, child item has an invalid image size");
+         if (sz.width / sz.height > whRatio)
+            whRatio = sz.width / sz.height;
+      }
+   }
+   
+   CGSize childImageHint = {};
+   if (whRatio) {
+      childImageHint.width = CernAPP::childMenuItemImageHeight * whRatio;
+      childImageHint.height = CernAPP::childMenuItemImageHeight;
+   }
+
+   indent += CernAPP::childMenuItemTextIndent;
+
+   for (NSObject<MenuItemProtocol> *menuItem in items)
+      [menuItem setIndent : indent imageHint : childImageHint];
+}
+
+//________________________________________________________________________________________
 - (NSString *) itemText
 {
    return title;
@@ -295,6 +337,13 @@ using CernAPP::ItemStyle;
 - (CGFloat) requiredHeight
 {
    return CernAPP::separatorItemHeight;
+}
+
+//________________________________________________________________________________________
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint
+{
+#pragma unused(indent, imageHint)
+   //Noop - separator has no image, no text.
 }
 
 //________________________________________________________________________________________

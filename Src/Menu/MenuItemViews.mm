@@ -30,6 +30,7 @@ const CGFloat childMenuItemTextHeight = 20.f;
 const CGFloat discloseTriangleSize = 14.f;
 const CGFloat groupMenuItemLeftMargin = 80.f;
 const CGFloat childMenuItemImageSize = 15.f;
+const CGFloat itemImageMargin = 2.f;
 
 const CGFloat groupMenuFillColor[][4] = {{0.247f, 0.29f, 0.36f, 1.f}, {0.242f, 0.258f, 0.321f, 1.f}};
 const CGFloat frameTopLineColor[] = {0.258f, 0.278f, 0.33f};
@@ -72,7 +73,7 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    UILabel *itemLabel;
 }
 
-@synthesize isSelected, itemStyle;
+@synthesize isSelected, itemStyle, indent, imageHint;
 
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) anItem
@@ -136,24 +137,19 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       } else
          CernAPP::GradientFillRect(ctx, rect, CernAPP::menuItemHighlightColor[0]);
       
-      if (menuItem.itemImage) {
-         const CGSize imageSize = menuItem.itemImage.size;
-         const CGFloat ratio = imageSize.width / imageSize.height;
-      
-         using CernAPP::childMenuItemTextIndent;
+      if (UIImage * const im = menuItem.itemImage) {
+         assert(imageHint.width > 0.f && imageHint.height > 0.f &&
+                "drawRect:, invalid image hint");
          
-         CGFloat x = 0.f;
-         
-         if (itemStyle == CernAPP::ItemStyle::standalone) {
-            x = groupMenuLeftMargin;
-         } else {
-            x = childMenuItemTextIndent;
-            if (menuItem.menuGroup.parentGroup)
-               x += childMenuItemTextIndent;
-         }
-         
-         [menuItem.itemImage drawInRect:CGRectMake(x, self.frame.size.height / 2 - childMenuItemImageSize / 2,
-                                                   childMenuItemImageSize * ratio, childMenuItemImageSize)];
+         const CGSize imageSize = im.size;
+         assert(imageSize.width > 0.f && imageSize.height > 0.f &&
+                "drawRect:, invalid image size");
+         const CGFloat whRatio = imageSize.width / imageSize.height;
+
+         CGRect imageRect = {0.f, self.frame.size.height / 2.f - imageHint.height / 2.f,
+                             imageHint.height * whRatio, imageHint.height};
+         imageRect.origin.x = indent + (imageHint.width + 2 * itemImageMargin) / 2.f - imageRect.size.width / 2.f;
+         [im drawInRect : imageRect];
       }
    }
 }
@@ -168,31 +164,19 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
 
    CGRect frame = self.frame;
    
-   if (itemStyle == ItemStyle::child)
-      frame.origin.x = childMenuItemTextIndent;
-   else
-      frame.origin.x = groupMenuItemTextIndent;
-   
-   frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
-   
-   if (itemStyle == ItemStyle::child)
-      frame.size.width -= 2 * childMenuItemTextIndent;
-   else
-      frame.size.width -= 2 * groupMenuItemTextIndent;//why 2??? ;)
-   
-   if (menuItem.menuGroup.parentGroup) {
-      frame.origin.x = 2 * childMenuItemTextIndent;
-      frame.size.width -= childMenuItemTextIndent * 2;
-   }
+   frame.origin.x = indent;
    
    if (menuItem.itemImage) {
-      const CGSize imageSize = menuItem.itemImage.size;
-      const CGFloat addW = (imageSize.width / imageSize.height) * childMenuItemImageSize;
-   
-      frame.origin.x += addW + groupMenuLeftMargin;
-      frame.size.width -= addW + groupMenuLeftMargin;
+      assert(imageHint.width > 0.f && imageHint.height > 0.f &&
+             "layoutText, image hint is invalid");
+      
+      frame.origin.x += imageHint.width + 2 * itemImageMargin;
+   } else {
+      frame.origin.x += 2 * itemImageMargin;
    }
    
+   frame.size.width -= frame.origin.x;
+   frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
    frame.size.height = childMenuItemTextHeight;
    itemLabel.frame = frame;
 }
@@ -213,6 +197,8 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    UILabel *itemLabel;
    UIImageView *discloseImageView;
 }
+
+@synthesize indent, imageHint;
 
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect)frame item : (MenuItemsGroup *) item controller : (MenuViewController *) controller
@@ -286,16 +272,6 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       CGContextSetRGBFillColor(ctx, childMenuFillColor[0], childMenuFillColor[1], childMenuFillColor[2], 1.f);
       CGContextFillRect(ctx, rect);
       DrawFrame(ctx, rect, 0.f);
-      
-      if (groupItem.itemImage) {
-         const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
-         const CGSize imageSize = groupItem.itemImage.size;
-         const CGFloat ratio = imageSize.width / imageSize.height;
-         const CGRect imageRect = {CernAPP::childMenuItemTextIndent, frame.size.height / 2 - childMenuItemImageSize / 2,
-                                   childMenuItemImageSize * ratio, childMenuItemImageSize};
-         
-         [groupItem.itemImage drawInRect : imageRect];
-      }
    } else {
       CernAPP::GradientFillRect(ctx, rect, groupMenuFillColor[0]);
       //Dark line at the bottom.
@@ -303,14 +279,20 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       CGContextMoveToPoint(ctx, 0.f, rect.size.height);
       CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
       CGContextStrokePath(ctx);
+   }
+
+   if (groupItem.itemImage) {
+      assert(imageHint.width > 0.f && imageHint.height &&
+             "drawRect:, invalid image size hint");
+      const CGSize imageSize = groupItem.itemImage.size;
+      assert(imageSize.width > 0.f && imageSize.height > 0.f &&
+             "drawRect:, invalid image size");
+      const CGFloat whRatio = imageSize.width / imageSize.height;
       
-      if (groupItem.itemImage) {
-         const CGRect frame = self.frame;//can it be different from the 'rect' parameter???
-         const CGRect imageRect = CGRectMake(groupMenuLeftMargin, frame.size.height / 2 - menuItemImageSize / 2,
-                                             menuItemImageSize, menuItemImageSize);
-         [groupItem.itemImage drawInRect : imageRect];
-      }
-      
+      CGRect imageRect = {0.f, self.frame.size.height / 2.f - imageHint.height / 2.f,
+                          imageHint.height * whRatio, imageHint.height};
+      imageRect.origin.x = indent + (imageHint.width + 2 * itemImageMargin) / 2.f - imageRect.size.width / 2.f;
+      [groupItem.itemImage drawInRect : imageRect];
    }
 }
 
@@ -319,32 +301,28 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
 {
    CGRect frame = self.frame;
    
-   if (!groupItem.parentGroup) {
-      if (groupItem.itemImage)
-         frame.origin.x = menuItemImageSize + 8.f;
-      else
-         frame.origin.x = groupMenuItemTextIndent;
-      
-      frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;//Not very smart, but ok.
-      frame.origin.y = frame.size.height / 2 - groupMenuItemTextHeight / 2;
-      frame.size.height = groupMenuItemTextHeight;
-   } else {
-      frame.origin.x = CernAPP::childMenuItemTextIndent;
-      
-      if (groupItem.itemImage) {
-         const CGSize imageSize = groupItem.itemImage.size;
-         const CGFloat addW = (imageSize.width / imageSize.height) * childMenuItemImageSize;
-         frame.origin.x += addW + 4.f;
-      }
-      
-      frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;
-      frame.origin.y = frame.size.height / 2 - CernAPP::childMenuItemTextIndent / 2;
-      frame.size.height = childMenuItemTextHeight;      
+   frame.origin.x = indent;
+
+   if (imageHint.width) {
+      frame.origin.x += 2 * itemImageMargin + imageHint.width;
+   } else {//No items at this level have images.
+      frame.origin.x += 2 * itemImageMargin;
    }
    
-   itemLabel.frame = frame;
-   discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width, self.frame.size.height / 2 - discloseTriangleSize / 2, discloseTriangleSize, discloseTriangleSize);
+   frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;
+   
+   if (!groupItem.parentGroup) {
+      frame.origin.y = frame.size.height / 2.f - groupMenuItemTextHeight / 2.f;
+      frame.size.height = groupMenuItemTextHeight;
+   } else {
+      frame.origin.y = frame.size.height / 2.f - childMenuItemTextHeight / 2.f;
+      frame.size.height = childMenuItemTextHeight;
+   }
 
+   itemLabel.frame = frame;
+   discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width,
+                                        self.frame.size.height / 2 - discloseTriangleSize / 2,
+                                        discloseTriangleSize, discloseTriangleSize);   
 }
 
 //________________________________________________________________________________________

@@ -22,6 +22,8 @@
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
 - (CGFloat) requiredHeight;
 
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
+
 @optional
 - (void) itemPressedIn : (UIViewController *) controller;
 
@@ -45,6 +47,8 @@
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
 - (CGFloat) requiredHeight;
 
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
+
 - (void) itemPressedIn : (UIViewController *) controller;
 
 @property (nonatomic) __weak MenuItemsGroup *menuGroup;
@@ -62,6 +66,8 @@
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
 - (CGFloat) requiredHeight;
+
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
@@ -91,6 +97,8 @@
 - (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
 - (CGFloat) requiredHeight;
+
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;

@@ -16,6 +16,8 @@ extern NSString * const groupMenuFontName;
 extern const CGFloat childTextColor[3];
 extern const CGFloat childMenuFillColor[3];
 extern const CGFloat menuBackgroundColor[4];
+extern const CGFloat groupMenuItemImageHeight;
+extern const CGFloat childMenuItemImageHeight;
 
 extern const CGFloat menuItemHighlightColor[2][4];
 

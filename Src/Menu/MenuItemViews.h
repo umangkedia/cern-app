@@ -33,6 +33,9 @@ enum class ItemStyle {
 @property (nonatomic) BOOL isSelected;
 @property (nonatomic) CernAPP::ItemStyle itemStyle;
 
+@property (nonatomic) CGFloat indent;
+@property (nonatomic) CGSize imageHint;
+
 @end
 
 //This is a group title.
@@ -43,6 +46,9 @@ enum class ItemStyle {
 - (void) drawRect : (CGRect)rect;
 
 - (void) layoutText;
+
+@property (nonatomic) CGFloat indent;
+@property (nonatomic) CGSize imageHint;
 
 - (MenuItemsGroup *) menuItemsGroup;
 - (UIImageView *) discloseImageView;

@@ -291,6 +291,34 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (void) setMenuGeometryHints
+{
+   CGFloat whRatio = 0.f;
+
+   for (NSObject<MenuItemProtocol> *menuItem in menuItems) {
+      if (UIImage * const image = menuItem.itemImage) {
+         const CGSize size = image.size;
+         assert(size.width > 0.f && size.height > 0.f &&
+                "setMenuGeometryHints, invalid image size");
+         const CGFloat currRatio = size.width / size.height;
+         if (currRatio > whRatio)
+            whRatio = currRatio;
+      }
+   }
+   
+   CGSize imageHint = {};
+   if (whRatio) {
+      imageHint.width = CernAPP::groupMenuItemImageHeight * whRatio;
+      imageHint.height = CernAPP::groupMenuItemImageHeight;
+   }
+   
+   for (NSObject<MenuItemProtocol> *menuItem in menuItems) {
+      //indent == 0.f - these are top-level menu items.
+      [menuItem setIndent : 0.f imageHint : imageHint];
+   }
+}
+
+//________________________________________________________________________________________
 - (void) loadMenuContents
 {
    menuItems = [[NSMutableArray alloc] init];
@@ -334,6 +362,8 @@ using CernAPP::ItemStyle;
       //Jobs;
       //Webcasts.
    }
+   
+   [self setMenuGeometryHints];
 }
 
 //________________________________________________________________________________________
