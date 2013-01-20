@@ -1,7 +1,6 @@
 //
-//In our new sliding view GUI, I can not have table view controller as a "top level" controller,
-//it should be a child of navigation controller.
-//MenuNavigationController is a parent controller for a NewsTableViewController.
+//MenuNavigationController - the parent controller for all other controllers,
+//which can be loaded from the menu.
 //
 
 #import <UIKit/UIKit.h>
