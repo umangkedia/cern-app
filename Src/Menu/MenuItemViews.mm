@@ -166,15 +166,12 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    
    frame.origin.x = indent;
    
-   if (menuItem.itemImage) {
-      assert(imageHint.width > 0.f && imageHint.height > 0.f &&
-             "layoutText, image hint is invalid");
-      
+   if (imageHint.width > 0.) {
       frame.origin.x += imageHint.width + 2 * itemImageMargin;
    } else {
       frame.origin.x += 2 * itemImageMargin;
    }
-   
+
    frame.size.width -= frame.origin.x;
    frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
    frame.size.height = childMenuItemTextHeight;
