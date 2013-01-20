@@ -9,9 +9,8 @@
 @optional
 
 - (UIImage *) categoryImage;
-
 - (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
+
 @property (nonatomic, retain) NSString *categoryName;
 
 @end
@@ -28,7 +27,6 @@
 - (UIImage *) categoryImage;
 
 - (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
 
 @end
 
@@ -41,7 +39,6 @@
 - (UIImage *) categoryImage;
 
 - (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
 
 @end
 
@@ -57,7 +54,6 @@
 - (UIImage *) categoryImage;
 
 - (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
 - (void) pushEventDisplayInto : (UINavigationController *) controller selectedImage : (NSInteger) selected;
 
 @end
@@ -88,6 +84,17 @@
 - (UIImage *) categoryImage;
 
 - (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
+
+@end
+
+@interface StaticInfoProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (UIImage *) categoryImage;
+
+- (void) loadControllerTo : (UIViewController *) controller;
 
 @end

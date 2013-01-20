@@ -53,27 +53,6 @@
 @end
 
 //
-//Different items in the "About CERN" sub-menu.
-//
-@interface MenuItemStaticInfo : NSObject<MenuItemProtocol>
-
-- (id) initWithDictionary : (NSDictionary *) dict;
-
-- (NSString *) itemText;
-- (UIImage *) itemImage;
-
-- (void) addMenuItemViewInto : (UIView *) parentView controller : (MenuViewController *) controller;
-- (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
-- (CGFloat) requiredHeight;
-
-- (void) itemPressedIn : (UIViewController *) controller;
-
-@property (nonatomic) __weak MenuItemsGroup *menuGroup;
-@property (nonatomic) __weak MenuItemView *itemView;
-
-@end
-
-//
 // Menu group - collapsing/expanding group of items.
 //
 @interface MenuItemsGroup : NSObject<MenuItemProtocol>

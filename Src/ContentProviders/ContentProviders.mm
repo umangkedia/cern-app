@@ -1,5 +1,6 @@
 #import <cassert>
 
+#import "StaticInfoScrollViewController.h"
 #import "BulletinTableViewController.h"
 #import "EventDisplayViewController.h"
 #import "MenuNavigationController.h"
@@ -95,31 +96,9 @@ void CancelConnections(UIViewController *controller)
    }];
 }
 
-//________________________________________________________________________________________
-- (void) pushViewControllerInto : (UINavigationController *) navController
-{
-   //We already inside a navController and just want to add next level - table with feeds.
-   assert(navController != nil && "pushViewControllerInto:, parameter 'navController' is nil");
-
-   using namespace CernAPP;
-
-   NewsTableViewController * const nc = (NewsTableViewController *)[navController.storyboard instantiateViewControllerWithIdentifier : NewsTableViewControllerID];
-   [nc.aggregator addFeedForURL : [NSURL URLWithString : feed]];
-   nc.navigationItem.title = feedName;
-   
-   [navController pushViewController : nc animated : YES];
-}
-
 @end
 
-/*
-- (id) initWithDictionary : (NSDictionary *) info;
-
-@property (nonatomic, retain) NSString *categoryName;
-
-- (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
-*/
+//
 
 @implementation PhotoSetProvider {
    NSDictionary *info;
@@ -185,12 +164,6 @@ void CancelConnections(UIViewController *controller)
       [controller.slidingViewController resetTopView];
    }];
 
-}
-
-//________________________________________________________________________________________
-- (void) pushViewControllerInto : (UINavigationController *) navController
-{
-   assert(navController != nil && "pushViewControllerInto:, parameter 'navController' is nil");
 }
 
 @end
@@ -436,35 +409,6 @@ void CancelConnections(UIViewController *controller)
       controller.slidingViewController.topViewController.view.frame = frame;
       [controller.slidingViewController resetTopView];
    }];
-
-}
-
-//________________________________________________________________________________________
-- (void) pushViewControllerInto : (UINavigationController *) navController
-{
-   //We already inside a navController and just want to add next level - table with feeds.
-   assert(navController != nil && "pushViewControllerInto:, parameter 'navController' is nil");
-
-   using namespace CernAPP;
-   
-   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
-   NSString * const experimentName = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
-   
-   if ([liveEvents count] == 1 && [[liveEvents objectAtIndex : 0] isKindOfClass : [LiveImageData class]]) {
-      //For such an image we just load "event display" view directly into the navigation controller.
-      EventDisplayViewController * const evc = [mainStoryboard instantiateViewControllerWithIdentifier :
-                                                               EventDisplayControllerID];
-      [self addLiveImageDescription:liveEvents[0] into : evc];
-      evc.title = [NSString stringWithFormat : @"%s", ExperimentName(experiment)];
-      [navController pushViewController : evc animated : YES];
-   } else {
-      LiveEventTableController * const eventViewController = [mainStoryboard instantiateViewControllerWithIdentifier : LiveEventTableControllerID];
-      eventViewController.navigationItem.title = categoryName;
-      [eventViewController setTableContents : liveEvents experimentName : experimentName];
-      eventViewController.provider = self;
-      eventViewController.navController = navController;
-      [navController pushViewController : eventViewController animated : YES];
-   }
 }
 
 //________________________________________________________________________________________
@@ -509,20 +453,7 @@ void CancelConnections(UIViewController *controller)
 
 @end
 
-/*
-@interface BulletinProvider : NSObject<ContentProvider>
-
-- (id) initWithDictionary : (NSDictionary *) info;
-
-@property (nonatomic, retain) NSString *categoryName;
-
-- (UIImage *) categoryImage;
-
-- (void) loadControllerTo : (UIViewController *) controller;
-- (void) pushViewControllerInto : (UINavigationController *) navController;
-
-@end
-*/
+//
 
 @implementation BulletinProvider {
    UIImage *menuImage;
@@ -591,10 +522,80 @@ void CancelConnections(UIViewController *controller)
 
 }
 
+@end
+
+
+/*
+@interface StaticInfoProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (UIImage *) categoryImage;
+
+- (void) loadControllerTo : (UIViewController *) controller;
+
+@end
+*/
+
+@implementation StaticInfoProvider {
+   NSDictionary *info;
+}
+
 //________________________________________________________________________________________
-- (void) pushViewControllerInto : (UINavigationController *) navController
+- (id) initWithDictionary : (NSDictionary *) dict
 {
-   assert(navController != nil && "pushViewControllerInto:, parameter 'navController' is nil");
+   assert(dict != nil && "initWithDictionary:, parameter 'info' is nil");
+
+   if (self = [super init]) {
+      assert([dict[@"Title"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Title' is not found or has a wrong type");
+      assert([dict[@"Items"] isKindOfClass : [NSArray class]] &&
+             "initWithDictionary:, 'Items' is not found or has a wrong type");
+      info = dict;
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (NSString *) categoryName
+{
+   return (NSString *)info[@"Title"];
+}
+
+//________________________________________________________________________________________
+- (UIImage *) categoryImage
+{
+   //Noop at the moment.
+   return nil;
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UIViewController *) controller
+{
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+
+   using namespace CernAPP;
+   MenuNavigationController * const navController =
+                  (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
+                                                                     StaticInfoNavigationControllerID];
+
+   assert([navController.topViewController isKindOfClass : [StaticInfoScrollViewController class]] &&
+          "loadControllerTo:, top view controller is either nil or has a wrong type");
+
+   
+   StaticInfoScrollViewController * const sc = (StaticInfoScrollViewController *)navController.topViewController;
+   sc.navigationItem.title = (NSString *)info[@"Title"];
+   sc.dataSource = (NSArray *)info[@"Items"];
+
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = navController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
+   }];
 }
 
 @end

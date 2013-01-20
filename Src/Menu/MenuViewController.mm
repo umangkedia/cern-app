@@ -206,8 +206,10 @@ using CernAPP::ItemStyle;
             for (id dictBase in staticInfo) {
                assert([dictBase isKindOfClass : [NSDictionary class]] &&
                       "loadStaticInfo:, array of dictionaries expected");
-               MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary :
-                                                     (NSDictionary *)dictBase];
+               StaticInfoProvider * const provider = [[StaticInfoProvider alloc] initWithDictionary :
+                                                      (NSDictionary *)dictBase];
+
+               MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
                [subMenu addObject : newItem];
               
             }
@@ -218,7 +220,8 @@ using CernAPP::ItemStyle;
                                                image : [self loadItemImage : itemDict] items : subMenu];
             [items addObject : newGroup];
          } else {
-            MenuItemStaticInfo * const newItem = [[MenuItemStaticInfo alloc] initWithDictionary:itemDict];
+            StaticInfoProvider * const provider = [[StaticInfoProvider alloc] initWithDictionary : itemDict];
+            MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
             [items addObject : newItem];
          }
       }
