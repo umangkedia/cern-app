@@ -57,6 +57,9 @@
 @property (nonatomic, copy) NSString *content;
 @property (nonatomic, copy) NSArray *enclosures;
 
+//
 @property (nonatomic, strong) UIImage *image;
+//Subset is a bulletin issue.
+@property (nonatomic) NSUInteger subsetIndex;
 
 @end

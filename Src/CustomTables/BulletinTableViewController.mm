@@ -196,6 +196,7 @@ const CGFloat rowHeight = 100.f;
    
       NSMutableArray *weekData = [[NSMutableArray alloc] init];
       MWFeedItem * const firstArticle = [articles objectAtIndex : 0];
+      firstArticle.subsetIndex = 0;
       [weekData addObject : firstArticle];
    
       NSCalendar * const calendar = [NSCalendar currentCalendar];
@@ -205,7 +206,7 @@ const CGFloat rowHeight = 100.f;
       NSInteger currentWeek = dateComponents.week;
       NSInteger currentYear = dateComponents.year;
    
-      for (int i = 1; i < articles.count; i++) {
+      for (NSUInteger i = 1, e = articles.count; i < e; ++i) {
          MWFeedItem * const article = (MWFeedItem *)articles[i];
          dateComponents = [calendar components : requiredComponents fromDate : article.date];
 
@@ -216,6 +217,7 @@ const CGFloat rowHeight = 100.f;
             weekData = [[NSMutableArray alloc] init];
          }
          
+         article.subsetIndex = bulletins.count;
          [weekData addObject : article];
       }
       
