@@ -44,30 +44,4 @@
    [self.view addGestureRecognizer : self.slidingViewController.panGesture];
 }
 
-//________________________________________________________________________________________
-- (void) addFeed : (NSString *) feed withName : (NSString *) feedName
-{
-   assert(feed != nil && "addFeed:, parameter 'feed' is nil");
-   assert(feedName != nil && "addFeed:, parameter 'feedName' is nil");
-   assert([self.topViewController isKindOfClass : [NewsTableViewController class]] &&
-          "addFeed:, topViewController is either nil, or has a wrong type - not a NewsTableViewController");
-
-   NewsTableViewController * const nt = (NewsTableViewController *)self.topViewController;
-   nt.navigationItem.title = feedName;
-   [nt.aggregator addFeedForURL : [NSURL URLWithString:feed]];
-}
-
-//________________________________________________________________________________________
-- (void) setStaticInfo : (NSArray *) staticInfo withTitle : (NSString *) sectionName
-{
-   assert(staticInfo != nil && "setStaticInfo:withTitle:, parameter 'staticInfo' is nil");
-   assert(sectionName != nil && "setStaticInfo:withTitle:, parameter 'sectionName' is nil");
-   assert([self.topViewController isKindOfClass : [StaticInfoScrollViewController class]] &&
-          "setStaticInfo:withTitle:, topViewController is either nil, or has a wrong type - not a StaticInfoScrollViewController");
-   
-   StaticInfoScrollViewController * const st = (StaticInfoScrollViewController *)self.topViewController;
-   st.navigationItem.title = sectionName;
-   st.dataSource = staticInfo;
-}
-
 @end

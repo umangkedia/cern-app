@@ -80,17 +80,23 @@ void CancelConnections(UIViewController *controller)
 
    assert(controller != nil && "loadControllerTo:, parameter controller is nil");
    
-   MenuNavigationController * const topController =
+   MenuNavigationController * const navController =
          (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
  
-   [topController addFeed : feed withName : feedName];
+   assert([navController.topViewController isKindOfClass : [NewsTableViewController class]] &&
+          "loadControllerTo:, top view controller is either nil or has a wrong type");
+ 
+   NewsTableViewController * const nt = (NewsTableViewController *)navController.topViewController;
+   nt.navigationItem.title = feedName;
+   [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
+
 
    if (controller.slidingViewController.topViewController)
       CancelConnections(controller.slidingViewController.topViewController);
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
-      controller.slidingViewController.topViewController = topController;
+      controller.slidingViewController.topViewController = navController;
       controller.slidingViewController.topViewController.view.frame = frame;
       [controller.slidingViewController resetTopView];
    }];

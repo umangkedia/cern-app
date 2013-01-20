@@ -14,6 +14,7 @@
 
 #import "InitialSlidingViewController.h"
 #import "MenuNavigationController.h"
+#import "NewsTableViewController.h"
 #import "StoryboardIdentifiers.h"
 
 @implementation InitialSlidingViewController
@@ -40,8 +41,15 @@
    MenuNavigationController * const top = (MenuNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
                                                                          CernAPP::TableNavigationControllerNewsID];
 
-   //Now, let's ask for the first (from the top of MENU.plist) news feed.
-   [top addFeed : @"http://cms.web.cern.ch/news/category/265/rss.xml" withName : @"CMS News"];
+   assert([top.topViewController isKindOfClass : [NewsTableViewController class]] &&
+          "viewDidLoad:, top view controller is either nil or has a wrong type");
+   
+   
+   //TODO: search the first (from the top of MENU.plist) news feed.
+   
+   NewsTableViewController * const nt = (NewsTableViewController *)top.topViewController;
+   nt.navigationItem.title = @"CMS News";
+   [nt.aggregator addFeedForURL : [NSURL URLWithString : @"http://cms.web.cern.ch/news/category/265/rss.xml"]];
    
    self.topViewController = top;
 }
