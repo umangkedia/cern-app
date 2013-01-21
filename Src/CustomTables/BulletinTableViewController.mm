@@ -266,7 +266,8 @@
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-   assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
+   assert(tableView != nil && "tableView:didSelectRowAtIndexPath:, parameter 'tableView' is nil");
+   assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, parameter 'indexPath' is nil");
    assert(indexPath.row >= 0 && indexPath.row < bulletins.count &&
           "tableView:didSelectRowAtIndexPath, row index is out of bounds");
 
@@ -274,6 +275,7 @@
       UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
       BulletinIssueTableViewController * const vc = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::BulletinIssueTableControllerID];
       vc.tableData = bulletins[indexPath.row];
+      vc.prevController = self;
       [self.navigationController pushViewController : vc animated : YES];
       activeIssueController = vc;
    }

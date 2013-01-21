@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class BulletinTableViewController;
 @class MWFeedItem;
 
 @interface BulletinIssueTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic) __weak NSArray *tableData;
+@property (nonatomic) __weak BulletinTableViewController *prevController;
 
 - (void) reloadRowFor : (MWFeedItem *) article;
 

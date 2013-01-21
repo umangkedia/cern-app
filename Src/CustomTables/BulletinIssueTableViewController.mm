@@ -7,14 +7,20 @@
 //
 
 #import "BulletinIssueTableViewController.h"
+#import "ArticleDetailViewController.h"
+#import "BulletinTableViewController.h"
+#import "StoryboardIdentifiers.h"
+#import "ApplicationErrors.h"
 #import "NewsTableViewCell.h"
 #import "MWFeedItem.h"
 
 @implementation BulletinIssueTableViewController {
    BOOL loaded;
+   
+   NSMutableArray *rowsToUpdate;//OMG!!! I have this table from tables from tables ...
 }
 
-@synthesize tableData;
+@synthesize tableData, prevController;
 
 //________________________________________________________________________________________
 - (void) setTableData : (NSArray *) aData
@@ -45,6 +51,11 @@
    if (!loaded) {
       [self.tableView reloadData];
       loaded = YES;
+   }
+   
+   if (rowsToUpdate) {
+      [self.tableView reloadRowsAtIndexPaths : rowsToUpdate withRowAnimation : UITableViewRowAnimationNone];
+      rowsToUpdate = nil;
    }
 }
 
@@ -113,7 +124,23 @@
 //________________________________________________________________________________________
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
-//
+   assert(self.navigationController != nil && "tableView:didSelectRowAtIndexPath: navigation controller is nil");
+   assert(prevController != nil && "tableView:didSelectRowAtIndexPath: prevController is nil");
+
+   if (prevController.aggregator.hasConnection) {
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+      ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+      viewController.loadOriginalLink = YES;
+      const NSInteger row = indexPath.row;
+      assert(row >= 0 && row < tableData.count &&
+             "tableView:didSelectRowAtIndexPath:, index is out of bounds");
+      [viewController setContentForArticle : (MWFeedItem *)tableData[row]];
+      [self.navigationController pushViewController : viewController animated : YES];
+   } else {
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+   }
+
+   [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 
 #pragma mark - Aux.
@@ -130,7 +157,16 @@
 
    const NSUInteger path[2] = {0, index};
    NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-   [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
+   
+   if (self.navigationController.topViewController == self)
+      [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
+   else {
+      //When table is invisible (self is not a top view controller in a navigation stack,
+      //reloadRowsAtIndexPaths does not work (??). OMG!!!
+      if (!rowsToUpdate)
+         rowsToUpdate = [[NSMutableArray alloc] init];
+      [rowsToUpdate addObject : indexPath];
+   }
 }
 
 @end
