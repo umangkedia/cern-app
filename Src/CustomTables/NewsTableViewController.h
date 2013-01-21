@@ -23,8 +23,6 @@
    MBProgressHUD *noConnectionHUD;
 }
 
-@property (nonatomic) BOOL refreshEnabled;
-
 //From PageController protocol:
 - (void) reloadPage;
 - (void) reloadPageFromRefreshControl;

@@ -47,7 +47,7 @@
    NSMutableArray *allArticles;
 }
 
-@synthesize refreshEnabled, pageLoaded, aggregator;
+@synthesize pageLoaded, aggregator;
 
 #pragma mark - Construction/destruction.
 
@@ -58,8 +58,6 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
-      
-      refreshEnabled = YES;
    }
 
    return self;
@@ -73,8 +71,6 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
-      
-      refreshEnabled = YES;
    }
 
    return self;
@@ -87,8 +83,6 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
-      
-      refreshEnabled = YES;
    }
 
    return self;
@@ -115,10 +109,8 @@
    
    [spinner setHidden : YES];
    
-   if (refreshEnabled) {
-      self.refreshControl = [[UIRefreshControl alloc] init];
-      [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
-   }
+   self.refreshControl = [[UIRefreshControl alloc] init];
+   [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
 }
 
 //________________________________________________________________________________________

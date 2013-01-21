@@ -438,10 +438,43 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="ko8-j9-gnx" kind="push" identifier="HehePush" id="5JF-HA-LcX"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5kp-Q1-IQE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-491" y="2249"/>
+        </scene>
+        <!--Bulletin Issue Table View Controller-->
+        <scene sceneID="Arv-H9-BEz">
+            <objects>
+                <tableViewController storyboardIdentifier="BulletinIssueTableControllerID" id="ko8-j9-gnx" customClass="BulletinIssueTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="RSr-hG-T2Q">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BulletinIssueCell" id="7Wd-bj-jfd" customClass="NewsTableViewCell">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="ko8-j9-gnx" id="7sL-8S-s06"/>
+                            <outlet property="delegate" destination="ko8-j9-gnx" id="L0S-Uq-6Qc"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="T3S-LW-i8W"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sjo-XE-sSL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-63" y="2250"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="QPu-eL-rHv">
@@ -596,6 +629,9 @@
             <relationships>
                 <relationship kind="outlet" name="contentWebView" candidateClass="UIWebView"/>
             </relationships>
+        </class>
+        <class className="BulletinIssueTableViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/BulletinIssueTableViewController.h"/>
         </class>
         <class className="BulletinTableViewController" superclassName="NewsTableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/BulletinTableViewController.h"/>

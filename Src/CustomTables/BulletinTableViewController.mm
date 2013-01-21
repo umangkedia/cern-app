@@ -8,7 +8,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "BulletinIssueTableViewController.h"
 #import "BulletinTableViewController.h"
+#import "StoryboardIdentifiers.h"
 #import "NewsTableViewCell.h"
 #import "BulletinViewCell.h"
 #import "GUIHelpers.h"
@@ -16,6 +18,9 @@
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
    NSMutableDictionary *thumbnails;
+   
+   NSMutableArray *rowsToUpdate;
+   BulletinIssueTableViewController *activeIssueController;
 }
 
 //________________________________________________________________________________________
@@ -32,6 +37,19 @@
 {
    [super viewDidLoad];
 	//Do any additional setup after loading the view.
+}
+
+//________________________________________________________________________________________
+- (void) viewDidAppear : (BOOL) animated
+{
+   [super viewDidAppear : animated];
+   activeIssueController = nil;
+   if (rowsToUpdate && rowsToUpdate.count) {
+      if (self.navigationController.topViewController == self) {//Quite a strange test :)
+         [self.tableView reloadRowsAtIndexPaths : rowsToUpdate withRowAnimation : UITableViewRowAnimationNone];
+         rowsToUpdate = nil;
+      }
+   }
 }
 
 //________________________________________________________________________________________
@@ -220,18 +238,26 @@
       [thumbnails setObject : image forKey : key];
       const NSUInteger path[2] = {0, article.subsetIndex};
       NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-      [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+      
+      if (self.navigationController.topViewController == self)
+         [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
+      else {
+         //Ooops, our controller and table are invisilbe at the moment,
+         //reloadRowsAtIndexPaths ... does not work as expected -
+         //image will not be visible after we pop-back top view controller.
+         if (!rowsToUpdate)
+            rowsToUpdate = [[NSMutableArray alloc] init];
+         [rowsToUpdate addObject : indexPath];
+      }
    }
-//   NSLog(@"Got image for issue ... %u", article.subsetIndex);
-//   const NSUInteger index = [allArticles indexOfObject : article];
 
-//   assert(index != NSNotFound &&
-//          "aggregator:didDownloadFirstImage:forArticle:, article is not found in a list of articles");
-
-  // const NSUInteger path[2] = {0, index};
-  // NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-  // [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
-  //We have to check, if any week is loaded now and inform the corresponding child controller.
+   if (activeIssueController) {
+      if (activeIssueController.tableData.count) {
+         MWFeedItem * const first = (MWFeedItem *)activeIssueController.tableData[0];
+         if (first.subsetIndex == article.subsetIndex)
+            [activeIssueController reloadRowFor : article];
+      }
+   }
 }
 
 
@@ -241,23 +267,17 @@
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
+   assert(indexPath.row >= 0 && indexPath.row < bulletins.count &&
+          "tableView:didSelectRowAtIndexPath, row index is out of bounds");
 
-   /*
-   if (self.navigationController && !self.aggregator.isLoadingData) {
-      if (aggregator.hasConnection) {
-         UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+   if (self.navigationController) {
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+      BulletinIssueTableViewController * const vc = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::BulletinIssueTableControllerID];
+      vc.tableData = bulletins[indexPath.row];
+      [self.navigationController pushViewController : vc animated : YES];
+      activeIssueController = vc;
+   }
 
-         ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-         viewController.loadOriginalLink = YES;
-         const NSUInteger index = indexPath.row;
-         [viewController setContentForArticle : [allArticles objectAtIndex : index]];
-         
-         [self.navigationController pushViewController : viewController animated : YES];
-      } else {
-         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-      }
-   }*/
-   
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 

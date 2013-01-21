@@ -16,5 +16,6 @@ NSString * const StaticInfoNavigationControllerID = @"StaticInfoNavigationContro
 NSString * const StaticInfoScrollViewControllerNoRootID = @"StaticInfoScrollViewControllerNoRootID";
 NSString * const PhotoGridControllerNavID = @"PhotoGridControllerNavID";
 NSString * const BulletinTableViewControllerID = @"BulletinTableViewControllerID";
+NSString * const BulletinIssueTableControllerID = @"BulletinIssueTableControllerID";
 
 }
