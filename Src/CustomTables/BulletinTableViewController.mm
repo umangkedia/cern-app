@@ -18,8 +18,7 @@
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
    NSMutableDictionary *thumbnails;
-   
-   NSMutableArray *rowsToUpdate;
+
    BulletinIssueTableViewController *activeIssueController;
 }
 
@@ -44,12 +43,6 @@
 {
    [super viewDidAppear : animated];
    activeIssueController = nil;
-   if (rowsToUpdate && rowsToUpdate.count) {
-      if (self.navigationController.topViewController == self) {//Quite a strange test :)
-         [self.tableView reloadRowsAtIndexPaths : rowsToUpdate withRowAnimation : UITableViewRowAnimationNone];
-         rowsToUpdate = nil;
-      }
-   }
 }
 
 //________________________________________________________________________________________
@@ -239,16 +232,7 @@
       const NSUInteger path[2] = {0, article.subsetIndex};
       NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
       
-      if (self.navigationController.topViewController == self)
-         [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
-      else {
-         //Ooops, our controller and table are invisilbe at the moment,
-         //reloadRowsAtIndexPaths ... does not work as expected -
-         //image will not be visible after we pop-back top view controller.
-         if (!rowsToUpdate)
-            rowsToUpdate = [[NSMutableArray alloc] init];
-         [rowsToUpdate addObject : indexPath];
-      }
+      [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
    }
 
    if (activeIssueController) {

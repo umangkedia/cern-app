@@ -16,8 +16,6 @@
 
 @implementation BulletinIssueTableViewController {
    BOOL loaded;
-   
-   NSMutableArray *rowsToUpdate;//OMG!!! I have this table from tables from tables ...
 }
 
 @synthesize tableData, prevController;
@@ -51,11 +49,6 @@
    if (!loaded) {
       [self.tableView reloadData];
       loaded = YES;
-   }
-   
-   if (rowsToUpdate) {
-      [self.tableView reloadRowsAtIndexPaths : rowsToUpdate withRowAnimation : UITableViewRowAnimationNone];
-      rowsToUpdate = nil;
    }
 }
 
@@ -158,15 +151,7 @@
    const NSUInteger path[2] = {0, index};
    NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
    
-   if (self.navigationController.topViewController == self)
-      [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
-   else {
-      //When table is invisible (self is not a top view controller in a navigation stack,
-      //reloadRowsAtIndexPaths does not work (??). OMG!!!
-      if (!rowsToUpdate)
-         rowsToUpdate = [[NSMutableArray alloc] init];
-      [rowsToUpdate addObject : indexPath];
-   }
+   [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
 }
 
 @end
