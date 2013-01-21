@@ -9,13 +9,13 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "BulletinTableViewController.h"
+#import "NewsTableViewCell.h"
 #import "BulletinViewCell.h"
 #import "GUIHelpers.h"
 
-const CGFloat rowHeight = 100.f;
-
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
+   NSMutableDictionary *thumbnails;
 }
 
 //________________________________________________________________________________________
@@ -92,36 +92,6 @@ const CGFloat rowHeight = 100.f;
 }
 
 //________________________________________________________________________________________
-- (void) tableView : (UITableView *) tableView willDisplayCell : (UITableViewCell *)cell forRowAtIndexPath : (NSIndexPath *) indexPath
-{
-//   cell.backgroundColor = [UIColor whiteColor];
-
-   cell.layer.cornerRadius = 10.f;
-   cell.layer.borderWidth = 1.f;
-   cell.layer.borderColor = [UIColor colorWithRed : 209.f / 255 green : 215.f / 255 blue : 227.f / 255 alpha : 1.f].CGColor;
-
-   cell.layer.shadowColor = [UIColor blackColor].CGColor;
-   cell.layer.shadowOffset = CGSizeMake(1.f, 1.f);
-   cell.layer.shadowOpacity = 0.5f;
-   
-   CGRect frame(cell.frame);
-   frame.origin = CGPoint();
-   cell.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect : frame cornerRadius : 10.f].CGPath;
-   
-   assert([cell isKindOfClass : [BulletinViewCell class]] &&
-          "tableView:willDisplayCell:forRowAtIndexPath:, cell has a wrong type");
-   
-   BulletinViewCell * const bc = (BulletinViewCell *)cell;
-   
-   CGRect labelFrame(bc.cellLabel.frame);
-   labelFrame.origin.y = frame.size.height / 2 - labelFrame.size.height / 2;
-   
-   bc.cellLabel.frame = labelFrame;
-}
-
-//- (void) ta
-
-//________________________________________________________________________________________
 - (UITableViewCell *) tableView : (UITableView *) tableView cellForRowAtIndexPath : (NSIndexPath *) indexPath
 {
    assert(tableView != nil && "tableView:cellForRowAtIndexPath:, parameter 'tableView' is nil");
@@ -131,33 +101,20 @@ const CGFloat rowHeight = 100.f;
    assert(row >= 0 && row < bulletins.count && "tableView:cellForRowAtIndexPath:, index is out of bounds");
 
    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier : @"BulletinCell"];
-   assert(!cell || [cell isKindOfClass : [BulletinViewCell class]] &&
+   assert(!cell || [cell isKindOfClass : [NewsTableViewCell class]] &&
           "tableView:cellForRowAtIndexPath:, reusable cell has a wrong type");
 
    if (!cell)
-      cell = [[BulletinViewCell alloc] initWithFrame : CGRectMake(0, 0, self.tableView.frame.size.width, rowHeight)];
+      cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
-   if (![cell.selectedBackgroundView isKindOfClass : [BackgroundView class]]) {
+   if (![cell.selectedBackgroundView isKindOfClass : [BackgroundView class]]) {   
       BackgroundView * const sbv = [[BackgroundView alloc] initWithFrame:CGRect()];
-      sbv.selectedView = YES;
-      cell.selectedBackgroundView = sbv;
-      cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
-      
-      BackgroundView * const bv = [[BackgroundView alloc] initWithFrame : CGRect()];
-      bv.selectedView = NO;
-      cell.backgroundView = bv;
-      bv.backgroundColor = [UIColor clearColor];
+      cell.backgroundView = sbv;
    }
 
-   BulletinViewCell * const newsCell = (BulletinViewCell *)cell;
-   newsCell.cellLabel.text = [self titleForIssue : row];
-   
-   UIFont * const font = [UIFont fontWithName : CernAPP::groupMenuFontName size : 18.f];
-   assert(font != nil && "tableView:cellForRowAtIndexPath:, failed to create a font");
-   
-   cell.backgroundColor = [UIColor clearColor];
-   
-   newsCell.cellLabel.font = font;
+   NewsTableViewCell * const newsCell = (NewsTableViewCell *)cell;
+   UIImage * const image = [thumbnails objectForKey : [NSNumber numberWithInteger : row]];
+   [newsCell setTitle : [self titleForIssue : row] image : image];
 
    return cell;
 }
@@ -172,7 +129,8 @@ const CGFloat rowHeight = 100.f;
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < bulletins.count && "tableView:heightForRowAtIndexPath:, index is out of bounds");
 
-   return rowHeight;
+   UIImage * const image = [thumbnails objectForKey : [NSNumber numberWithInteger : row]];
+   return [NewsTableViewCell calculateCellHeightWithText : [self titleForIssue : row] image : image];
 }
 
 #pragma mark - RSSAggregatorDelegate methods
@@ -191,6 +149,7 @@ const CGFloat rowHeight = 100.f;
    //
    if (theAggregator.allArticles.count) {
       bulletins = [[NSMutableArray alloc] init];
+      thumbnails = [[NSMutableDictionary alloc] init];
    
       NSArray * const articles = theAggregator.allArticles;//They are sorted by date (by an aggregator).
    
@@ -251,8 +210,19 @@ const CGFloat rowHeight = 100.f;
 //________________________________________________________________________________________
 - (void) aggregator : (RSSAggregator *) rssAggregator didDownloadFirstImage : (UIImage *) image forArticle : (MWFeedItem *) article
 {
-#pragma unused(rssAggregator, image)
+#pragma unused(rssAggregator)
 
+   assert(article.subsetIndex < bulletins.count &&
+          "aggregator:didDownloadFirstImage:forArticle:, bulletin index is out of bounds");
+
+   NSNumber * const key = [NSNumber numberWithInteger : NSInteger(article.subsetIndex)];
+   if (!thumbnails[key]) {
+      [thumbnails setObject : image forKey : key];
+      const NSUInteger path[2] = {0, article.subsetIndex};
+      NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
+      [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+   }
+//   NSLog(@"Got image for issue ... %u", article.subsetIndex);
 //   const NSUInteger index = [allArticles indexOfObject : article];
 
 //   assert(index != NSNotFound &&

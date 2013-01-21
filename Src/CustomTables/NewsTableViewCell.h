@@ -23,9 +23,13 @@
 
 + (CGFloat) calculateCellHeightForData : (MWFeedItem *) data imageOnTheRight : (BOOL) right;
 + (CGFloat) calculateCellHeightForText : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right;
++ (CGFloat) calculateCellHeightWithText : (NSString *) cellText image : (UIImage *) image;
+
 
 - (void) setCellData : (MWFeedItem *) data imageOnTheRight : (BOOL) right;
 - (void) setCellData : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right;
+//For the bulletin table.
+- (void) setTitle : (NSString *) cellText image : (UIImage *) image;
 
 @property (nonatomic, retain) UILabel *author;
 @property (nonatomic, retain) UILabel *date;

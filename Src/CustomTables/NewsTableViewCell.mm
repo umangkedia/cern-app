@@ -18,6 +18,8 @@ const CGFloat defaultImageSize = 80.f;
 const CGFloat defaultHeightNoImage = 60.f;
 const CGFloat sourceLabelWidthRatio = 0.85;
 const CGFloat dateLabelWidthRatio = 0.75;
+const CGFloat bulletinCellHeight = cellInset * 2 + defaultImageSize;
+const CGFloat bulletinTextHeight = 40.f;
 
 //TODO: check WHY do I have images of size 1x1 ????
 const CGFloat minImageSize = 10.f;//??
@@ -251,7 +253,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 }
 
 //________________________________________________________________________________________
-- (void)setSelected : (BOOL)selected animated : (BOOL)animated
+- (void) setSelected : (BOOL)selected animated : (BOOL)animated
 {
    [super setSelected : selected animated : animated];
    // Configure the view for the selected state
@@ -410,13 +412,49 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 
 }
 
+//________________________________________________________________________________________
+- (void) setTitle : (NSString *)cellText image : (UIImage *) image
+{
+   assert(cellText != nil && "setBulletinTitle:, parameter 'cellText' is nil");
+   //image can be nil.
+   
+   if (!title.text.length) {
+      UIFont * const font = [UIFont fontWithName : [NewsTableViewCell authorLabelFontName] size : 20.f];
+      assert(font != nil && "setTitle:image:, font not found");
+      title.font = font;
+      title.textAlignment = NSTextAlignmentCenter;
+   }
+   
+   title.text = cellText;
+   CGRect cellFrame = self.frame;
+   
+   if (image && image.size.width > minImageSize && image.size.height > minImageSize)
+      imageView.image = image;
+   else
+      imageView.image = nil;
+   
+   if (imageView.image) {
+      const CGRect textRect = CGRectMake(defaultImageSize + 2 * cellInset,
+                                         bulletinCellHeight / 2 - bulletinTextHeight / 2,
+                                         cellFrame.size.width - defaultImageSize - 3 * cellInset,
+                                         bulletinTextHeight);
+      title.frame = textRect;
+      imageView.frame = CGRectMake(cellInset,
+                                   bulletinCellHeight / 2 - defaultImageSize / 2,
+                                   defaultImageSize, defaultImageSize);
+   } else {
+      const CGRect textRect = CGRectMake(cellInset, bulletinCellHeight / 2 - bulletinTextHeight / 2,
+                                         cellFrame.size.width - 2 * cellInset, bulletinTextHeight);
+      title.frame = textRect;
+   }
+}
 
 //________________________________________________________________________________________
 + (CGFloat) calculateCellHeightForData : (MWFeedItem *) data imageOnTheRight : (BOOL) right
 {
    assert(data != nil && "calculateCellHeightForData:imageOnTheRight:, data parameter is nil");
 
-   static NewsTableViewCell *cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+   static NewsTableViewCell * const cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
    [cell setCellData : data imageOnTheRight : right];
 
    return cell.frame.size.height;
@@ -428,10 +466,17 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    assert(cellText != nil && "calculateCellHeightForText:source:image:imageOnTheRight:, cellText parameter is nil");
    assert(source != nil && "calculateCellHeightForText:source:image:imageOnTheRight:, source parameter is nil");
    
-   static NewsTableViewCell *cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+   static NewsTableViewCell * const cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
    [cell setCellData : cellText source : source image : image imageOnTheRight : right];
    
    return cell.frame.size.height;
+}
+
+//________________________________________________________________________________________
++ (CGFloat) calculateCellHeightWithText : (NSString *) cellText image : (UIImage *) image
+{
+#pragma unused(cellText, image)
+   return bulletinCellHeight;
 }
 
 @end

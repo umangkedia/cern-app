@@ -8,13 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BulletinViewCell : UITableViewCell
-
-@property (nonatomic) IBOutlet UILabel *cellLabel;
-
-@end
-
-
 @interface BackgroundView : UIView
 
 @property (nonatomic) BOOL selectedView;
