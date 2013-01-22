@@ -45,12 +45,9 @@
    //it's a gray color.
    BOOL resetSeparatorColor;
    NSMutableArray *allArticles;
-
-   NSMutableDictionary *imageDownloaders;
-   NSUInteger nLoadedImages;
 }
 
-@synthesize pageLoaded, aggregator;
+@synthesize pageLoaded, aggregator, imageDownloaders, nLoadedImages;
 
 #pragma mark - Construction/destruction.
 
@@ -462,7 +459,7 @@
    }
 }
 
-// this method is used in case the user scrolled into a set of cells that don't have their app icons yet
+// This method is used in case the user scrolled into a set of cells that don't have their thumbnails yet.
 
 //________________________________________________________________________________________
 - (void) loadImagesForOnscreenRows

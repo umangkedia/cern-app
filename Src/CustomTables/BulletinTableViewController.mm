@@ -25,10 +25,7 @@
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
-   if (self = [super initWithCoder : aDecoder]) {
-   }
-
-   return self;
+   return self = [super initWithCoder : aDecoder];
 }
 
 //________________________________________________________________________________________
@@ -124,8 +121,11 @@
    }
 
    NewsTableViewCell * const newsCell = (NewsTableViewCell *)cell;
-   UIImage * const image = [thumbnails objectForKey : [NSNumber numberWithInteger : row]];
+   UIImage * const image = [thumbnails objectForKey : indexPath];
    [newsCell setTitle : [self titleForIssue : row] image : image];
+
+   if (!image)
+      [self startIconDownloadForIndexPath : indexPath];
 
    return cell;
 }
@@ -193,6 +193,8 @@
       
       [bulletins addObject : weekData];
       
+      self.imageDownloaders = [[NSMutableDictionary alloc] init];
+      
       [self.tableView reloadData];
    }
 
@@ -218,33 +220,6 @@
    self.pageLoaded = NO;
 }
 
-//________________________________________________________________________________________
-- (void) aggregator : (RSSAggregator *) rssAggregator didDownloadFirstImage : (UIImage *) image forArticle : (MWFeedItem *) article
-{
-#pragma unused(rssAggregator)
-
-   assert(article.subsetIndex < bulletins.count &&
-          "aggregator:didDownloadFirstImage:forArticle:, bulletin index is out of bounds");
-
-   NSNumber * const key = [NSNumber numberWithInteger : NSInteger(article.subsetIndex)];
-   if (!thumbnails[key]) {
-      [thumbnails setObject : image forKey : key];
-      const NSUInteger path[2] = {0, article.subsetIndex};
-      NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-      
-      [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
-   }
-
-   if (activeIssueController) {
-      if (activeIssueController.tableData.count) {
-         MWFeedItem * const first = (MWFeedItem *)activeIssueController.tableData[0];
-         if (first.subsetIndex == article.subsetIndex)
-            [activeIssueController reloadRowFor : article];
-      }
-   }
-}
-
-
 #pragma mark - Table view delegate
 
 //________________________________________________________________________________________
@@ -266,5 +241,79 @@
 
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
+
+#pragma mark - Thumbnails.
+
+
+//________________________________________________________________________________________
+- (void) startIconDownloadForIndexPath : (NSIndexPath *) indexPath
+{
+   assert(indexPath != nil && "startIconDownloadForIndexPath:, parameter 'indexPath' is nil");
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < bulletins.count &&
+          "startIconDownloadForIndexPath:, index is out of bounds");
+
+   ImageDownloader * downloader = (ImageDownloader *)self.imageDownloaders[indexPath];
+   if (!downloader) {//We did not start download for this image yet.
+      NSArray * const articles = (NSArray *)bulletins[indexPath.row];
+      assert(articles.count > 0 && "startIconDownloadForIndexPath, no articles for issue found");
+      MWFeedItem * const article = (MWFeedItem *)articles[0];//select the first one.
+      assert(article.image == nil && "startIconDownloadForIndexPath:, image was loaded already");
+      
+      NSString * body = article.content;
+      if (!body)
+         body = article.summary;
+      
+      if (body) {
+         if (NSString * const urlString = [NewsTableViewController firstImageURLFromHTMLString : body]) {
+            downloader = [[ImageDownloader alloc] initWithURLString : urlString];
+            downloader.indexPathInTableView = indexPath;
+            downloader.delegate = self;
+            [self.imageDownloaders setObject : downloader forKey : indexPath];
+            [downloader startDownload];//Power on.
+         }
+      }
+   }
+}
+
+// This method is used in case the user scrolled into a set of cells that don't have their thumbnails yet.
+
+//________________________________________________________________________________________
+- (void) loadImagesForOnscreenRows
+{
+   if (bulletins.count && self.nLoadedImages != bulletins.count) {
+      NSArray * const visiblePaths = [self.tableView indexPathsForVisibleRows];
+      for (NSIndexPath *indexPath in visiblePaths) {
+         if (!thumbnails[indexPath])
+            [self startIconDownloadForIndexPath : indexPath];
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) imageDidLoad : (NSIndexPath *) indexPath
+{
+   //
+   assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < bulletins.count && "imageDidLoad:, index is out of bounds");
+   
+//   [thumbnails setObject:<#(id)#> forKey:<#(id<NSCopying>)#>
+   
+   //We should not load any image more when once.
+   assert(thumbnails[indexPath] == nil && "imageDidLoad:, image was loaded already");
+   
+   ImageDownloader * downloader = (ImageDownloader *)self.imageDownloaders[indexPath];
+   assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
+   
+   if (downloader.image) {
+      [thumbnails setObject : downloader.image forKey : indexPath];
+      [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
+   }
+   
+   ++self.nLoadedImages;
+   [self.imageDownloaders removeObjectForKey : indexPath];
+}
+
 
 @end
