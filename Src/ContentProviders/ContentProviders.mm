@@ -19,6 +19,8 @@ namespace {
 void CancelConnections(UIViewController *controller)
 {
    assert(controller != nil && "CancelConnections, parameter 'controller' is nil");
+   
+   //TODO: Cancel connections for all controllers in the current navigation stack!!!
 
    if ([controller respondsToSelector : @selector(cancelAnyConnections)])
       [controller performSelector : @selector(cancelAnyConnections)];
