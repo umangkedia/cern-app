@@ -115,7 +115,6 @@
       image = [[UIImage alloc] initWithData : imageData];
 
    assert(indexPathInTableView != nil && "connectionDidFinishLoading:, indexPathInTableView is nil");
-
    [delegate imageDidLoad : indexPathInTableView];
 
    imageConnection = nil;

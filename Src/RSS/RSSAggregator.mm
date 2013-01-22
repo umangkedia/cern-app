@@ -16,11 +16,6 @@
    NSUInteger feedLoadCount;
    NSUInteger feedFailCount;
 
-   BOOL loadingImages;
-   NSUInteger imageForArticle;
-   NSMutableData *imageData;
-   NSURLConnection *currentConnection;
-   
    Reachability *internetReach;
 }
 
@@ -44,18 +39,6 @@
 
          if (delegate && [delegate respondsToSelector : @selector(lostConnection:)])
             [delegate lostConnection : self];
-      } else if (loadingImages){
-         [currentConnection cancel];
-         currentConnection = nil;
-
-         for (NSUInteger i = imageForArticle, e = allArticles.count; i < e; ++i) {
-            MWFeedItem *feed = (MWFeedItem *)[allArticles objectAtIndex : i];
-            feed.image = nil;
-         }
-         
-         [self cancelLoading];
-         if (delegate && [delegate respondsToSelector : @selector(lostConnection:)])
-            [delegate lostConnection : self];
       }
    }
 }
@@ -63,7 +46,7 @@
 //________________________________________________________________________________________
 - (BOOL) isLoadingData
 {
-   return loadingImages || feedLoadCount;
+   return feedLoadCount;
 }
 
 //________________________________________________________________________________________
@@ -74,7 +57,6 @@
 
       feedLoadCount = 0;
       feedFailCount = 0;
-      loadingImages = NO;
       
       [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
       internetReach = [Reachability reachabilityForInternetConnection];
@@ -98,7 +80,6 @@
 {
    assert(feed != nil && "addFeed:, parameter 'feed' is nil");
    assert(feedLoadCount == 0 && "addFeed:, called while refreshing aggregator");
-   assert(loadingImages == NO && "addFeed:, called while loading images");
 
    feed.delegate = self;
    [feeds addObject : feed];
@@ -109,7 +90,6 @@
 {
    assert(url != nil && "addFeedForURL:, parameter 'url' is nil");
    assert(feedLoadCount == 0 && "addFeedForURL:, called while refreshing aggregator");
-   assert(loadingImages == NO && "addFeedForURL:, called while loading images");
 
    RSSFeed * const feed = [[RSSFeed alloc] initWithFeedURL : url];
    [self addFeed : feed];
@@ -126,8 +106,7 @@
 {
    // Only refresh all feeds if we are not already in the middle of a refresh
    
-   if (!feedLoadCount && !loadingImages) {
-      currentConnection = nil;
+   if (!feedLoadCount) {
       feedFailCount = 0;
       feedLoadCount = feeds.count;
 
@@ -161,11 +140,8 @@
    if (--feedLoadCount == 0) {
 
       allArticles = [self aggregate];
-      loadingImages = YES;//Now we'll try to load images for feed items, but first:
       if (delegate && [delegate respondsToSelector : @selector(allFeedsDidLoadForAggregator:)])
          [delegate allFeedsDidLoadForAggregator : self];
-
-      [self downloadAllFirstImages];
    }
 }
 
@@ -185,8 +161,12 @@
       if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
          [delegate aggregator : self didFailWithError : @"Load error"];//[error description]];//Error messages from MWFeedParser are bad.
       [self cancelLoading];
-   } else if (!feedLoadCount)
-      [self downloadAllFirstImages];
+   } else if (!feedLoadCount) {
+      //TODO: check this! Should I really inform delegate?
+      allArticles = [self aggregate];
+      if (delegate && [delegate respondsToSelector : @selector(allFeedsDidLoadForAggregator:)])
+         [delegate allFeedsDidLoadForAggregator : self];
+   }
 }
 
 #pragma mark - Private helper methods
@@ -216,168 +196,8 @@
 }
 
 //________________________________________________________________________________________
-- (void) downloadAllFirstImages
-{
-   assert(loadingImages == YES && "downloadAllFirstImages, can be called only while loading images");
-
-   if (allArticles.count) {
-      imageForArticle = 0;
-      [self downloadFirstImageForNextArticle];
-   }
-}
-
-//________________________________________________________________________________________
-- (void) downloadFirstImageForNextArticle
-{
-   assert(imageForArticle < [allArticles count] &&
-         "downloadFirstImageForNextArticle, imageForArticle is out of bounds");
-   assert(loadingImages == YES && "downloadFirstImageForNextArticle, can be called only while loading images");
-
-   MWFeedItem * const article = [allArticles objectAtIndex : imageForArticle];
-   article.image = nil;
-
-   NSString *body = article.content;
-   if (!body)
-      body = article.summary;
-
-   NSURL * const imageURL = [self firstImageURLFromHTMLString : body];
-   if (imageURL) {
-      imageData = [[NSMutableData alloc] init];
-      NSURLRequest * const request = [NSURLRequest requestWithURL : imageURL];
-      currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
-   } else if (imageForArticle + 1 == [allArticles count]) {
-      [self cancelLoading];
-   } else {
-      ++imageForArticle;
-      [self downloadFirstImageForNextArticle];
-   }
-}
-
-//________________________________________________________________________________________
-- (void) informDelegateOfFirstImage : (UIImage *) image downloadForArticle : (MWFeedItem *) article
-{
-   assert(loadingImages == YES &&
-          "informDelegateOfFirstImage:downloadForArticle:, can be called only while loading images");
-   assert(imageForArticle < [allArticles count] &&
-          "informDelegateOfFirstImage:downloadForArticle:, imageForArticle is out of bounds");
-   assert(image != nil &&
-          "informDelegateOfFirstImage:downloadForArticle:, parameter 'image' is nil");
-   assert(article != nil &&
-          "informDelegateOfFirstImage:downloadForArticle:, parameter 'article' is nil");
-
-   [self.delegate aggregator : self didDownloadFirstImage : image forArticle : article];
-}
-
-//________________________________________________________________________________________
-- (NSURL *) firstImageURLFromHTMLString : (NSString *) htmlString
-{
-   if (!htmlString)
-      return nil;
-
-   NSScanner * const theScanner = [NSScanner scannerWithString : htmlString];
-   //Find the start of IMG tag
-   [theScanner scanUpToString : @"<img" intoString : nil];
-   
-   if (![theScanner isAtEnd]) {
-      [theScanner scanUpToString : @"src" intoString : nil];
-      NSCharacterSet * const charset = [NSCharacterSet characterSetWithCharactersInString : @"\"'"];
-      [theScanner scanUpToCharactersFromSet : charset intoString : nil];
-      [theScanner scanCharactersFromSet : charset intoString : nil];
-      NSString *urlString = nil;
-      [theScanner scanUpToCharactersFromSet : charset intoString : &urlString];
-      // "url" now contains the URL of the img
-      if (urlString)
-         return [NSURL URLWithString : urlString];
-   }
-
-   // if no img url was found, return nil
-   return nil;
-}
-
-#pragma mark - NSURLConnectionDelegate.
-
-//________________________________________________________________________________________
-- (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *)data
-{
-   assert(connection != nil && "connection:didReceiveData:, parameter 'connection' is nil");
-
-   if (currentConnection != connection)//Aggregator was stopped.
-      return;
-
-   assert(data != nil && "connection:didReceiveData:, parameter 'data' is nil");
-   assert(loadingImages == YES && "connection:didReceiveData:, can be called only while loading images");
-   assert(imageData != nil && "connection:didReceiveData:, imageData is nil");
-   
-   [imageData appendData : data];
-}
-
-//________________________________________________________________________________________
-- (void) connectionDidFinishLoading : (NSURLConnection *) urlConnection
-{
-   assert(urlConnection != nil && "connectionDidFinitshLoading:, parameter 'urlConnection' is nil");
-   
-   if (currentConnection != urlConnection)//Aggregator was stopped.
-      return;
-
-   assert(loadingImages == YES &&
-          "connectionDidFinishLoading:, can be called only while loading images");
-   assert(imageData != nil &&
-          "connectionDidFinishLoading:, imageData is nil");
-   assert(imageForArticle < [allArticles count] &&
-          "connectionDidFinishLoading:, imageForArticle is out of bounds");
-   
-   if ([imageData length]) {
-      UIImage *firstImage = [[UIImage alloc] initWithData : imageData];
-      MWFeedItem * const currentArticle = [allArticles objectAtIndex : imageForArticle];
-      
-      if (firstImage) {
-         currentArticle.image = firstImage;
-         // Inform the delegate on the main thread that the image downloaded
-         if (delegate && [delegate respondsToSelector : @selector(aggregator:didDownloadFirstImage:forArticle:)])
-            [self informDelegateOfFirstImage : firstImage downloadForArticle : currentArticle];
-      } else
-         currentArticle.image = nil;
-
-      if (imageForArticle + 1 == [allArticles count]) {
-         [self cancelLoading];
-      } else {
-         ++imageForArticle;
-         [self downloadFirstImageForNextArticle];
-      }
-   }
-}
-
-//________________________________________________________________________________________
-- (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
-{
-   assert(urlConnection != nil && "connection:didFailWithError:, parameter 'urlConnection' is nil");
-   
-   if (urlConnection != currentConnection)//Aggregator was stopped already.
-      return;
-
-   assert(loadingImages == YES &&
-          "connection:didFailWithError:, can be called only while loading images");
-   assert(imageForArticle < [allArticles count] &&
-          "connection:didFailWithError:, imageForArticle is out of bounds");
-   
-   MWFeedItem * const currItem = [allArticles objectAtIndex : imageForArticle];
-   currItem.image = nil;
-   
-   if (imageForArticle + 1 == [allArticles count]) {
-      [self cancelLoading];
-   } else {
-      //Try to continue.
-      ++imageForArticle;
-      [self downloadFirstImageForNextArticle];
-   }
-}
-
-//________________________________________________________________________________________
 - (void) cancelLoading
 {
-   imageData = nil;
-   loadingImages = NO;
-   imageForArticle = 0;
    feedLoadCount = 0;
    feedFailCount = 0;
 }
@@ -387,11 +207,6 @@
 {
    //This one is called when controller is deleted,
    //I do not care in what state we now.
-   if (currentConnection) {
-      [currentConnection cancel];
-      currentConnection = nil;
-   }
-   
    for (RSSFeed * feed in feeds)
       [feed stopParsing];
 }

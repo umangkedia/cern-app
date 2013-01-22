@@ -11,21 +11,25 @@
 
 #import "PageControllerProtocol.h"
 #import "ConnectionController.h"
+#import "ImageDownloader.h"
 #import "RSSAggregator.h"
 #import "MBProgressHUD.h"
 
 @interface NewsTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate,
                                                            RSSAggregatorDelegate, PageController,
-                                                           ConnectionController>
+                                                           ImageDownloaderDelegate, ConnectionController>
 {
 @protected
    UIActivityIndicatorView *spinner;
    MBProgressHUD *noConnectionHUD;
 }
 
++ (NSString *) firstImageURLFromHTMLString : (NSString *) htmlString;
+
 //From PageController protocol:
 - (void) reloadPage;
 - (void) reloadPageFromRefreshControl;
+
 
 @property (nonatomic) BOOL pageLoaded;
 @property (nonatomic, strong) RSSAggregator *aggregator;
