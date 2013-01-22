@@ -16,6 +16,8 @@
 
 @implementation BulletinIssueTableViewController {
    BOOL loaded;
+   
+   NSMutableDictionary *imageDownloaders;
 }
 
 @synthesize tableData, prevController;
@@ -95,6 +97,9 @@
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
    [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
+   
+   if (!article.image)
+      [self startIconDownloadForIndexPath : indexPath];
 
    return cell;
 }
@@ -152,6 +157,137 @@
    NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
    
    [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
+}
+
+#pragma mark - ConnectionController
+
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   [self cancelAllImageDownloaders];
+}
+
+//________________________________________________________________________________________
+- (void) cancelAllImageDownloaders
+{
+   if (imageDownloaders && imageDownloaders.count) {
+      NSEnumerator * const keyEnumerator = [imageDownloaders keyEnumerator];
+      for (id key in keyEnumerator) {
+         ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[key];
+         [downloader cancelDownload];
+      }
+      
+      imageDownloaders = nil;
+   }
+}
+
+#pragma mark - ImageDownloader.
+
+// Load images for all onscreen rows when scrolling is finished
+//________________________________________________________________________________________
+- (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL) decelerate
+{
+#pragma unused(scrollView)
+   if (!decelerate)
+      [self loadImagesForOnscreenRows];
+}
+
+//________________________________________________________________________________________
+- (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
+{
+   [self loadImagesForOnscreenRows];
+}
+
+#pragma mark - Download images for news' items in a table.
+
+//________________________________________________________________________________________
+- (void) startIconDownloadForIndexPath : (NSIndexPath *) indexPath
+{
+   assert(indexPath != nil && "startIconDownloadForIndexPath:, parameter 'indexPath' is nil");
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < tableData.count &&
+          "startIconDownloadForIndexPath:, index is out of bounds");
+   
+   if (!imageDownloaders)
+      imageDownloaders = [[NSMutableDictionary alloc] init];
+
+   ImageDownloader * downloader = (ImageDownloader *)imageDownloaders[indexPath];
+   if (!downloader) {//We did not start download for this image yet.
+      MWFeedItem * const article = (MWFeedItem *)tableData[indexPath.row];
+      assert(article.image == nil && "startIconDownloadForIndexPath:, image was loaded already");
+      
+      NSString * body = article.content;
+      if (!body)
+         body = article.summary;
+      
+      if (body) {
+         if (NSString * const urlString = [NewsTableViewController firstImageURLFromHTMLString : body]) {
+            downloader = [[ImageDownloader alloc] initWithURLString : urlString];
+            downloader.indexPathInTableView = indexPath;
+            downloader.delegate = self;
+            [imageDownloaders setObject : downloader forKey : indexPath];
+            [downloader startDownload];//Power on.
+         }
+      }
+   }
+}
+
+// This method is used in case the user scrolled into a set of cells that don't have their thumbnails yet.
+
+//________________________________________________________________________________________
+- (void) loadImagesForOnscreenRows
+{
+   if (tableData.count) {
+      NSArray * const visiblePaths = [self.tableView indexPathsForVisibleRows];
+      for (NSIndexPath *indexPath in visiblePaths) {
+         MWFeedItem * const article = tableData[indexPath.row];
+         if (!article.image)
+            [self startIconDownloadForIndexPath : indexPath];
+      }
+   }
+}
+
+#pragma mark - ImageDownloaderDelegate.
+
+//________________________________________________________________________________________
+- (void) imageDidLoad : (NSIndexPath *) indexPath
+{
+   //
+   assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < tableData.count && "imageDidLoad:, index is out of bounds");
+   
+   MWFeedItem * const article = (MWFeedItem *)tableData[row];
+   
+   //We should not load any image more when once.
+   assert(article.image == nil && "imageDidLoad:, image was loaded already");
+   
+   ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[indexPath];
+   assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
+   
+   if (downloader.image) {
+      article.image = downloader.image;
+      [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
+   }
+
+   [imageDownloaders removeObjectForKey : indexPath];
+}
+
+//________________________________________________________________________________________
+- (void) imageDownloadFailed : (NSIndexPath *) indexPath
+{
+   assert(indexPath != nil && "imageDownloadFailed:, parameter 'indexPath' is nil");
+
+   const NSInteger row = indexPath.row;
+
+   //Even if download failed, index still must be valid.
+   assert(row >= 0 && row < tableData.count &&
+          "imageDownloadFailed:, index is out of bounds");
+   assert(imageDownloaders[indexPath] != nil &&
+          "imageDownloadFailed:, no downloader for the given path");
+   
+   [imageDownloaders removeObjectForKey : indexPath];
+   //No need to update the tableView.
 }
 
 @end

@@ -293,8 +293,6 @@
 
    [self copyArticlesFromAggregator];
 
-   imageDownloaders = [[NSMutableDictionary alloc] init];
-
    [spinner stopAnimating];
    [spinner setHidden : YES];
    [self.refreshControl endRefreshing];
@@ -399,7 +397,7 @@
       NSEnumerator * const keyEnumerator = [imageDownloaders keyEnumerator];
       for (id key in keyEnumerator) {
          ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[key];
-         [downloader startDownload];
+         [downloader cancelDownload];
       }
       
       imageDownloaders = nil;
@@ -437,6 +435,9 @@
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < allArticles.count &&
           "startIconDownloadForIndexPath:, index is out of bounds");
+
+   if (!imageDownloaders)
+      imageDownloaders = [[NSMutableDictionary alloc] init];
 
    ImageDownloader * downloader = (ImageDownloader *)imageDownloaders[indexPath];
    if (!downloader) {//We did not start download for this image yet.
@@ -515,7 +516,7 @@
    //We should not load any image more when once.
    assert(article.image == nil && "imageDidLoad:, image was loaded already");
    
-   ImageDownloader * downloader = (ImageDownloader *)imageDownloaders[indexPath];
+   ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[indexPath];
    assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
    
    if (downloader.image) {

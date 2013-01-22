@@ -193,8 +193,6 @@
       
       [bulletins addObject : weekData];
       
-      self.imageDownloaders = [[NSMutableDictionary alloc] init];
-      
       [self.tableView reloadData];
    }
 
@@ -253,6 +251,9 @@
    assert(row >= 0 && row < bulletins.count &&
           "startIconDownloadForIndexPath:, index is out of bounds");
 
+   if (!self.imageDownloaders)
+      self.imageDownloaders = [[NSMutableDictionary alloc] init];
+
    ImageDownloader * downloader = (ImageDownloader *)self.imageDownloaders[indexPath];
    if (!downloader) {//We did not start download for this image yet.
       NSArray * const articles = (NSArray *)bulletins[indexPath.row];
@@ -298,12 +299,10 @@
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < bulletins.count && "imageDidLoad:, index is out of bounds");
    
-//   [thumbnails setObject:<#(id)#> forKey:<#(id<NSCopying>)#>
-   
    //We should not load any image more when once.
    assert(thumbnails[indexPath] == nil && "imageDidLoad:, image was loaded already");
    
-   ImageDownloader * downloader = (ImageDownloader *)self.imageDownloaders[indexPath];
+   ImageDownloader * const downloader = (ImageDownloader *)self.imageDownloaders[indexPath];
    assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
    
    if (downloader.image) {

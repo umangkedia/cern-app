@@ -8,10 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ConnectionController.h"
+#import "ImageDownloader.h"
+
 @class BulletinTableViewController;
 @class MWFeedItem;
 
-@interface BulletinIssueTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate>
+@interface BulletinIssueTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate,
+                                                                    ImageDownloaderDelegate, ConnectionController>
 
 @property (nonatomic) __weak NSArray *tableData;
 @property (nonatomic) __weak BulletinTableViewController *prevController;
