@@ -47,6 +47,7 @@
    NSMutableArray *allArticles;
 
    NSMutableDictionary *imageDownloaders;
+   NSUInteger nLoadedImages;
 }
 
 @synthesize pageLoaded, aggregator;
@@ -406,6 +407,8 @@
       
       imageDownloaders = nil;
    }
+   
+   nLoadedImages = 0;
 }
 
 #pragma mark - UIScrollView delegate.
@@ -416,14 +419,16 @@
 {
 #pragma unused(scrollView)
    if (!decelerate) {
-      [self loadImagesForOnscreenRows];
+      if (nLoadedImages != allArticles.count)
+         [self loadImagesForOnscreenRows];
    }
 }
 
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
 {
-   [self loadImagesForOnscreenRows];
+   if (nLoadedImages != allArticles.count)
+      [self loadImagesForOnscreenRows];
 }
 
 #pragma mark - Download images for news' items in a table.
@@ -521,6 +526,7 @@
       [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
    }
    
+   ++nLoadedImages;
    [imageDownloaders removeObjectForKey : indexPath];
 }
 
@@ -537,6 +543,7 @@
    assert(imageDownloaders[indexPath] != nil &&
           "imageDownloadFailed:, no downloader for the given path");
    
+   ++nLoadedImages;//Still, we count this image.
    [imageDownloaders removeObjectForKey : indexPath];
 
    //But no need to update the tableView.

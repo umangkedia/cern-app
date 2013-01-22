@@ -138,7 +138,6 @@
 
    // Keep track of how many feeds have loaded after refreshAllFeeds was called, and after all feeds have loaded, inform the delegate.
    if (--feedLoadCount == 0) {
-
       allArticles = [self aggregate];
       if (delegate && [delegate respondsToSelector : @selector(allFeedsDidLoadForAggregator:)])
          [delegate allFeedsDidLoadForAggregator : self];
@@ -162,7 +161,7 @@
          [delegate aggregator : self didFailWithError : @"Load error"];//[error description]];//Error messages from MWFeedParser are bad.
       [self cancelLoading];
    } else if (!feedLoadCount) {
-      //TODO: check this! Should I really inform delegate?
+      //Even if some feed was not loaded, still, some feeds are ok.
       allArticles = [self aggregate];
       if (delegate && [delegate respondsToSelector : @selector(allFeedsDidLoadForAggregator:)])
          [delegate allFeedsDidLoadForAggregator : self];
