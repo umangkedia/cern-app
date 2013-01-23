@@ -69,6 +69,7 @@
    if (!photoDownloader.isDownloading) {
       [noConnectionHUD hide : YES];
       [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+      self.navigationItem.rightBarButtonItem.enabled = NO;
       [self.photoDownloader parse];
    }
 }
@@ -233,6 +234,7 @@
 #pragma unused(aPhotoDownloader)
    [photoDownloader compactData];
    photoSets = [photoDownloader.photoSets copy];
+   self.navigationItem.rightBarButtonItem.enabled = YES;
    [self.collectionView reloadData];
 }
 
