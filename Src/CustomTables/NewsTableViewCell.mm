@@ -349,7 +349,7 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
 
    NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
    [dateFormatter setDateFormat:@"d MMM. yyyy"];
-   date.text = [dateFormatter stringFromDate : data.date];
+   date.text = [dateFormatter stringFromDate : data.date ? data.date : [NSDate date]];
 
    UIImage * const image = data.image;
    if (image && image.size.width > minImageSize && image.size.height > minImageSize)
