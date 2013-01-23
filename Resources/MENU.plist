@@ -112,7 +112,7 @@
 					<key>Category name</key>
 					<string>PhotoSet</string>
 					<key>Image name</key>
-					<string>86-camera@2x.png</string>
+					<string>photos.png</string>
 					<key>Name</key>
 					<string>Latest photos</string>
 				</dict>
@@ -124,12 +124,12 @@
 		</dict>
 		<dict>
 			<key>Image name</key>
-			<string>106-sliders@2x.png</string>
+			<string>more.png</string>
 			<key>Feeds</key>
 			<array>
 				<dict>
 					<key>Image</key>
-					<string>158-wrench-2@2x.png</string>
+					<string>jobs.png</string>
 					<key>Url</key>
 					<string>https://ert.cern.ch/browse_www/wd_portal_rss.rss?p_hostname=ert.cern.ch</string>
 					<key>Name</key>
@@ -141,7 +141,7 @@
 			<key>Category name</key>
 			<string>News</string>
 			<key>Name</key>
-			<string>More ...</string>
+			<string>More</string>
 		</dict>
 	</array>
 </dict>
