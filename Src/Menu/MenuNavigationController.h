@@ -5,8 +5,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ConnectionController.h"
 #import "Experiments.h"
 
-@interface MenuNavigationController : UINavigationController
+@interface MenuNavigationController : UINavigationController<ConnectionController>
 
 @end

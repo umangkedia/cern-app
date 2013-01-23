@@ -44,4 +44,15 @@
    [self.view addGestureRecognizer : self.slidingViewController.panGesture];
 }
 
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   //Cancel all connections in the reversed range [top, self).
+   NSEnumerator * const enumerator = [self.viewControllers reverseObjectEnumerator];
+   for (id controller in enumerator) {
+      if ([controller respondsToSelector : @selector(cancelAnyConnections)])
+         [controller performSelector : @selector(cancelAnyConnections)];
+   }
+}
+
 @end
