@@ -131,10 +131,23 @@ using CernAPP::ItemStyle;
          for (id info in feeds) {
             assert([info isKindOfClass : [NSDictionary class]] &&
                    "loadNewsSection, feed info must be a dictionary");
+            
             NSDictionary * const feedInfo = (NSDictionary *)info;
-            FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
-            MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
-            [items addObject : newItem];
+            
+            if (feedInfo[@"Category name"]) {
+               assert([feedInfo[@"Category name"] isKindOfClass : [NSString class]] &&
+                      "loadNewsSection:, 'Category name' must be have the NSString type");
+               //Bulletin is a feed, but it's treated in a quite special way, it's not
+               //directly loaded in a news table view, but in a special table, which groups
+               //articles into bulletin's issues.
+               if ([(NSString *)feedInfo[@"Category name"] isEqualToString : @"Bulletin"]) {
+                  [self addBulletin : feedInfo into : items];
+               }
+            } else {
+               FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
+               MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
+               [items addObject : newItem];
+            }
          }
          
          [self addMenuGroup : sectionName withImage : [self loadItemImage:desc] forItems : items];
@@ -288,6 +301,21 @@ using CernAPP::ItemStyle;
    menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
    
    return YES;
+}
+
+//________________________________________________________________________________________
+- (void) addBulletin : (NSDictionary *) desc into : (NSMutableArray *) items
+{
+   assert(desc != nil && "addBulletin:into:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "addBulletin:into:, 'Category name' not found or has a wrong type");
+   
+   assert([(NSString *)desc[@"Category name"] isEqualToString : @"Bulletin"] &&
+          "addBulletin:into, 'Category name' is expected to be 'Bulletin'");
+
+   BulletinProvider * const provider = [[BulletinProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [items addObject : menuItem];
 }
 
 //________________________________________________________________________________________
