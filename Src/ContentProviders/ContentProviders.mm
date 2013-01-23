@@ -92,7 +92,6 @@ void CancelConnections(UIViewController *controller)
    nt.navigationItem.title = feedName;
    [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
 
-
    if (controller.slidingViewController.topViewController)
       CancelConnections(controller.slidingViewController.topViewController);
 

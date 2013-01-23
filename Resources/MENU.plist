@@ -103,7 +103,7 @@
 			<key>Image name</key>
 			<string>45-movie-1@2x.png</string>
 			<key>Expanded</key>
-			<integer>1</integer>
+			<integer>0</integer>
 			<key>Items</key>
 			<array>
 				<dict>
@@ -121,6 +121,25 @@
 			<string>PhotosVideosSection</string>
 			<key>Name</key>
 			<string>Photos and videos</string>
+		</dict>
+		<dict>
+			<key>Feeds</key>
+			<array>
+				<dict>
+					<key>Image</key>
+					<string>158-wrench-2@2x.png</string>
+					<key>Url</key>
+					<string>https://ert.cern.ch/browse_www/wd_portal_rss.rss?p_hostname=ert.cern.ch</string>
+					<key>Name</key>
+					<string>Jobs</string>
+				</dict>
+			</array>
+			<key>Expanded</key>
+			<integer>0</integer>
+			<key>Category name</key>
+			<string>News</string>
+			<key>Name</key>
+			<string>More ...</string>
 		</dict>
 	</array>
 </dict>

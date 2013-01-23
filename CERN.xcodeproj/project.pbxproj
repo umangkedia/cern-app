@@ -131,6 +131,7 @@
 		70600A23169AF9B300F9E833 /* live.png in Resources */ = {isa = PBXBuildFile; fileRef = 70600A12169AF9B300F9E833 /* live.png */; };
 		70600A25169AF9B300F9E833 /* news.png in Resources */ = {isa = PBXBuildFile; fileRef = 70600A14169AF9B300F9E833 /* news.png */; };
 		70600A27169AF9B300F9E833 /* webcasts.png in Resources */ = {isa = PBXBuildFile; fileRef = 70600A16169AF9B300F9E833 /* webcasts.png */; };
+		70619D2516B03C7600906E5C /* 158-wrench-2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70619D2416B03C7600906E5C /* 158-wrench-2@2x.png */; };
 		7064A35D169DA177006405B9 /* menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7064A35C169DA177006405B9 /* menu@2x.png */; };
 		707B133D169AE8BC00180E02 /* AQGridSelection.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1338169AE8BC00180E02 /* AQGridSelection.png */; };
 		707B133E169AE8BC00180E02 /* AQGridSelectionGray.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */; };
@@ -368,6 +369,7 @@
 		70600A12169AF9B300F9E833 /* live.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = live.png; sourceTree = "<group>"; };
 		70600A14169AF9B300F9E833 /* news.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = news.png; sourceTree = "<group>"; };
 		70600A16169AF9B300F9E833 /* webcasts.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = webcasts.png; sourceTree = "<group>"; };
+		70619D2416B03C7600906E5C /* 158-wrench-2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "158-wrench-2@2x.png"; sourceTree = "<group>"; };
 		7064A35C169DA177006405B9 /* menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu@2x.png"; sourceTree = "<group>"; };
 		707B1338169AE8BC00180E02 /* AQGridSelection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelection.png; sourceTree = "<group>"; };
 		707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGray.png; sourceTree = "<group>"; };
@@ -821,6 +823,7 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				70619D2416B03C7600906E5C /* 158-wrench-2@2x.png */,
 				701BE5F816B0158400EA21C2 /* 45-movie-1@2x.png */,
 				709CE6C916A5C287006D524E /* 180-stickynote@2x.png */,
 				709CE6C716A5C045006D524E /* 112-group@2x.png */,
@@ -1305,6 +1308,7 @@
 				709CE6C816A5C045006D524E /* 112-group@2x.png in Resources */,
 				709CE6CA16A5C287006D524E /* 180-stickynote@2x.png in Resources */,
 				701BE5F916B0158400EA21C2 /* 45-movie-1@2x.png in Resources */,
+				70619D2516B03C7600906E5C /* 158-wrench-2@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
