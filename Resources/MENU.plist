@@ -100,18 +100,27 @@
 			<string>LIVE</string>
 		</dict>
 		<dict>
-			<key>Category name</key>
-			<string>Separator</string>
-		</dict>
-		<dict>
 			<key>Image name</key>
-			<string>86-camera@2x.png</string>
-			<key>Url</key>
-			<string>http://cdsweb.cern.ch/search?ln=en&amp;cc=Photos&amp;p=&amp;f=&amp;action_search=Search&amp;c=Photos&amp;c=&amp;sf=&amp;so=d&amp;rm=&amp;rg=10&amp;sc=1&amp;of=xm</string>
+			<string>45-movie-1@2x.png</string>
+			<key>Expanded</key>
+			<integer>1</integer>
+			<key>Items</key>
+			<array>
+				<dict>
+					<key>Url</key>
+					<string>http://cdsweb.cern.ch/search?ln=en&amp;cc=Photos&amp;p=&amp;f=&amp;action_search=Search&amp;c=Photos&amp;c=&amp;sf=&amp;so=d&amp;rm=&amp;rg=10&amp;sc=1&amp;of=xm</string>
+					<key>Category name</key>
+					<string>PhotoSet</string>
+					<key>Image name</key>
+					<string>86-camera@2x.png</string>
+					<key>Name</key>
+					<string>Latest photos</string>
+				</dict>
+			</array>
 			<key>Category name</key>
-			<string>Photos</string>
+			<string>PhotosVideosSection</string>
 			<key>Name</key>
-			<string>Latest photos</string>
+			<string>Photos and videos</string>
 		</dict>
 	</array>
 </dict>

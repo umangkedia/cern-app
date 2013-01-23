@@ -266,21 +266,55 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (BOOL) loadPhotos : (NSDictionary *) desc
+- (BOOL) loadPhotos : (NSDictionary *) desc into : (NSMutableArray *) items
 {
-   assert(desc != nil && "loadPhotos:, parameter 'desc' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadPhotos:, 'Category name' either not found or has a wrong type");
+   assert(desc != nil && "loadPhotos:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadPhotos:into:, parameter 'items' is nil");
    
-   if (![(NSString *)desc[@"Category name"] isEqualToString : @"Photos"])
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadPhotos:into:, 'Category name' not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString:@"PhotoSet"])
       return NO;
 
    PhotoSetProvider * const provider = [[PhotoSetProvider alloc] initWithDictionary : desc];
    MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-   [menuItems addObject : menuItem];
-   [menuItem addMenuItemViewInto : scrollView controller : self];
-   menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+   [items addObject : menuItem];
+   
+   return YES;
+}
 
+//________________________________________________________________________________________
+- (BOOL) loadPhotosAndVideos : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadPhotosAndVideos:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadPhotosAndVideos:, 'Category name' either not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"PhotosVideosSection"])
+      return NO;
+
+   id obj = desc[@"Items"];
+   if (obj) {
+      assert([obj isKindOfClass:[NSArray class]] && "loadPhotosAndVideos:, 'Items' has a wrong type");
+      NSArray * const items = (NSArray *)obj;
+      if (items.count) {
+         assert([desc[@"Name"] isKindOfClass : [NSString class]] &&
+                "loadPhotosAndVideos:, 'Name' is not found or has a wrong type");
+   
+         NSMutableArray * const groupItems = [[NSMutableArray alloc] init];
+         for (obj in items) {
+            if ([self loadPhotos : (NSDictionary *)obj into : groupItems])
+               continue;
+
+            //videos here.
+         }
+         
+         [self addMenuGroup : (NSString *)desc[@"Name"] withImage : [self loadItemImage : desc] forItems : groupItems];
+         [self setStateForGroup : menuItems.count - 1 from : desc];
+      }
+   }
+   
    return YES;
 }
 
@@ -381,7 +415,7 @@ using CernAPP::ItemStyle;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;
 
-      if ([self loadPhotos : (NSDictionary *)entryBase])
+      if ([self loadPhotosAndVideos : (NSDictionary *)entryBase])
          continue;
       
       if ([self loadBulletin : (NSDictionary *)entryBase])

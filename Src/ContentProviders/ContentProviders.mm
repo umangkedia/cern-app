@@ -532,21 +532,6 @@ void CancelConnections(UIViewController *controller)
 
 @end
 
-
-/*
-@interface StaticInfoProvider : NSObject<ContentProvider>
-
-- (id) initWithDictionary : (NSDictionary *) info;
-
-@property (nonatomic, retain) NSString *categoryName;
-
-- (UIImage *) categoryImage;
-
-- (void) loadControllerTo : (UIViewController *) controller;
-
-@end
-*/
-
 @implementation StaticInfoProvider {
    NSDictionary *info;
 }
