@@ -17,7 +17,6 @@
 
 - (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator;
 - (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSString *) errorDescription;
-- (void) aggregator : (RSSAggregator *) aggregator didDownloadFirstImage : (UIImage *)image forArticle : (MWFeedItem *)article;
 - (void) lostConnection : (RSSAggregator *) aggregator;
 
 @end

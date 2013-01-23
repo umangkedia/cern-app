@@ -21,6 +21,8 @@
    MBProgressHUD *noConnectionHUD;
    
    NSUInteger selectedSection;
+   NSArray *photoSets;
+   BOOL loaded;
 }
 
 @synthesize photoDownloader;
@@ -45,8 +47,10 @@
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
-   if (!photoDownloader.numberOfPhotoSets)
+   if (!loaded) {
       [self refresh];
+      loaded = YES;
+   }
 }
 
 //________________________________________________________________________________________
@@ -89,14 +93,17 @@
 - (NSInteger) numberOfSectionsInCollectionView : (UICollectionView *) collectionView
 {
 #pragma unused(collectionView)
-   return [photoDownloader numberOfPhotoSets];//Actually, we can have several sections?
+   return photoSets.count;
 }
 
 //________________________________________________________________________________________
 - (NSInteger) collectionView : (UICollectionView *) collectionView numberOfItemsInSection : (NSInteger) section
 {
-#pragma unused(collectionView, section)
-   return [photoDownloader numberOfImagesInSet : section];
+#pragma unused(collectionView)
+   assert(section >= 0 && section < photoSets.count && "collectionView:numberOfItemsInSection:, index is out of bounds");
+   PhotoSet * const photoSet = (PhotoSet *)photoSets[section];
+
+   return photoSet.nImages;
 }
 
 //________________________________________________________________________________________
@@ -113,7 +120,15 @@
       cell = [[PhotoGridViewCell alloc] initWithFrame : CGRect()];
    
    PhotoGridViewCell * const photoCell = (PhotoGridViewCell *)cell;
-   photoCell.imageView.image = [photoDownloader tuhmbnailForIndex : indexPath.row fromPhotoset : indexPath.section];
+   
+   assert(indexPath.section >= 0 && indexPath.section < photoSets.count &&
+          "collectionView:cellForItemAtIndexPath:, section index is out of bounds");
+
+   PhotoSet * const photoSet = (PhotoSet *)photoSets[indexPath.section];
+   
+   assert(indexPath.row >= 0 && indexPath.row < photoSet.nImages && "collectionView:cellForItemAtIndexPath:, row index is out of bounds");
+   
+   photoCell.imageView.image = [photoSet getThumbnailImageForIndex : indexPath.row];
    
    return photoCell;
 }
@@ -126,7 +141,7 @@
           "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'collectionView' is nil");
    assert(indexPath != nil &&
           "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'indexPath' is nil");
-   assert(indexPath.section < photoDownloader.numberOfPhotoSets &&
+   assert(indexPath.section < photoSets.count &&
          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, indexPath.section is out of bounds");
 
    UICollectionReusableView *view = nil;
@@ -140,14 +155,12 @@
              "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
 
       PhotoSetInfoView * infoView = (PhotoSetInfoView *)view;
-      infoView.descriptionLabel.text = [photoDownloader titleForSet : indexPath.section];
+      PhotoSet * const photoSet = (PhotoSet *)photoSets[indexPath.section];
+      infoView.descriptionLabel.text = photoSet.title;
       
       UIFont * const font = [UIFont fontWithName : CernAPP::childMenuFontName size : 12.f];
       assert(font != nil && "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, font not found");
       infoView.descriptionLabel.font = font;
-      
-      //infoView.layer.borderColor = [UIColor whiteColor].CGColor;
-      //infoView.layer.borderWidth = 1.f;
    } else {
       //Footer.
       view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
@@ -155,10 +168,6 @@
 
       assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
              "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
-
-      //PhotoSetInfoView * infoView = (PhotoSetInfoView *)view;
-      //infoView.layer.borderWidth = 0.f;
-      //infoView.layer.borderColor = [UIColor clearColor].CGColor;
    }
    
    return view;
@@ -174,7 +183,7 @@
    assert(indexPath.section >= 0 && "collectionView:didSelectItemAtIndexPath:, indexPath.section is negative");
 
    selectedSection = indexPath.section;
-   assert(selectedSection < photoDownloader.numberOfPhotoSets && "collectionView:didSelectItemAtIndexPath:, section is out of bounds");
+   assert(selectedSection < photoSets.count && "collectionView:didSelectItemAtIndexPath:, section is out of bounds");
 
    MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate : self];
    browser.displayActionButton = YES;
@@ -190,9 +199,10 @@
 #pragma mark - PhotoDownloaderDelegate methods
 
 //________________________________________________________________________________________
-- (void) photoDownloaderDidFinish : (PhotoDownloader *) photoDownloader
+- (void) photoDownloaderDidFinish : (PhotoDownloader *) aPhotoDownloader
 {
    [MBProgressHUD hideHUDForView : self.view animated : YES];
+   photoSets = [aPhotoDownloader.photoSets copy];//This is non-compacted sets without images.
    [self.collectionView reloadData];
 }
 
@@ -222,6 +232,7 @@
 {
 #pragma unused(aPhotoDownloader)
    [photoDownloader compactData];
+   photoSets = [photoDownloader.photoSets copy];
    [self.collectionView reloadData];
 }
 
@@ -232,20 +243,25 @@
 {
 #pragma unused(photoBrowser)
 
-   assert(selectedSection < photoDownloader.numberOfPhotoSets &&
+   assert(selectedSection < photoSets.count &&
           "numberOfPhotosInPhotoBrowser:, selectedSection is out of bounds");
 
-   return [photoDownloader numberOfImagesInSet : selectedSection];
+   PhotoSet * const photoSet = (PhotoSet *)photoSets[selectedSection];
+
+   return photoSet.nImages;
 }
 
 //________________________________________________________________________________________
 - (MWPhoto *) photoBrowser : (MWPhotoBrowser *) photoBrowser photoAtIndex : (NSUInteger) index
 {
 #pragma unused(photoBrowser)
-   assert(selectedSection < photoDownloader.numberOfPhotoSets &&
+   assert(selectedSection < photoSets.count &&
           "photoBrowser:photoAtIndex:, selectedSection is out of bounds");
 
-   NSURL * const url = [photoDownloader imageURLForIndex:index fromPhotoset:selectedSection forType : @"jpgA5"];
+   PhotoSet * const photoSet = (PhotoSet *)photoSets[selectedSection];
+   assert(index < photoSet.nImages && "photoBrowser:photoAtIndex:, index is out of bounds");
+
+   NSURL * const url = [photoSet getImageURLWithIndex : index forType : @"jpgA5"];
    return [MWPhoto photoWithURL : url];
 }
 

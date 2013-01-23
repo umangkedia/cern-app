@@ -37,18 +37,32 @@
 //PhotoDownloader itself ONLY downloads thumbnails, not real images (this is done by
 //MWPhotoBrowser later).
 //
+
+@interface PhotoSet : NSObject {
+   NSMutableArray *images;
+}
+
+@property (nonatomic) NSString *title;
+
+
+- (void) addImageData : (NSDictionary *) dict;
+- (UIImage *) getThumbnailImageForIndex : (NSUInteger) index;
+- (void) setThumbnailImage : (UIImage *) image withIndex : (NSUInteger) index;
+- (NSURL *) getImageURLWithIndex : (NSUInteger) index forType : (NSString *) type;
+
+- (NSUInteger) nImages;
+- (void) compactPhotoSet;
+
+@end
+
 @interface PhotoDownloader : NSObject<CernMediaMarcParserDelegate, NSURLConnectionDataDelegate>
 
 - (void) parse;
 - (void) stop;
 
-- (NSUInteger) numberOfPhotoSets;
-- (NSUInteger) numberOfImagesInSet : (NSUInteger) index;
-- (NSString *) titleForSet : (NSUInteger) index;
-- (UIImage *) tuhmbnailForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex;
-- (NSURL *) imageURLForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex forType : (NSString *) imageType;
 - (void) compactData;
 
+@property (nonatomic, readonly) NSMutableArray *photoSets;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic) __weak id<PhotoDownloaderDelegate> delegate;
 @property (nonatomic, assign) BOOL isDownloading;

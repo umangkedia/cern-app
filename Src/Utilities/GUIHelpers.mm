@@ -20,7 +20,7 @@ const CGFloat separatorItemHeight = 20.f;
 //Menu.
 const CGFloat groupMenuItemHeight = 44.f;
 const CGFloat childMenuItemHeight = 30.f;
-const CGFloat childMenuItemTextIndent = 20.f;
+const CGFloat childMenuItemTextIndent = 15.f;
 NSString * const childMenuFontName = @"PTSans-Caption";
 NSString * const groupMenuFontName = @"PTSans-Bold";
 const CGFloat groupMenuItemImageHeight = 24.f;

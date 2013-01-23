@@ -20,24 +20,6 @@ using CernAPP::NetworkStatus;
 //If I do not have a thumbnail (load error) - I do not show this item in a collection view.
 //TODO: better logic can be used for such errors.
 
-
-@interface PhotoSet : NSObject {
-   NSMutableArray *images;
-}
-
-@property (nonatomic) NSString *title;
-
-
-- (void) addImageData : (NSDictionary *) dict;
-- (UIImage *) getThumbnailImageForIndex : (NSUInteger) index;
-- (void) setThumbnailImage : (UIImage *) image withIndex : (NSUInteger) index;
-- (NSURL *) getImageURLWithIndex : (NSUInteger) index forType : (NSString *) type;
-
-- (NSUInteger) nImages;
-- (void) compactPhotoSet;
-
-@end
-
 ///////
 
 @implementation PhotoSet
@@ -122,7 +104,6 @@ using CernAPP::NetworkStatus;
 @implementation PhotoDownloader {
    CernMediaMARCParser *parser;
 
-   NSMutableArray *photoSets;
    NSUInteger photoSetToLoad;
    NSUInteger imageToLoad;
    NSMutableData *thumbnailData;
@@ -131,7 +112,7 @@ using CernAPP::NetworkStatus;
    Reachability *internetReach;
 }
 
-@synthesize delegate, isDownloading;
+@synthesize photoSets, delegate, isDownloading;
 
 #pragma mark - Reachability.
 
@@ -417,47 +398,6 @@ using CernAPP::NetworkStatus;
             [self.delegate photoDownloaderDidFinishLoadingThumbnails : self];      
       }
    }
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) numberOfPhotoSets
-{
-   return photoSets.count;
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) numberOfImagesInSet : (NSUInteger) index
-{
-   assert(index < photoSets.count && "numberOfImageInSet:, parameter 'index' is out of bounds");
-   return [(PhotoSet *)photoSets[index] nImages];
-}
-
-//________________________________________________________________________________________
-- (NSString *) titleForSet : (NSUInteger) index
-{
-   assert(index < photoSets.count && "titleForSet:, parameter 'index' is out of bounds");
-
-   return ((PhotoSet *)photoSets[index]).title;
-}
-
-//________________________________________________________________________________________
-- (UIImage *) tuhmbnailForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex
-{
-   assert(setIndex < photoSets.count && "thumbnailForIndex:fromPhotoset:, parameter 'setIndex' is out of bounds");
-   PhotoSet * const set = (PhotoSet *)photoSets[setIndex];
-   assert(imageIndex < [set nImages] && "thumbnailForIndex:fromPhotoset:, parameter 'imageIndex' is out of bounds");
-   
-   return [set getThumbnailImageForIndex : imageIndex];
-}
-
-//________________________________________________________________________________________
-- (NSURL *) imageURLForIndex : (NSUInteger) imageIndex fromPhotoset : (NSUInteger) setIndex forType : (NSString *) imageType
-{
-   assert(setIndex < photoSets.count && "imageURLForIndex:fromPhotoset:forType:, parameter 'setIndex' is out of bounds");
-   PhotoSet * const set = (PhotoSet *)photoSets[setIndex];
-   assert(imageIndex < [set nImages] && "imageURLForIndex:fromPhotoset:forType:, parameter 'imageIndex' is out of bounds");
-   
-   return [set getImageURLWithIndex : imageIndex forType : imageType];
 }
 
 //________________________________________________________________________________________
