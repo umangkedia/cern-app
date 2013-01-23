@@ -123,6 +123,8 @@
 			<string>Photos and videos</string>
 		</dict>
 		<dict>
+			<key>Image name</key>
+			<string>106-sliders@2x.png</string>
 			<key>Feeds</key>
 			<array>
 				<dict>
