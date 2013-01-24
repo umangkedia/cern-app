@@ -85,13 +85,21 @@
 					<key>Category name</key>
 					<string>SingleImage</string>
 					<key>Name</key>
+					<string>LHC Luminosity</string>
+					<key>Image</key>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhclumi.png</string>
+				</dict>
+				<dict>
+					<key>Category name</key>
+					<string>SingleImage</string>
+					<key>Name</key>
 					<string>Coordination Planning</string>
 					<key>Image</key>
 					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhccoord_small.png</string>
 				</dict>
 			</array>
 			<key>Category name</key>
-			<string>DAQ</string>
+			<string>Status</string>
 		</dict>
 	</array>
 	<key>ATLAS</key>
