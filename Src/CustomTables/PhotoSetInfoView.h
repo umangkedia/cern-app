@@ -10,6 +10,6 @@
 
 @interface PhotoSetInfoView : UICollectionReusableView
 
-@property (weak) IBOutlet UILabel *descriptionLabel;
+@property (nonatomic) IBOutlet UILabel *descriptionLabel;
 
 @end

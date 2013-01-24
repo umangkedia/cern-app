@@ -98,3 +98,19 @@
 - (void) loadControllerTo : (UIViewController *) controller;
 
 @end
+
+//
+//Videos.
+//
+
+@interface LatestVideosProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+
+@property (nonatomic, retain) NSString *categoryName;
+
+- (UIImage *) categoryImage;
+
+- (void) loadControllerTo : (UIViewController *) controller;
+
+@end

@@ -16,6 +16,7 @@
 {
    if (self = [super initWithFrame : frame]) {
       //
+      descriptionLabel = [[UILabel alloc] initWithFrame : CGRect()];
    }
 
    return self;

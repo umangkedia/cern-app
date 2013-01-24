@@ -285,6 +285,24 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadLatestVideos : (NSDictionary *) desc into : (NSMutableArray *) items
+{
+   assert(desc != nil && "loadLatestVideos:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadLatestVideos:into:, parameter 'items' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadLatestVideos:into:, 'Category name' not found or has a wrong type");
+
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"LatestVideos"])
+      return NO;
+
+   LatestVideosProvider * const provider = [[LatestVideosProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [items addObject : menuItem];
+   
+   return YES;
+}
+
+//________________________________________________________________________________________
 - (BOOL) loadPhotosAndVideos : (NSDictionary *) desc
 {
    assert(desc != nil && "loadPhotosAndVideos:, parameter 'desc' is nil");
@@ -306,8 +324,8 @@ using CernAPP::ItemStyle;
          for (obj in items) {
             if ([self loadPhotos : (NSDictionary *)obj into : groupItems])
                continue;
-
-            //videos here.
+            if ([self loadLatestVideos:(NSDictionary *)obj into : groupItems])
+               continue;
          }
          
          [self addMenuGroup : (NSString *)desc[@"Name"] withImage : [self loadItemImage : desc] forItems : groupItems];

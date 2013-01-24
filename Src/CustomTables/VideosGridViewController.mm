@@ -9,15 +9,23 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "VideosGridViewController.h"
+#import "ECSlidingViewController.h"
+#import "PhotoGridViewCell.h"
+#import "PhotoSetInfoView.h"
 #import "MBProgressHUD.h"
+#import "GUIHelpers.h"
 
 @implementation VideosGridViewController {
    MBProgressHUD *noConnectionHUD;
    BOOL loaded;
+   
+   CernMediaMARCParser *parser;
+   NSMutableArray *videoMetadata;
+   NSMutableDictionary *videoThumbnails;
+   NSMutableDictionary *imageDownloaders;
 }
 
-@synthesize parser, videoMetadata, videoThumbnails;
-
+//________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
    if (self = [super initWithCoder : aDecoder]) {
@@ -35,7 +43,8 @@
    return self;
 }
 
-- (void)viewWillAppear:(BOOL)animated
+//________________________________________________________________________________________
+- (void) viewWillAppear : (BOOL) animated
 {
    if (!loaded) {
       [self refresh];
@@ -43,20 +52,37 @@
    }
 }
 
-- (void)refresh
+//________________________________________________________________________________________
+- (IBAction) refresh : (id) sender
 {
-   if (!videoMetadata.count) {
-      [noConnectionHUD hide : YES];
-      [self.parser parse];
-      [MBProgressHUD showHUDAddedTo : self.view animated : YES];
-   }
+#pragma unused(sender)
+
+   [self refresh];
 }
 
+//________________________________________________________________________________________
+- (void) refresh
+{
+   assert(parser.isFinishedParsing == YES && "refresh, called while parser is active");
+
+   self.navigationItem.rightBarButtonItem.enabled = NO;
+   videoMetadata = [[NSMutableArray alloc] init];
+   videoThumbnails = [[NSMutableDictionary alloc] init];
+   
+   [self.collectionView reloadData];
+   
+   [noConnectionHUD hide : YES];
+   [parser parse];
+   [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+}
+
+//________________________________________________________________________________________
 - (void) viewDidLoad
 {
    [super viewDidLoad];
 }
 
+//________________________________________________________________________________________
 - (void) hudWasTapped : (MBProgressHUD *) hud
 {
    [self refresh];
@@ -64,116 +90,241 @@
 
 #pragma mark - CernMediaMARCParserDeleate methods
 
+//________________________________________________________________________________________
 - (void) parserDidFinish : (CernMediaMARCParser *) parser
 {
    [MBProgressHUD hideHUDForView : self.view animated : YES];
+   [self downloadVideoThumbnails];
    [self.collectionView reloadData];
+   self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
+//________________________________________________________________________________________
 - (void) parser : (CernMediaMARCParser *) parser didParseRecord : (NSDictionary *) record
 {
    // Copy over just the title, the date, and the first url of each resource type
- /*  NSMutableDictionary *video = [NSMutableDictionary dictionary];
-   [video setObject : record[@"title"] forKey : @"VideoMetadataPropertyTitle"];
+   NSMutableDictionary * const video = [NSMutableDictionary dictionary];
+   [video setObject : record[@"title"] forKey : @"title"];
    NSDate * const date = (NSDate *)record[@"date"];
    if (date)
       [video setObject : date forKey : @"VideoMetadataPropertyDate"];
 
-   NSDictionary *resources = [record objectForKey:@"resources"];
+   NSDictionary * const resources = (NSDictionary *)record[@"resources"];
    NSArray *resourceTypes = [resources allKeys];
    for (NSString *currentResourceType in resourceTypes) {
-   NSURL *url = [[resources objectForKey:currentResourceType] objectAtIndex:0];
-   [video setObject:url forKey:currentResourceType];
+      NSURL * const url = [resources[currentResourceType] objectAtIndex : 0];
+      [video setObject : url forKey : currentResourceType];
    }
-   [self.videoMetadata addObject:video];
-   // now download the thumbnail for that photo
-   int index = self.videoMetadata.count - 1;
-   [self performSelectorInBackground:@selector(downloadThumbnailForIndex:) withObject:[NSNumber numberWithInt:index]];*/
+   
+   [videoMetadata addObject : video];
 }
 
+//________________________________________________________________________________________
 - (void) parser : (CernMediaMARCParser *) parser didFailWithError : (NSError *) error
 {
- /*  [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
+   //TODO: report/handle errors correctly.
+   
+   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
    noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
    noConnectionHUD.delegate = self;
    noConnectionHUD.mode = MBProgressHUDModeText;
    noConnectionHUD.labelText = @"No internet connection";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;*/
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
-// We will use a synchronous connection running in a background thread to download thumbnails
-// because it is much simpler than handling an arbitrary number of asynchronous connections concurrently.
-/*
-- (void) downloadThumbnailForIndex : (id) indexNumber
+#pragma mark - ImageDownloader.
+
+//________________________________________________________________________________________
+- (void) downloadVideoThumbnails
 {
-    // now download the thumbnail for that photo
-    int index = ((NSNumber *)indexNumber).intValue;
-    NSDictionary *video = [self.videoMetadata objectAtIndex:index];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[video objectForKey:kVideoMetadataPropertyThumbnailURL]];
-    NSData *thumbnailData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-    UIImage *thumbnailImage = [UIImage imageWithData:thumbnailData];
-    [self.videoThumbnails setObject:thumbnailImage forKey:[NSNumber numberWithInt:index]];
-    [self performSelectorOnMainThread:@selector(reloadRowAtIndex:) withObject:[NSNumber numberWithInt:index] waitUntilDone:NO];
+   NSUInteger section = 0;
+   imageDownloaders = [[NSMutableDictionary alloc] init];
+   for (NSDictionary *metaData in videoMetadata) {
+      ImageDownloader * const downloader = [[ImageDownloader alloc] initWithURL : (NSURL *)metaData[@"jpgposterframe"]];
+      NSIndexPath * const indexPath = [NSIndexPath indexPathForRow : 0 inSection : section];
+      downloader.indexPathInTableView = indexPath;
+      downloader.delegate = self;
+      [imageDownloaders setObject : downloader forKey : indexPath];
+      [downloader startDownload];
+      ++section;
+   }
 }
 
-- (void)reloadRowAtIndex:(NSNumber *)index
+//________________________________________________________________________________________
+- (void) imageDidLoad : (NSIndexPath *) indexPath
 {
-    [self.gridView reloadItemsAtIndices:[NSIndexSet indexSetWithIndex:index.intValue] withAnimation:AQGridViewItemAnimationFade];
-}
-*/
+   //
+   assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
 
-/*
-- (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView
+   assert(indexPath.row == 0 && "imageDidLoad:, row is out of bounds");
+   assert(indexPath.section < videoMetadata.count && "imageDidLoad:, section is out of bounds");
+   
+   ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[indexPath];
+   assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
+   
+   if (downloader.image) {
+      assert(videoThumbnails[indexPath] == nil && "imageDidLoad:, image was loaded already");
+      [videoThumbnails setObject : downloader.image forKey : indexPath];
+      [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];//may be, simply set an image for image view?
+   }
+
+   [imageDownloaders removeObjectForKey : indexPath];
+}
+
+//________________________________________________________________________________________
+- (void) imageDownloadFailed : (NSIndexPath *) indexPath
 {
-    return self.videoMetadata.count;
+   assert(indexPath != nil && "imageDownloadFailed:, parameter 'indexPath' is nil");
+
+   //Even if download failed, index still must be valid.
+   assert(indexPath.row == 0 && "imageDownloadFailed:, row is out of bounds");
+   assert(indexPath.section < videoMetadata.count && "imageDownloadFailed:, section is out of bounds");
+
+   assert(imageDownloaders[indexPath] != nil &&
+          "imageDownloadFailed:, no downloader for the given path");
+   
+   [imageDownloaders removeObjectForKey : indexPath];
+   //But no need to update the collectionView.
 }
 
-- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
+#pragma mark - UICollectionViewDataSource.
+
+//________________________________________________________________________________________
+- (NSInteger) numberOfSectionsInCollectionView : (UICollectionView *) collectionView
 {
-    using namespace ROOT::CernApp;
-
-    static NSString *newsCellIdentifier = @"newsCell";
-    NewsGridViewCell *cell = (NewsGridViewCell *)[self.gridView dequeueReusableCellWithIdentifier:newsCellIdentifier];
-    if (cell == nil) {
-        cell = [[NewsGridViewCell alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 250.0) reuseIdentifier : newsCellIdentifier cellStyle : iPadStyle];
-        cell.selectionStyle = AQGridViewCellSelectionStyleGlow;
-    }
-    
-    NSDictionary *video = [self.videoMetadata objectAtIndex:index];
-
-    // Set the title label
-    cell.titleLabel.text = [video objectForKey:kVideoMetadataPropertyTitle];
-    
-    // Set the date label
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
-    NSString *dateString = [dateFormatter stringFromDate:[video objectForKey:kVideoMetadataPropertyDate]];
-    cell.dateLabel.text = dateString;
-
-    // Set the thumbnail
-    
-    
-    UIImage *image = [self.videoThumbnails objectForKey:[NSNumber numberWithInt:index]];
-    if (image) {
-        cell.thumbnailImageView.image = image;
-    }
-    return cell;
+#pragma unused(collectionView)
+   return videoMetadata.count;
 }
 
-- (CGSize) portraitGridCellSizeForGridView: (AQGridView *) aGridView
+//________________________________________________________________________________________
+- (NSInteger) collectionView : (UICollectionView *) collectionView numberOfItemsInSection : (NSInteger) section
 {
-    return CGSizeMake(320.0, 270.0);
+#pragma unused(collectionView)
+
+   assert(section >= 0 && section < videoMetadata.count &&
+          "collectionView:numbefOfItemsInSection:, parameter 'section' is out of bounds");
+
+   return 1;//We always have 1 cell in a section.
 }
 
-- (void) gridView: (AQGridView *) gridView didSelectItemAtIndex: (NSUInteger) index numFingersTouch:(NSUInteger)numFingers
+//________________________________________________________________________________________
+- (UICollectionViewCell *) collectionView : (UICollectionView *) collectionView cellForItemAtIndexPath : (NSIndexPath *) indexPath
 {
-    [gridView deselectItemAtIndex:index animated:YES];
-    NSDictionary *video = [self.videoMetadata objectAtIndex:index];
-    NSURL *url = [video objectForKey:kVideoMetadataPropertyVideoURL];
-    MPMoviePlayerViewController *playerController = [[MPMoviePlayerViewController alloc] initWithContentURL:url];
-    [self presentMoviePlayerViewControllerAnimated:(MPMoviePlayerViewController *)playerController];
+   assert(collectionView != nil && "collectionView:cellForItemAtIndexPath:, parameter 'collectionView' is nil");
+   assert(indexPath != nil && "collectionView:cellForItemAtIndexPath:, parameter 'indexPath' is nil");
 
+   UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier : @"VideoCell" forIndexPath : indexPath];
+   assert(!cell || [cell isKindOfClass : [PhotoGridViewCell class]] &&
+          "collectionView:cellForItemAtIndexPath:, reusable cell has a wrong type");
+   
+   if (!cell)
+      cell = [[PhotoGridViewCell alloc] initWithFrame : CGRect()];
+   
+   PhotoGridViewCell * const photoCell = (PhotoGridViewCell *)cell;
+   
+   assert(indexPath.section >= 0 && indexPath.section < videoMetadata.count &&
+          "collectionView:cellForItemAtIndexPath:, section is out of bounds");
+   assert(indexPath.row == 0 && "collectionView:cellForItemAtIndexPath:, row is out of bounds");
+
+   if (UIImage * const thumbnail = (UIImage *)videoThumbnails[indexPath])
+      photoCell.imageView.image = thumbnail;
+   
+   return photoCell;
 }
-*/
+
+//________________________________________________________________________________________
+- (UICollectionReusableView *) collectionView : (UICollectionView *) collectionView
+                               viewForSupplementaryElementOfKind : (NSString *) kind atIndexPath : (NSIndexPath *) indexPath
+{
+   assert(collectionView != nil &&
+          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'collectionView' is nil");
+   assert(indexPath != nil &&
+          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'indexPath' is nil");
+   assert(indexPath.section < videoMetadata.count &&
+         "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, section is out of bounds");
+
+   UICollectionReusableView *view = nil;
+   if ([kind isEqualToString : UICollectionElementKindSectionHeader]) {
+      view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
+                             withReuseIdentifier : @"VideoInfoView" forIndexPath : indexPath];
+
+      assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
+             "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
+      
+      if (!view)
+         view = [[PhotoSetInfoView alloc] initWithFrame : CGRect()];
+
+      PhotoSetInfoView * const infoView = (PhotoSetInfoView *)view;
+      
+      NSDictionary * const metaData = (NSDictionary *)videoMetadata[indexPath.section];
+      
+      
+      infoView.descriptionLabel.text = (NSString *)metaData[@"title"];
+      
+      UIFont * const font = [UIFont fontWithName : CernAPP::childMenuFontName size : 12.f];
+      assert(font != nil && "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, font not found");
+      infoView.descriptionLabel.font = font;
+   } else {
+      //Footer.
+      view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
+                             withReuseIdentifier : @"VideoCellFooter" forIndexPath : indexPath];
+
+      assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
+             "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
+   }
+   
+   return view;
+}
+
+#pragma mark - UICollectionViewDelegate
+
+//________________________________________________________________________________________
+- (void) collectionView : (UICollectionView *) collectionView didSelectItemAtIndexPath : (NSIndexPath *) indexPath
+{
+#pragma unused(collectionView)
+
+   assert(indexPath != nil && "collectionView:didSelectItemAtIndexPath:, parameter 'indexPath' is nil");
+   assert(indexPath.section >= 0 && indexPath.section < videoMetadata.count &&
+          "collectionView:didSelectItemAtIndexPath:, section is out of bounds");
+
+   NSDictionary * const video = (NSDictionary *)videoMetadata[indexPath.section];
+   NSURL * const url = (NSURL *)video[@"mp40600"];
+   MPMoviePlayerViewController *playerController = [[MPMoviePlayerViewController alloc] initWithContentURL : url];
+   [self presentMoviePlayerViewControllerAnimated : (MPMoviePlayerViewController *)playerController];
+}
+
+#pragma mark - Connection controller.
+
+//________________________________________________________________________________________
+- (void) cancelAllDownloaders
+{
+   if (imageDownloaders && imageDownloaders.count) {
+      NSEnumerator * const keyEnumerator = [imageDownloaders keyEnumerator];
+      for (id key in keyEnumerator) {
+         ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[key];
+         [downloader cancelDownload];
+      }
+      
+      imageDownloaders = nil;
+   }
+}
+
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   if (!parser.isFinishedParsing)
+      [parser stop];
+   
+   [self cancelAllDownloaders];
+}
+
+#pragma mark - Sliding view.
+
+//________________________________________________________________________________________
+- (IBAction) revealMenu : (id) sender
+{
+#pragma unused(sender)
+   [self.slidingViewController anchorTopViewTo : ECRight];
+}
 
 @end

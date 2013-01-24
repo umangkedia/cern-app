@@ -13,18 +13,32 @@
 @implementation ImageDownloader {
    NSMutableData *imageData;
    NSURLConnection *imageConnection;
-   NSString *urlString;
+   NSURL *url;
 }
 
 @synthesize delegate, indexPathInTableView, image;
 
 //________________________________________________________________________________________
-- (id) initWithURLString : (NSString *) url
+- (id) initWithURLString : (NSString *) urlString
 {
-   assert(url != nil && "initWithURLString:, parameter 'url' is nil");
+   assert(urlString != nil && "initWithURLString:, parameter 'url' is nil");
    
    if (self = [super init]) {
-      urlString = url;
+      url = [NSURL URLWithString : urlString];
+      imageData = nil;
+      imageConnection = nil;
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (id) initWithURL : (NSURL *) anUrl
+{
+   assert(anUrl != nil && "initWithURL:, parameter 'url' is nil");
+   
+   if (self = [super init]) {
+      url = anUrl;
       imageData = nil;
       imageConnection = nil;
    }
@@ -45,9 +59,7 @@
 
    image = nil;
    imageData = [[NSMutableData alloc] init];
-   imageConnection = [[NSURLConnection alloc] initWithRequest :
-                      [NSURLRequest requestWithURL : [NSURL URLWithString : urlString]]
-                      delegate : self];
+   imageConnection = [[NSURLConnection alloc] initWithRequest : [NSURLRequest requestWithURL : url] delegate : self];
 }
 
 //________________________________________________________________________________________

@@ -10,13 +10,13 @@
 
 #import "ConnectionController.h"
 #import "CernMediaMARCParser.h"
+#import "ImageDownloader.h"
 #import "MBProgressHUD.h"
 
-@interface VideosGridViewController : UICollectionViewController<CernMediaMarcParserDelegate, MBProgressHUDDelegate>
+@interface VideosGridViewController : UICollectionViewController<CernMediaMarcParserDelegate, MBProgressHUDDelegate, ImageDownloaderDelegate, ConnectionController,
+                                                                 UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (nonatomic, strong) CernMediaMARCParser *parser;
-@property (nonatomic, strong) NSMutableArray *videoMetadata;
-@property (nonatomic, strong) NSMutableDictionary *videoThumbnails;
+- (IBAction)refresh : (id) sender;
+- (IBAction) revealMenu : (id) sender;
 
-- (void)refresh;
 @end

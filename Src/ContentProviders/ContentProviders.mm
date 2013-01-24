@@ -3,6 +3,7 @@
 #import "StaticInfoScrollViewController.h"
 #import "BulletinTableViewController.h"
 #import "EventDisplayViewController.h"
+#import "VideosGridViewController.h"
 #import "MenuNavigationController.h"
 #import "PhotosGridViewController.h"
 #import "LiveEventTableController.h"
@@ -568,6 +569,7 @@ void CancelConnections(UIViewController *controller)
    assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
 
    using namespace CernAPP;
+
    MenuNavigationController * const navController =
                   (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
                                                                      StaticInfoNavigationControllerID];
@@ -579,6 +581,75 @@ void CancelConnections(UIViewController *controller)
    StaticInfoScrollViewController * const sc = (StaticInfoScrollViewController *)navController.topViewController;
    sc.navigationItem.title = (NSString *)info[@"Title"];
    sc.dataSource = (NSArray *)info[@"Items"];
+   
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
+
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = navController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
+   }];
+}
+
+@end
+
+//
+//
+//
+
+@implementation LatestVideosProvider {
+   UIImage *image;
+}
+
+@synthesize categoryName;
+
+//________________________________________________________________________________________
+- (id) initWithDictionary : (NSDictionary *) info
+{
+   assert(info != nil && "initWithDictionary:, parameter 'info' is nil");
+   
+   if (self = [super init]) {
+      assert([info[@"Name"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary, 'Name' not found or has a wrong type");
+      categoryName = (NSString *)info[@"Name"];
+      if (info[@"Image name"]) {
+         assert([info[@"Image name"] isKindOfClass : [NSString class]] &&
+                "initWithDictionary:, 'Image name' has a wrong type");
+         image = [UIImage imageNamed : (NSString *)info[@"Image name"]];
+      }
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) categoryImage
+{
+   return image;
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UIViewController *) controller
+{
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+   
+   using namespace CernAPP;
+
+   MenuNavigationController * const navController =
+                  (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
+                                                                     VideosCollectionViewControllerID];
+
+   assert([navController.topViewController isKindOfClass : [VideosGridViewController class]] &&
+          "loadControllerTo:, top view controller is either nil or has a wrong type");
+
+   
+   VideosGridViewController * const vc = (VideosGridViewController *)navController.topViewController;
+   vc.navigationItem.title = categoryName;
+   
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
 
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;

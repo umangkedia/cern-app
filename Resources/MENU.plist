@@ -116,6 +116,14 @@
 					<key>Name</key>
 					<string>Latest photos</string>
 				</dict>
+				<dict>
+					<key>Image name</key>
+					<string>videos.png</string>
+					<key>Category name</key>
+					<string>LatestVideos</string>
+					<key>Name</key>
+					<string>Latest videos</string>
+				</dict>
 			</array>
 			<key>Category name</key>
 			<string>PhotosVideosSection</string>

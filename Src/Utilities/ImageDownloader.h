@@ -16,6 +16,7 @@
 @interface ImageDownloader : NSObject<NSURLConnectionDelegate>
 
 - (id) initWithURLString : (NSString *) url;
+- (id) initWithURL : (NSURL *) url;
 - (void) startDownload;
 - (void) cancelDownload;
 

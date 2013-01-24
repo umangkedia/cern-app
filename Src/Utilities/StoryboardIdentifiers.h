@@ -18,5 +18,6 @@ extern NSString * const StaticInfoScrollViewControllerNoRootID;
 extern NSString * const PhotoGridControllerNavID;
 extern NSString * const BulletinTableViewControllerID;
 extern NSString * const BulletinIssueTableControllerID;
+extern NSString * const VideosCollectionViewControllerID;
 
 }
