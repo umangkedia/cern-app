@@ -18,8 +18,6 @@
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
    NSMutableDictionary *thumbnails;
-
-   BulletinIssueTableViewController *activeIssueController;
 }
 
 //________________________________________________________________________________________
@@ -39,7 +37,6 @@
 - (void) viewDidAppear : (BOOL) animated
 {
    [super viewDidAppear : animated];
-   activeIssueController = nil;
 }
 
 //________________________________________________________________________________________
@@ -234,7 +231,6 @@
       vc.tableData = bulletins[indexPath.row];
       vc.prevController = self;
       [self.navigationController pushViewController : vc animated : YES];
-      activeIssueController = vc;
    }
 
    [tableView deselectRowAtIndexPath : indexPath animated : NO];

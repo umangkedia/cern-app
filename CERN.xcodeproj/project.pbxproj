@@ -129,6 +129,7 @@
 		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
 		700FAD5D16A7068200FED28D /* PhotoSetInfoView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 700FAD5C16A7068200FED28D /* PhotoSetInfoView.mm */; };
 		701F048C16ADE609007E9463 /* BulletinIssueTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 701F048B16ADE609007E9463 /* BulletinIssueTableViewController.mm */; };
+		70221E4216B14F59007AE923 /* VideosGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70221E4016B14F59007AE923 /* VideosGridViewController.mm */; };
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
 		702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */; };
@@ -383,6 +384,8 @@
 		700FAD5C16A7068200FED28D /* PhotoSetInfoView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhotoSetInfoView.mm; sourceTree = "<group>"; };
 		701F048A16ADE609007E9463 /* BulletinIssueTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinIssueTableViewController.h; sourceTree = "<group>"; };
 		701F048B16ADE609007E9463 /* BulletinIssueTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinIssueTableViewController.mm; sourceTree = "<group>"; };
+		70221E4016B14F59007AE923 /* VideosGridViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideosGridViewController.mm; sourceTree = "<group>"; };
+		70221E4116B14F59007AE923 /* VideosGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideosGridViewController.h; sourceTree = "<group>"; };
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -888,6 +891,8 @@
 		707B1381169AEC6F00180E02 /* CustomTables */ = {
 			isa = PBXGroup;
 			children = (
+				70221E4016B14F59007AE923 /* VideosGridViewController.mm */,
+				70221E4116B14F59007AE923 /* VideosGridViewController.h */,
 				709CE66F16A59C8E006D524E /* PhotoGridViewCell.h */,
 				709CE67016A59C8E006D524E /* PhotoGridViewCell.mm */,
 				709CE66C16A59BE3006D524E /* PhotosGridViewController.h */,
@@ -1324,6 +1329,7 @@
 				41B3D9F916B12D9000AF4463 /* MBProgressHUD.m in Sources */,
 				41B3DA0016B12DA100AF4463 /* ECSlidingViewController.m in Sources */,
 				41B3DA0116B12DA100AF4463 /* UIImage+ImageWithUIView.m in Sources */,
+				70221E4216B14F59007AE923 /* VideosGridViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
