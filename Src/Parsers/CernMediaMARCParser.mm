@@ -216,7 +216,6 @@
    self.isFinishedParsing = YES;
    if (self.delegate && [self.delegate respondsToSelector : @selector(parserDidFinish:)])
       [self.delegate parserDidFinish : self];
-   xmlParser = nil;
 }
 
 @end
