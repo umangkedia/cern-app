@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#include <cassert>
+
 #import "WebcastsParser.h"
 
 NSString * const webcastURL = @"http://webcast.web.cern.ch/webcast/";
