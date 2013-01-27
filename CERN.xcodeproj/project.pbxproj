@@ -134,6 +134,7 @@
 		7024E029161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */; };
 		7024E02B161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */; };
 		702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */; };
+		702E654616B5948000D927A9 /* WebcastsParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702E654516B5948000D927A9 /* WebcastsParser.mm */; };
 		703FD35C161DDB4F00B8BB8C /* PTS75F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */; };
 		7046DFD716A423AB00F17445 /* 18-puzzle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046DFD616A423AB00F17445 /* 18-puzzle@2x.png */; };
 		7046DFD916A425D700F17445 /* 124-bullhorn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046DFD816A425D700F17445 /* 124-bullhorn@2x.png */; };
@@ -391,6 +392,8 @@
 		7024E028161F1CC000588CE1 /* mapPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		7024E02A161F244E00588CE1 /* mapShadowPortrait-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapShadowPortrait-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		702A4B7B1678E4D7005EBD1B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		702E654416B5948000D927A9 /* WebcastsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebcastsParser.h; sourceTree = "<group>"; };
+		702E654516B5948000D927A9 /* WebcastsParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebcastsParser.mm; sourceTree = "<group>"; };
 		703FD35B161DDB4F00B8BB8C /* PTS75F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS75F.ttf; sourceTree = "<group>"; };
 		7046DFD616A423AB00F17445 /* 18-puzzle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "18-puzzle@2x.png"; sourceTree = "<group>"; };
 		7046DFD816A425D700F17445 /* 124-bullhorn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "124-bullhorn@2x.png"; sourceTree = "<group>"; };
@@ -1012,6 +1015,8 @@
 		709CE66516A59A3B006D524E /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
+				702E654416B5948000D927A9 /* WebcastsParser.h */,
+				702E654516B5948000D927A9 /* WebcastsParser.mm */,
 				709CE66616A59A3B006D524E /* CernMediaMARCParser.h */,
 				709CE66716A59A3B006D524E /* CernMediaMARCParser.mm */,
 			);
@@ -1334,6 +1339,7 @@
 				41B3DA0016B12DA100AF4463 /* ECSlidingViewController.m in Sources */,
 				41B3DA0116B12DA100AF4463 /* UIImage+ImageWithUIView.m in Sources */,
 				70221E4216B14F59007AE923 /* VideosGridViewController.mm in Sources */,
+				702E654616B5948000D927A9 /* WebcastsParser.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
