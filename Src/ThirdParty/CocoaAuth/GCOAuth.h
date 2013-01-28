@@ -37,10 +37,7 @@
  to interact with in the wild. How ace is that?!
  */
 
-@interface GCOAuth : NSObject {
-@private
-   
-}
+@interface GCOAuth : NSObject
 
 /*
  Set the user agent to be used for all requests.
