@@ -392,7 +392,7 @@ void CancelConnections(UIViewController *controller)
       
       EventDisplayViewController * const evc = (EventDisplayViewController *)navController.topViewController;
       [self addLiveImageDescription:liveEvents[0] into : evc];
-      evc.title = experimentName;
+      evc.title = categoryName;// experimentName;
    } else {
       navController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : EventDisplayControllerFromTableID];
       assert([navController.topViewController isKindOfClass : [LiveEventTableController class]] &&
@@ -403,7 +403,7 @@ void CancelConnections(UIViewController *controller)
       [eventViewController setTableContents : liveEvents experimentName : experimentName];
       eventViewController.provider = self;
       eventViewController.navController = navController;
-      eventViewController.title = experimentName;
+     // eventViewController.title = experimentName;
    }
    
    if (controller.slidingViewController.topViewController)
