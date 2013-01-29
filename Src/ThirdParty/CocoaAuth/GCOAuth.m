@@ -292,8 +292,6 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
       if ([oauth.requestParameters count]) {
          NSString *query = [GCOAuth queryStringFromParameters : oauth.requestParameters];
          URLString = [NSString stringWithFormat : @"%@?%@", URLString, query];
-         
-         NSLog(@"query and url: %@", URLString);
       }
    }
 

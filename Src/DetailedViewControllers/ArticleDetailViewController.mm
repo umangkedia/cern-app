@@ -11,18 +11,31 @@
 #import "ArticleDetailViewController.h"
 #import "ApplicationErrors.h"
 #import "NSString+HTML.h"
-//#import "GuiAdjustment.h"
 #import "Reachability.h"
-#import "DeviceCheck.h"
-//#import "Constants.h"
+#import "GCOAuth.h"
 
-using CernAPP::NetworkStatus;
+namespace {
+
+enum class LoadStage : unsigned char {
+   inactive,
+   auth,
+   rdbRequest,
+   originalPageLoad
+};
+
+}
 
 @implementation ArticleDetailViewController {
    NSString *articleLink;
    UIActivityIndicatorView *spinner;
    
    Reachability *internetReach;
+   //
+   LoadStage stage;
+   NSInteger status;
+   NSMutableData *responseData;
+   
+   NSURLConnection *currentConnection;
 }
 
 @synthesize contentWebView, contentString, loadOriginalLink;
@@ -30,24 +43,28 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
-   #pragma unused(current)
+#pragma unused(current)
+   using CernAPP::NetworkStatus;
    
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       [self.contentWebView stopLoading];
-      if (spinner && spinner.isAnimating) {
-         [spinner stopAnimating];
-         [spinner setHidden : YES];
-         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      if (currentConnection) {
+         [currentConnection cancel];
+         currentConnection = nil;
+         stage = LoadStage::inactive;
       }
+
+      [self stopSpinner];
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
    }
 }
 
 //________________________________________________________________________________________
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
 {
-   self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil];
-   if (self) {
+   if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
       // Custom initialization
+      stage = LoadStage::inactive;
    }
 
    return self;
@@ -63,11 +80,21 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) viewWillAppear : (BOOL) animated
 {
+}
+
+//________________________________________________________________________________________
+- (void) viewDidAppear : (BOOL) animated
+{
+   [super viewDidAppear : animated];
+
+   status = 200;
+   stage = LoadStage::inactive;
+
    if (loadOriginalLink && articleLink) {
-      const CGFloat spinnerSize = 150.f;
-      const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
-      
       if (!spinner) {
+         const CGFloat spinnerSize = 150.f;
+         const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
+
          spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
          spinner.color = [UIColor grayColor];
          [self.view addSubview : spinner];
@@ -75,55 +102,34 @@ using CernAPP::NetworkStatus;
       
       [spinner setHidden : NO];
       [spinner startAnimating];
-   
-      NSURL * const url = [NSURL URLWithString : articleLink];      
-      NSURLRequest * const request = [NSURLRequest requestWithURL : url];
-      [self.contentWebView loadRequest : request];
+
+
+      [self loadOriginalPage];
+
+      //[self readabilityAuth];
    } else if (self.contentString)
       [self.contentWebView loadHTMLString : self.contentString baseURL : nil];
 }
 
 //________________________________________________________________________________________
-- (void) viewDidAppear : (BOOL) animated
-{
-}
-
-//________________________________________________________________________________________
 - (void) viewWillDisappear : (BOOL)animated
 {
-    [self.contentWebView stopLoading];
-    if (spinner && [spinner isAnimating]) {
-       [spinner stopAnimating];
-       [spinner setHidden : YES];
-    }
+   [self.contentWebView stopLoading];
+   [self stopSpinner];
+   if (currentConnection) {
+      [currentConnection cancel];
+      currentConnection = nil;
+   }
+
+   stage = LoadStage::inactive;
 }
 
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
-  // if (![DeviceCheck deviceIsiPad])
-  //    CernAPP::ResetBackButton(self, @"back_button_flat.png");
-
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
    [internetReach startNotifier];
-}
-
-//________________________________________________________________________________________
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-}
-
-//________________________________________________________________________________________
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-    else
-        return (interfaceOrientation == UIInterfaceOrientationPortrait);
-
 }
 
 //________________________________________________________________________________________
@@ -198,10 +204,10 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) webView : (UIWebView *) webView didFailLoadWithError : (NSError *) error
 {
-   if (spinner && [spinner isAnimating]) {
-      [spinner stopAnimating];
-      [spinner setHidden : YES];
-   }
+   //assert(stage == LoadStage::originalPageLoad && "webView:didFaildLoadWithError:, wrong stage");
+
+   [self stopSpinner];
+   stage = LoadStage::inactive;
 }
 
 //________________________________________________________________________________________
@@ -212,10 +218,8 @@ using CernAPP::NetworkStatus;
    //undocumented work under the hood, ignoring this property),
    //probably, because of something like this: "<meta name="viewport" content="width=device-width, initial-scale = 1, user-scalable = yes" />"
 
-   if (spinner && [spinner isAnimating]) {
-      [spinner stopAnimating];
-      [spinner setHidden : YES];
-   }
+   [self stopSpinner];
+   stage = LoadStage::inactive;
    /*
    //Many thank to Confused Vorlon for this trick (http://stackoverflow.com/questions/1511707/uiwebview-does-not-scale-content-to-fit)
    if ([self.contentWebView respondsToSelector:@selector(scrollView)]) {
@@ -227,5 +231,200 @@ using CernAPP::NetworkStatus;
    }
    */
 }
+
+#pragma mark - Readability and web-view.
+
+//________________________________________________________________________________________
+- (void) stopSpinner
+{
+   if (spinner && spinner.isAnimating) {
+      [spinner stopAnimating];
+      [spinner setHidden : YES];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) loadOriginalPage
+{
+   assert(stage != LoadStage::originalPageLoad && "loadOriginalPage, wrong stage");
+   assert(currentConnection == nil && "loadOriginalPage, has an active connection");
+
+   using CernAPP::NetworkStatus;
+   if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
+      [self stopSpinner];
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      stage = LoadStage::inactive;
+   } else {
+      stage = LoadStage::originalPageLoad;
+      //Either authentication or parsing failed, try to load original page.
+      assert(articleLink != nil && "loadOriginalPage, articleLink is nil");
+      NSURL * const url = [NSURL URLWithString : articleLink];      
+      NSURLRequest * const request = [NSURLRequest requestWithURL : url];
+      [self.contentWebView loadRequest : request];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) readabilityAuth
+{
+   assert(stage == LoadStage::inactive && "readabilityAuth, wrong stage");
+   assert(currentConnection == nil && "readabilityAuth, has an active connection");
+
+   stage = LoadStage::auth;
+   
+   //This part is classified.
+   
+   NSString * const path = @"";
+   NSString * const userName = @"";
+   NSString * const password = @"";
+
+   NSDictionary * const postParameters = [NSDictionary dictionaryWithObjectsAndKeys : userName, @"x_auth_username",
+                                          password, @"x_auth_password", @"client_auth", @"x_auth_mode", nil];
+   NSString * const consumerKey = @"";
+   NSString * const consumerSecret = @"";
+      
+   NSString * const host = @"";
+
+   [GCOAuth setUserAgent : @""];
+   NSURLRequest *xauth = [GCOAuth URLRequestForPath : path POSTParameters : postParameters host : host consumerKey : consumerKey
+                          consumerSecret : consumerSecret accessToken : nil tokenSecret : nil];
+      
+   if (xauth && (currentConnection = [[NSURLConnection alloc] initWithRequest : xauth delegate : self]))
+      return;
+   
+   currentConnection = nil;
+   [self loadOriginalPage];
+}
+
+//________________________________________________________________________________________
+- (void) readabilityParse
+{
+   assert(stage == LoadStage::auth && "readabilityParse, wrong stage");
+   assert(responseData != nil && "readabilitParse, responseData  is nil");
+   
+
+   //Extract OAuth tokens to make a next request.
+    
+   NSString * const response = [[NSString alloc] initWithData : responseData encoding : NSUTF8StringEncoding];
+   NSArray * const components = [response componentsSeparatedByString : @"&"];
+   
+   NSString *OAuthToken = nil;
+   NSString *OAuthTokenSecret = nil;
+   NSString *OAuthConfirm = nil;
+   
+   for (NSString *component in components) {
+      NSArray *pair = [component componentsSeparatedByString:@"="];
+      assert(pair.count == 2);
+      if ([(NSString *)pair[0] isEqualToString : @"oauth_token_secret"])
+         OAuthTokenSecret = (NSString *)pair[1];
+      else if ([(NSString *)pair[0] isEqualToString : @"oauth_token"])
+         OAuthToken = (NSString *)pair[1];
+      else if ([(NSString *)pair[0] isEqualToString : @"oauth_callback_confirmed"])
+         OAuthConfirm = (NSString *)pair[1];
+   }
+   
+   if (OAuthToken && OAuthTokenSecret && OAuthConfirm && [OAuthConfirm isEqualToString : @"true"]) {
+      assert(articleLink != nil && "readabilityParse, articleLink is nil");
+      //Here's the real black magic, we send a request to Readability's parser.
+      
+      stage = LoadStage::rdbRequest;
+
+      //This part is classified, I can not show private content API in a public SVN rep :)
+   }
+   
+   currentConnection = nil;
+   //Something bad happened.
+   [self loadOriginalPage];
+}
+
+//________________________________________________________________________________________
+- (void) loadExtractedContent
+{
+   assert(stage == LoadStage::rdbRequest && "loadExtractedContent, wrong stage");
+   assert(status == 200 && "loadExtractedContent, wrong status code");
+   assert(responseData != nil && "loadExtractedContent, responseData is nil");
+
+   currentConnection = nil;
+
+   NSError *err = nil;
+   NSDictionary * const json = [NSJSONSerialization JSONObjectWithData : responseData options : NSJSONReadingAllowFragments error : &err];
+   if (json) {
+      //This part is classified.
+      return;
+   }
+
+   [self loadOriginalPage];
+}
+
+#pragma mark - NSURLConnectionDelegate and NSURLConnectionDataDelegate.
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didReceiveResponse : (NSURLResponse *) response
+{
+#pragma unused(connection)
+   assert(stage == LoadStage::auth || stage == LoadStage::rdbRequest &&
+          "connection:didReceiveResponse:, wrong stage");
+   assert(response != nil && "connection:didReceiveResponse:, parameter 'response' is nil");
+
+   if ([response isKindOfClass : [NSHTTPURLResponse class]])
+      status = [(NSHTTPURLResponse *)response statusCode];
+   else
+      status = 200;//???
+
+   if (!responseData)
+      responseData = [[NSMutableData alloc] init];
+   
+   [responseData setLength : 0];
+   
+   if (status != 200)
+      NSLog(@"got error %d", status);
+}
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *) data
+{
+#pragma unused(connection)
+   assert(stage == LoadStage::auth || stage == LoadStage::rdbRequest &&
+          "connection:didReceiveData:, wrong stage");
+   assert(responseData != nil && "connection:didReceiveData:, 'responseData' is nil");
+   
+   [responseData appendData : data];
+}
+
+//________________________________________________________________________________________
+- (void) connectionDidFinishLoading : (NSURLConnection *) connection
+{
+   assert(stage == LoadStage::auth || stage == LoadStage::rdbRequest &&
+          "connectionDidFinishLoading:, wrong stage");
+
+   using CernAPP::NetworkStatus;
+
+   currentConnection = nil;
+
+   if (status != 200)
+      //Something bad happened either during auth. or parsing.
+      [self loadOriginalPage];
+   else if (stage == LoadStage::auth)
+      //We have OAuth tokens.
+      [self readabilityParse];
+   else
+      //We have an extracted content.
+      [self loadExtractedContent];
+}
+
+//________________________________________________________________________________________
+- (void) connection : (NSURLConnection *) connection didFailWithError : (NSError *) error
+{
+#pragma unused(connection)
+
+   assert(stage == LoadStage::auth || stage == LoadStage::rdbRequest &&
+          "connection:didFailWithError:, wrong stage");
+   
+   currentConnection = nil;
+   
+   [self loadOriginalPage];
+}
+
+
 
 @end
