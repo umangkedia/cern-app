@@ -891,12 +891,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         }
         
         // Status Bar
-        if ([UIApplication instancesRespondToSelector:@selector(setStatusBarHidden:withAnimation:)]) {
-            [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animated?UIStatusBarAnimationFade:UIStatusBarAnimationNone];
-        } else {
-            [[UIApplication sharedApplication] setStatusBarHidden:hidden animated:animated];
-        }
-        
+        [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation : animated ? UIStatusBarAnimationFade : UIStatusBarAnimationNone];
+       
         // Get status bar height if visible
         if (![UIApplication sharedApplication].statusBarHidden) {
             CGRect statusBarFrame = [[UIApplication sharedApplication] statusBarFrame];
