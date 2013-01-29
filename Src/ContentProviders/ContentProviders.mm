@@ -392,14 +392,24 @@ void CancelConnections(UIViewController *controller)
       
       EventDisplayViewController * const evc = (EventDisplayViewController *)navController.topViewController;
       [self addLiveImageDescription:liveEvents[0] into : evc];
-      evc.title = categoryName;// experimentName;
+      
+      //Combine experiment name and category name?
+      if ([categoryName hasPrefix : experimentName])
+         evc.title = categoryName;
+      else
+         evc.title = [experimentName stringByAppendingFormat : @" %@", categoryName];// experimentName;
    } else {
       navController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : EventDisplayControllerFromTableID];
       assert([navController.topViewController isKindOfClass : [LiveEventTableController class]] &&
              "loadControllerTo:, top view controller is either nil or has a wrong type");
 
       LiveEventTableController * const eventViewController = (LiveEventTableController *)navController.topViewController;
-      eventViewController.navigationItem.title = categoryName;
+      
+      if ([categoryName hasPrefix : experimentName])
+         eventViewController.navigationItem.title = categoryName;
+      else
+         eventViewController.navigationItem.title = [experimentName stringByAppendingFormat : @" %@", categoryName];
+
       [eventViewController setTableContents : liveEvents experimentName : experimentName];
       eventViewController.provider = self;
       eventViewController.navController = navController;
