@@ -413,7 +413,6 @@ void CancelConnections(UIViewController *controller)
       [eventViewController setTableContents : liveEvents experimentName : experimentName];
       eventViewController.provider = self;
       eventViewController.navController = navController;
-     // eventViewController.title = experimentName;
    }
    
    if (controller.slidingViewController.topViewController)

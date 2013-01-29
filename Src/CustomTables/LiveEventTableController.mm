@@ -111,7 +111,8 @@ using CernAPP::NetworkStatus;
    if (!pageLoaded)
       [self reloadPage];
    
-   self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle : @"Events" style : UIBarButtonItemStylePlain target : nil action : nil];
+   if ([self.navigationItem.title rangeOfString : @"Live Events"].location != NSNotFound)//Otherwise, name is too long.
+      self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle : @"Events" style : UIBarButtonItemStylePlain target : nil action : nil];
 }
 
 #pragma mark - Aux. function to search image data for a given row index.

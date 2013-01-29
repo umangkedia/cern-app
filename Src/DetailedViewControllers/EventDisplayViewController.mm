@@ -124,7 +124,6 @@ using CernAPP::NetworkStatus;
    [internetReach startNotifier];
 
    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem : UIBarButtonSystemItemRefresh target : self action : @selector(reloadPageFromRefreshControl)];
-   //
 }
 
 //________________________________________________________________________________________
