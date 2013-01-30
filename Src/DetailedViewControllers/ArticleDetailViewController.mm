@@ -46,6 +46,10 @@ enum class LoadStage : unsigned char {
 
 @synthesize contentWebView, contentString, loadOriginalLink, title;
 
+//It has to be included here, since the file can contain
+//methods.
+#import "Readability.h"
+
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
@@ -109,9 +113,11 @@ enum class LoadStage : unsigned char {
       [spinner setHidden : NO];
       [spinner startAnimating];
 
+#ifndef READABILITY_CONTENT_API_DEFINED
       [self loadOriginalPage];
-
-      //[self readabilityAuth];
+#else
+      [self readabilityAuth];
+#endif
    } else if (self.contentString)
       [self.contentWebView loadHTMLString : self.contentString baseURL : nil];
 }
@@ -258,112 +264,6 @@ enum class LoadStage : unsigned char {
    }
 }
 
-//________________________________________________________________________________________
-- (void) readabilityAuth
-{
-   assert(stage == LoadStage::inactive && "readabilityAuth, wrong stage");
-   assert(currentConnection == nil && "readabilityAuth, has an active connection");
-
-   stage = LoadStage::auth;
-   
-   NSString * const path = @"";
-   NSString * const userName = @"";
-   NSString * const password = @"";
-
-   NSDictionary * const postParameters = [NSDictionary dictionaryWithObjectsAndKeys : userName, @"x_auth_username",
-                                          password, @"x_auth_password", @"client_auth", @"x_auth_mode", nil];
-   NSString * const consumerKey = @"";
-   NSString * const consumerSecret = @"";
-      
-   NSString * const host = @"";
-
-   [GCOAuth setUserAgent : @""];
-   NSURLRequest *xauth = [GCOAuth URLRequestForPath : path POSTParameters : postParameters host : host consumerKey : consumerKey
-                          consumerSecret : consumerSecret accessToken : nil tokenSecret : nil];
-      
-   if (xauth && (currentConnection = [[NSURLConnection alloc] initWithRequest : xauth delegate : self]))
-      return;
-   
-   currentConnection = nil;
-   [self loadOriginalPage];
-}
-
-//________________________________________________________________________________________
-- (void) readabilityParse
-{
-   assert(stage == LoadStage::auth && "readabilityParse, wrong stage");
-   assert(responseData != nil && "readabilitParse, responseData  is nil");
-   
-
-   //Extract OAuth tokens to make a next request.
-    
-   NSString * const response = [[NSString alloc] initWithData : responseData encoding : NSUTF8StringEncoding];
-   NSArray * const components = [response componentsSeparatedByString : @"&"];
-   
-   NSString *OAuthToken = nil;
-   NSString *OAuthTokenSecret = nil;
-   NSString *OAuthConfirm = nil;
-   
-   for (NSString *component in components) {
-      NSArray *pair = [component componentsSeparatedByString:@"="];
-      assert(pair.count == 2);
-      if ([(NSString *)pair[0] isEqualToString : @"oauth_token_secret"])
-         OAuthTokenSecret = (NSString *)pair[1];
-      else if ([(NSString *)pair[0] isEqualToString : @"oauth_token"])
-         OAuthToken = (NSString *)pair[1];
-      else if ([(NSString *)pair[0] isEqualToString : @"oauth_callback_confirmed"])
-         OAuthConfirm = (NSString *)pair[1];
-   }
-   
-   if (OAuthToken && OAuthTokenSecret && OAuthConfirm && [OAuthConfirm isEqualToString : @"true"]) {
-      assert(articleLink != nil && "readabilityParse, articleLink is nil");
-      //Here's the real black magic, we send a request to Readability's parser.
-      stage = LoadStage::rdbRequest;
-
-      //Private Readability content API.
-   }
-   
-   currentConnection = nil;
-   //Something bad happened.
-   [self loadOriginalPage];
-}
-
-//________________________________________________________________________________________
-- (void) loadExtractedContent
-{
-   assert(stage == LoadStage::rdbRequest && "loadExtractedContent, wrong stage");
-   assert(status == 200 && "loadExtractedContent, wrong status code");
-   assert(responseData != nil && "loadExtractedContent, responseData is nil");
-
-   currentConnection = nil;
-
-   NSError *err = nil;
-   NSDictionary * const json = [NSJSONSerialization JSONObjectWithData : responseData options : NSJSONReadingAllowFragments error : &err];
-   if (json) {
-      if (json[@""]) {//Private API (result format).
-         //
-         NSString * const imgPath = [[NSBundle mainBundle] pathForResource : @"readOriginalArticle" ofType:@"png"];
-         NSString * const cssPath = [[NSBundle mainBundle] pathForResource : @"ArticleCSS" ofType:@"css"];
-
-         NSMutableString *htmlString = [NSMutableString stringWithFormat :
-                                                      @"<html><head><link rel='stylesheet' type='text/css' "
-                                                      "href='file://%@'></head><body><a href='%@'><img src='file://%@' "
-                                                      "/></a></p></body></html><h1>%@</h1>%@<p class='read'>",
-                                        cssPath, articleLink, imgPath, title, (NSString *)json[@""]];
-         [self.contentWebView loadHTMLString : htmlString baseURL : nil];
-         //
-         stage = LoadStage::inactive;
-         [self stopSpinner];
-         
-         [self addZoomButtons];
-         
-         return;
-      }
-   }
-
-   [self loadOriginalPage];
-}
-
 #pragma mark - NSURLConnectionDelegate and NSURLConnectionDataDelegate.
 
 //________________________________________________________________________________________
@@ -409,6 +309,7 @@ enum class LoadStage : unsigned char {
 
    currentConnection = nil;
 
+#ifdef READABILITY_CONTENT_API_DEFINED
    if (status != 200)
       //Something bad happened either during auth. or parsing.
       [self loadOriginalPage];
@@ -418,6 +319,7 @@ enum class LoadStage : unsigned char {
    else
       //We have an extracted content.
       [self loadExtractedContent];
+#endif
 }
 
 //________________________________________________________________________________________
@@ -429,8 +331,10 @@ enum class LoadStage : unsigned char {
           "connection:didFailWithError:, wrong stage");
    
    currentConnection = nil;
-   
+
+#ifdef READABILITY_CONTENT_API_DEFINED
    [self loadOriginalPage];
+#endif
 }
 
 #pragma mark - GUI adjustments.

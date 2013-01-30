@@ -12,31 +12,32 @@
 
 
 @implementation WebcastsGridViewController {
-    MBProgressHUD *_noConnectionHUD;
+    MBProgressHUD *noConnectionHUD;
 }
 
 //________________________________________________________________________________________
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder]) {
-        //self.gridView.backgroundColor = [UIColor whiteColor];
-        _noConnectionHUD.delegate = self;
-        _noConnectionHUD.mode = MBProgressHUDModeText;
-        _noConnectionHUD.labelText = @"No internet connection";
-        _noConnectionHUD.removeFromSuperViewOnHide = YES;
-        
-        self.parser = [[WebcastsParser alloc] init];
-        self.parser.delegate = self;
-        [self refresh];
-    }
-    return self;
+   if (self = [super initWithCoder:aDecoder]) {
+      //self.gridView.backgroundColor = [UIColor whiteColor];
+      noConnectionHUD.delegate = self;
+      noConnectionHUD.mode = MBProgressHUDModeText;
+      noConnectionHUD.labelText = @"No internet connection";
+      noConnectionHUD.removeFromSuperViewOnHide = YES;
+
+      self.parser = [[WebcastsParser alloc] init];
+      self.parser.delegate = self;
+      [self refresh];
+   }
+
+   return self;
 }
 
 //________________________________________________________________________________________
 - (void)refresh
 {
     if (!self.parser.recentWebcasts.count && !self.parser.upcomingWebcasts.count) {
-        [_noConnectionHUD hide:YES];
+        [noConnectionHUD hide:YES];
 
         self.finishedParsingRecent = NO;
         self.finishedParsingUpcoming = NO;
@@ -131,12 +132,12 @@
 - (void)webcastsParser:(WebcastsParser *)parser didFailWithError:(NSError *)error
 {
     [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-	_noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    _noConnectionHUD.delegate = self;
-    _noConnectionHUD.mode = MBProgressHUDModeText;
-    _noConnectionHUD.labelText = @"No internet connection";
-    _noConnectionHUD.removeFromSuperViewOnHide = YES;
+    noConnectionHUD.delegate = self;
+    noConnectionHUD.mode = MBProgressHUDModeText;
+    noConnectionHUD.labelText = @"No internet connection";
+    noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
 @end
