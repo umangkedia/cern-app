@@ -391,7 +391,7 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) addWebBrowserButtons
 {
-#ifndef READABILITY_CONTENT_API_DEFINED
+#ifdef READABILITY_CONTENT_API_DEFINED
    actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
    [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
    [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
