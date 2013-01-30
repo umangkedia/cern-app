@@ -37,8 +37,10 @@ enum class LoadStage : unsigned char {
    
    NSURLConnection *currentConnection;
    
+   UIButton *origPageBtn;
    UIButton *zoomInBtn;
    UIButton *zoomOutBtn;
+   UIButton *actionBtn;
    
    NSUInteger zoomLevel;
    int fontSize;
@@ -230,6 +232,7 @@ enum class LoadStage : unsigned char {
 
    [self stopSpinner];
    stage = LoadStage::inactive;
+   [self addWebBrowserButtons];
 }
 
 #pragma mark - Readability and web-view.
@@ -337,39 +340,22 @@ enum class LoadStage : unsigned char {
 #endif
 }
 
-#pragma mark - GUI adjustments.
-
-//________________________________________________________________________________________
-- (void) addZoomButtons
-{
-   zoomInBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [zoomInBtn setBackgroundImage : [UIImage imageNamed : @"zoomin.png"] forState : UIControlStateNormal];
-   [zoomInBtn addTarget : self action : @selector(zoomIn) forControlEvents : UIControlEventTouchUpInside];
-
-   zoomInBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
-   zoomOutBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [zoomOutBtn addTarget : self action : @selector(zoomOut) forControlEvents : UIControlEventTouchUpInside];
-   
-   [zoomOutBtn setBackgroundImage : [UIImage imageNamed : @"zoomout.png"] forState : UIControlStateNormal];
-   zoomOutBtn.frame = CGRectMake(22.f, 0.f, 22.f, 22.f);
-   UIView * const view = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f, 44.f, 22.f)];
-   [view addSubview : zoomInBtn];
-   [view addSubview : zoomOutBtn];
-   
-   zoomOutBtn.enabled = NO;
-   
-   UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : view];
-   self.navigationItem.rightBarButtonItem = backButton;
-   
-   zoomLevel = 1;
-   fontSize = 24;
-}
-
+#pragma mark - "Browser"
 //________________________________________________________________________________________
 - (void) changeTextSize
 {
    NSString *jsString = [[NSString alloc] initWithFormat : @"document.getElementsByTagName('body')[0].style.fontSize=%d", fontSize];
    [self.contentWebView stringByEvaluatingJavaScriptFromString : jsString];
+}
+
+//________________________________________________________________________________________
+- (void) sendArticle
+{
+}
+
+//________________________________________________________________________________________
+- (void) switchToOriginalPage
+{
 }
 
 //________________________________________________________________________________________
@@ -398,6 +384,56 @@ enum class LoadStage : unsigned char {
    fontSize -= 8;
    
    [self changeTextSize];
+}
+
+#pragma mark - GUI adjustments.
+
+//________________________________________________________________________________________
+- (void) addWebBrowserButtons
+{
+#ifndef READABILITY_CONTENT_API_DEFINED
+   actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
+   [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
+   actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+
+   origPageBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [origPageBtn setBackgroundImage : [UIImage imageNamed : @"globe.png"] forState : UIControlStateNormal];
+   [origPageBtn addTarget : self action : @selector(switchToOriginalPage) forControlEvents : UIControlEventTouchUpInside];
+   origPageBtn.frame = CGRectMake(24.f, 0.f, 22.f, 22.f);
+
+   zoomInBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [zoomInBtn setBackgroundImage : [UIImage imageNamed : @"zoomin.png"] forState : UIControlStateNormal];
+   [zoomInBtn addTarget : self action : @selector(zoomIn) forControlEvents : UIControlEventTouchUpInside];
+   zoomInBtn.frame = CGRectMake(48.f, 0.f, 22.f, 22.f);
+   
+   zoomOutBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [zoomOutBtn addTarget : self action : @selector(zoomOut) forControlEvents : UIControlEventTouchUpInside];
+   [zoomOutBtn setBackgroundImage : [UIImage imageNamed : @"zoomout.png"] forState : UIControlStateNormal];
+   zoomOutBtn.frame = CGRectMake(72.f, 0.f, 22.f, 22.f);
+
+   UIView * const view = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f, 96.f, 22.f)];
+   [view addSubview : actionBtn];
+   [view addSubview : origPageBtn];
+   [view addSubview : zoomInBtn];
+   [view addSubview : zoomOutBtn];
+   
+   zoomOutBtn.enabled = NO;
+#else
+   actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
+   [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
+   actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+
+   UIView * const view = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f,  22.f, 22.f)];
+   [view addSubview : actionBtn];
+#endif
+
+   UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : view];
+   self.navigationItem.rightBarButtonItem = backButton;
+   
+   zoomLevel = 1;
+   fontSize = 24;
 }
 
 @end

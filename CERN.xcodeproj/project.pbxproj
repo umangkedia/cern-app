@@ -124,6 +124,8 @@
 		41E618901614CFAB00BAA7D4 /* ArticleCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = 41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */; };
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
 		70086231169B56F2001C7BB5 /* MenuItemViews.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70086230169B56F2001C7BB5 /* MenuItemViews.mm */; };
+		700AF64F16B98ED600194E16 /* globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF64E16B98ED600194E16 /* globe.png */; };
+		700AF65116B9932500194E16 /* action.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF65016B9932500194E16 /* action.png */; };
 		700B978416AEB03D0006EAD3 /* ImageDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 700B978316AEB03D0006EAD3 /* ImageDownloader.mm */; };
 		700F547916396A130082B89E /* CERNLive.plist in Resources */ = {isa = PBXBuildFile; fileRef = 700F547816396A130082B89E /* CERNLive.plist */; };
 		700FAD5D16A7068200FED28D /* PhotoSetInfoView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 700FAD5C16A7068200FED28D /* PhotoSetInfoView.mm */; };
@@ -384,6 +386,8 @@
 		7008622F169B56F2001C7BB5 /* MenuItemViews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItemViews.h; sourceTree = "<group>"; };
 		70086230169B56F2001C7BB5 /* MenuItemViews.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItemViews.mm; sourceTree = "<group>"; };
 		700AF64B16B9830300194E16 /* Readability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Readability.h; sourceTree = "<group>"; };
+		700AF64E16B98ED600194E16 /* globe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = globe.png; sourceTree = "<group>"; };
+		700AF65016B9932500194E16 /* action.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = action.png; sourceTree = "<group>"; };
 		700B978216AEB03D0006EAD3 /* ImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageDownloader.h; sourceTree = "<group>"; };
 		700B978316AEB03D0006EAD3 /* ImageDownloader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageDownloader.mm; sourceTree = "<group>"; };
 		700F547816396A130082B89E /* CERNLive.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CERNLive.plist; sourceTree = "<group>"; };
@@ -877,6 +881,8 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				700AF65016B9932500194E16 /* action.png */,
+				700AF64E16B98ED600194E16 /* globe.png */,
 				70B7878B16B951B100048CC9 /* zoomin.png */,
 				70B7878C16B951B100048CC9 /* zoomout.png */,
 				70221E4316B1722B007AE923 /* videos.png */,
@@ -1307,6 +1313,8 @@
 				70221E4416B1722B007AE923 /* videos.png in Resources */,
 				70B7878D16B951B100048CC9 /* zoomin.png in Resources */,
 				70B7878E16B951B100048CC9 /* zoomout.png in Resources */,
+				700AF64F16B98ED600194E16 /* globe.png in Resources */,
+				700AF65116B9932500194E16 /* action.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

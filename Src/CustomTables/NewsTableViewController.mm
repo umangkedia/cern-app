@@ -362,7 +362,7 @@
          viewController.loadOriginalLink = YES;
          const NSUInteger index = indexPath.row;
          [viewController setContentForArticle : [allArticles objectAtIndex : index]];
-         
+         viewController.title = @"";
          [self.navigationController pushViewController : viewController animated : YES];
       } else {
          CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
