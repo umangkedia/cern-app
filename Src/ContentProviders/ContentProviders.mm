@@ -394,10 +394,7 @@ void CancelConnections(UIViewController *controller)
       [self addLiveImageDescription:liveEvents[0] into : evc];
       
       //Combine experiment name and category name?
-      if ([categoryName hasPrefix : experimentName])
-         evc.title = categoryName;
-      else
-         evc.title = [experimentName stringByAppendingFormat : @" %@", categoryName];// experimentName;
+      evc.title = categoryName;
    } else {
       navController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : EventDisplayControllerFromTableID];
       assert([navController.topViewController isKindOfClass : [LiveEventTableController class]] &&
@@ -405,10 +402,7 @@ void CancelConnections(UIViewController *controller)
 
       LiveEventTableController * const eventViewController = (LiveEventTableController *)navController.topViewController;
       
-      if ([categoryName hasPrefix : experimentName])
-         eventViewController.navigationItem.title = categoryName;
-      else
-         eventViewController.navigationItem.title = [experimentName stringByAppendingFormat : @" %@", categoryName];
+      eventViewController.navigationItem.title = categoryName;
 
       [eventViewController setTableContents : liveEvents experimentName : experimentName];
       eventViewController.provider = self;
