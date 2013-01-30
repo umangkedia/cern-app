@@ -36,9 +36,15 @@ enum class LoadStage : unsigned char {
    NSMutableData *responseData;
    
    NSURLConnection *currentConnection;
+   
+   UIButton *zoomInBtn;
+   UIButton *zoomOutBtn;
+   
+   NSUInteger zoomLevel;
+   int fontSize;
 }
 
-@synthesize contentWebView, contentString, loadOriginalLink;
+@synthesize contentWebView, contentString, loadOriginalLink, title;
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
@@ -103,7 +109,6 @@ enum class LoadStage : unsigned char {
       [spinner setHidden : NO];
       [spinner startAnimating];
 
-
       [self loadOriginalPage];
 
       //[self readabilityAuth];
@@ -152,6 +157,7 @@ enum class LoadStage : unsigned char {
 
    NSString *link = article.link;
    articleLink = article.link;
+   title = article.title;
    
    NSString *imgPath = [[NSBundle mainBundle] pathForResource:@"readOriginalArticle" ofType:@"png"];
    NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"ArticleCSS" ofType:@"css"];
@@ -194,7 +200,7 @@ enum class LoadStage : unsigned char {
 - (BOOL) webView : (UIWebView *) webView shouldStartLoadWithRequest : (NSURLRequest *)request navigationType : (UIWebViewNavigationType) navigationType
 {
    if (navigationType == UIWebViewNavigationTypeLinkClicked ) {
-      [[UIApplication sharedApplication] openURL:[request URL]];
+      [[UIApplication sharedApplication] openURL : [request URL]];
       return NO;
    }
 
@@ -204,8 +210,6 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) webView : (UIWebView *) webView didFailLoadWithError : (NSError *) error
 {
-   //assert(stage == LoadStage::originalPageLoad && "webView:didFaildLoadWithError:, wrong stage");
-
    [self stopSpinner];
    stage = LoadStage::inactive;
 }
@@ -220,16 +224,6 @@ enum class LoadStage : unsigned char {
 
    [self stopSpinner];
    stage = LoadStage::inactive;
-   /*
-   //Many thank to Confused Vorlon for this trick (http://stackoverflow.com/questions/1511707/uiwebview-does-not-scale-content-to-fit)
-   if ([self.contentWebView respondsToSelector:@selector(scrollView)]) {
-      UIScrollView * const scroll = [self.contentWebView scrollView];
-      const CGFloat zoom = self.contentWebView.bounds.size.width / scroll.contentSize.width;
-      if (zoom != 1.) {
-         [scroll setZoomScale : zoom animated : YES];
-      }
-   }
-   */
 }
 
 #pragma mark - Readability and web-view.
@@ -271,8 +265,6 @@ enum class LoadStage : unsigned char {
    assert(currentConnection == nil && "readabilityAuth, has an active connection");
 
    stage = LoadStage::auth;
-   
-   //This part is classified.
    
    NSString * const path = @"";
    NSString * const userName = @"";
@@ -326,10 +318,9 @@ enum class LoadStage : unsigned char {
    if (OAuthToken && OAuthTokenSecret && OAuthConfirm && [OAuthConfirm isEqualToString : @"true"]) {
       assert(articleLink != nil && "readabilityParse, articleLink is nil");
       //Here's the real black magic, we send a request to Readability's parser.
-      
       stage = LoadStage::rdbRequest;
 
-      //This part is classified, I can not show private content API in a public SVN rep :)
+      //Private Readability content API.
    }
    
    currentConnection = nil;
@@ -349,8 +340,25 @@ enum class LoadStage : unsigned char {
    NSError *err = nil;
    NSDictionary * const json = [NSJSONSerialization JSONObjectWithData : responseData options : NSJSONReadingAllowFragments error : &err];
    if (json) {
-      //This part is classified.
-      return;
+      if (json[@""]) {//Private API (result format).
+         //
+         NSString * const imgPath = [[NSBundle mainBundle] pathForResource : @"readOriginalArticle" ofType:@"png"];
+         NSString * const cssPath = [[NSBundle mainBundle] pathForResource : @"ArticleCSS" ofType:@"css"];
+
+         NSMutableString *htmlString = [NSMutableString stringWithFormat :
+                                                      @"<html><head><link rel='stylesheet' type='text/css' "
+                                                      "href='file://%@'></head><body><a href='%@'><img src='file://%@' "
+                                                      "/></a></p></body></html><h1>%@</h1>%@<p class='read'>",
+                                        cssPath, articleLink, imgPath, title, (NSString *)json[@""]];
+         [self.contentWebView loadHTMLString : htmlString baseURL : nil];
+         //
+         stage = LoadStage::inactive;
+         [self stopSpinner];
+         
+         [self addZoomButtons];
+         
+         return;
+      }
    }
 
    [self loadOriginalPage];
@@ -425,6 +433,67 @@ enum class LoadStage : unsigned char {
    [self loadOriginalPage];
 }
 
+#pragma mark - GUI adjustments.
 
+//________________________________________________________________________________________
+- (void) addZoomButtons
+{
+   zoomInBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [zoomInBtn setBackgroundImage : [UIImage imageNamed : @"zoomin.png"] forState : UIControlStateNormal];
+   [zoomInBtn addTarget : self action : @selector(zoomIn) forControlEvents : UIControlEventTouchUpInside];
+
+   zoomInBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+   zoomOutBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+   [zoomOutBtn addTarget : self action : @selector(zoomOut) forControlEvents : UIControlEventTouchUpInside];
+   
+   [zoomOutBtn setBackgroundImage : [UIImage imageNamed : @"zoomout.png"] forState : UIControlStateNormal];
+   zoomOutBtn.frame = CGRectMake(22.f, 0.f, 22.f, 22.f);
+   UIView * const view = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f, 44.f, 22.f)];
+   [view addSubview : zoomInBtn];
+   [view addSubview : zoomOutBtn];
+   
+   zoomOutBtn.enabled = NO;
+   
+   UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : view];
+   self.navigationItem.rightBarButtonItem = backButton;
+   
+   zoomLevel = 1;
+   fontSize = 24;
+}
+
+//________________________________________________________________________________________
+- (void) changeTextSize
+{
+   NSString *jsString = [[NSString alloc] initWithFormat : @"document.getElementsByTagName('body')[0].style.fontSize=%d", fontSize];
+   [self.contentWebView stringByEvaluatingJavaScriptFromString : jsString];
+}
+
+//________________________________________________________________________________________
+- (void) zoomIn
+{
+   if (zoomLevel + 1 == 5)
+      zoomInBtn.enabled = NO;
+   else if (zoomLevel == 1)
+      zoomOutBtn.enabled = YES;
+
+   ++zoomLevel;   
+   fontSize += 8;
+
+   [self changeTextSize];   
+}
+
+//________________________________________________________________________________________
+- (void) zoomOut
+{
+   if (zoomLevel - 1 < 2)
+      zoomOutBtn.enabled = NO;
+   else
+      zoomInBtn.enabled = YES;
+   
+   --zoomLevel;
+   fontSize -= 8;
+   
+   [self changeTextSize];
+}
 
 @end
