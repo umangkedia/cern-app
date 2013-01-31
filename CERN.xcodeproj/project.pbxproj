@@ -238,6 +238,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		411D362016BAC270008CF20B /* Readability-oauth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Readability-oauth.h"; path = "../Readability-oauth.h"; sourceTree = "<group>"; };
+		411D362316BADC57008CF20B /* Readability-sample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Readability-sample.h"; sourceTree = "<group>"; };
 		4162A4541625BA87002B9D09 /* Default~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default~iphone.png"; sourceTree = "<group>"; };
 		4162A4561625BA98002B9D09 /* Default@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x~iphone.png"; sourceTree = "<group>"; };
 		4162A4601625BD3C002B9D09 /* Default-Landscape@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x~ipad.png"; sourceTree = "<group>"; };
@@ -385,7 +387,6 @@
 		41E618931614CFB500BAA7D4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		7008622F169B56F2001C7BB5 /* MenuItemViews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItemViews.h; sourceTree = "<group>"; };
 		70086230169B56F2001C7BB5 /* MenuItemViews.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItemViews.mm; sourceTree = "<group>"; };
-		700AF64B16B9830300194E16 /* Readability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Readability.h; sourceTree = "<group>"; };
 		700AF64E16B98ED600194E16 /* globe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = globe.png; sourceTree = "<group>"; };
 		700AF65016B9932500194E16 /* action.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = action.png; sourceTree = "<group>"; };
 		700B978216AEB03D0006EAD3 /* ImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageDownloader.h; sourceTree = "<group>"; };
@@ -1031,13 +1032,13 @@
 				707B13EA169AF69300180E02 /* NSString+HTML.m */,
 				707B13EB169AF69300180E02 /* Reachability.h */,
 				707B13EC169AF69300180E02 /* Reachability.mm */,
+				411D362316BADC57008CF20B /* Readability-sample.h */,
 				707B13ED169AF69300180E02 /* UIImage+SquareScaledImage.h */,
 				707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */,
 				707B13AB169AF1E500180E02 /* ApplicationErrors.h */,
 				707B13AC169AF1E500180E02 /* ApplicationErrors.mm */,
 				707B139E169AF07D00180E02 /* GUIHelpers.h */,
 				707B139F169AF07D00180E02 /* GUIHelpers.mm */,
-				700AF64B16B9830300194E16 /* Readability.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1077,6 +1078,7 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
+				411D362016BAC270008CF20B /* Readability-oauth.h */,
 				707B1342169AE8C900180E02 /* Src */,
 				41E617C31614CEB700BAA7D4 /* Resources */,
 				E1F7B689156EDC7C0092367F /* Frameworks */,
@@ -1118,6 +1120,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E1F7B6C7156EDC7D0092367F /* Build configuration list for PBXNativeTarget "CERN" */;
 			buildPhases = (
+				411D362216BAC33E008CF20B /* ShellScript */,
 				E1F7B682156EDC7C0092367F /* Sources */,
 				E1F7B683156EDC7C0092367F /* Frameworks */,
 				E1F7B684156EDC7C0092367F /* Resources */,
@@ -1319,6 +1322,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		411D362216BAC33E008CF20B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Src/Utilities/Readability-sample.h",
+				"",
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Readability.h",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "tokens=$SRCROOT/Src/Utilities/Readability-tokens.h\nsample=$SRCROOT/Src/Utilities/Readability-sample.h\nout=$DERIVED_FILE_DIR/Readability.h\n\nif [ x${ACTION} = \"xbuild\" ]; then\n   echo \"Checking for Readability tokens header: $tokens\"\n   if test -f $tokens; then\n      cp $tokens $out\n      echo \"Found header with Readability tokens\"\n   else\n      cp $sample $out\n      echo \"No Readability tokens header found, ask developers for Readability-tokens.h\"\n   fi\nfi\n\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E1F7B682156EDC7C0092367F /* Sources */ = {
