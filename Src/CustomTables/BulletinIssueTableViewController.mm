@@ -132,6 +132,7 @@
       assert(row >= 0 && row < tableData.count &&
              "tableView:didSelectRowAtIndexPath:, index is out of bounds");
       [viewController setContentForArticle : (MWFeedItem *)tableData[row]];
+      viewController.navigationItem.title = @"";
       [self.navigationController pushViewController : viewController animated : YES];
    } else {
       CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
