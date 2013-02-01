@@ -4,6 +4,8 @@
 
 @synthesize window = _window;
 
+@synthesize OAuthToken, OAuthTokenSecret;
+
 //________________________________________________________________________________________
 - (BOOL) application : (UIApplication *) application didFinishLaunchingWithOptions : (NSDictionary *) launchOptions
 {
