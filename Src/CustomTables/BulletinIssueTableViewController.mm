@@ -128,7 +128,6 @@
    if (prevController.aggregator.hasConnection) {
       UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
       ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-      viewController.loadOriginalLink = YES;
       const NSInteger row = indexPath.row;
       assert(row >= 0 && row < tableData.count &&
              "tableView:didSelectRowAtIndexPath:, index is out of bounds");

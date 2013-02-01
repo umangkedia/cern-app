@@ -10,17 +10,15 @@
 
 #import "MWFeedItem.h"
 
-@interface ArticleDetailViewController : UIViewController <UIWebViewDelegate, NSURLConnectionDelegate, NSURLConnectionDataDelegate> {
-   IBOutlet UIWebView *contentWebView;
-}
+@interface ArticleDetailViewController : UIViewController <UIWebViewDelegate, NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 
-@property (nonatomic, strong) UIWebView *contentWebView;
-@property (nonatomic, strong) NSString *contentString;
-@property (nonatomic, assign) BOOL loadOriginalLink;
+@property (nonatomic, strong) IBOutlet UIWebView *rdbView;
+@property (nonatomic, strong) IBOutlet UIWebView *pageView;
+
+@property (nonatomic, strong) NSString *rdbCache;
+
 @property (nonatomic, copy) NSString *title;
 
 - (void) setContentForArticle : (MWFeedItem *) article;
-//- (void) setContentForVideoMetadata : (NSDictionary *) videoMetadata;
-- (void) setContentForTweet : (NSDictionary *) tweet;
 
 @end

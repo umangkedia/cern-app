@@ -12,6 +12,7 @@
 #import "ApplicationErrors.h"
 #import "NSString+HTML.h"
 #import "Reachability.h"
+#import "AppDelegate.h"
 #import "GCOAuth.h"
 
 namespace {
@@ -20,7 +21,8 @@ enum class LoadStage : unsigned char {
    inactive,
    auth,
    rdbRequest,
-   originalPageLoad
+   originalPageLoad,
+   needRefresh
 };
 
 }
@@ -37,20 +39,23 @@ enum class LoadStage : unsigned char {
    
    NSURLConnection *currentConnection;
    
-   UIButton *origPageBtn;
    UIButton *zoomInBtn;
    UIButton *zoomOutBtn;
-   UIButton *actionBtn;
    
    NSUInteger zoomLevel;
    int fontSize;
+   
+   BOOL rdbLoaded;
+   BOOL pageLoaded;
 }
 
-@synthesize contentWebView, contentString, loadOriginalLink, title;
+@synthesize rdbView, pageView, rdbCache, title;
 
 //It has to be included here, since the file can contain
 //methods.
 #import "Readability.h"
+
+#define  READABILITY_CONTENT_API_DEFINED
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
@@ -59,15 +64,24 @@ enum class LoadStage : unsigned char {
    using CernAPP::NetworkStatus;
    
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
-      [self.contentWebView stopLoading];
+      [rdbView stopLoading];
+      [pageView stopLoading];
+
       if (currentConnection) {
          [currentConnection cancel];
          currentConnection = nil;
-         stage = LoadStage::inactive;
       }
 
       [self stopSpinner];
-      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+
+      if (stage != LoadStage::inactive) {
+         //We show the message and change buttons
+         //ONLY if view was loading at the time of this
+         //reachability status change.
+         stage = LoadStage::needRefresh;
+         [self addWebBrowserButtons];
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      }
    }
 }
 
@@ -75,7 +89,7 @@ enum class LoadStage : unsigned char {
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
 {
    if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
-      // Custom initialization
+      status = 200;
       stage = LoadStage::inactive;
    }
 
@@ -90,19 +104,33 @@ enum class LoadStage : unsigned char {
 }
 
 //________________________________________________________________________________________
-- (void) viewWillAppear : (BOOL) animated
-{
-}
-
-//________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
    [super viewDidAppear : animated];
 
+   CGRect frame = self.view.frame;
+   frame.origin = CGPoint();
+   
+   zoomLevel = 1;
+   fontSize = 44;
+   
+   rdbView.frame = frame;
+   pageView.frame = frame;
+   
+   rdbView.multipleTouchEnabled = YES;
+   pageView.multipleTouchEnabled = YES;
+   
+   rdbLoaded = NO;
+   pageLoaded = NO;
+
    status = 200;
    stage = LoadStage::inactive;
 
-   if (loadOriginalLink && articleLink) {
+   if (rdbCache && rdbCache.length) {
+      //
+      [self switchToRdbView];
+      [self loadReadabilityCache];
+   } else {
       if (!spinner) {
          const CGFloat spinnerSize = 150.f;
          const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
@@ -112,29 +140,33 @@ enum class LoadStage : unsigned char {
          [self.view addSubview : spinner];
       }
       
-      [spinner setHidden : NO];
-      [spinner startAnimating];
-
 #ifndef READABILITY_CONTENT_API_DEFINED
+      [self switchToPageView];
+      [self startSpinner];
       [self loadOriginalPage];
 #else
-      [self readabilityAuth];
+      [self switchToRdbView];
+      [self startSpinner];
+      [self loadHtmlFromReadability];
 #endif
-   } else if (self.contentString)
-      [self.contentWebView loadHTMLString : self.contentString baseURL : nil];
+   }
 }
 
 //________________________________________________________________________________________
-- (void) viewWillDisappear : (BOOL)animated
+- (void) viewWillDisappear : (BOOL) animated
 {
-   [self.contentWebView stopLoading];
+   [rdbView stopLoading];
+   [pageView stopLoading];
+   
    [self stopSpinner];
+   
    if (currentConnection) {
       [currentConnection cancel];
       currentConnection = nil;
    }
 
    stage = LoadStage::inactive;
+   status = 200;
 }
 
 //________________________________________________________________________________________
@@ -148,58 +180,8 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) setContentForArticle : (MWFeedItem *) article
 {
-   NSString *body = @"";
-
-   // Give "content" a higher priority, but otherwise use "summary"
-   if (article.content)
-      body = article.content;
-   else if (article.summary)
-      body = article.summary;
-
-    
-   NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-   formatter.dateStyle = NSDateFormatterMediumStyle;
-   NSString *dateString = [formatter stringFromDate : article.date];
-   if (!dateString)
-      dateString = @"";
-
-   NSString *link = article.link;
    articleLink = article.link;
    title = article.title;
-   
-   NSString *imgPath = [[NSBundle mainBundle] pathForResource:@"readOriginalArticle" ofType:@"png"];
-   NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"ArticleCSS" ofType:@"css"];
-   NSMutableString *htmlString = [NSMutableString stringWithFormat:@"<html><head><link rel='stylesheet' type='text/css' href='file://%@'></head><body><h1>%@</h1><h2>%@</h2>%@<p class='read'><a href='%@'><img src='file://%@' /></a></p></body></html>", cssPath, article.title, dateString, body, link, imgPath];
-
-   self.contentString = htmlString;
-   [self.contentWebView loadHTMLString : self.contentString baseURL : nil];//TP: this is actually never gets called - contentWebView is nil here.
-}
-
-//________________________________________________________________________________________
-/*
-- (void)setContentForVideoMetadata:(NSDictionary *)videoMetadata
-{
-    NSString *videoTag = [NSString stringWithFormat:@"<video width='100%%' controls='controls'><source src='%@' type='video/mp4' /></video>", [videoMetadata objectForKey:kVideoMetadataPropertyVideoURL]];
-    NSString *titleTag = [NSString stringWithFormat:@"<h1>%@</h1>", [videoMetadata objectForKey:kVideoMetadataPropertyTitle]];
-    
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateStyle = NSDateFormatterMediumStyle;
-    NSString *dateString = [formatter stringFromDate:[videoMetadata objectForKey:kVideoMetadataPropertyDate]];
-    NSString *dateTag = [NSString stringWithFormat:@"<h2>%@</h2>", dateString];
-    
-    NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"ArticleCSS" ofType:@"css"];
-    
-    NSMutableString *htmlString = [NSMutableString stringWithFormat:@"<html><head><link rel='stylesheet' type='text/css' href='file://%@'></head><body>%@%@%@</body></html>", cssPath, videoTag, titleTag, dateTag];
-    
-    self.contentString = htmlString;
-    [self.contentWebView loadHTMLString:self.contentString baseURL:nil];   
-}
-*/
-//________________________________________________________________________________________
-- (void)setContentForTweet:(NSDictionary *)tweet
-{
-    self.contentString = [[tweet objectForKey:@"text"] stringByLinkifyingURLs];
-    [self.contentWebView loadHTMLString:self.contentString baseURL:nil];
 }
 
 #pragma mark - UIWebViewDelegate protocol.
@@ -218,24 +200,52 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) webView : (UIWebView *) webView didFailLoadWithError : (NSError *) error
 {
+#pragma unused(webView, error)
+
+   //Web view by Apple is a piece of ...
+   //You can first receive didFinishLoad, and later didFailWithError.
+   //Or you can receive didFinishLoad many times.
+   //Or some ugly mix of both.
+   //So web-view delegate is quite a useless crap.
+
    [self stopSpinner];
-   stage = LoadStage::inactive;
+
+   if (pageView.superview) {
+      //We're loading an original web-page.
+      if (stage != LoadStage::inactive)//didFinish was called already, ignore this error.
+         stage = LoadStage::needRefresh;
+   } else {
+      //simply ignore for the moment.
+      stage = LoadStage::inactive;
+   }
+   
+   [self addWebBrowserButtons];
 }
 
 //________________________________________________________________________________________
 - (void) webViewDidFinishLoad : (UIWebView *) webView
 {
-   //As usually, Apple has a bug or at least bad documentation:
-   //scale pages to fit property does not work with some pages (or UIWebView does some
-   //undocumented work under the hood, ignoring this property),
-   //probably, because of something like this: "<meta name="viewport" content="width=device-width, initial-scale = 1, user-scalable = yes" />"
-
+#pragma unused(webView)
    [self stopSpinner];
+
    stage = LoadStage::inactive;
    [self addWebBrowserButtons];
+   
+   if (pageView.superview)
+      pageLoaded = YES;
+   else
+      rdbLoaded = YES;
 }
 
 #pragma mark - Readability and web-view.
+
+//________________________________________________________________________________________
+- (void) startSpinner
+{
+   [spinner setHidden : NO];
+   [spinner.superview bringSubviewToFront : spinner];
+   [spinner startAnimating];
+}
 
 //________________________________________________________________________________________
 - (void) stopSpinner
@@ -247,23 +257,99 @@ enum class LoadStage : unsigned char {
 }
 
 //________________________________________________________________________________________
+- (void) loadReadabilityCache
+{
+   assert(rdbCache != nil && rdbCache.length && "loadReadabilityCache, no cache");
+   
+   NSString * const cssPath = [[NSBundle mainBundle] pathForResource : @"ArticleCSS" ofType:@"css"];
+   NSMutableString *htmlString = [NSMutableString stringWithFormat :
+                                                @"<html><head><link rel='stylesheet' type='text/css' "
+                                                "href='file://%@'></head><body></p></body></html><h1>%@</h1>%@<p class='read'>",
+                                  cssPath, title, rdbCache];
+
+   [rdbView loadHTMLString : htmlString baseURL : nil];
+}
+
+//________________________________________________________________________________________
+- (void) loadHtmlFromReadability
+{
+   assert(currentConnection == nil && "loadHtmlFromReadability, connection is active");
+
+   id delegateBase = [UIApplication sharedApplication].delegate;
+   assert([delegateBase isKindOfClass : [AppDelegate class]] &&
+          "loadHtmlFromReadability, app delegate has a wrong type");
+   
+   AppDelegate * const appDelegate = (AppDelegate *)delegateBase;
+   if (appDelegate.OAuthToken && appDelegate.OAuthTokenSecret)
+      //We try to re-use OAuth tokens (if they don't expire yet).
+      [self readabilityParseHtml];
+   else
+      [self readabilityAuth];
+}
+
+//________________________________________________________________________________________
+- (BOOL) extractAuthTokens
+{
+   assert(stage == LoadStage::auth && "extractAuthTokens, wrong stage");
+   assert(responseData != nil && "extractAuthTokens, response data is nil");
+   
+   //Delegate.
+   id delegateBase = [UIApplication sharedApplication].delegate;
+   assert([delegateBase isKindOfClass : [AppDelegate class]] &&
+          "extractAuthTokens, app delegate has a wrong type");
+   AppDelegate * const appDelegate = (AppDelegate *)delegateBase;
+   appDelegate.OAuthToken = nil, appDelegate.OAuthTokenSecret = nil;
+   
+   //Parse the responce.
+   NSString *OAuthToken = nil;
+   NSString *OAuthTokenSecret = nil;
+   NSString *OAuthConfirm = nil;
+
+   NSString * const response = [[NSString alloc] initWithData : responseData encoding : NSUTF8StringEncoding];
+   NSArray * const components = [response componentsSeparatedByString : @"&"];
+   
+   for (NSString *component in components) {
+      NSArray *pair = [component componentsSeparatedByString:@"="];
+      assert(pair.count == 2);
+      if ([(NSString *)pair[0] isEqualToString : @"oauth_token_secret"])
+         OAuthTokenSecret = (NSString *)pair[1];
+      else if ([(NSString *)pair[0] isEqualToString : @"oauth_token"])
+         OAuthToken = (NSString *)pair[1];
+      else if ([(NSString *)pair[0] isEqualToString : @"oauth_callback_confirmed"])
+         OAuthConfirm = (NSString *)pair[1];
+   }
+   
+   if (OAuthToken && OAuthTokenSecret && OAuthConfirm && [OAuthConfirm isEqualToString : @"true"]) {
+      appDelegate.OAuthToken = OAuthToken;
+      appDelegate.OAuthTokenSecret = OAuthTokenSecret;
+      
+      return YES;
+   }
+   
+   return NO;
+}
+
+//________________________________________________________________________________________
 - (void) loadOriginalPage
 {
-   assert(stage != LoadStage::originalPageLoad && "loadOriginalPage, wrong stage");
    assert(currentConnection == nil && "loadOriginalPage, has an active connection");
 
    using CernAPP::NetworkStatus;
+
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       [self stopSpinner];
       CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-      stage = LoadStage::inactive;
+      stage = LoadStage::needRefresh;
+      //Set a HUD with error message here!
+      [self addWebBrowserButtons];//
    } else {
-      stage = LoadStage::originalPageLoad;
-      //Either authentication or parsing failed, try to load original page.
+      //Load original page.
       assert(articleLink != nil && "loadOriginalPage, articleLink is nil");
-      NSURL * const url = [NSURL URLWithString : articleLink];      
+
+      stage = LoadStage::originalPageLoad;
+      NSURL * const url = [NSURL URLWithString : articleLink];
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
-      [self.contentWebView loadRequest : request];
+      [pageView loadRequest : request];
    }
 }
 
@@ -273,6 +359,7 @@ enum class LoadStage : unsigned char {
 - (void) connection : (NSURLConnection *) connection didReceiveResponse : (NSURLResponse *) response
 {
 #pragma unused(connection)
+
    assert(stage == LoadStage::auth || stage == LoadStage::rdbRequest &&
           "connection:didReceiveResponse:, wrong stage");
    assert(response != nil && "connection:didReceiveResponse:, parameter 'response' is nil");
@@ -287,8 +374,20 @@ enum class LoadStage : unsigned char {
    
    [responseData setLength : 0];
    
-   if (status != 200)
-      NSLog(@"got error %d", status);
+   if (status != 200) {
+      [currentConnection cancel];
+      currentConnection = nil;
+      
+      if (stage == LoadStage::auth) {
+         //Load original page, we can not try authorization again (it can fail again and again).
+         [self switchToPageView];
+         [self loadOriginalPage];
+      } else if (status == 401) {
+         //Looks like our auth tokens expired.
+         [self switchToRdbView];//select rdb view, if not yet.
+         [self readabilityAuth];
+      }
+   }
 }
 
 //________________________________________________________________________________________
@@ -312,17 +411,21 @@ enum class LoadStage : unsigned char {
 
    currentConnection = nil;
 
-#ifdef READABILITY_CONTENT_API_DEFINED
-   if (status != 200)
-      //Something bad happened either during auth. or parsing.
-      [self loadOriginalPage];
-   else if (stage == LoadStage::auth)
-      //We have OAuth tokens.
-      [self readabilityParse];
-   else
-      //We have an extracted content.
-      [self loadExtractedContent];
-#endif
+   if (stage == LoadStage::auth) {
+      //Ok, we, probably, received tokens, try to extract them.
+      if ([self extractAuthTokens])
+         [self readabilityParseHtml];
+      else {
+         [self switchToPageView];
+         [self loadOriginalPage];
+      }
+   } else {
+      //We, probably, have content parsed from Readability.
+      if (![self extractReadabilityContent]) {
+         [self switchToPageView];
+         [self loadOriginalPage];
+      }
+   }
 }
 
 //________________________________________________________________________________________
@@ -335,17 +438,18 @@ enum class LoadStage : unsigned char {
    
    currentConnection = nil;
 
-#ifdef READABILITY_CONTENT_API_DEFINED
+   //Something is wrong with readability, either auth. failed
+   //or readability parse stage, do not try anything else,
+   //load the original page.
    [self loadOriginalPage];
-#endif
 }
 
 #pragma mark - "Browser"
 //________________________________________________________________________________________
 - (void) changeTextSize
 {
-   NSString *jsString = [[NSString alloc] initWithFormat : @"document.getElementsByTagName('body')[0].style.fontSize=%d", fontSize];
-   [self.contentWebView stringByEvaluatingJavaScriptFromString : jsString];
+   NSString * const jsString = [[NSString alloc] initWithFormat : @"document.getElementsByTagName('body')[0].style.fontSize=%d", fontSize];
+   [rdbView stringByEvaluatingJavaScriptFromString : jsString];
 }
 
 //________________________________________________________________________________________
@@ -354,8 +458,38 @@ enum class LoadStage : unsigned char {
 }
 
 //________________________________________________________________________________________
-- (void) switchToOriginalPage
+- (void) flipWebViews
 {
+   const UIViewAnimationOptions transitionOptions = UIViewAnimationOptionTransitionFlipFromLeft;
+
+   if (rdbView.superview) {
+      //Switch to original web-page.
+      [rdbView stopLoading];//?
+      [UIView transitionFromView : rdbView toView : pageView duration : 1.f options : transitionOptions completion : ^(BOOL finished) {
+         if (finished) {
+            stage = LoadStage::inactive;
+            if (!pageLoaded) {
+               [self startSpinner];
+               [self hideWebBrowserButtons];
+               [self loadOriginalPage];
+            } else
+               [self addWebBrowserButtons];
+         }
+      }];
+
+   } else {
+      [pageView stopLoading];
+      [UIView transitionFromView : pageView toView : rdbView duration : 1.f options : transitionOptions completion : ^(BOOL finished) {
+         if (finished) {
+            stage = LoadStage::inactive;
+            if (!rdbLoaded) {
+               [self startSpinner];
+               [self loadReadabilityCache];
+            } else
+               [self addWebBrowserButtons];
+         }
+      }];      
+   }
 }
 
 //________________________________________________________________________________________
@@ -367,7 +501,7 @@ enum class LoadStage : unsigned char {
       zoomOutBtn.enabled = YES;
 
    ++zoomLevel;   
-   fontSize += 8;
+   fontSize += 4;
 
    [self changeTextSize];   
 }
@@ -381,9 +515,15 @@ enum class LoadStage : unsigned char {
       zoomInBtn.enabled = YES;
    
    --zoomLevel;
-   fontSize -= 8;
+   fontSize -= 4;
    
    [self changeTextSize];
+}
+
+//________________________________________________________________________________________
+- (void) refresh
+{
+
 }
 
 #pragma mark - GUI adjustments.
@@ -391,49 +531,152 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) addWebBrowserButtons
 {
-#ifdef READABILITY_CONTENT_API_DEFINED
-   actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
-   [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
-   actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+   if (stage == LoadStage::needRefresh) {
+      //We have an error at some stage.
+      if (rdbView.superview) {
+         //Network connection was lost before I even tried to load
+         //original page without readability.
+         //I need ONLY refresh button.
+         UIButton * const refreshBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+         [refreshBtn setBackgroundImage : [UIImage imageNamed:@"refresh.png"] forState : UIControlStateNormal];
+         [refreshBtn addTarget : self action : @selector(refresh) forControlEvents : UIControlEventTouchUpInside];
+         refreshBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+         
+         UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : refreshBtn];//well, not a button but a group of them.
+         self.navigationItem.rightBarButtonItem = backButton;
+      } else {
+         assert(pageView.superview && "addWebBrowserButton, neither rdbView nor pageView are visible");
+         if (rdbLoaded) {
+            //We have a readability processed data and can switch back to this view.
+            //Thus we need 2 buttons: "refresh", "back to readability".
+            UIButton * const refreshBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+            [refreshBtn setBackgroundImage : [UIImage imageNamed:@"refresh.png"] forState : UIControlStateNormal];
+            [refreshBtn addTarget : self action : @selector(refresh) forControlEvents : UIControlEventTouchUpInside];
+            refreshBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+            
+            UIButton * const flipBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+            [flipBtn setBackgroundImage:[UIImage imageNamed:@"bookmarks.png"] forState:UIControlStateNormal];
+            [flipBtn addTarget : self action : @selector(flipWebViews) forControlEvents : UIControlEventTouchUpInside];
+            flipBtn.frame = CGRectMake(28.f, 0.f, 22.f, 22.f);
+            
+            UIView * const parentView = [[UIView alloc] initWithFrame : CGRect()];
+            parentView.frame = CGRectMake(0.f, 0.f, 50.f, 22.f);
+            [parentView addSubview : flipBtn];
+            [parentView addSubview : refreshBtn];
+            
+            UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : parentView];//well, not a button but a group of them.
+            self.navigationItem.rightBarButtonItem = backButton;
+         } else {
+            //Only one button.
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem : UIBarButtonSystemItemRefresh
+                                                      target : self action : @selector(refresh)];
+         }
+      }
+   } else {
+      //No errors.
+      if (rdbView.superview) {
+         UIButton * const actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+         [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
+         [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
+         actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
 
-   origPageBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [origPageBtn setBackgroundImage : [UIImage imageNamed : @"globe.png"] forState : UIControlStateNormal];
-   [origPageBtn addTarget : self action : @selector(switchToOriginalPage) forControlEvents : UIControlEventTouchUpInside];
-   origPageBtn.frame = CGRectMake(24.f, 0.f, 22.f, 22.f);
+         UIButton * const origPageBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+         [origPageBtn setBackgroundImage : [UIImage imageNamed : @"globe.png"] forState : UIControlStateNormal];
+         [origPageBtn addTarget : self action : @selector(flipWebViews) forControlEvents : UIControlEventTouchUpInside];
+         origPageBtn.frame = CGRectMake(28.f, 0.f, 22.f, 22.f);
 
-   zoomInBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [zoomInBtn setBackgroundImage : [UIImage imageNamed : @"zoomin.png"] forState : UIControlStateNormal];
-   [zoomInBtn addTarget : self action : @selector(zoomIn) forControlEvents : UIControlEventTouchUpInside];
-   zoomInBtn.frame = CGRectMake(48.f, 0.f, 22.f, 22.f);
+         zoomInBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+         [zoomInBtn setBackgroundImage : [UIImage imageNamed : @"zoomin.png"] forState : UIControlStateNormal];
+         [zoomInBtn addTarget : self action : @selector(zoomIn) forControlEvents : UIControlEventTouchUpInside];
+         zoomInBtn.frame = CGRectMake(56.f, 0.f, 22.f, 22.f);
+         
+         zoomOutBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+         [zoomOutBtn addTarget : self action : @selector(zoomOut) forControlEvents : UIControlEventTouchUpInside];
+         [zoomOutBtn setBackgroundImage : [UIImage imageNamed : @"zoomout.png"] forState : UIControlStateNormal];
+         zoomOutBtn.frame = CGRectMake(84.f, 0.f, 22.f, 22.f);
+
+         UIView * const parentView = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f, 106.f, 22.f)];
+         [parentView addSubview : actionBtn];
+         [parentView addSubview : origPageBtn];
+         [parentView addSubview : zoomInBtn];
+         [parentView addSubview : zoomOutBtn];
+         
+         if (zoomLevel == 1)
+            zoomOutBtn.enabled = NO;
+         else if (zoomLevel == 5)
+            zoomInBtn.enabled = NO;
+         
+         actionBtn.enabled = NO;
+         
+         UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : parentView];//well, not a button but a group of them.
+         self.navigationItem.rightBarButtonItem = backButton;
+      } else {
+         //"Send" button and "back to readability".
+         if (rdbLoaded) {
+            UIButton * const actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+            [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
+            [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
+            actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+            
+            UIButton * const flipBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+            [flipBtn setBackgroundImage:[UIImage imageNamed:@"bookmarks.png"] forState : UIControlStateNormal];
+            [flipBtn addTarget : self action : @selector(flipWebViews) forControlEvents : UIControlEventTouchUpInside];
+            flipBtn.frame = CGRectMake(28.f, 0.f, 22.f, 22.f);
+            
+            UIView * const parentView = [[UIView alloc] initWithFrame : CGRect()];
+            parentView.frame = CGRectMake(0.f, 0.f, 50.f, 22.f);
+            [parentView addSubview : flipBtn];
+            [parentView addSubview : actionBtn];
+            
+            UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : parentView];//well, not a button but a group of them.
+            self.navigationItem.rightBarButtonItem = backButton;
+
+            actionBtn.enabled = NO;
+         } else {
+            //Only send.
+            UIButton * const actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
+            [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
+            [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
+            actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+            
+            actionBtn.enabled = NO;
+            UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : actionBtn];//well, not a button but a group of them.
+            self.navigationItem.rightBarButtonItem = backButton;
+         }
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) hideWebBrowserButtons
+{
+   self.navigationItem.rightBarButtonItem = nil;
+}
+
+//________________________________________________________________________________________
+- (void) switchToPageView
+{
+   //Non-animated switch.
+   if (rdbView.superview)
+      [rdbView removeFromSuperview];
+   if (!pageView.superview)
+      [self.view addSubview : pageView];
    
-   zoomOutBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [zoomOutBtn addTarget : self action : @selector(zoomOut) forControlEvents : UIControlEventTouchUpInside];
-   [zoomOutBtn setBackgroundImage : [UIImage imageNamed : @"zoomout.png"] forState : UIControlStateNormal];
-   zoomOutBtn.frame = CGRectMake(72.f, 0.f, 22.f, 22.f);
+   if (!spinner.hidden)
+      [spinner.superview bringSubviewToFront : spinner];
+}
 
-   UIView * const view = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f, 96.f, 22.f)];
-   [view addSubview : actionBtn];
-   [view addSubview : origPageBtn];
-   [view addSubview : zoomInBtn];
-   [view addSubview : zoomOutBtn];
-   
-   zoomOutBtn.enabled = NO;
-#else
-   actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
-   [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
-   [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
-   actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
+//________________________________________________________________________________________
+-(void) switchToRdbView
+{
+   //Non-animated switch.
+   if (pageView.superview)
+      [pageView removeFromSuperview];
+   if (!rdbView.superview)
+      [self.view addSubview : rdbView];
 
-   UIView * const view = [[UIView alloc] initWithFrame : CGRectMake(0.f, 0.f,  22.f, 22.f)];
-   [view addSubview : actionBtn];
-#endif
-
-   UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : view];
-   self.navigationItem.rightBarButtonItem = backButton;
-   
-   zoomLevel = 1;
-   fontSize = 24;
+   if (!spinner.hidden)
+      [spinner.superview bringSubviewToFront : spinner];
 }
 
 @end

@@ -6,7 +6,22 @@
 //  Copyright (c) 2013 CERN. All rights reserved.
 //
 
-#ifndef Readability
-#define Readability
+//________________________________________________________________________________________
+- (void) readabilityParseHtml
+{
+   assert(0 && "readabilityParseHtml, can not be called without Content API enabled");
+}
 
-#endif
+//________________________________________________________________________________________
+- (void) readabilityAuth
+{
+   assert(0 && "readabilityAuth, can not be called without Content API enabled");
+}
+
+//________________________________________________________________________________________
+- (BOOL) extractReadabilityContent
+{
+   assert(0 && "extractReadabilityContent, can not be called without Content API enabled");
+
+   return NO;
+}

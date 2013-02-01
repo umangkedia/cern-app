@@ -359,10 +359,9 @@
          UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
 
          ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-         viewController.loadOriginalLink = YES;
          const NSUInteger index = indexPath.row;
          [viewController setContentForArticle : [allArticles objectAtIndex : index]];
-         viewController.title = @"";
+         viewController.navigationItem.title = @"";
          [self.navigationController pushViewController : viewController animated : YES];
       } else {
          CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");

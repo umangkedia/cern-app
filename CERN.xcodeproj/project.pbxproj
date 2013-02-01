@@ -205,6 +205,8 @@
 		709CE6C516A5BE97006D524E /* 389-flash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709CE6C416A5BE97006D524E /* 389-flash@2x.png */; };
 		709CE6C816A5C045006D524E /* 112-group@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709CE6C716A5C045006D524E /* 112-group@2x.png */; };
 		709CE6CA16A5C287006D524E /* 180-stickynote@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709CE6C916A5C287006D524E /* 180-stickynote@2x.png */; };
+		70A2533E16BBED0F00F9898A /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A2533D16BBED0F00F9898A /* refresh.png */; };
+		70A2534016BBEF8F00F9898A /* bookmarks.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A2533F16BBEF8F00F9898A /* bookmarks.png */; };
 		70B0F11016A825750037907B /* BulletinTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F10F16A825750037907B /* BulletinTableViewController.mm */; };
 		70B0F11416A846850037907B /* BulletinViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F11316A846850037907B /* BulletinViewCell.mm */; };
 		70B10A4316A0145C00CB8BC6 /* PREV_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4116A0145C00CB8BC6 /* PREV_about.png */; };
@@ -238,7 +240,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		411D362016BAC270008CF20B /* Readability-oauth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Readability-oauth.h"; path = "../Readability-oauth.h"; sourceTree = "<group>"; };
 		411D362316BADC57008CF20B /* Readability-sample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Readability-sample.h"; sourceTree = "<group>"; };
 		4162A4541625BA87002B9D09 /* Default~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default~iphone.png"; sourceTree = "<group>"; };
 		4162A4561625BA98002B9D09 /* Default@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x~iphone.png"; sourceTree = "<group>"; };
@@ -509,6 +510,8 @@
 		709CE6C416A5BE97006D524E /* 389-flash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "389-flash@2x.png"; sourceTree = "<group>"; };
 		709CE6C716A5C045006D524E /* 112-group@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "112-group@2x.png"; sourceTree = "<group>"; };
 		709CE6C916A5C287006D524E /* 180-stickynote@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "180-stickynote@2x.png"; sourceTree = "<group>"; };
+		70A2533D16BBED0F00F9898A /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
+		70A2533F16BBEF8F00F9898A /* bookmarks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bookmarks.png; sourceTree = "<group>"; };
 		70B0F10E16A825750037907B /* BulletinTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinTableViewController.h; sourceTree = "<group>"; };
 		70B0F10F16A825750037907B /* BulletinTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinTableViewController.mm; sourceTree = "<group>"; };
 		70B0F11216A846850037907B /* BulletinViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinViewCell.h; sourceTree = "<group>"; };
@@ -882,6 +885,8 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				70A2533F16BBEF8F00F9898A /* bookmarks.png */,
+				70A2533D16BBED0F00F9898A /* refresh.png */,
 				700AF65016B9932500194E16 /* action.png */,
 				700AF64E16B98ED600194E16 /* globe.png */,
 				70B7878B16B951B100048CC9 /* zoomin.png */,
@@ -1078,7 +1083,6 @@
 		E1F7B67B156EDC7C0092367F = {
 			isa = PBXGroup;
 			children = (
-				411D362016BAC270008CF20B /* Readability-oauth.h */,
 				707B1342169AE8C900180E02 /* Src */,
 				41E617C31614CEB700BAA7D4 /* Resources */,
 				E1F7B689156EDC7C0092367F /* Frameworks */,
@@ -1318,6 +1322,8 @@
 				70B7878E16B951B100048CC9 /* zoomout.png in Resources */,
 				700AF64F16B98ED600194E16 /* globe.png in Resources */,
 				700AF65116B9932500194E16 /* action.png in Resources */,
+				70A2533E16BBED0F00F9898A /* refresh.png in Resources */,
+				70A2534016BBEF8F00F9898A /* bookmarks.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
