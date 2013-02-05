@@ -162,6 +162,7 @@
 		70600A27169AF9B300F9E833 /* webcasts.png in Resources */ = {isa = PBXBuildFile; fileRef = 70600A16169AF9B300F9E833 /* webcasts.png */; };
 		70619D3016B042F900906E5C /* 106-sliders@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70619D2F16B042F900906E5C /* 106-sliders@2x.png */; };
 		7064A35D169DA177006405B9 /* menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7064A35C169DA177006405B9 /* menu@2x.png */; };
+		7069F33116C11517006BC78B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7069F33016C11517006BC78B /* Settings.bundle */; };
 		707B133D169AE8BC00180E02 /* AQGridSelection.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1338169AE8BC00180E02 /* AQGridSelection.png */; };
 		707B133E169AE8BC00180E02 /* AQGridSelectionGray.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */; };
 		707B133F169AE8BC00180E02 /* AQGridSelectionGrayBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */; };
@@ -436,6 +437,7 @@
 		70600A16169AF9B300F9E833 /* webcasts.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = webcasts.png; sourceTree = "<group>"; };
 		70619D2F16B042F900906E5C /* 106-sliders@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "106-sliders@2x.png"; sourceTree = "<group>"; };
 		7064A35C169DA177006405B9 /* menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu@2x.png"; sourceTree = "<group>"; };
+		7069F33016C11517006BC78B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = ../Src/Menu/Settings.bundle; sourceTree = "<group>"; };
 		707B1338169AE8BC00180E02 /* AQGridSelection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelection.png; sourceTree = "<group>"; };
 		707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGray.png; sourceTree = "<group>"; };
 		707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGrayBlue.png; sourceTree = "<group>"; };
@@ -672,6 +674,7 @@
 				41E617C41614CEB700BAA7D4 /* Images */,
 				41E618291614CEB700BAA7D4 /* MWPhotoBrowser.bundle */,
 				41E618911614CFB500BAA7D4 /* en.lproj */,
+				7069F33016C11517006BC78B /* Settings.bundle */,
 				41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */,
 				41E618271614CEB700BAA7D4 /* MainStoryboard_iPad.storyboard */,
 				41E618281614CEB700BAA7D4 /* iPhone.storyboard */,
@@ -1324,6 +1327,7 @@
 				700AF65116B9932500194E16 /* action.png in Resources */,
 				70A2533E16BBED0F00F9898A /* refresh.png in Resources */,
 				70A2534016BBEF8F00F9898A /* bookmarks.png in Resources */,
+				7069F33116C11517006BC78B /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

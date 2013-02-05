@@ -192,7 +192,10 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
 //________________________________________________________________________________________
 - (void) setLabelFontSize : (CGFloat) size
 {
-
+   assert(size > 0.f && "setLabelFontSize:, parameter 'size' must be positive");
+   UIFont * const font = [UIFont fontWithName : CernAPP::childMenuFontName size : size];
+   assert(font != nil && "initWithFrame:item:style:controller:, font not found");
+   itemLabel.font = font;
 }
 
 //________________________________________________________________________________________
@@ -338,7 +341,10 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
 //________________________________________________________________________________________
 - (void) setLabelFontSize : (CGFloat) size
 {
-
+   assert(size > 0.f && "setLabelFontSize:, parameter 'size' must be positive");
+   UIFont * const font = [UIFont fontWithName : groupItem.parentGroup ? CernAPP::childMenuFontName : CernAPP::groupMenuFontName size : size];
+   assert(font != nil && "initWithFrame:item:style:controller:, font not found");
+   itemLabel.font = font;
 }
 
 //________________________________________________________________________________________

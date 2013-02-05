@@ -10,7 +10,12 @@
 - (BOOL) application : (UIApplication *) application didFinishLaunchingWithOptions : (NSDictionary *) launchOptions
 {
    [[UIBarButtonItem appearance] setTintColor : [UIColor colorWithRed : 0.f green : 83.f / 255.f blue : 161.f / 255.f alpha : 1.f]];
-
+   //
+   NSUserDefaults * const defaults = [NSUserDefaults standardUserDefaults];
+   NSDictionary * const appDefaults = [NSDictionary dictionaryWithObject : @13 forKey : @"GUIFontSize"];
+   [defaults registerDefaults : appDefaults];
+   [defaults synchronize];
+   //
    return YES;
 }
 

@@ -465,13 +465,36 @@ using CernAPP::ItemStyle;
       scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, totalHeight);
 }
 
-#pragma mark - View lifecycle's management.
+#pragma mark - View lifecycle's management + settings notifications.
 
 //________________________________________________________________________________________
 - (void) awakeFromNib
 {
    inAnimation = NO;
    newOpen = nil;
+}
+
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
+}
+
+//________________________________________________________________________________________
+- (void) defaultsChanged : (NSNotification *) notification
+{
+   if ([notification.object isKindOfClass : [NSUserDefaults class]]) {
+      NSUserDefaults * const defaults = (NSUserDefaults *)notification.object;
+      if (id sz = [defaults objectForKey : @"GUIFontSize"]) {
+         assert([sz isKindOfClass : [NSNumber class]] && "defaultsChanged:, GUIFontSize has a wrong type");
+         const CGFloat newFontSize = [(NSNumber *)sz floatValue];
+         
+         for (NSObject<MenuItemProtocol> * item in menuItems)
+            [item setLabelFontSize : newFontSize];
+         
+         [self layoutMenuResetOffset : NO resetContentSize : NO];
+      }
+   }
 }
 
 //________________________________________________________________________________________
@@ -491,6 +514,10 @@ using CernAPP::ItemStyle;
    
    selectedItemView = nil;
    [self loadMenuContents];
+   
+   //Settings modifications.
+  [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(defaultsChanged:) name : NSUserDefaultsDidChangeNotification object : nil];
+   //
 }
 
 //________________________________________________________________________________________

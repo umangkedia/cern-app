@@ -22,6 +22,7 @@
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
 - (CGFloat) requiredHeight;
 
+- (void) setLabelFontSize : (CGFloat) sizeBase;
 - (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
 
 @optional
@@ -48,6 +49,7 @@
 - (CGFloat) requiredHeight;
 
 - (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
+- (void) setLabelFontSize : (CGFloat) sizeBase;
 
 - (void) itemPressedIn : (UIViewController *) controller;
 
@@ -68,6 +70,7 @@
 - (CGFloat) requiredHeight;
 
 - (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
+- (void) setLabelFontSize : (CGFloat) sizeBase;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;
@@ -99,6 +102,7 @@
 - (CGFloat) requiredHeight;
 
 - (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
+- (void) setLabelFontSize : (CGFloat) sizeBase;
 
 - (NSString *) itemText;
 - (UIImage *) itemImage;

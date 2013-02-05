@@ -11,6 +11,23 @@
 
 using CernAPP::ItemStyle;
 
+namespace {
+
+//________________________________________________________________________________________
+CGFloat DefaultGUIFontSize()
+{
+   NSUserDefaults * const defaults = [NSUserDefaults standardUserDefaults];
+   if (id sz = [defaults objectForKey:@"GUIFontSize"]) {
+      assert([sz isKindOfClass : [NSNumber class]] && "DefaultGUIFontSize, 'GUIFontSize' has a wrong type");
+      return [(NSNumber *)sz floatValue];
+   }
+   
+   //Ooops.
+   return 13.f;
+}
+
+}
+
 //Single menu item, can be standalone or a group member.
 @implementation MenuItem {
    NSString *itemTitle;
@@ -55,6 +72,7 @@ using CernAPP::ItemStyle;
                                    style : ItemStyle::child controller : controller];
      
    itemView = newView;
+   [itemView setLabelFontSize : DefaultGUIFontSize()];
    [parentView addSubview : newView];
 }
 
@@ -84,6 +102,14 @@ using CernAPP::ItemStyle;
 
    itemView.indent = indent;
    itemView.imageHint = imageHint;
+}
+
+//________________________________________________________________________________________
+- (void) setLabelFontSize : (CGFloat) size
+{
+   assert(size > 0 && "setLabelFontSize:, parameter 'size' must be positive");
+   assert(itemView != nil && "setLabelFontSize:, itemView is nil");
+   [itemView setLabelFontSize : size];
 }
 
 //________________________________________________________________________________________
@@ -157,6 +183,11 @@ using CernAPP::ItemStyle;
    [parentView addSubview : menuGroupView];
          
    titleView = menuGroupView;
+   if (!parentGroup)
+      [titleView setLabelFontSize : DefaultGUIFontSize() + 4.f];
+   else
+      [titleView setLabelFontSize : DefaultGUIFontSize()];
+
    containerView = newContainerView;
    groupView = newGroupView;
 }
@@ -277,6 +308,21 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (void) setLabelFontSize : (CGFloat) sizeBase
+{
+   assert(sizeBase > 0 && "setLabelFontSize:, parameter 'sizeBase' must be positive");
+   assert(titleView != nil && "setLabelFontSize:, titleView is nil");
+   
+   if (!parentGroup)
+      [titleView setLabelFontSize : sizeBase + 4];
+   else
+      [titleView setLabelFontSize : sizeBase];
+   
+   for (NSObject<MenuItemProtocol> *menuItem in items)
+      [menuItem setLabelFontSize : sizeBase];
+}
+
+//________________________________________________________________________________________
 - (NSString *) itemText
 {
    return title;
@@ -344,6 +390,13 @@ using CernAPP::ItemStyle;
 {
 #pragma unused(indent, imageHint)
    //Noop - separator has no image, no text.
+}
+
+//________________________________________________________________________________________
+- (void) setLabelFontSize : (CGFloat) sizeBase
+{
+#pragma unused(sizeBase)
+   //Noop, separators does not have a text.
 }
 
 //________________________________________________________________________________________
