@@ -675,7 +675,7 @@ enum class LoadStage : unsigned char {
    assert(sendOverlay != nil && "addSendButtons, sendOverlay is nil");
    
    //Harcoded geometry :) But it's ... ok :)
-   CGRect frame = CGRectMake(10.f, 100.f, 80.f, 80.f);
+   CGRect frame = CGRectMake(10.f, 60.f, 80.f, 80.f);
 
    PictureButtonView * const btnView = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"twitter-bird-white-on-blue.png"]];
    [btnView addTarget : self selector : @selector(sendTweet)];
