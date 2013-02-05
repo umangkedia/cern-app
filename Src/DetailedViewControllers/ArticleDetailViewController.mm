@@ -26,7 +26,25 @@ enum class LoadStage : unsigned char {
    needRefresh
 };
 
+//________________________________________________________________________________________
+CGFloat DefaultHTMLBodyFontSize()
+{
+   //Some number in a range [0, 20]
+
+   NSUserDefaults * const defaults = [NSUserDefaults standardUserDefaults];
+   if (id sz = [defaults objectForKey:@"HTMLBodyFontSize"]) {
+      assert([sz isKindOfClass : [NSNumber class]] && "DefaultHTMLBodyFontSize, dictionary expected");
+      return [(NSNumber *)sz floatValue];
+   }
+   
+   return 0.f;
 }
+
+const NSUInteger fontIncreaseStep = 4;
+
+}
+
+
 
 @implementation ArticleDetailViewController {
    NSString *articleLink;
@@ -44,8 +62,7 @@ enum class LoadStage : unsigned char {
    UIButton *zoomOutBtn;
    
    NSUInteger zoomLevel;
-   int fontSize;
-   
+
    BOOL rdbLoaded;
    BOOL pageLoaded;
    
@@ -98,6 +115,26 @@ enum class LoadStage : unsigned char {
 }
 
 //________________________________________________________________________________________
+- (void) defaultsChanged : (NSNotification *) notification
+{
+    if ([notification.object isKindOfClass : [NSUserDefaults class]]) {
+      NSUserDefaults * const defaults = (NSUserDefaults *)notification.object;
+      if (id sz = [defaults objectForKey : @"HTMLBodyFontSize"]) {
+         assert([sz isKindOfClass : [NSNumber class]] && "defaultsChanged:, GUIFontSize has a wrong type");
+
+         const NSUInteger newZoom = NSUInteger([(NSNumber *)sz floatValue]) / fontIncreaseStep;
+         if (newZoom != zoomLevel) {
+            zoomLevel = newZoom;
+            [self changeTextSize];
+            
+            zoomInBtn.enabled = zoomLevel < 5 ? YES : NO;
+            zoomOutBtn.enabled = zoomLevel != 0 ? YES : NO;
+         }       
+      }
+   }
+}
+
+//________________________________________________________________________________________
 - (void) dealloc
 {
    [internetReach stopNotifier];
@@ -112,9 +149,10 @@ enum class LoadStage : unsigned char {
    CGRect frame = self.view.frame;
    frame.origin = CGPoint();
    
-   zoomLevel = 1;
-   fontSize = 44;
-   
+   const CGFloat presetSize = DefaultHTMLBodyFontSize();
+   assert(presetSize >= 0.f && presetSize <= 20.f && "viewDidAppear, unexpected text size from app settings");
+   zoomLevel = unsigned(presetSize) / fontIncreaseStep;
+
    rdbView.frame = frame;
    pageView.frame = frame;
    
@@ -176,6 +214,8 @@ enum class LoadStage : unsigned char {
    [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(reachabilityStatusChanged:) name : CernAPP::reachabilityChangedNotification object : nil];
    internetReach = [Reachability reachabilityForInternetConnection];
    [internetReach startNotifier];
+   
+   [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(defaultsChanged:) name : NSUserDefaultsDidChangeNotification object : nil];
 }
 
 //________________________________________________________________________________________
@@ -234,8 +274,10 @@ enum class LoadStage : unsigned char {
    
    if (pageView.superview)
       pageLoaded = YES;
-   else
+   else {
       rdbLoaded = YES;
+      [self changeTextSize];
+   }
 }
 
 #pragma mark - Readability and web-view.
@@ -449,6 +491,7 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) changeTextSize
 {
+   const int fontSize = 44 + fontIncreaseStep * zoomLevel;
    NSString * const jsString = [[NSString alloc] initWithFormat : @"document.getElementsByTagName('body')[0].style.fontSize=%d", fontSize];
    [rdbView stringByEvaluatingJavaScriptFromString : jsString];
 }
@@ -516,11 +559,13 @@ enum class LoadStage : unsigned char {
 {
    if (zoomLevel + 1 == 5)
       zoomInBtn.enabled = NO;
-   else if (zoomLevel == 1)
-      zoomOutBtn.enabled = YES;
 
-   ++zoomLevel;   
-   fontSize += 4;
+   zoomOutBtn.enabled = YES;
+
+   ++zoomLevel;
+   
+   [[NSUserDefaults standardUserDefaults] setFloat : CGFloat(zoomLevel * fontIncreaseStep) forKey : @"HTMLBodyFontSize"];
+   [[NSUserDefaults standardUserDefaults] synchronize];
 
    [self changeTextSize];   
 }
@@ -528,13 +573,15 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) zoomOut
 {
-   if (zoomLevel - 1 < 2)
+   if (zoomLevel - 1 == 0)
       zoomOutBtn.enabled = NO;
-   else
-      zoomInBtn.enabled = YES;
+
+   zoomInBtn.enabled = YES;
    
    --zoomLevel;
-   fontSize -= 4;
+   
+   [[NSUserDefaults standardUserDefaults] setFloat : zoomLevel * fontIncreaseStep forKey : @"HTMLBodyFontSize"];
+   [[NSUserDefaults standardUserDefaults] synchronize];
    
    [self changeTextSize];
 }
@@ -625,11 +672,9 @@ enum class LoadStage : unsigned char {
          [parentView addSubview : origPageBtn];
          [parentView addSubview : zoomInBtn];
          [parentView addSubview : zoomOutBtn];
-         
-         if (zoomLevel == 1)
-            zoomOutBtn.enabled = NO;
-         else if (zoomLevel == 5)
-            zoomInBtn.enabled = NO;
+
+         zoomInBtn.enabled = zoomLevel < 5 ? YES : NO;
+         zoomOutBtn.enabled = zoomLevel != 0 ? YES : NO;
          
          UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : parentView];//well, not a button but a group of them.
          self.navigationItem.rightBarButtonItem = backButton;
@@ -653,8 +698,6 @@ enum class LoadStage : unsigned char {
             
             UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : parentView];//well, not a button but a group of them.
             self.navigationItem.rightBarButtonItem = backButton;
-
-            actionBtn.enabled = NO;
          } else {
             //Only send.
             UIButton * const actionBtn = [UIButton buttonWithType : UIButtonTypeCustom];
