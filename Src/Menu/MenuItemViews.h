@@ -30,6 +30,8 @@ enum class ItemStyle {
 
 - (void) layoutText;
 
+- (void) setLabelFontSize : (CGFloat) size;
+
 @property (nonatomic) BOOL isSelected;
 @property (nonatomic) CernAPP::ItemStyle itemStyle;
 
@@ -46,6 +48,8 @@ enum class ItemStyle {
 - (void) drawRect : (CGRect)rect;
 
 - (void) layoutText;
+
+- (void) setLabelFontSize : (CGFloat) size;
 
 @property (nonatomic) CGFloat indent;
 @property (nonatomic) CGSize imageHint;

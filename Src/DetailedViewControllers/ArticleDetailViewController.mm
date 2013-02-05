@@ -55,8 +55,6 @@ enum class LoadStage : unsigned char {
 //methods.
 #import "Readability.h"
 
-#define  READABILITY_CONTENT_API_DEFINED
-
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {

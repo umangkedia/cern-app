@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Timur Pocheptsov. All rights reserved.
 //
 
+#import <utility>
 #import <cassert>
 
 #import <QuartzCore/QuartzCore.h>
@@ -25,8 +26,6 @@ const CGSize menuTextShadowOffset = CGSizeMake(2.f, 2.f);
 const CGFloat menuTextShadowAlpha = 0.5f;
 const CGFloat menuItemImageSize = 24.f;//must be square image.
 const CGFloat groupMenuItemTextIndent = 10.f;
-const CGFloat groupMenuItemTextHeight = 20.f;
-const CGFloat childMenuItemTextHeight = 20.f;
 const CGFloat discloseTriangleSize = 14.f;
 const CGFloat groupMenuItemLeftMargin = 80.f;
 const CGFloat childMenuItemImageSize = 15.f;
@@ -41,6 +40,14 @@ const CGFloat groupTextColor[] = {0.615f, 0.635f, 0.69f};
 using CernAPP::ItemStyle;
 
 namespace {
+
+//________________________________________________________________________________________
+std::pair<CGFloat, CGFloat> TextMetrics(UILabel *label)
+{
+   assert(label != nil && "TextHeight, parameter 'label' is nil");
+   const CGSize lineBounds = [label.text sizeWithFont : label.font];
+   return std::make_pair(lineBounds.height - label.font.descender, lineBounds.height);
+}
 
 //________________________________________________________________________________________
 void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
@@ -173,9 +180,19 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    }
 
    frame.size.width -= frame.origin.x;
-   frame.origin.y = frame.size.height / 2 - childMenuItemTextHeight / 2;
-   frame.size.height = childMenuItemTextHeight;
+   //
+   const auto metrics = TextMetrics(itemLabel);
+   //
+   frame.origin.y = frame.size.height / 2 - metrics.second / 2;
+   frame.size.height = metrics.first;
+
    itemLabel.frame = frame;
+}
+
+//________________________________________________________________________________________
+- (void) setLabelFontSize : (CGFloat) size
+{
+
 }
 
 //________________________________________________________________________________________
@@ -308,18 +325,20 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    
    frame.size.width -= frame.origin.x + groupMenuItemLeftMargin;
    
-   if (!groupItem.parentGroup) {
-      frame.origin.y = frame.size.height / 2.f - groupMenuItemTextHeight / 2.f;
-      frame.size.height = groupMenuItemTextHeight;
-   } else {
-      frame.origin.y = frame.size.height / 2.f - childMenuItemTextHeight / 2.f;
-      frame.size.height = childMenuItemTextHeight;
-   }
+   const auto metrics = TextMetrics(itemLabel);
+   frame.origin.y = frame.size.height / 2.f - metrics.second / 2;
+   frame.size.height = metrics.first;
 
    itemLabel.frame = frame;
    discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width,
                                         self.frame.size.height / 2 - discloseTriangleSize / 2,
                                         discloseTriangleSize, discloseTriangleSize);   
+}
+
+//________________________________________________________________________________________
+- (void) setLabelFontSize : (CGFloat) size
+{
+
 }
 
 //________________________________________________________________________________________
