@@ -10,6 +10,7 @@
 
 #import "ArticleDetailViewController.h"
 #import "ApplicationErrors.h"
+#import "PictureButtonView.h"
 #import "NSString+HTML.h"
 #import "Reachability.h"
 #import "AppDelegate.h"
@@ -47,6 +48,8 @@ enum class LoadStage : unsigned char {
    
    BOOL rdbLoaded;
    BOOL pageLoaded;
+   
+   OverlayView *sendOverlay;
 }
 
 @synthesize rdbView, pageView, rdbCache, title;
@@ -453,6 +456,24 @@ enum class LoadStage : unsigned char {
 //________________________________________________________________________________________
 - (void) sendArticle
 {
+   //Woo-hoo.
+   CGRect frame = self.view.frame;
+   frame.origin.x = 0.f;
+   frame.size.height += 66;
+   frame.origin.y = -frame.size.height;
+
+   sendOverlay = [[OverlayView alloc] initWithFrame : frame];
+   sendOverlay.delegate = self;
+   
+   [self addSendButtons];
+
+   [self.navigationController.view addSubview : sendOverlay];
+   
+   frame.origin.y = 0.f;
+   
+   [UIView animateWithDuration : 0.25f animations : ^ {
+      sendOverlay.frame = frame;
+   } completion : nil];
 }
 
 //________________________________________________________________________________________
@@ -524,7 +545,13 @@ enum class LoadStage : unsigned char {
 
 }
 
-#pragma mark - GUI adjustments.
+//________________________________________________________________________________________
+- (void) sendTweet
+{
+   NSLog(@"vroom-vroom!!!");
+}
+
+#pragma mark - GUI.
 
 //________________________________________________________________________________________
 - (void) addWebBrowserButtons
@@ -604,8 +631,6 @@ enum class LoadStage : unsigned char {
          else if (zoomLevel == 5)
             zoomInBtn.enabled = NO;
          
-         actionBtn.enabled = NO;
-         
          UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : parentView];//well, not a button but a group of them.
          self.navigationItem.rightBarButtonItem = backButton;
       } else {
@@ -636,13 +661,25 @@ enum class LoadStage : unsigned char {
             [actionBtn setBackgroundImage : [UIImage imageNamed : @"action.png"] forState : UIControlStateNormal];
             [actionBtn addTarget : self action : @selector(sendArticle) forControlEvents : UIControlEventTouchUpInside];
             actionBtn.frame = CGRectMake(0.f, 0.f, 22.f, 22.f);
-            
-            actionBtn.enabled = NO;
+
             UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithCustomView : actionBtn];//well, not a button but a group of them.
             self.navigationItem.rightBarButtonItem = backButton;
          }
       }
    }
+}
+
+//________________________________________________________________________________________
+- (void) addSendButtons
+{
+   assert(sendOverlay != nil && "addSendButtons, sendOverlay is nil");
+   
+   //Harcoded geometry :) But it's ... ok :)
+   CGRect frame = CGRectMake(10.f, 100.f, 80.f, 80.f);
+
+   PictureButtonView * const btnView = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"twitter-bird-white-on-blue.png"]];
+   [btnView addTarget : self selector : @selector(sendTweet)];
+   [sendOverlay addSubview : btnView];
 }
 
 //________________________________________________________________________________________
@@ -675,6 +712,15 @@ enum class LoadStage : unsigned char {
 
    if (!spinner.hidden)
       [spinner.superview bringSubviewToFront : spinner];
+}
+
+#pragma mark - OverlayViewDelegate
+
+//________________________________________________________________________________________
+- (void) dismissOverlayView
+{
+   [sendOverlay removeFromSuperview];
+   sendOverlay = nil;
 }
 
 @end

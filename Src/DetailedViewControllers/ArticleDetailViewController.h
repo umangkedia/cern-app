@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "OverlayView.h"
 #import "MWFeedItem.h"
 
-@interface ArticleDetailViewController : UIViewController <UIWebViewDelegate, NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@interface ArticleDetailViewController : UIViewController <UIWebViewDelegate, NSURLConnectionDelegate, NSURLConnectionDataDelegate,
+                                                           OverlayViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UIWebView *rdbView;
 @property (nonatomic, strong) IBOutlet UIWebView *pageView;

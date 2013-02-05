@@ -163,6 +163,9 @@
 		70619D3016B042F900906E5C /* 106-sliders@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70619D2F16B042F900906E5C /* 106-sliders@2x.png */; };
 		7064A35D169DA177006405B9 /* menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7064A35C169DA177006405B9 /* menu@2x.png */; };
 		7069F33116C11517006BC78B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7069F33016C11517006BC78B /* Settings.bundle */; };
+		7069F75F16C14CE0006BC78B /* twitter-bird-white-on-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 7069F75E16C14CE0006BC78B /* twitter-bird-white-on-blue.png */; };
+		7069F76516C14D6D006BC78B /* OverlayView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7069F76216C14D6D006BC78B /* OverlayView.mm */; };
+		7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7069F76416C14D6D006BC78B /* PictureButtonView.mm */; };
 		707B133D169AE8BC00180E02 /* AQGridSelection.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1338169AE8BC00180E02 /* AQGridSelection.png */; };
 		707B133E169AE8BC00180E02 /* AQGridSelectionGray.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */; };
 		707B133F169AE8BC00180E02 /* AQGridSelectionGrayBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */; };
@@ -438,6 +441,11 @@
 		70619D2F16B042F900906E5C /* 106-sliders@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "106-sliders@2x.png"; sourceTree = "<group>"; };
 		7064A35C169DA177006405B9 /* menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu@2x.png"; sourceTree = "<group>"; };
 		7069F33016C11517006BC78B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = ../Src/Menu/Settings.bundle; sourceTree = "<group>"; };
+		7069F75E16C14CE0006BC78B /* twitter-bird-white-on-blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "twitter-bird-white-on-blue.png"; sourceTree = "<group>"; };
+		7069F76116C14D6D006BC78B /* OverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OverlayView.h; sourceTree = "<group>"; };
+		7069F76216C14D6D006BC78B /* OverlayView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OverlayView.mm; sourceTree = "<group>"; };
+		7069F76316C14D6D006BC78B /* PictureButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PictureButtonView.h; sourceTree = "<group>"; };
+		7069F76416C14D6D006BC78B /* PictureButtonView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PictureButtonView.mm; sourceTree = "<group>"; };
 		707B1338169AE8BC00180E02 /* AQGridSelection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelection.png; sourceTree = "<group>"; };
 		707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGray.png; sourceTree = "<group>"; };
 		707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGrayBlue.png; sourceTree = "<group>"; };
@@ -842,6 +850,17 @@
 			name = Sounds;
 			sourceTree = "<group>";
 		};
+		7069F76016C14D6D006BC78B /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				7069F76116C14D6D006BC78B /* OverlayView.h */,
+				7069F76216C14D6D006BC78B /* OverlayView.mm */,
+				7069F76316C14D6D006BC78B /* PictureButtonView.h */,
+				7069F76416C14D6D006BC78B /* PictureButtonView.mm */,
+			);
+			path = CustomViews;
+			sourceTree = "<group>";
+		};
 		707B1337169AE8BC00180E02 /* AQGridView */ = {
 			isa = PBXGroup;
 			children = (
@@ -857,6 +876,7 @@
 		707B1342169AE8C900180E02 /* Src */ = {
 			isa = PBXGroup;
 			children = (
+				7069F76016C14D6D006BC78B /* CustomViews */,
 				709CE66516A59A3B006D524E /* Parsers */,
 				70BE54AE169AFC2900A3E1B6 /* PCH */,
 				707B13BF169AF4FA00180E02 /* RSS */,
@@ -888,6 +908,7 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				7069F75E16C14CE0006BC78B /* twitter-bird-white-on-blue.png */,
 				70A2533F16BBEF8F00F9898A /* bookmarks.png */,
 				70A2533D16BBED0F00F9898A /* refresh.png */,
 				700AF65016B9932500194E16 /* action.png */,
@@ -1328,6 +1349,7 @@
 				70A2533E16BBED0F00F9898A /* refresh.png in Resources */,
 				70A2534016BBEF8F00F9898A /* bookmarks.png in Resources */,
 				7069F33116C11517006BC78B /* Settings.bundle in Resources */,
+				7069F75F16C14CE0006BC78B /* twitter-bird-white-on-blue.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1421,6 +1443,8 @@
 				70501E3C16B6E180002C0F48 /* GCOAuth.m in Sources */,
 				70501E3D16B6E180002C0F48 /* NSData+Base64.m in Sources */,
 				70B7879216B9692600048CC9 /* WebcastsGridViewController.mm in Sources */,
+				7069F76516C14D6D006BC78B /* OverlayView.mm in Sources */,
+				7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
