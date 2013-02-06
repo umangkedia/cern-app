@@ -67,6 +67,7 @@ const NSUInteger fontIncreaseStep = 4;
    BOOL pageLoaded;
    
    OverlayView *sendOverlay;
+   BOOL animatingOverlay;
 }
 
 @synthesize rdbView, pageView, rdbCache, title;
@@ -499,6 +500,9 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) sendArticle
 {
+   if (animatingOverlay)
+      return;
+
    //Woo-hoo.
    CGRect frame = self.view.frame;
    frame.origin.x = 0.f;
@@ -720,9 +724,20 @@ const NSUInteger fontIncreaseStep = 4;
    //Harcoded geometry :) But it's ... ok :)
    CGRect frame = CGRectMake(10.f, 60.f, 80.f, 80.f);
 
-   PictureButtonView * const btnView = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"twitter-bird-white-on-blue.png"]];
-   [btnView addTarget : self selector : @selector(sendTweet)];
-   [sendOverlay addSubview : btnView];
+   PictureButtonView * const twBtn = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"Twitter.png"]];
+   [twBtn addTarget : self selector : @selector(sendTweet)];
+   [sendOverlay addSubview : twBtn];
+   
+   frame.origin.x = 100.f;
+   PictureButtonView * const fbBtn = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"Facebook.png"]];
+   [fbBtn addTarget : self selector : @selector(sendTweet)];
+   [sendOverlay addSubview : fbBtn];
+   
+   frame.origin.x = 190.f;
+   PictureButtonView * const emBtn = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"Email-01.png"]];
+   [emBtn addTarget : self selector : @selector(sendTweet)];
+   [sendOverlay addSubview : emBtn];
+
 }
 
 //________________________________________________________________________________________
@@ -762,8 +777,21 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) dismissOverlayView
 {
-   [sendOverlay removeFromSuperview];
-   sendOverlay = nil;
+   animatingOverlay = YES;
+
+   CGRect frame = sendOverlay.frame;
+
+   frame.origin.y = -frame.size.height;
+
+   [UIView animateWithDuration : 0.25f animations : ^ {
+      sendOverlay.frame = frame;
+    } completion:^(BOOL finished) {
+       if (finished) {
+          [sendOverlay removeFromSuperview];
+          sendOverlay = nil;
+          animatingOverlay = NO;
+       }
+    }];
 }
 
 @end
