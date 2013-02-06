@@ -2,7 +2,7 @@
 
 @protocol OverlayViewDelegate <NSObject>
 @required
-- (void) dismissOverlayView;
+- (void) dismissOverlayView : (void (^)(BOOL finished)) block;
 @end
 
 @interface OverlayView : UIView

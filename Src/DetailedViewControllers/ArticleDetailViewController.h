@@ -6,13 +6,14 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import <MessageUI/MessageUI.h>
 #import <UIKit/UIKit.h>
 
 #import "OverlayView.h"
 #import "MWFeedItem.h"
 
 @interface ArticleDetailViewController : UIViewController <UIWebViewDelegate, NSURLConnectionDelegate, NSURLConnectionDataDelegate,
-                                                           OverlayViewDelegate>
+                                                           OverlayViewDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) IBOutlet UIWebView *rdbView;
 @property (nonatomic, strong) IBOutlet UIWebView *pageView;

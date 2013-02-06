@@ -524,6 +524,42 @@ const NSUInteger fontIncreaseStep = 4;
 }
 
 //________________________________________________________________________________________
+- (void) composeEmail
+{
+   if (![MFMailComposeViewController canSendMail]) {
+      UIAlertView *alert = [[UIAlertView alloc] initWithTitle : @"Send e-mail:"
+                                                message : @"Please, add your e-mail account in the device settings"
+                                                delegate : nil
+                                                cancelButtonTitle : @"Close"
+                                                otherButtonTitles : nil];
+      [alert show];
+      return;
+   }
+
+   MFMailComposeViewController * mailComposer = [[MFMailComposeViewController alloc] init];
+   [mailComposer setSubject:@"E-mail from CERN.app"];
+   [mailComposer setMessageBody : articleLink isHTML : NO];
+   mailComposer.mailComposeDelegate = self;
+
+   [self presentViewController : mailComposer animated : YES completion : nil];
+}
+
+//________________________________________________________________________________________
+- (void) sendEmail
+{
+   void (^mailSenderBlock) (BOOL) = ^ (BOOL finished) {
+      if (finished) {
+         [sendOverlay removeFromSuperview];
+         sendOverlay = nil;
+         animatingOverlay = NO;
+         [self composeEmail];
+      }
+   };
+   
+   [self dismissOverlayView : mailSenderBlock];
+}
+
+//________________________________________________________________________________________
 - (void) flipWebViews
 {
    const UIViewAnimationOptions transitionOptions = UIViewAnimationOptionTransitionFlipFromLeft;
@@ -599,7 +635,8 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) sendTweet
 {
-   NSLog(@"vroom-vroom!!!");
+   //
+   [self dismissOverlayView : nil];
 }
 
 #pragma mark - GUI.
@@ -735,7 +772,7 @@ const NSUInteger fontIncreaseStep = 4;
    
    frame.origin.x = 190.f;
    PictureButtonView * const emBtn = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"Email-01.png"]];
-   [emBtn addTarget : self selector : @selector(sendTweet)];
+   [emBtn addTarget : self selector : @selector(sendEmail)];
    [sendOverlay addSubview : emBtn];
 
 }
@@ -775,23 +812,40 @@ const NSUInteger fontIncreaseStep = 4;
 #pragma mark - OverlayViewDelegate
 
 //________________________________________________________________________________________
-- (void) dismissOverlayView
+- (void) dismissOverlayView : (void (^)(BOOL finished)) block
 {
+   //block MUST remove sendOverlay view (but I can not check/force it).
    animatingOverlay = YES;
 
    CGRect frame = sendOverlay.frame;
 
    frame.origin.y = -frame.size.height;
 
-   [UIView animateWithDuration : 0.25f animations : ^ {
-      sendOverlay.frame = frame;
-    } completion:^(BOOL finished) {
-       if (finished) {
-          [sendOverlay removeFromSuperview];
-          sendOverlay = nil;
-          animatingOverlay = NO;
+   if (block) {
+      [UIView animateWithDuration : 0.25f animations : ^ {
+          sendOverlay.frame = frame;
        }
-    }];
+       completion : block];
+   } else {
+      [UIView animateWithDuration : 0.25f animations : ^ {
+         sendOverlay.frame = frame;
+       } completion:^(BOOL finished) {
+          if (finished) {
+             [sendOverlay removeFromSuperview];
+             sendOverlay = nil;
+             animatingOverlay = NO;
+          }
+       }];
+   }
+}
+
+#pragma mark - MFMailComposeViewController delegate
+
+//___________________________________________________________
+- (void) mailComposeController : (MFMailComposeViewController *)controller didFinishWithResult : (MFMailComposeResult)result error : (NSError *)error
+{
+   [self becomeFirstResponder];//???
+   [self dismissViewControllerAnimated : YES completion : nil];
 }
 
 @end

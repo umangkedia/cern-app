@@ -33,7 +33,7 @@
 - (void) handleTap
 {
    if (delegate)
-      [delegate dismissOverlayView];
+      [delegate dismissOverlayView : nil];
 }
 
 @end
