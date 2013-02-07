@@ -201,6 +201,7 @@
 		707B13F6169AF69300180E02 /* Reachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B13EC169AF69300180E02 /* Reachability.mm */; };
 		707B13F7169AF69300180E02 /* UIImage+SquareScaledImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */; };
 		707B13FA169AF6AE00180E02 /* StoryboardIdentifiers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */; };
+		7098286616C404C500311025 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7098286516C404C500311025 /* Social.framework */; };
 		709CE66816A59A3B006D524E /* CernMediaMARCParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709CE66716A59A3B006D524E /* CernMediaMARCParser.mm */; };
 		709CE66B16A59B11006D524E /* PhotoDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709CE66A16A59B11006D524E /* PhotoDownloader.mm */; };
 		709CE66E16A59BE3006D524E /* PhotosGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709CE66D16A59BE3006D524E /* PhotosGridViewController.mm */; };
@@ -234,7 +235,6 @@
 		70CC55E8169EE70100292332 /* StaticInfoItemViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55E7169EE70100292332 /* StaticInfoItemViewController.mm */; };
 		70CC55EC169EEB3400292332 /* StaticInfoScrollViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55EB169EEB3400292332 /* StaticInfoScrollViewController.mm */; };
 		70CC55EF169EF80600292332 /* MenuNavigationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55ED169EF80500292332 /* MenuNavigationController.mm */; };
-		E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15CC7B81593E9E40016CC95 /* Twitter.framework */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
 		E1D87E89159EEC880051104C /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D87E88159EEC880051104C /* ImageIO.framework */; };
@@ -510,6 +510,7 @@
 		707B13EE169AF69300180E02 /* UIImage+SquareScaledImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+SquareScaledImage.m"; sourceTree = "<group>"; };
 		707B13F8169AF6AE00180E02 /* StoryboardIdentifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryboardIdentifiers.h; sourceTree = "<group>"; };
 		707B13F9169AF6AE00180E02 /* StoryboardIdentifiers.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StoryboardIdentifiers.mm; sourceTree = "<group>"; };
+		7098286516C404C500311025 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		709CE66616A59A3B006D524E /* CernMediaMARCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CernMediaMARCParser.h; sourceTree = "<group>"; };
 		709CE66716A59A3B006D524E /* CernMediaMARCParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CernMediaMARCParser.mm; sourceTree = "<group>"; };
 		709CE66916A59B11006D524E /* PhotoDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoDownloader.h; sourceTree = "<group>"; };
@@ -573,6 +574,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7098286616C404C500311025 /* Social.framework in Frameworks */,
 				702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */,
 				705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */,
 				E1FFFC2B15A651B40093462B /* MediaPlayer.framework in Frameworks */,
@@ -583,7 +585,6 @@
 				E1F7B68B156EDC7C0092367F /* UIKit.framework in Frameworks */,
 				E1F7B68D156EDC7C0092367F /* Foundation.framework in Frameworks */,
 				E1F7B68F156EDC7C0092367F /* CoreGraphics.framework in Frameworks */,
-				E15CC7B91593E9E40016CC95 /* Twitter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1131,6 +1132,7 @@
 		E1F7B689156EDC7C0092367F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7098286516C404C500311025 /* Social.framework */,
 				E1FFFC2A15A651B40093462B /* MediaPlayer.framework */,
 				E1D87E8A159EEC920051104C /* MessageUI.framework */,
 				E1D87E88159EEC880051104C /* ImageIO.framework */,

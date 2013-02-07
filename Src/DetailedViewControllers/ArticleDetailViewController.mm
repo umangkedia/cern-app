@@ -8,6 +8,8 @@
 
 //Modified by Timur Pocheptsov.
 
+#import <Social/Social.h>
+
 #import "ArticleDetailViewController.h"
 #import "ApplicationErrors.h"
 #import "PictureButtonView.h"
@@ -48,6 +50,7 @@ const NSUInteger fontIncreaseStep = 4;
 
 @implementation ArticleDetailViewController {
    NSString *articleLink;
+   //UIImage *thumbnail;
    UIActivityIndicatorView *spinner;
    
    Reachability *internetReach;
@@ -224,6 +227,7 @@ const NSUInteger fontIncreaseStep = 4;
 {
    articleLink = article.link;
    title = article.title;
+   //thumbnail = article.image;
 }
 
 #pragma mark - UIWebViewDelegate protocol.
@@ -633,11 +637,100 @@ const NSUInteger fontIncreaseStep = 4;
 }
 
 //________________________________________________________________________________________
+- (void) composeTweetMessage
+{
+   // Set up the built-in twitter composition view controller.
+   if (![SLComposeViewController isAvailableForServiceType : SLServiceTypeTwitter]) {
+      UIAlertView *alert = [[UIAlertView alloc] initWithTitle : @"Send a twitter message:"
+                                                message : @"Service is not available"
+                                                delegate : nil
+                                                cancelButtonTitle : @"Close"
+                                                otherButtonTitles : nil];
+      [alert show];
+      return;
+   }
+   
+   SLComposeViewController * const twController = [SLComposeViewController composeViewControllerForServiceType : SLServiceTypeTwitter];
+   [twController setInitialText : articleLink];
+
+   SLComposeViewControllerCompletionHandler handler = ^ (SLComposeViewControllerResult result) {
+      [self dismissViewControllerAnimated:YES completion:nil];
+   };
+   
+   twController.completionHandler = handler;
+   [self presentViewController : twController animated : YES completion : nil];
+}
+
+//________________________________________________________________________________________
 - (void) sendTweet
 {
    //
-   [self dismissOverlayView : nil];
+   void (^tweetSenderBlock) (BOOL) = ^ (BOOL finished) {
+      if (finished) {
+         [sendOverlay removeFromSuperview];
+         sendOverlay = nil;
+         animatingOverlay = NO;
+         [self composeTweetMessage];
+      }
+   };
+   
+   [self dismissOverlayView : tweetSenderBlock];
 }
+
+//________________________________________________________________________________________
+- (void) composeFacebookMessage
+{
+// Set up the built-in twitter composition view controller.
+   if (![SLComposeViewController isAvailableForServiceType : SLServiceTypeFacebook]) {
+      UIAlertView *alert = [[UIAlertView alloc] initWithTitle : @"Send a facebook message:"
+                                                message : @"Please, check facebook settings"
+                                                delegate : nil
+                                                cancelButtonTitle : @"Close"
+                                                otherButtonTitles : nil];
+      [alert show];
+      return;
+   }
+   
+   SLComposeViewController * const twController = [SLComposeViewController composeViewControllerForServiceType : SLServiceTypeFacebook];
+   [twController setInitialText : articleLink];
+   //
+   /*
+   if (thumbnail) {
+      //TODO: check image sizes?
+      //Image URL instead of image?
+      //I do not know. Use a scaled image for now.
+      const CGSize imageSize = thumbnail.size;
+      if (imageSize.width >= 300 || imageSize.height >= 300) {
+         UIImage * const attachment = [UIImage imageWithCGImage : thumbnail.CGImage scale:0.3 orientation : UIImageOrientationUp];
+         [twController addImage : attachment];
+      } else
+         [twController addImage : thumbnail];
+   }*/
+
+   SLComposeViewControllerCompletionHandler handler = ^ (SLComposeViewControllerResult result) {
+      [self dismissViewControllerAnimated:YES completion:nil];
+   };
+   
+   twController.completionHandler = handler;
+   [self presentViewController : twController animated : YES completion : nil];
+}
+
+//________________________________________________________________________________________
+- (void) sendFacebookMessage
+{
+   void (^fbSenderBlock) (BOOL) = ^ (BOOL finished) {
+      if (finished) {
+         [sendOverlay removeFromSuperview];
+         sendOverlay = nil;
+         animatingOverlay = NO;
+         [self composeFacebookMessage];
+      }
+   };
+   
+   [self dismissOverlayView : fbSenderBlock];
+
+}
+
 
 #pragma mark - GUI.
 
@@ -767,7 +860,7 @@ const NSUInteger fontIncreaseStep = 4;
    
    frame.origin.x = 100.f;
    PictureButtonView * const fbBtn = [[PictureButtonView alloc] initWithFrame : frame image : [UIImage imageNamed : @"Facebook.png"]];
-   [fbBtn addTarget : self selector : @selector(sendTweet)];
+   [fbBtn addTarget : self selector : @selector(sendFacebookMessage)];
    [sendOverlay addSubview : fbBtn];
    
    frame.origin.x = 190.f;
