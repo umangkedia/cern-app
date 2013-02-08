@@ -1380,7 +1380,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "tokens=$SRCROOT/Src/Utilities/Readability-tokens.h\nsample=$SRCROOT/Src/Utilities/Readability-sample.h\nout=$DERIVED_FILE_DIR/Readability.h\n\nif [ x${ACTION} = \"xbuild\" ]; then\n   echo \"Checking for Readability tokens header: $tokens\"\n   if test -f $tokens; then\n      cp $tokens $out\n      echo \"Found header with Readability tokens\"\n   else\n      cp $sample $out\n      echo \"No Readability tokens header found, ask developers for Readability-tokens.h\"\n   fi\nfi\n\nexit 0\n";
+			shellScript = "tokens=$SRCROOT/Src/Utilities/Readability-tokens.h\nsample=$SRCROOT/Src/Utilities/Readability-sample.h\nout=$DERIVED_FILE_DIR/Readability.h\n\nif [ x${ACTION} = \"xbuild\" ]; then\n   echo \"Checking for Readability tokens header: $tokens\"\n   if test -f $tokens; then\n      cp $tokens $out\n      echo \"Found header with Readability tokens\"\n   else\n      cp $sample $out\n      echo \"No Readability tokens header found, ask developers for decryption password\"\n   fi\nfi\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
