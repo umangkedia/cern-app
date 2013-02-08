@@ -96,6 +96,7 @@
 #import "ArticleDetailViewController.h"
 #import "ApplicationErrors.h"
 #import "PictureButtonView.h"
+#import "MBProgressHUD.h"
 #import "NSString+HTML.h"
 #import "Reachability.h"
 #import "AppDelegate.h"
@@ -153,6 +154,8 @@ const NSUInteger fontIncreaseStep = 4;
 
    OverlayView *sendOverlay;
    BOOL animatingOverlay;
+   
+   MBProgressHUD *noConnectionHUD;
 }
 
 @synthesize rdbView, pageView, rdbCache, title;
@@ -189,7 +192,7 @@ const NSUInteger fontIncreaseStep = 4;
          //ONLY if view was loading at the time of this
          //reachability status change.
 
-         //TODO: show error HUD here.
+         [self showErrorHUD];
 
          stage = LoadStage::lostNetworkConnection;
          [self addWebBrowserButtons];
@@ -344,7 +347,7 @@ const NSUInteger fontIncreaseStep = 4;
       [self stopSpinner];
       [webView stopLoading];
       
-      //TODO: HUD with error message here.
+      [self showErrorHUD];
       stage = LoadStage::needRefresh;
       
       [self addWebBrowserButtons];
@@ -430,10 +433,10 @@ const NSUInteger fontIncreaseStep = 4;
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       [self stopSpinner];
       stage = LoadStage::needRefresh;
-      //Set a HUD with error message here!
-      
-      //
-      [self addWebBrowserButtons];//
+
+      [self showErrorHUD];
+
+      [self addWebBrowserButtons];
    } else {
       //Load original page.
       assert(articleLink != nil && "loadOriginalPage, articleLink is nil");
@@ -1068,6 +1071,18 @@ const NSUInteger fontIncreaseStep = 4;
 {
    [self becomeFirstResponder];//???
    [self dismissViewControllerAnimated : YES completion : nil];
+}
+
+#pragma mark - MBProgressHUD
+
+//________________________________________________________________________________________
+- (void) showErrorHUD
+{
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+   noConnectionHUD.color = [UIColor redColor];
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"No network";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
 @end
