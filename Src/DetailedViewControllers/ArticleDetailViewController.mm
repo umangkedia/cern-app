@@ -720,7 +720,19 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) refresh
 {
+   assert((stage == LoadStage::needRefresh || stage == LoadStage::lostNetworkConnection) &&
+          "refresh, wrong stage");
+   
+   assert((rdbView.superview != nil || pageView.superview != nil) &&
+          "refresh, neither rdbView, nor pageView is active");
 
+   [self startSpinner];
+   //Remove error HUD.
+
+   if (rdbView.superview)
+      [self loadHtmlFromReadability];
+   else
+      [self loadOriginalPage];
 }
 
 //________________________________________________________________________________________
@@ -830,7 +842,7 @@ const NSUInteger fontIncreaseStep = 4;
 {
    assert(rdbView.superview != nil &&
           "addNavigationButtonForReadabilityView, readability view is not active");
-   assert(stage == LoadStage::lostNetworkConnection || stage == LoadStage::inactive &&
+   assert((stage == LoadStage::lostNetworkConnection || stage == LoadStage::inactive) &&
           "addNavigationButtonForReadabilityView, wrong stage");
 
    if (stage == LoadStage::lostNetworkConnection) {
@@ -880,6 +892,7 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) addNavigationButtonsForPageView
 {
+   assert(pageView.superview != nil && "addNavigationButtonsForPageView, pageView is not active");
    assert(![self isInActiveStage] && "addNavigationButtonsForPageView, wrong stage");
    
    if (stage == LoadStage::needRefresh || stage == LoadStage::lostNetworkConnection) {
@@ -953,7 +966,7 @@ const NSUInteger fontIncreaseStep = 4;
 {
    assert(![self isInActiveStage] && "addWebBrowserButtons, wrong stage");
 
-   assert(pageView.superview != nil || rdbView.superview != nil &&
+   assert((pageView.superview != nil || rdbView.superview != nil) &&
           "addWebBrowserButtons, either rdbView or pageView must be active");
 
    if (rdbView.superview)
