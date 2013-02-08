@@ -106,7 +106,6 @@ namespace {
 
 enum class LoadStage : unsigned char {
    inactive,
-   needRefresh,
    lostNetworkConnection,
    auth,
    rdbRequest,
@@ -167,7 +166,7 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (BOOL) isInActiveStage
 {
-   return stage != LoadStage::inactive && stage != LoadStage::needRefresh && stage != LoadStage::lostNetworkConnection;
+   return stage != LoadStage::inactive && stage != LoadStage::lostNetworkConnection;
 }
 
 //________________________________________________________________________________________
@@ -348,7 +347,7 @@ const NSUInteger fontIncreaseStep = 4;
       [webView stopLoading];
       
       [self showErrorHUD];
-      stage = LoadStage::needRefresh;
+      stage = LoadStage::lostNetworkConnection;
       
       [self addWebBrowserButtons];
    } else if (stage == LoadStage::rdbCacheLoad && webView == rdbView) {
@@ -432,7 +431,7 @@ const NSUInteger fontIncreaseStep = 4;
 
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       [self stopSpinner];
-      stage = LoadStage::needRefresh;
+      stage = LoadStage::lostNetworkConnection;
 
       [self showErrorHUD];
 
@@ -723,9 +722,7 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) refresh
 {
-   assert((stage == LoadStage::needRefresh || stage == LoadStage::lostNetworkConnection) &&
-          "refresh, wrong stage");
-   
+   assert(stage == LoadStage::lostNetworkConnection && "refresh, wrong stage");
    assert((rdbView.superview != nil || pageView.superview != nil) &&
           "refresh, neither rdbView, nor pageView is active");
 
@@ -898,7 +895,7 @@ const NSUInteger fontIncreaseStep = 4;
    assert(pageView.superview != nil && "addNavigationButtonsForPageView, pageView is not active");
    assert(![self isInActiveStage] && "addNavigationButtonsForPageView, wrong stage");
    
-   if (stage == LoadStage::needRefresh || stage == LoadStage::lostNetworkConnection) {
+   if (stage == LoadStage::lostNetworkConnection) {
       //We have some errors while trying to load original page. Buttons depend on the
       //fact if we have a readability view or not.
       if (rdbCache) {
