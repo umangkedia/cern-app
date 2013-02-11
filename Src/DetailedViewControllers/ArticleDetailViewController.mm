@@ -94,6 +94,7 @@
 #import <Social/Social.h>
 
 #import "ArticleDetailViewController.h"
+#import "ECSlidingViewController.h"
 #import "ApplicationErrors.h"
 #import "PictureButtonView.h"
 #import "MBProgressHUD.h"
@@ -1084,16 +1085,36 @@ const NSUInteger fontIncreaseStep = 4;
 
 #pragma mark - Interface rotation.
 
+
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
+   if ((rdbCache && rdbView.superview) || (pageLoaded && pageView.superview))
+      return YES;
+   
    return NO;
 }
 
 //________________________________________________________________________________________
 - (NSUInteger) supportedInterfaceOrientations
 {
-   return  UIInterfaceOrientationMaskPortrait;
+   return  UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
+}
+
+//________________________________________________________________________________________
+- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+{
+#pragma unused(fromInterfaceOrientation)
+
+   [self.view layoutSubviews];
+
+   if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+      [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];
+      [self.navigationController setNavigationBarHidden : YES];
+   } else {
+      [self.navigationController.view addGestureRecognizer : self.slidingViewController.panGesture];
+      [self.navigationController setNavigationBarHidden : NO];
+   }
 }
 
 @end
