@@ -38,6 +38,9 @@
    self.view.layer.shadowRadius = 10.f;
    self.view.layer.shadowColor = [UIColor blackColor].CGColor;
   
+//   self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect : self.view.frame].CGPath;
+//   self.view.layer.shadowPath = [UIBezierPath ]
+  
    if (![self.slidingViewController.underLeftViewController isKindOfClass : [MenuViewController class]])
       self.slidingViewController.underLeftViewController  = [self.storyboard instantiateViewControllerWithIdentifier:@"Menu"];
 

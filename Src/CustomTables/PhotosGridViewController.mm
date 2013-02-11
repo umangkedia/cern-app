@@ -289,4 +289,19 @@
    [photoDownloader stop];
 }
 
+#pragma mark - Interface rotations.
+
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
+
 @end

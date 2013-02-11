@@ -260,9 +260,9 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       if (groupItem.parentGroup) //Nested group.
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose_child.png"]];
       else {
-         itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
-         itemLabel.layer.shadowOffset = menuTextShadowOffset;
-         itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
+         //itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+         //itemLabel.layer.shadowOffset = menuTextShadowOffset;
+         //itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
 
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
       }

@@ -554,10 +554,4 @@
    return NO;
 }
 
-//________________________________________________________________________________________
-- (NSUInteger) supportedInterfaceOrientations
-{
-   return  UIInterfaceOrientationMaskPortrait;
-}
-
 @end

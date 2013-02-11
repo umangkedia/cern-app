@@ -575,13 +575,13 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
-   return NO;
+   return pageLoaded;
 }
 
 //________________________________________________________________________________________
 - (NSUInteger) supportedInterfaceOrientations
 {
-   return  UIInterfaceOrientationMaskPortrait;
+   return  UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
 }
 
 

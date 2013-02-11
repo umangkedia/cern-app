@@ -1102,9 +1102,17 @@ const NSUInteger fontIncreaseStep = 4;
 }
 
 //________________________________________________________________________________________
+- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+   [UIView setAnimationsEnabled : NO];
+}
+
+//________________________________________________________________________________________
 - (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
 {
 #pragma unused(fromInterfaceOrientation)
+
+   [UIView setAnimationsEnabled : YES];
 
    [self.view layoutSubviews];
 
