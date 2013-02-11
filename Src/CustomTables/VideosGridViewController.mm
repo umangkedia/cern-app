@@ -327,4 +327,16 @@
    [self.slidingViewController anchorTopViewTo : ECRight];
 }
 
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
 @end

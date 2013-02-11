@@ -42,12 +42,27 @@
 
 @synthesize imageView, imageTitle;
 
+//________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
    if (self = [super initWithCoder : aDecoder]) {
    }
 
    return self;
+}
+
+#pragma mark - Interface rotation.
+
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
 }
 
 @end

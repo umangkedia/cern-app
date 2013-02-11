@@ -290,4 +290,17 @@
    //No need to update the tableView.
 }
 
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
+
 @end

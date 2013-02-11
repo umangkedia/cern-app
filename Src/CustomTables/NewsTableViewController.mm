@@ -546,4 +546,18 @@
    //But no need to update the tableView.
 }
 
+#pragma mark - Interface rotation.
+
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
 @end

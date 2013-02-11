@@ -1082,4 +1082,18 @@ const NSUInteger fontIncreaseStep = 4;
    noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
+#pragma mark - Interface rotation.
+
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
 @end

@@ -55,4 +55,16 @@
    }
 }
 
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return [self.topViewController shouldAutorotate];
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return [self.topViewController supportedInterfaceOrientations];
+}
+
 @end

@@ -740,7 +740,8 @@
         <class className="ArticleDetailViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ArticleDetailViewController.h"/>
             <relationships>
-                <relationship kind="outlet" name="contentWebView" candidateClass="UIWebView"/>
+                <relationship kind="outlet" name="pageView" candidateClass="UIWebView"/>
+                <relationship kind="outlet" name="rdbView" candidateClass="UIWebView"/>
             </relationships>
         </class>
         <class className="EventDisplayViewController" superclassName="UIViewController">

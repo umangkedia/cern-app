@@ -38,6 +38,7 @@
    //Actually, feed info is in MENU.plist, but at this point menu is not created yet
    //(it'll be created by this first table navigation controller.
 
+
    MenuNavigationController * const top = (MenuNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
                                                                          CernAPP::TableNavigationControllerNewsID];
 
@@ -50,14 +51,19 @@
    NewsTableViewController * const nt = (NewsTableViewController *)top.topViewController;
    nt.navigationItem.title = @"CMS News";
    [nt.aggregator addFeedForURL : [NSURL URLWithString : @"http://cms.web.cern.ch/news/category/265/rss.xml"]];
-   
    self.topViewController = top;
 }
 
 //________________________________________________________________________________________
-- (BOOL) shouldAutorotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation
+- (BOOL) shouldAutorotate
 {
-   return YES;
+   return [self.topViewController shouldAutorotate];
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return [self.topViewController supportedInterfaceOrientations];
 }
 
 @end

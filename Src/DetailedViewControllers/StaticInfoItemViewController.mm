@@ -110,4 +110,16 @@
    return [MWPhoto photoWithImage : [UIImage imageNamed : [staticInfo objectForKey : @"Image"]]];
 }
 
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
 @end

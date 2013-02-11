@@ -570,5 +570,19 @@ using CernAPP::NetworkStatus;
    [self.slidingViewController anchorTopViewTo : ECRight];
 }
 
+#pragma mark - Interface rotation.
+
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) supportedInterfaceOrientations
+{
+   return  UIInterfaceOrientationMaskPortrait;
+}
+
 
 @end
