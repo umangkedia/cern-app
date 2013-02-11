@@ -260,6 +260,7 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       if (groupItem.parentGroup) //Nested group.
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose_child.png"]];
       else {
+         /*
          itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
          itemLabel.layer.shadowOffset = menuTextShadowOffset;
          itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
@@ -267,6 +268,7 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
          //Many thanks to tc: http://stackoverflow.com/questions/6395139/i-have-bad-performance-on-using-shadow-effect
          itemLabel.layer.shouldRasterize = YES;
          itemLabel.layer.rasterizationScale = 2.f;
+         */
 
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
       }
