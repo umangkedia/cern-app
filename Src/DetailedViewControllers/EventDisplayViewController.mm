@@ -183,19 +183,23 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    CGFloat oldScreenWidth = UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)?[UIScreen mainScreen].bounds.size.height:[UIScreen mainScreen].bounds.size.width;
-    
-    float scrollViewWidth = self.scrollView.frame.size.width;
-    float scrollViewHeight = self.scrollView.frame.size.height;
-    self.scrollView.contentSize = CGSizeMake(scrollViewWidth*numPages, 1.0);
-    [self.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width*currentPage, 0.0)];
-    
-    [UIView animateWithDuration:duration animations:^{
-        for (UIView *subview in self.scrollView.subviews) {
-            int page = floor((subview.frame.origin.x - oldScreenWidth / 2) / oldScreenWidth) + 1;
-            subview.frame = CGRectMake(scrollViewWidth*page, 0.0, scrollViewWidth, scrollViewHeight);
-        }
-    }];
+   CGRect pcFrame = pageControl.frame;
+   pcFrame.origin.x = self.view.frame.size.width / 2 - pcFrame.size.width / 2;
+   pageControl.frame = pcFrame;
+
+   CGFloat oldScreenWidth = UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)?[UIScreen mainScreen].bounds.size.height:[UIScreen mainScreen].bounds.size.width;
+
+   float scrollViewWidth = self.scrollView.frame.size.width;
+   float scrollViewHeight = self.scrollView.frame.size.height;
+   self.scrollView.contentSize = CGSizeMake(scrollViewWidth*numPages, 1.0);
+   [self.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width*currentPage, 0.0)];
+
+   [UIView animateWithDuration:duration animations:^{
+      for (UIView *subview in self.scrollView.subviews) {
+         const int page = floor((subview.frame.origin.x - oldScreenWidth / 2) / oldScreenWidth) + 1;
+         subview.frame = CGRectMake(scrollViewWidth*page, 0.0, scrollViewWidth, scrollViewHeight);
+      }
+   }];
 }
 
 //________________________________________________________________________________________
@@ -575,7 +579,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
-   return pageLoaded;
+   return NO;//pageLoaded;
 }
 
 //________________________________________________________________________________________
@@ -584,5 +588,17 @@ using CernAPP::NetworkStatus;
    return  UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
 }
 
+//________________________________________________________________________________________
+- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+{
+#pragma unused(fromInterfaceOrientation)
+   if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+      [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];
+      [self.navigationController setNavigationBarHidden : YES];
+   } else {
+      [self.navigationController.view addGestureRecognizer : self.slidingViewController.panGesture];
+      [self.navigationController setNavigationBarHidden : NO];
+   }
+}
 
 @end
