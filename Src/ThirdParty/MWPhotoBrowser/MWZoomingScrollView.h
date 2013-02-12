@@ -40,5 +40,9 @@
 
 //Added by TP:
 - (void) showSpinner;
+- (BOOL) loading;
+
+@property (nonatomic) BOOL imageBroken;
+
 
 @end

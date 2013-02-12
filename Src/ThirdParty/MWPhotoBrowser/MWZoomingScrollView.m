@@ -19,12 +19,13 @@
 
 @implementation MWZoomingScrollView
 
-@synthesize photoBrowser = _photoBrowser, photo = _photo, captionView = _captionView;
+@synthesize photoBrowser = _photoBrowser, photo = _photo, captionView = _captionView, imageBroken;
 
 //________________________________________________________________________________________
 - (id) initWithPhotoBrowser : (NSObject<PhotoBrowserProtocol> *) browser
 {
    if ((self = [super init])) {
+      imageBroken = NO;
       // Delegate
       self.photoBrowser = browser;
 
@@ -130,11 +131,18 @@
    [_spinner startAnimating];
 }
 
+//________________________________________________________________________________________
+- (BOOL) loading
+{
+   return [_spinner isAnimating];
+}
+
 // Image failed so just show black!
 //________________________________________________________________________________________
 - (void) displayImageFailure
 {
    [_spinner stopAnimating];
+   imageBroken = YES;
 }
 
 #pragma mark - Setup

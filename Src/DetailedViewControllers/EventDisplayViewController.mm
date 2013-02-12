@@ -47,6 +47,9 @@ using CernAPP::NetworkStatus;
    Reachability *internetReach;
    
    NSMutableArray *pages;
+
+   //Error messages.
+   MBProgressHUD *noConnectionHUD;
 }
 
 #pragma mark - Reachability and the network status.
@@ -61,11 +64,17 @@ using CernAPP::NetworkStatus;
          [currentConnection cancel];
          currentConnection = nil;
          
+         //If some page managed to load - ok, but check the remaining.
+         for (;loadingPage < pages.count; ++loadingPage) {
+            MWZoomingScrollView * const page = (MWZoomingScrollView *)pages[loadingPage];
+            [page displayImageFailure];
+         }
+         
          loadingPage = 0;
          loadingSource = 0;
          imageData = nil;
 
-         //TODO: error HUD.
+         [self checkCurrentPage];
       }
    }
 }
@@ -191,6 +200,7 @@ using CernAPP::NetworkStatus;
    MWZoomingScrollView * const newView = [[MWZoomingScrollView alloc] initWithPhotoBrowser : self];
    newView.frame = newFrame;
    [pages addObject : newView];
+   newView.imageBroken = NO;
    [newView showSpinner];
 
    [scrollView addSubview : newView];
@@ -243,14 +253,14 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) showErrorHUD
 {
-   /*
+   [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
+
    noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.scrollView animated : NO];
    noConnectionHUD.color = [UIColor redColor];
    noConnectionHUD.delegate = self;
    noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"No network";
+   noConnectionHUD.labelText = @"Network error";
    noConnectionHUD.removeFromSuperViewOnHide = YES;
-   */
 }
 
 //________________________________________________________________________________________
@@ -350,11 +360,34 @@ using CernAPP::NetworkStatus;
 #pragma mark - UI methods
 
 //________________________________________________________________________________________
+- (void) checkCurrentPage
+{
+   //Check if we have a network or loading page.
+   //If both are no - check if we have an image for the current page.
+
+   if (!pages.count)
+      return;
+
+   [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
+
+   assert(pageControl.currentPage >= 0 && pageControl.currentPage < pages.count &&
+          "checkCurrentPage, current page is out of bounds");
+
+   MWZoomingScrollView * const page = (MWZoomingScrollView *)pages[pageControl.currentPage];
+   if (page.imageBroken && !page.loading) {
+      NSLog(@"error for %d", pageControl.currentPage);
+      [self showErrorHUD];
+   }
+}
+
+//________________________________________________________________________________________
 - (void) scrollViewDidScroll : (UIScrollView *) sender
 {
    const CGFloat pageWidth = self.scrollView.frame.size.width;
    const int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
    self.pageControl.currentPage = page;
+   
+   [self checkCurrentPage];
 }
 
 //________________________________________________________________________________________
@@ -367,6 +400,8 @@ using CernAPP::NetworkStatus;
    //so I have to scroll to this image (page).
    self.scrollView.contentOffset = CGPointMake(page * self.scrollView.frame.size.width, 0);
    self.pageControl.currentPage = page;
+
+   [self checkCurrentPage];
 }
 
 #pragma mark - NSURLConnectionDelegate
@@ -399,7 +434,7 @@ using CernAPP::NetworkStatus;
    if ([imageData length]) {
       UIImage * const newImage = [UIImage imageWithData : imageData];
       if (newImage) {
-         NSDictionary * const source = (NSDictionary *)[sources objectAtIndex : loadingSource];
+         NSDictionary * const source = (NSDictionary *)sources[loadingSource];
          //
          if (!lastUpdated)//TODO: this "lastUpdated" must be replaced with something more reliable.
             lastUpdated = [NSDate date];
@@ -453,8 +488,23 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
 {
-   //TODO: Show the error HUD if it's a curent page.
+   assert(loadingSource < sources.count && "connection:didFailWithError:, loadingSource is out of bounds");
+   assert(loadingPage >= 0 && loadingPage < pages.count && "connection:didFailWithError:, loadingPage is out of bounds");
 
+   NSDictionary * const source = (NSDictionary *)sources[loadingSource];
+   if (NSArray * const boundaryRects = (NSArray *)source[sourceBoundaryRects]) {
+      for (int pageIndex = loadingPage, e = loadingPage + boundaryRects.count; pageIndex < e; ++pageIndex) {
+         MWZoomingScrollView * const page = (MWZoomingScrollView *)pages[pageIndex];
+         [page displayImageFailure];//this will stop spinner and set imageBroken == YES.
+      }
+      
+      loadingPage += boundaryRects.count;//skip broken pages.
+   } else {
+      MWZoomingScrollView * const page = (MWZoomingScrollView *)pages[loadingPage];
+      [page displayImageFailure];//this will stop spinner and set imageBroken == YES.
+      ++loadingPage;//we skip the broken page.
+   }
+   
    if (loadingSource + 1 < [sources count]) {
       ++loadingSource;
       NSDictionary * const source = [sources objectAtIndex : loadingSource];
@@ -469,6 +519,8 @@ using CernAPP::NetworkStatus;
       pageLoaded = YES;
       self.navigationItem.rightBarButtonItem.enabled = YES;
    }
+   
+   [self checkCurrentPage];//This will probably set an error HUD.
 }
 
 #pragma mark - Sliding view controller.
