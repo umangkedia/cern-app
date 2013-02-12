@@ -15,6 +15,7 @@
 - (UIImage *) imageForPhoto : (id<MWPhoto>) photo;
 - (void) cancelControlHiding;
 - (void) hideControlsAfterDelay;
+- (void) toggleControls;
 
 @required
 

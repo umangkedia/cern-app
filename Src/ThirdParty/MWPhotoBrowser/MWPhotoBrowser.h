@@ -21,31 +21,38 @@
 #define MWLog(x, ...)
 #endif
 
-// Delgate
+// Delegate
 @class MWPhotoBrowser;
+
 @protocol MWPhotoBrowserDelegate <NSObject>
+
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser;
 - (id<MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index;
+
 @optional
+
 - (MWCaptionView *)photoBrowser:(MWPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index;
+
 @end
 
-// MWPhotoBrowser
-@interface MWPhotoBrowser : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate,
+//
+//MWPhotoBrowser
+//
+@interface MWPhotoBrowser : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate,
+                                              MFMailComposeViewControllerDelegate,
                                               PhotoBrowserProtocol>
-
 // Properties
 @property (nonatomic) BOOL displayActionButton;
 
 // Init
-- (id)initWithPhotos:(NSArray *)photosArray  __attribute__((deprecated)); // Depreciated
-- (id)initWithDelegate:(id <MWPhotoBrowserDelegate>)delegate;
+- (id) initWithPhotos : (NSArray *) photosArray  __attribute__((deprecated)); // Depreciated
+- (id) initWithDelegate : (id <MWPhotoBrowserDelegate>) delegate;
 
 // Reloads the photo browser and refetches data
-- (void)reloadData;
+- (void) reloadData;
 
 // Set page that photo browser starts on
-- (void)setInitialPageIndex:(NSUInteger)index;
+- (void) setInitialPageIndex : (NSUInteger) index;
 
 @end
 

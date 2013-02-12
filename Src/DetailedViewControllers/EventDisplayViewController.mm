@@ -15,9 +15,12 @@
 
 #import "EventDisplayViewController.h"
 #import "ECSlidingViewController.h"
+#import "MWZoomingScrollView.h"
 #import "ApplicationErrors.h"
+#import "MWPhotoProtocol.h"
 #import "Reachability.h"
 #import "GUIHelpers.h"
+#import "MWPhoto.h"
 
 //We compile as Objective-C++, in C++ const have internal linkage ==
 //no need for static or unnamed namespace.
@@ -29,15 +32,25 @@ NSString * const sourceURL = @"URL";
 
 using CernAPP::NetworkStatus;
 
+//
+//pageLoaded is a legacy of CERN.app v.1 - I had a multi-page controller there and
+//event display view supported PageController protocol.
+//
+
 @implementation EventDisplayViewController {
+   unsigned loadingPage;
    unsigned loadingSource;
+
    NSURLConnection *currentConnection;
    NSMutableData *imageData;
    NSDate *lastUpdated;
    
    Reachability *internetReach;
-   MBProgressHUD *noConnectionHUD;
+   
+   NSMutableArray *pages;
 }
+
+#pragma mark - Reachability and the network status.
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
@@ -49,11 +62,11 @@ using CernAPP::NetworkStatus;
          [currentConnection cancel];
          currentConnection = nil;
          
+         loadingPage = 0;
          loadingSource = 0;
          imageData = nil;
-         [self removeSpinners];
 
-         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+         //TODO: error HUD.
       }
    }
 }
@@ -66,13 +79,20 @@ using CernAPP::NetworkStatus;
 
 @synthesize sources, downloadedResults, scrollView, pageControl, titleLabel, dateLabel, pageLoaded, needsRefreshButton;
 
+#pragma mark - Lifecycle.
+
 //________________________________________________________________________________________
-- (id)initWithCoder : (NSCoder *) aDecoder
+- (id) initWithCoder : (NSCoder *) aDecoder
 {
    if (self = [super initWithCoder : aDecoder]) {
-      self.sources = [NSMutableArray array];
+      sources = [[NSMutableArray alloc] init];
+      pages = [[NSMutableArray alloc] init];
+
       numPages = 0;
+      loadingPage = 0;
       loadingSource = 0;
+      
+      pageLoaded = NO;
    }
 
    return self;
@@ -84,6 +104,8 @@ using CernAPP::NetworkStatus;
    [internetReach stopNotifier];
    [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
+
+#pragma mark - UIViewController's overriders.
 
 //________________________________________________________________________________________
 - (void) viewDidLoad
@@ -112,10 +134,11 @@ using CernAPP::NetworkStatus;
 
    self.navigationItem.titleView = titleView;
 
-   self.pageControl.numberOfPages = numPages;
+   pageControl.numberOfPages = numPages;
    if (numPages == 1)
-      [self.pageControl setHidden : YES];
-   self.scrollView.backgroundColor = [UIColor blackColor];
+      [pageControl setHidden : YES];
+
+   scrollView.backgroundColor = [UIColor blackColor];
    
    pageLoaded = NO;
    
@@ -129,29 +152,21 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
-   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * numPages, 1.f);
+   self.scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * numPages, scrollView.frame.size.height);
 
-   if (![self hasConnection])
+   //We do not add anything into the navigation stack, so this method (in principle) is
+   //called only once.
+
+   if (![self hasConnection]) {
+      //TODO: show error HUD.
       return;
+   }
 
-   [self addSpinners];
    [self refresh];
 }
 
 //________________________________________________________________________________________
-- (void) viewDidUnload
-{
-    [super viewDidUnload];
-    for (UIView *subview in self.scrollView.subviews) {
-        if ([subview class] == [UIImageView class]) {
-            ((UIImageView *)subview).image = nil;
-        }
-        [subview removeFromSuperview];
-    }
-}
-
-//________________________________________________________________________________________
-- (void) viewWillDisappear:(BOOL)animated
+- (void) viewWillDisappear : (BOOL) animated
 {
    if (currentConnection)
       [currentConnection cancel];
@@ -166,72 +181,76 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) addEventDisplayPage
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-    else
-        return (interfaceOrientation == UIInterfaceOrientationPortrait);
+   assert(pages.count < numPages && "addEventDisplayPage, too many pages");
+   
+   CGRect newFrame = scrollView.frame;
+   newFrame.origin.y = 0;
+   newFrame.origin.x = pages.count * newFrame.size.width;
+   
+   MWZoomingScrollView * const newView = [[MWZoomingScrollView alloc] initWithPhotoBrowser : self];
+   newView.frame = newFrame;
+   [pages addObject : newView];
+   
+   [scrollView addSubview : newView];
+   scrollView.contentSize = CGSizeMake(pages.count * newFrame.size.width, newFrame.size.height);
+}
+
+//________________________________________________________________________________________
+- (void) addEventDisplayPages
+{
+   assert(pages.count == 0 && "addEventDisplayPages, count is not 0");
+
+   for (NSDictionary *source in sources) {
+      if (NSArray * const boundaryRects = source[sourceBoundaryRects]) {
+         for (NSDictionary *boundaryInfo in boundaryRects)
+            [self addEventDisplayPage];
+      } else
+         [self addEventDisplayPage];
+   }
 }
 
 //________________________________________________________________________________________
 - (void) addSourceWithDescription : (NSString *) description URL : (NSURL *) url boundaryRects : (NSArray *) boundaryRects
 {
-    pageLoaded = NO;
-    NSMutableDictionary *source = [NSMutableDictionary dictionary];
-    [source setValue : description forKey : sourceDescription];
-    [source setValue : url forKey : sourceURL];
-    if (boundaryRects) {
-        [source setValue : boundaryRects forKey : sourceBoundaryRects];
-        // If the image downloaded from this source is going to be divided into multiple images, we will want a separate page for each of these.
-        numPages += boundaryRects.count;
-    } else {
-        numPages += 1;
-    }
-    [self.sources addObject:source];
+   pageLoaded = NO;
+   NSMutableDictionary * const source = [NSMutableDictionary dictionary];
+   [source setValue : description forKey : sourceDescription];
+   [source setValue : url forKey : sourceURL];
+
+   if (boundaryRects) {
+      [source setValue : boundaryRects forKey : sourceBoundaryRects];
+      // If the image downloaded from this source is going to be divided into multiple images, we will want a separate page for each of these.
+      numPages += boundaryRects.count;
+   } else {
+      numPages += 1;
+   }
+
+   [sources addObject : source];
 }
 
 #pragma mark - Loading event display images
 
 //________________________________________________________________________________________
-- (NSUInteger) nOfEventDisplays
+- (MWZoomingScrollView *) imageViewForTheCurrentPage
 {
-   NSUInteger nD = 0;
-
-   for (UIView *v in scrollView.subviews)
-      if ([v isKindOfClass : [UIImageView class]])
-         ++nD;
- 
-   return nD;
-}
-
-//________________________________________________________________________________________
-- (UIImageView *) imageViewForTheCurrentPage
-{
-   const NSInteger page = self.pageControl.currentPage;
-   const CGFloat scrollViewWidth = scrollView.frame.size.width;
-   const CGFloat innerX = page * scrollViewWidth + 0.5f * scrollViewWidth;
-   
-   for (UIView *v in scrollView.subviews) {
-      if ([v isKindOfClass : [UIImageView class]]) {
-         const CGRect viewFrame = v.frame;
-         if (innerX > viewFrame.origin.x && innerX < viewFrame.origin.x + viewFrame.size.width)
-            return (UIImageView *)v;
-      }
-   }
-   
-   return nil;
+   assert(pageControl.currentPage >= 0 && pageControl.currentPage < numPages &&
+          "imageViewForTheCurrentPage, current page is out of bounds");
+   return (MWZoomingScrollView *)pages[pageControl.currentPage];
 }
 
 //________________________________________________________________________________________
 - (void) showErrorHUD
 {
+   /*
    noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.scrollView animated : NO];
    noConnectionHUD.color = [UIColor redColor];
    noConnectionHUD.delegate = self;
    noConnectionHUD.mode = MBProgressHUDModeText;
    noConnectionHUD.labelText = @"No network";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;         
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
+   */
 }
 
 //________________________________________________________________________________________
@@ -252,32 +271,40 @@ using CernAPP::NetworkStatus;
    [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
 
    if (![self hasConnection]) {
-      UIImageView * currentView = [self imageViewForTheCurrentPage];
-      if ((currentView && !currentView.image) || ![self nOfEventDisplays])
-         [self showErrorHUD];
-         //otherwise, just show the old image.
+      //TODO: show error HUD.
       return;
    }
 
    if (currentConnection)
       [currentConnection cancel];
-   
-   pageLoaded = NO;
 
    // If the event display images from a previous load are already in the scrollview, remove all of them before refreshing.
+   [pages removeAllObjects];
+   
    for (UIView *subview in self.scrollView.subviews) {
-      if ([subview class] == [UIImageView class])
+      if ([subview class] == [MWZoomingScrollView class])
          [subview removeFromSuperview];
    }
+
+   pageLoaded = NO;
+   loadingPage = 0;
+   loadingSource = 0;
    
    if ([sources count]) {
-      [self addSpinnerToPage : self.pageControl.currentPage];
+      const NSInteger currentPage = pageControl.currentPage;
+      [self addEventDisplayPages];
+      pageControl.currentPage = currentPage;
+
+      assert(pageControl.currentPage >= 0 && pageControl.currentPage < pages.count &&
+             "refresh, current page is out of bounds");
+
+      [self scrollToPage : pageControl.currentPage];
+
       self.navigationItem.rightBarButtonItem.enabled = NO;
       self.downloadedResults = [NSMutableArray array];
       NSDictionary * const source = [sources objectAtIndex : 0];
       NSURL * const url = [source objectForKey : sourceURL];
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
-      loadingSource = 0;
       imageData = [[NSMutableData alloc] init];
       currentConnection = [[NSURLConnection alloc] initWithRequest : request delegate : self startImmediately : YES];
    }
@@ -287,7 +314,6 @@ using CernAPP::NetworkStatus;
 - (IBAction) refresh : (id) sender
 {
    //This method is connected to the "reload" button.
-
    if (![self hasConnection])
       CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
 
@@ -295,147 +321,53 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) synchronouslyDownloadImageForSource : (NSDictionary *) source
+- (NSDate *) lastModifiedDateFromHTTPResponse : (NSHTTPURLResponse *) response
 {
-   // Download the image from the specified source
-   NSURL *url = [source objectForKey : sourceURL];
-   NSURLRequest *request = [NSURLRequest requestWithURL:url];
-   NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] init];
-   NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-   UIImage *image = [UIImage imageWithData : data];
-
-   NSDate *updated = [self lastModifiedDateFromHTTPResponse:response];
-
-   // Just set the date in the nav bar to the date of the first image, because they should all be pretty much the same anyway
-   if (self.downloadedResults.count == 0) {
-      self.dateLabel.text = [self timeAgoStringFromDate:updated];
-   }
-
-   // If the downloaded image needs to be divided into several smaller images, do that now and add each
-   // smaller image to the results array.
-   NSArray *boundaryRects = [source objectForKey:sourceBoundaryRects];
-   if (boundaryRects) {
-      for (NSDictionary *boundaryInfo in boundaryRects) {
-         NSValue *rectValue = [boundaryInfo objectForKey:@"Rect"];
-         CGRect boundaryRect = [rectValue CGRectValue];
-         CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, boundaryRect);
-         UIImage *partialImage = [UIImage imageWithCGImage:imageRef];
-         CGImageRelease(imageRef);
-         NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-         [imageInfo setValue:partialImage forKey:resultImage];
-         [imageInfo setValue:[boundaryInfo objectForKey:sourceDescription] forKey:sourceDescription];
-         [imageInfo setValue:updated forKey:resultLastUpdate];
-         [self.downloadedResults addObject:imageInfo];
-         [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
-      }
-   } else {    // Otherwise if the image does not need to be divided, just add the image to the results array.
-      NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-      [imageInfo setValue:image forKey:resultImage];
-      [imageInfo setValue:[source objectForKey:sourceDescription] forKey : sourceDescription];
-      [imageInfo setValue:updated forKey:resultLastUpdate];
-      [self.downloadedResults addObject:imageInfo];
-      [self addDisplay:imageInfo toPage:self.downloadedResults.count-1];
-   }
-
-   if (self.downloadedResults.count == numPages) {
-      self.navigationItem.rightBarButtonItem.enabled = YES;
-   }
-}
-
-//________________________________________________________________________________________
-- (NSDate *)lastModifiedDateFromHTTPResponse:(NSHTTPURLResponse *)response
-{
-    NSDictionary *allHeaderFields = response.allHeaderFields;
-    NSString *lastModifiedString = [allHeaderFields objectForKey:@"Last-Modified"];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"EEE',' dd' 'MMM' 'yyyy HH':'mm':'ss zzz"];
+   NSDictionary *allHeaderFields = response.allHeaderFields;
+   NSString *lastModifiedString = [allHeaderFields objectForKey : @"Last-Modified"];
+   NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+   [dateFormatter setDateFormat : @"EEE',' dd' 'MMM' 'yyyy HH':'mm':'ss zzz"];
     
-    return [dateFormatter dateFromString:lastModifiedString];
+   return [dateFormatter dateFromString : lastModifiedString];
 }
 
 //________________________________________________________________________________________
-- (NSString *)timeAgoStringFromDate:(NSDate *)date
+- (NSString *) timeAgoStringFromDate : (NSDate *) date
 {
-    int secondsAgo = abs([date timeIntervalSinceNow]);
-    NSString *dateString;
-    if (secondsAgo<60*60) {
-        dateString = [NSString stringWithFormat:@"%d minutes ago", secondsAgo/60];
-    } else if (secondsAgo<60*60*24) {
-        dateString = [NSString stringWithFormat:@"%0.1f hours ago", (float)secondsAgo/(60*60)];
-    } else {
-        dateString = [NSString stringWithFormat:@"%0.1f days ago", (float)secondsAgo/(60*60*24)];
-    }
-    return dateString;
+   const int secondsAgo = abs([date timeIntervalSinceNow]);
+   NSString *dateString = nil;
+
+   if (secondsAgo < 60 * 60) {
+      dateString = [NSString stringWithFormat : @"%d minutes ago", secondsAgo / 60];
+   } else if (secondsAgo < 60 * 60 * 24) {
+      dateString = [NSString stringWithFormat : @"%0.1f hours ago", (float)secondsAgo / (60 * 60)];
+   } else {
+      dateString = [NSString stringWithFormat : @"%0.1f days ago", (float)secondsAgo / (60 * 60 * 24)];
+   }
+
+   return dateString;
 }
         
 #pragma mark - UI methods
 
 //________________________________________________________________________________________
-- (void) addDisplay : (NSDictionary *) eventDisplayInfo toPage : (int) page
+- (void) scrollViewDidScroll : (UIScrollView *) sender
 {
-   UIImage *image = [eventDisplayInfo objectForKey : resultImage];
-   CGRect imageViewFrame = CGRectMake(self.scrollView.frame.size.width*page, 0., self.scrollView.frame.size.width, self.scrollView.frame.size.height);
-   UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageViewFrame];
-   imageView.contentMode = UIViewContentModeScaleAspectFit;
-   imageView.image = image;
-   [self.scrollView addSubview:imageView];
-}
-
-//________________________________________________________________________________________
-- (void) addSpinners
-{
-   for (int i = 0; i< numPages; i++)
-      [self addSpinnerToPage : i];
-}
-
-//________________________________________________________________________________________
-- (void) addSpinnerToPage : (int) page
-{
-    UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    spinner.frame = CGRectMake(self.scrollView.frame.size.width*page, 0.0, self.scrollView.frame.size.width, self.scrollView.frame.size.height);
-    [spinner startAnimating];
-    [self.scrollView addSubview:spinner];
-}
-
-//________________________________________________________________________________________
-- (void) removeSpinners
-{
-   for (UIView * v in self.scrollView.subviews) {
-      if ([v isKindOfClass:[UIActivityIndicatorView class]])
-         [v removeFromSuperview];
-   }
-}
-
-//________________________________________________________________________________________
-- (void) scrollViewDidScroll : (UIScrollView *)sender
-{
-   CGFloat pageWidth = self.scrollView.frame.size.width;
-   int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+   const CGFloat pageWidth = self.scrollView.frame.size.width;
+   const int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
    self.pageControl.currentPage = page;
-   
-   if (![self hasConnection]) {
-      [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
-      UIImageView * const v = [self imageViewForTheCurrentPage];
-      if ((v && !v.image) || ![self nOfEventDisplays])
-         [self showErrorHUD];
-   }
 }
 
 //________________________________________________________________________________________
 - (void) scrollToPage : (NSInteger) page
 {
+   assert(page >= 0 && page < numPages && "scrollToPage:, parameter 'page' is out of bounds");
+
    //When controller is loaded from LiveEventTableView,
    //any image (not at index 0) can be selected in a table,
    //so I have to scroll to this image (page).
    self.scrollView.contentOffset = CGPointMake(page * self.scrollView.frame.size.width, 0);
    self.pageControl.currentPage = page;
-
-   if (![self hasConnection]) {
-      [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
-      UIImageView *v = [self imageViewForTheCurrentPage];
-      if ((v && !v.image) || ![self nOfEventDisplays])
-         [self showErrorHUD];
-   }
 }
 
 #pragma mark - NSURLConnectionDelegate
@@ -444,6 +376,7 @@ using CernAPP::NetworkStatus;
 - (void) connection : (NSURLConnection *) connection didReceiveData : (NSData *)data
 {
    assert(imageData != nil && "connection:didReceiveData:, imageData is nil");
+
    [imageData appendData : data];
 }
 
@@ -476,26 +409,42 @@ using CernAPP::NetworkStatus;
 
          if (NSArray * const boundaryRects = [source objectForKey : sourceBoundaryRects]) {
             for (NSDictionary *boundaryInfo in boundaryRects) {
+               assert(loadingPage >= 0 && loadingPage < pages.count &&
+                      "connectionDidFinishLoading:, loadingPage is out of bounds");
+
                NSValue * const rectValue = (NSValue *)[boundaryInfo objectForKey : @"Rect"];
                const CGRect boundaryRect = [rectValue CGRectValue];
                CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, boundaryRect));
                UIImage * const partialImage = [UIImage imageWithCGImage : imageRef];
                CGImageRelease(imageRef);
+               ///
+               //TODO: remove this shit.
                NSDictionary *imageInfo = [NSMutableDictionary dictionary];
                [imageInfo setValue : partialImage forKey : resultImage];
                [imageInfo setValue : [boundaryInfo objectForKey : sourceDescription] forKey : sourceDescription];
                [imageInfo setValue : lastUpdated forKey : resultLastUpdate];
                [self.downloadedResults addObject : imageInfo];
-               [self addDisplay : imageInfo toPage : self.downloadedResults.count - 1];
+               ///
+               MWZoomingScrollView * const view = (MWZoomingScrollView *)pages[loadingPage];
+               view.photo = [[MWPhoto alloc] initWithImage : partialImage];
+               ++loadingPage;
             }
+            
+            loadingPage += boundaryRects.count;
          } else {
-            // Otherwise if the image does not need to be divided, just add the image to the results array.
+            //TODO: remove this shit.
             NSDictionary * const imageInfo = [NSMutableDictionary dictionary];
             [imageInfo setValue : newImage forKey : resultImage];
             [imageInfo setValue : [source objectForKey : sourceDescription] forKey : sourceDescription];
             [imageInfo setValue : lastUpdated forKey : resultLastUpdate];
             [self.downloadedResults addObject : imageInfo];
-            [self addDisplay : imageInfo toPage : self.downloadedResults.count - 1];
+            //
+            assert(loadingPage >= 0 && loadingPage < pages.count &&
+                   "connectionDidFinishLoading:, loadingPage is out of bounds");
+            
+            MWZoomingScrollView * const view = (MWZoomingScrollView *)pages[loadingPage];
+            view.photo = [[MWPhoto alloc] initWithImage : newImage];
+            ++loadingPage;
          }
       }
    }
@@ -515,13 +464,14 @@ using CernAPP::NetworkStatus;
       loadingSource = 0;
       pageLoaded = YES;
       self.navigationItem.rightBarButtonItem.enabled = YES;
-      [self removeSpinners];
    }
 }
 
 //________________________________________________________________________________________
 - (void) connection : (NSURLConnection *) urlConnection didFailWithError : (NSError *) error
 {
+   //TODO: Show the error HUD if it's a curent page.
+
    if (loadingSource + 1 < [sources count]) {
       ++loadingSource;
       NSDictionary * const source = [sources objectAtIndex : loadingSource];
@@ -551,7 +501,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
-   return pageLoaded;
+   return NO;//pageLoaded;
 }
 
 //________________________________________________________________________________________
@@ -564,8 +514,6 @@ using CernAPP::NetworkStatus;
 - (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
 #pragma unused(duration)
-   currentPage = pageControl.currentPage;
-
    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
       [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];
       [self.navigationController setNavigationBarHidden : YES];
@@ -578,7 +526,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
-   CGRect pcFrame = pageControl.frame;
+ /*  CGRect pcFrame = pageControl.frame;
    pcFrame.origin.x = self.view.frame.size.width / 2 - pcFrame.size.width / 2;
    pageControl.frame = pcFrame;
 
@@ -597,8 +545,34 @@ using CernAPP::NetworkStatus;
             subview.frame = CGRectMake(scrollViewWidth*page, 0.0, scrollViewWidth, scrollViewHeight);
          }
       }];
-   }
+   }*/
 }
 
+#pragma mark - PhotoBrowserDelegate.
+
+//________________________________________________________________________________________
+- (UIImage *) imageForPhoto : (id<MWPhoto>) photo
+{
+   assert(photo != nil && "imageForPhoto:, parameter 'photo' is nil");
+   return [photo underlyingImage];
+}
+
+//________________________________________________________________________________________
+- (void) cancelControlHiding
+{
+   //Noop.
+}
+
+//________________________________________________________________________________________
+- (void) hideControlsAfterDelay
+{
+   //Noop.
+}
+
+//________________________________________________________________________________________
+- (void) toggleControls
+{
+   //Noop.
+}
 
 @end

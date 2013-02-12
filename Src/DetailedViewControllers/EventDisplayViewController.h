@@ -9,20 +9,21 @@
 #import <UIKit/UIKit.h>
 
 #import "PageControllerProtocol.h"
+#import "PhotoBrowserProtocol.h"
 #import "MBProgressHUD.h"
 
 @interface EventDisplayViewController : UIViewController<NSURLConnectionDelegate, PageController,
-                                                         MBProgressHUDDelegate, UIScrollViewDelegate>
+                                                         MBProgressHUDDelegate, UIScrollViewDelegate,
+                                                         PhotoBrowserProtocol>
 {
-    IBOutlet UIScrollView *scrollView;
-    IBOutlet UIPageControl *pageControl;
-    UILabel *titleLabel;
-    UILabel *dateLabel;
-    
-    NSMutableArray *sources;
-    NSMutableArray *downloadedResults;
-    int numPages;
-    int currentPage;
+   IBOutlet UIScrollView *scrollView;
+   IBOutlet UIPageControl *pageControl;
+   UILabel *titleLabel;
+   UILabel *dateLabel;
+
+   NSMutableArray *sources;
+   NSMutableArray *downloadedResults;
+   int numPages;
 }
 
 - (void) refresh;
@@ -41,15 +42,10 @@
 @property (nonatomic, strong) UILabel *dateLabel;
 
 // This method should be called immediately after init, and before viewDidLoad gets called.
-- (void)addSourceWithDescription:(NSString *)description URL:(NSURL *)url boundaryRects:(NSArray *)boundaryRects;
-- (IBAction)refresh:(id)sender;
-- (void)synchronouslyDownloadImageForSource:(NSDictionary *)source;
-
-- (void)addDisplay:(NSDictionary *)eventDisplayInfo toPage:(int)page;
-- (void)addSpinnerToPage:(int)page;
+- (void) addSourceWithDescription : (NSString *) description URL : (NSURL *) url boundaryRects : (NSArray *) boundaryRects;
+- (IBAction)refresh : (id)sender;
 
 - (void) scrollToPage : (NSInteger) page;
-
 //For sliding menu.
 - (IBAction) revealMenu : (id) sender;
 
