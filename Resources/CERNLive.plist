@@ -76,7 +76,7 @@
 			<array>
 				<dict>
 					<key>Image</key>
-					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc1_small.png</string>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc1.png</string>
 					<key>Name</key>
 					<string>LHC Page1</string>
 					<key>Category name</key>
@@ -84,7 +84,7 @@
 				</dict>
 				<dict>
 					<key>Image</key>
-					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc3_small.png</string>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhc3.png</string>
 					<key>Name</key>
 					<string>LHC Page 2</string>
 					<key>Category name</key>
@@ -104,7 +104,7 @@
 					<key>Name</key>
 					<string>Coordination Planning</string>
 					<key>Image</key>
-					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhccoord_small.png</string>
+					<string>http://vistar-capture.web.cern.ch/vistar-capture/lhccoord.png</string>
 				</dict>
 			</array>
 			<key>Category name</key>
