@@ -22,7 +22,6 @@
    UILabel *dateLabel;
 
    NSMutableArray *sources;
-   NSMutableArray *downloadedResults;
    int numPages;
 }
 
@@ -35,7 +34,6 @@
 @property (nonatomic, assign) BOOL needsRefreshButton;
 
 @property (nonatomic, strong) NSMutableArray *sources;
-@property (nonatomic, strong) NSMutableArray *downloadedResults;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
 @property (nonatomic, strong) UILabel *titleLabel;

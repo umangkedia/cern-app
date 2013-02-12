@@ -123,6 +123,13 @@
    }
 }
 
+//________________________________________________________________________________________
+- (void) showSpinner
+{
+   _photoImageView.hidden = YES;
+   [_spinner startAnimating];
+}
+
 // Image failed so just show black!
 //________________________________________________________________________________________
 - (void) displayImageFailure

@@ -38,4 +38,7 @@
 - (void) setMaxMinZoomScalesForCurrentBounds;
 - (void) prepareForReuse;
 
+//Added by TP:
+- (void) showSpinner;
+
 @end

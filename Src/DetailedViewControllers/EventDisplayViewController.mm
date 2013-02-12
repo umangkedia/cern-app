@@ -8,8 +8,7 @@
 
 //Code with background threads and undefined behavior (shared data
 //modification from different threads) was removed and re-written
-//by Timur Pocheptsov. Bugs fixed, ugly code removed,
-//error handling (at least some) added.
+//by Timur Pocheptsov.
 
 #import <cassert>
 
@@ -77,7 +76,7 @@ using CernAPP::NetworkStatus;
    return internetReach && [internetReach currentReachabilityStatus] != NetworkStatus::notReachable;
 }
 
-@synthesize sources, downloadedResults, scrollView, pageControl, titleLabel, dateLabel, pageLoaded, needsRefreshButton;
+@synthesize sources, scrollView, pageControl, titleLabel, dateLabel, pageLoaded, needsRefreshButton;
 
 #pragma mark - Lifecycle.
 
@@ -192,7 +191,8 @@ using CernAPP::NetworkStatus;
    MWZoomingScrollView * const newView = [[MWZoomingScrollView alloc] initWithPhotoBrowser : self];
    newView.frame = newFrame;
    [pages addObject : newView];
-   
+   [newView showSpinner];
+
    [scrollView addSubview : newView];
    scrollView.contentSize = CGSizeMake(pages.count * newFrame.size.width, newFrame.size.height);
 }
@@ -301,7 +301,6 @@ using CernAPP::NetworkStatus;
       [self scrollToPage : pageControl.currentPage];
 
       self.navigationItem.rightBarButtonItem.enabled = NO;
-      self.downloadedResults = [NSMutableArray array];
       NSDictionary * const source = [sources objectAtIndex : 0];
       NSURL * const url = [source objectForKey : sourceURL];
       NSURLRequest * const request = [NSURLRequest requestWithURL : url];
@@ -389,9 +388,7 @@ using CernAPP::NetworkStatus;
       lastUpdated = [NSDate date];
 
    // Just set the date in the nav bar to the date of the first image, because they should all be pretty much the same anyway
-   if (!self.downloadedResults.count)
-      self.dateLabel.text = [self timeAgoStringFromDate : lastUpdated];
-
+   self.dateLabel.text = [self timeAgoStringFromDate : lastUpdated];
 }
 
 //________________________________________________________________________________________
@@ -417,14 +414,7 @@ using CernAPP::NetworkStatus;
                CGImageRef imageRef(CGImageCreateWithImageInRect(newImage.CGImage, boundaryRect));
                UIImage * const partialImage = [UIImage imageWithCGImage : imageRef];
                CGImageRelease(imageRef);
-               ///
-               //TODO: remove this shit.
-               NSDictionary *imageInfo = [NSMutableDictionary dictionary];
-               [imageInfo setValue : partialImage forKey : resultImage];
-               [imageInfo setValue : [boundaryInfo objectForKey : sourceDescription] forKey : sourceDescription];
-               [imageInfo setValue : lastUpdated forKey : resultLastUpdate];
-               [self.downloadedResults addObject : imageInfo];
-               ///
+
                MWZoomingScrollView * const view = (MWZoomingScrollView *)pages[loadingPage];
                view.photo = [[MWPhoto alloc] initWithImage : partialImage];
                ++loadingPage;
@@ -432,13 +422,6 @@ using CernAPP::NetworkStatus;
             
             loadingPage += boundaryRects.count;
          } else {
-            //TODO: remove this shit.
-            NSDictionary * const imageInfo = [NSMutableDictionary dictionary];
-            [imageInfo setValue : newImage forKey : resultImage];
-            [imageInfo setValue : [source objectForKey : sourceDescription] forKey : sourceDescription];
-            [imageInfo setValue : lastUpdated forKey : resultLastUpdate];
-            [self.downloadedResults addObject : imageInfo];
-            //
             assert(loadingPage >= 0 && loadingPage < pages.count &&
                    "connectionDidFinishLoading:, loadingPage is out of bounds");
             
