@@ -1104,6 +1104,8 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
 {
+   [self.view layoutSubviews];
+
 #pragma unused(fromInterfaceOrientation)
    if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
       [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];

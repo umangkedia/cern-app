@@ -57,12 +57,18 @@
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
+   if ([self underLeftShowing])
+      return NO;
+
    return [self.topViewController shouldAutorotate];
 }
 
 //________________________________________________________________________________________
 - (NSUInteger) supportedInterfaceOrientations
 {
+   if ([self underLeftShowing])
+      return UIInterfaceOrientationMaskPortrait;
+
    return [self.topViewController supportedInterfaceOrientations];
 }
 
