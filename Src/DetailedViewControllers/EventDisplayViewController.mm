@@ -160,7 +160,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
-   self.scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * numPages, scrollView.frame.size.height);
+   //self.scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * numPages, scrollView.frame.size.height);
 
    //We do not add anything into the navigation stack, so this method (in principle) is
    //called only once.
@@ -278,12 +278,21 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) refresh
 {
-   [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
-
    if (![self hasConnection]) {
-      //TODO: show error HUD.
+      if (pages.count) {//we already have pages.
+         CernAPP::ShowErrorAlert(@"Please, check network connection", @"Close");
+         [self checkCurrentPage];
+      } else {
+         [self showErrorHUD];
+         pageControl.hidden = YES;
+      }
+
       return;
    }
+   
+   pageControl.hidden = NO;
+
+   [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
 
    if (currentConnection)
       [currentConnection cancel];
@@ -374,10 +383,8 @@ using CernAPP::NetworkStatus;
           "checkCurrentPage, current page is out of bounds");
 
    MWZoomingScrollView * const page = (MWZoomingScrollView *)pages[pageControl.currentPage];
-   if (page.imageBroken && !page.loading) {
-      NSLog(@"error for %d", pageControl.currentPage);
+   if (page.imageBroken)
       [self showErrorHUD];
-   }
 }
 
 //________________________________________________________________________________________

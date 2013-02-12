@@ -131,12 +131,6 @@
    [_spinner startAnimating];
 }
 
-//________________________________________________________________________________________
-- (BOOL) loading
-{
-   return [_spinner isAnimating];
-}
-
 // Image failed so just show black!
 //________________________________________________________________________________________
 - (void) displayImageFailure
