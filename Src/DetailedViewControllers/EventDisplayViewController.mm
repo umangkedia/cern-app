@@ -295,7 +295,8 @@ using CernAPP::NetworkStatus;
       return;
    }
    
-   pageControl.hidden = NO;
+   if (numPages > 1)
+      pageControl.hidden = NO;
 
    [MBProgressHUD hideAllHUDsForView : self.scrollView animated : NO];
 

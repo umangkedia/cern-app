@@ -519,7 +519,13 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 {
 	// Remember page index before rotation
 	_pageIndexBeforeRotation = _currentPageIndex;
-	_rotating = YES;	
+	_rotating = YES;
+   
+   if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+      [self setControlsHidden : YES animated : NO permanent : NO];
+   } else {
+      [self setControlsHidden : NO animated : NO permanent : NO];
+   }
 }
 
 //________________________________________________________________________________________
