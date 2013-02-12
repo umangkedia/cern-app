@@ -1000,7 +1000,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         }
         
         // Status Bar
-        [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation : animated ? UIStatusBarAnimationFade : UIStatusBarAnimationNone];
+       // [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation : animated ? UIStatusBarAnimationFade : UIStatusBarAnimationNone];
        
         // Get status bar height if visible
         if (![UIApplication sharedApplication].statusBarHidden) {
