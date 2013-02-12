@@ -8,7 +8,7 @@
 
 //This class is a central for our app - it's our sliding view controller,
 //which hosts everything else inside. The code modified and adapted for CERN.app
-//by Timur Pocheptsov (and, probably, broken :).
+//by Timur Pocheptsov.
 
 #import <cassert>
 
@@ -44,8 +44,7 @@
              "loadFirstNewsFeed:, 'Category Name' either not found, or has a wrong type");
    
       NSString * const catName = (NSString *)objBase;
-      
-      NSLog(@"got %@", catName);
+
       if (![catName isEqualToString : @"News"])
          continue;
       
@@ -90,11 +89,6 @@
 
    assert(storyboard != nil && "viewDidLoad, storyboard is nil");
 
-   //The very first view a user see - is a news table. We create a navigation controller
-   //with such a table here, also, we have to add a news feed here.
-   //Actually, feed info is in MENU.plist, but at this point menu is not created yet
-   //(it'll be created by this first table navigation controller.
-
 
    MenuNavigationController * const top = (MenuNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
                                                                        CernAPP::TableNavigationControllerNewsID];
@@ -102,7 +96,10 @@
    assert([top.topViewController isKindOfClass : [NewsTableViewController class]] &&
           "viewDidLoad:, top view controller is either nil or has a wrong type");
 
+   //The very first view a user see - is a news table. We create a navigation controller
+   //with such a table here, also, we have to add a news feed here.
    [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
+
    self.topViewController = top;
 }
 
