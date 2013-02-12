@@ -6,11 +6,13 @@
 //  Copyright 2010 d3i. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
-#import "MWPhoto.h"
+#import <UIKit/UIKit.h>
+
+#import "PhotoBrowserProtocol.h"
 #import "MWPhotoProtocol.h"
 #import "MWCaptionView.h"
+#import "MWPhoto.h"
 
 // Debug Logging
 #if 0 // Set to 1 to enable debug logging
@@ -29,7 +31,8 @@
 @end
 
 // MWPhotoBrowser
-@interface MWPhotoBrowser : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate> 
+@interface MWPhotoBrowser : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate,
+                                              PhotoBrowserProtocol>
 
 // Properties
 @property (nonatomic) BOOL displayActionButton;

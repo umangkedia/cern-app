@@ -428,6 +428,7 @@
 		70501E3B16B6E180002C0F48 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		70501E4016B6E674002C0F48 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		70501E4216B6E6EB002C0F48 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		70533AEC16CA5B4C00077B0E /* PhotoBrowserProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoBrowserProtocol.h; sourceTree = "<group>"; };
 		7054DEEB169AFD7A00B025C7 /* MENU.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = MENU.plist; sourceTree = "<group>"; };
 		705D9FB0166F3867007C7611 /* scrollerClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = scrollerClick.wav; path = Sounds/scrollerClick.wav; sourceTree = "<group>"; };
 		705D9FB3166F3A00007C7611 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -607,6 +608,7 @@
 				41B3D9C516B12D6000AF4463 /* MWTapDetectingView.m */,
 				41B3D9C616B12D6000AF4463 /* MWZoomingScrollView.h */,
 				41B3D9C716B12D6000AF4463 /* MWZoomingScrollView.m */,
+				70533AEC16CA5B4C00077B0E /* PhotoBrowserProtocol.h */,
 			);
 			name = MWPhotoBrowser;
 			path = Src/ThirdParty/MWPhotoBrowser;

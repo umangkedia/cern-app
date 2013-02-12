@@ -1085,7 +1085,6 @@ const NSUInteger fontIncreaseStep = 4;
 
 #pragma mark - Interface rotation.
 
-
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
