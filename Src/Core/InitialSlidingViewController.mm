@@ -20,6 +20,63 @@
 @implementation InitialSlidingViewController
 
 //________________________________________________________________________________________
+- (void) loadFirstNewsFeed : (NewsTableViewController *) tableController
+{
+   assert(tableController != nil && "loadFirstNewsFeed:, parameter 'tableController' is nil");
+
+   NSString * const path = [[NSBundle mainBundle] pathForResource : @"MENU" ofType : @"plist"];
+   NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
+   assert(plistDict != nil && "viewDidLoad, no dictionary or MENU.plist found");
+
+   id objBase = plistDict[@"Menu Contents"];
+   assert([objBase isKindOfClass : [NSArray class]] &&
+          "viewDidLoad, object for the key 'Menu Contents' was not found or has a wrong type");
+
+   NSArray * const menuContents = (NSArray *)objBase;
+   assert(menuContents.count != 0 && "viewDidLoad, menu contents array is empty");
+
+   for (id item in menuContents) {
+      assert([item isKindOfClass : [NSDictionary class]] && "loadFirstNewsFeed:, item has a wrong type");
+      NSDictionary * const itemDict = (NSDictionary *)item;
+      
+      id objBase = itemDict[@"Category name"];
+      assert([objBase isKindOfClass : [NSString class]] &&
+             "loadFirstNewsFeed:, 'Category Name' either not found, or has a wrong type");
+   
+      NSString * const catName = (NSString *)objBase;
+      
+      NSLog(@"got %@", catName);
+      if (![catName isEqualToString : @"News"])
+         continue;
+      
+      objBase = itemDict[@"Feeds"];
+      if (objBase) {
+         assert([objBase isKindOfClass : [NSArray class]] &&
+                "loadFirstNewsFeed:, 'Feeds' has a wrong type");
+         NSArray * const feeds = (NSArray *)objBase;
+         for (id info in feeds) {
+            assert([info isKindOfClass : [NSDictionary class]] &&
+                   "loadFirstNewsFeed:, feed info must be a dictionary");
+            NSDictionary * const feedInfo = (NSDictionary *)info;
+            
+            if (!feedInfo[@"Category name"]) {
+               //Simple news feed does not have a 'Category name' property.
+               assert([feedInfo[@"Name"] isKindOfClass : [NSString class]] &&
+                      "loadFirstNewsFeed:, 'Name' not found or has a wrong type");
+               assert([feedInfo[@"Url"] isKindOfClass : [NSString class]] &&
+                      "loadFirstNewsFeed:, 'Url' not found or has a wrong type");
+               
+               tableController.navigationItem.title = (NSString *)feedInfo[@"Name"];
+               [tableController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedInfo[@"Url"]]];
+
+               return;
+            }
+         }
+      }
+   }
+}
+
+//________________________________________________________________________________________
 - (void) viewDidLoad
 {
    [super viewDidLoad];
@@ -40,17 +97,12 @@
 
 
    MenuNavigationController * const top = (MenuNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
-                                                                         CernAPP::TableNavigationControllerNewsID];
+                                                                       CernAPP::TableNavigationControllerNewsID];
 
    assert([top.topViewController isKindOfClass : [NewsTableViewController class]] &&
           "viewDidLoad:, top view controller is either nil or has a wrong type");
-   
-   
-   //TODO: search the first (from the top of MENU.plist) news feed.
-   
-   NewsTableViewController * const nt = (NewsTableViewController *)top.topViewController;
-   nt.navigationItem.title = @"CMS News";
-   [nt.aggregator addFeedForURL : [NSURL URLWithString : @"http://cms.web.cern.ch/news/category/265/rss.xml"]];
+
+   [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
    self.topViewController = top;
 }
 

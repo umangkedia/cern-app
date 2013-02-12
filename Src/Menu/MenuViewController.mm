@@ -407,15 +407,15 @@ using CernAPP::ItemStyle;
    //Create menu items and corresponding views.
    NSString * const path = [[NSBundle mainBundle] pathForResource : @"MENU" ofType : @"plist"];
    NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
-   assert(plistDict != nil && "loadMenuContents:, no dictionary or MENU.plist found");
+   assert(plistDict != nil && "loadMenuContents, no dictionary or MENU.plist found");
 
    id objBase = plistDict[@"Menu Contents"];
-   assert(objBase != nil && "loadMenuContents:, object for the key 'Menu Contents was not found'");
+   assert(objBase != nil && "loadMenuContents, object for the key 'Menu Contents was not found'");
    assert([objBase isKindOfClass : [NSArray class]] &&
           "loadMenuContents, menu contents must be of a NSArray type");
           
    NSArray * const menuContents = (NSArray *)objBase;
-   assert(menuContents.count != 0 && "loadMenuContents, menu arrays is empty");
+   assert(menuContents.count != 0 && "loadMenuContents, menu contents array is empty");
    
    for (id entryBase in menuContents) {
       assert([entryBase isKindOfClass : [NSDictionary class]] &&
