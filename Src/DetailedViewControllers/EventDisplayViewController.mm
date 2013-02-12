@@ -50,6 +50,9 @@ using CernAPP::NetworkStatus;
 
    //Error messages.
    MBProgressHUD *noConnectionHUD;
+   
+   //UglyUglyUgly
+   NSInteger pageBeforeRotation;
 }
 
 #pragma mark - Reachability and the network status.
@@ -119,6 +122,8 @@ using CernAPP::NetworkStatus;
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   
+   self.view.backgroundColor = [UIColor blackColor];//WTF it's not taken from the storyboard???
 
    CGRect titleViewFrame = CGRectMake(0.0, 0.0, 200.0, 44.0);
    UIView *titleView = [[UIView alloc] initWithFrame:titleViewFrame];
@@ -543,7 +548,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
-   return NO;//pageLoaded;
+   return pageLoaded;
 }
 
 //________________________________________________________________________________________
@@ -556,6 +561,8 @@ using CernAPP::NetworkStatus;
 - (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
 #pragma unused(duration)
+   pageBeforeRotation = pageControl.currentPage;//Ufff, uglyugly!!!
+
    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
       [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];
       [self.navigationController setNavigationBarHidden : YES];
@@ -568,26 +575,33 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
- /*  CGRect pcFrame = pageControl.frame;
+   CGRect pcFrame = pageControl.frame;
    pcFrame.origin.x = self.view.frame.size.width / 2 - pcFrame.size.width / 2;
    pageControl.frame = pcFrame;
 
-   if (scrollView.subviews.count) {
-      const CGFloat oldScreenWidth = ((UIView *)scrollView.subviews[0]).frame.size.width;
-
+   if (pages.count) {
       const CGFloat scrollViewWidth = self.scrollView.frame.size.width;
       const CGFloat scrollViewHeight = self.scrollView.frame.size.height;
 
-      self.scrollView.contentSize = CGSizeMake(scrollViewWidth * numPages, scrollViewHeight);
-      [self.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width*currentPage, 0.0)];
+      scrollView.contentSize = CGSizeMake(scrollViewWidth * numPages, scrollViewHeight);
+      [scrollView setContentOffset : CGPointMake(self.scrollView.frame.size.width * pageControl.currentPage, 0.f)];
 
-      [UIView animateWithDuration:duration animations:^{
-         for (UIView *subview in self.scrollView.subviews) {
-            const int page = floor((subview.frame.origin.x - oldScreenWidth / 2) / oldScreenWidth) + 1;
-            subview.frame = CGRectMake(scrollViewWidth*page, 0.0, scrollViewWidth, scrollViewHeight);
+      [UIView animateWithDuration : duration animations : ^ {
+         for (NSUInteger i = 0, e = pages.count; i < e; ++i) {
+            const CGRect pageFrame = CGRectMake(i * scrollViewWidth, 0.f, scrollViewWidth, scrollViewHeight);
+            MWZoomingScrollView * const page = (MWZoomingScrollView *)pages[i];
+            page.frame = pageFrame;
          }
+         
+         [self scrollToPage : pageBeforeRotation];
       }];
-   }*/
+   }
+}
+
+//________________________________________________________________________________________
+- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+{
+   [self checkCurrentPage];
 }
 
 #pragma mark - PhotoBrowserDelegate.
