@@ -175,34 +175,6 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    currentPage = self.pageControl.currentPage;
-}
-
-//________________________________________________________________________________________
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-   CGRect pcFrame = pageControl.frame;
-   pcFrame.origin.x = self.view.frame.size.width / 2 - pcFrame.size.width / 2;
-   pageControl.frame = pcFrame;
-
-   CGFloat oldScreenWidth = UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)?[UIScreen mainScreen].bounds.size.height:[UIScreen mainScreen].bounds.size.width;
-
-   float scrollViewWidth = self.scrollView.frame.size.width;
-   float scrollViewHeight = self.scrollView.frame.size.height;
-   self.scrollView.contentSize = CGSizeMake(scrollViewWidth*numPages, 1.0);
-   [self.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width*currentPage, 0.0)];
-
-   [UIView animateWithDuration:duration animations:^{
-      for (UIView *subview in self.scrollView.subviews) {
-         const int page = floor((subview.frame.origin.x - oldScreenWidth / 2) / oldScreenWidth) + 1;
-         subview.frame = CGRectMake(scrollViewWidth*page, 0.0, scrollViewWidth, scrollViewHeight);
-      }
-   }];
-}
-
-//________________________________________________________________________________________
 - (void) addSourceWithDescription : (NSString *) description URL : (NSURL *) url boundaryRects : (NSArray *) boundaryRects
 {
     pageLoaded = NO;
@@ -399,7 +371,7 @@ using CernAPP::NetworkStatus;
 #pragma mark - UI methods
 
 //________________________________________________________________________________________
-- (void)addDisplay:(NSDictionary *)eventDisplayInfo toPage:(int)page
+- (void) addDisplay : (NSDictionary *) eventDisplayInfo toPage : (int) page
 {
    UIImage *image = [eventDisplayInfo objectForKey : resultImage];
    CGRect imageViewFrame = CGRectMake(self.scrollView.frame.size.width*page, 0., self.scrollView.frame.size.width, self.scrollView.frame.size.height);
@@ -579,7 +551,7 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
-   return NO;//pageLoaded;
+   return pageLoaded;
 }
 
 //________________________________________________________________________________________
@@ -589,10 +561,12 @@ using CernAPP::NetworkStatus;
 }
 
 //________________________________________________________________________________________
-- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+- (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
-#pragma unused(fromInterfaceOrientation)
-   if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+#pragma unused(duration)
+   currentPage = pageControl.currentPage;
+
+   if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
       [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];
       [self.navigationController setNavigationBarHidden : YES];
    } else {
@@ -600,5 +574,31 @@ using CernAPP::NetworkStatus;
       [self.navigationController setNavigationBarHidden : NO];
    }
 }
+
+//________________________________________________________________________________________
+- (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
+{
+   CGRect pcFrame = pageControl.frame;
+   pcFrame.origin.x = self.view.frame.size.width / 2 - pcFrame.size.width / 2;
+   pageControl.frame = pcFrame;
+
+   if (scrollView.subviews.count) {
+      const CGFloat oldScreenWidth = ((UIView *)scrollView.subviews[0]).frame.size.width;
+
+      const CGFloat scrollViewWidth = self.scrollView.frame.size.width;
+      const CGFloat scrollViewHeight = self.scrollView.frame.size.height;
+
+      self.scrollView.contentSize = CGSizeMake(scrollViewWidth * numPages, scrollViewHeight);
+      [self.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width*currentPage, 0.0)];
+
+      [UIView animateWithDuration:duration animations:^{
+         for (UIView *subview in self.scrollView.subviews) {
+            const int page = floor((subview.frame.origin.x - oldScreenWidth / 2) / oldScreenWidth) + 1;
+            subview.frame = CGRectMake(scrollViewWidth*page, 0.0, scrollViewWidth, scrollViewHeight);
+         }
+      }];
+   }
+}
+
 
 @end

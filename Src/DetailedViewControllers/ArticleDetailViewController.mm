@@ -1102,18 +1102,25 @@ const NSUInteger fontIncreaseStep = 4;
 }
 
 //________________________________________________________________________________________
-- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+- (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
-   [self.view layoutSubviews];
+#pragma unused(duration)
 
-#pragma unused(fromInterfaceOrientation)
-   if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
+   if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
       [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];
       [self.navigationController setNavigationBarHidden : YES];
    } else {
       [self.navigationController.view addGestureRecognizer : self.slidingViewController.panGesture];
       [self.navigationController setNavigationBarHidden : NO];
    }
+}
+
+//________________________________________________________________________________________
+- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+{
+#pragma unused(fromInterfaceOrientation)
+
+   [self.view layoutSubviews];
 }
 
 @end
