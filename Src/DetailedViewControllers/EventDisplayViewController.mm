@@ -170,12 +170,6 @@ using CernAPP::NetworkStatus;
    //We do not add anything into the navigation stack, so this method (in principle) is
    //called only once.
 
-   /*
-   if (![self hasConnection]) {
-      [self showErrorHUD];
-      return;
-   }*/
-
    [self refresh];
 }
 
