@@ -4,7 +4,7 @@
 
 @synthesize window = _window;
 
-@synthesize OAuthToken, OAuthTokenSecret;
+@synthesize OAuthToken, OAuthTokenSecret, managedObjectContext, managedObjectModel, persistentStoreCoordinator;
 
 //________________________________________________________________________________________
 - (BOOL) application : (UIApplication *) application didFinishLaunchingWithOptions : (NSDictionary *) launchOptions
@@ -61,6 +61,73 @@
    Save data if appropriate.
    See also applicationDidEnterBackground:.
    */
+}
+
+#pragma mark - Core data management.
+
+//________________________________________________________________________________________
+- (NSManagedObjectContext *) managedObjectContext
+{
+   //Returns the managed object context for the application.
+   //If the context doesn't already exist, it is created and bound
+   //to the persistent store coordinator for the application.
+
+   if (managedObjectContext)
+      return managedObjectContext;
+
+   if (NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator]) {
+      managedObjectContext = [[NSManagedObjectContext alloc] init];
+      [managedObjectContext setPersistentStoreCoordinator : coordinator];
+   }
+   
+   return managedObjectContext;
+}
+
+//________________________________________________________________________________________
+- (NSManagedObjectModel *) managedObjectModel
+{
+   //Returns the managed object model for the application.
+   //If the model doesn't already exist, it is created
+   //from the application's model.
+
+   if (managedObjectModel)
+      return managedObjectModel;
+
+   NSURL * const modelURL = [[NSBundle mainBundle] URLForResource : @"Model" withExtension : @"momd"];
+   managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL : modelURL];
+
+   return managedObjectModel;
+}
+
+//________________________________________________________________________________________
+- (NSPersistentStoreCoordinator *) persistentStoreCoordinator
+{
+   //Returns the persistent store coordinator for the application.
+   //If the coordinator doesn't already exist, it is created
+   //and the application's store added to it.
+
+   if (persistentStoreCoordinator)
+      return persistentStoreCoordinator;
+
+   NSURL * const storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent : @"CERN.sqlite"];
+
+   NSError *error = nil;
+   persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel : [self managedObjectModel]];
+   if (![persistentStoreCoordinator addPersistentStoreWithType : NSSQLiteStoreType configuration : nil URL : storeURL options : nil error : &error]) {
+      //Handle error
+      NSLog(@"persistentStoreCoordinator, %@", error);
+   }
+
+   return persistentStoreCoordinator;
+}
+
+#pragma mark - Application's Documents directory
+
+//________________________________________________________________________________________
+- (NSURL *) applicationDocumentsDirectory
+{
+   // Returns the URL to the application's Documents directory.
+   return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
 @end

@@ -123,6 +123,8 @@
 		41E6188E1614CF7000BAA7D4 /* StaticInformation.plist in Resources */ = {isa = PBXBuildFile; fileRef = 41E6188D1614CF7000BAA7D4 /* StaticInformation.plist */; };
 		41E618901614CFAB00BAA7D4 /* ArticleCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = 41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */; };
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
+		7004A14516CBB7FA0097435D /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7004A14316CBB7FA0097435D /* Model.xcdatamodeld */; };
+		7004A14716CBB8E60097435D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7004A14616CBB8E60097435D /* CoreData.framework */; };
 		70086231169B56F2001C7BB5 /* MenuItemViews.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70086230169B56F2001C7BB5 /* MenuItemViews.mm */; };
 		700AF64F16B98ED600194E16 /* globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF64E16B98ED600194E16 /* globe.png */; };
 		700AF65116B9932500194E16 /* action.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF65016B9932500194E16 /* action.png */; };
@@ -392,6 +394,8 @@
 		41E6188D1614CF7000BAA7D4 /* StaticInformation.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = StaticInformation.plist; sourceTree = "<group>"; };
 		41E6188F1614CFAB00BAA7D4 /* ArticleCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ArticleCSS.css; sourceTree = "<group>"; };
 		41E618931614CFB500BAA7D4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
+		7004A14416CBB7FA0097435D /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		7004A14616CBB8E60097435D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		7008622F169B56F2001C7BB5 /* MenuItemViews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItemViews.h; sourceTree = "<group>"; };
 		70086230169B56F2001C7BB5 /* MenuItemViews.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItemViews.mm; sourceTree = "<group>"; };
 		700AF64E16B98ED600194E16 /* globe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = globe.png; sourceTree = "<group>"; };
@@ -575,6 +579,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7004A14716CBB8E60097435D /* CoreData.framework in Frameworks */,
 				7098286616C404C500311025 /* Social.framework in Frameworks */,
 				702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */,
 				705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */,
@@ -699,6 +704,7 @@
 				41BBD0E71615AEC70057EDE2 /* README.md */,
 				7054DEEB169AFD7A00B025C7 /* MENU.plist */,
 				41BBD0E61615ADC60057EDE2 /* CERN.plist */,
+				7004A14316CBB7FA0097435D /* Model.xcdatamodeld */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1134,6 +1140,7 @@
 		E1F7B689156EDC7C0092367F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7004A14616CBB8E60097435D /* CoreData.framework */,
 				7098286516C404C500311025 /* Social.framework */,
 				E1FFFC2A15A651B40093462B /* MediaPlayer.framework */,
 				E1D87E8A159EEC920051104C /* MessageUI.framework */,
@@ -1457,6 +1464,7 @@
 				70B7879216B9692600048CC9 /* WebcastsGridViewController.mm in Sources */,
 				7069F76516C14D6D006BC78B /* OverlayView.mm in Sources */,
 				7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */,
+				7004A14516CBB7FA0097435D /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1605,6 +1613,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		7004A14316CBB7FA0097435D /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7004A14416CBB7FA0097435D /* Model.xcdatamodel */,
+			);
+			currentVersion = 7004A14416CBB7FA0097435D /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = E1F7B67D156EDC7C0092367F /* Project object */;
 }

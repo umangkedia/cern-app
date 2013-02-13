@@ -34,6 +34,7 @@
 #import "StoryboardIdentifiers.h"
 #import "NewsTableViewCell.h"
 #import "ApplicationErrors.h"
+#import "AppDelegate.h"
 #import "GUIHelpers.h"
 
 @implementation NewsTableViewController {
@@ -118,8 +119,10 @@
 {
    [super viewDidAppear : animated];
    
-   if (!pageLoaded)
+   if (!pageLoaded) {
+      //read a cache?
       [self reloadPage];
+   }
 }
 
 //________________________________________________________________________________________
@@ -552,6 +555,73 @@
 - (BOOL) shouldAutorotate
 {
    return NO;
+}
+
+#pragma mark - Previously loaded feeds.
+
+//________________________________________________________________________________________
+- (void) readCache
+{
+   assert(0 && "readCache, test version, can not be called.");
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+   NSManagedObjectContext * const context = appDelegate.managedObjectContext;
+   
+   if (context) {
+      NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"FeedItem"
+                                                            inManagedObjectContext : context];
+      NSFetchRequest * const request = [[NSFetchRequest alloc] init];
+      [request setEntity : entityDesc];
+      
+      NSPredicate * const pred = [NSPredicate predicateWithFormat:@"(feedName = %@)", @"test_feed"];
+      [request setPredicate : pred];
+      
+      NSManagedObject *matches = nil;
+      NSError *error = nil;
+      NSArray * const objects = [context executeFetchRequest : request error : &error];
+      if (error) {
+         NSLog(@"error, while fetching feed %@", error);
+      } else {
+         if (objects.count) {
+            matches = (NSManagedObject *)objects[0];
+            NSLog(@"found item, title: %@ link: %@ date: %@", [matches valueForKey : @"itemTitle"],
+                                                              [matches valueForKey : @"itemLink"],
+                                                              [matches valueForKey : @"itemDate"]);
+         } else
+            NSLog(@"no feed data found");
+      }
+   } else {
+      NSLog(@"no managed object context found");
+   }
+}
+
+//________________________________________________________________________________________
+- (void) writeCache
+{
+   assert(0 && "writeCache, test version, can not be called.");
+
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+   NSManagedObjectContext * const context = appDelegate.managedObjectContext;
+   if (context) {
+      NSManagedObject * const newFeedItem = [NSEntityDescription insertNewObjectForEntityForName : @"FeedItem"
+                                                                 inManagedObjectContext : context];
+      if (newFeedItem) {
+         [newFeedItem setValue : @"test title" forKey : @"itemTitle"];
+         [newFeedItem setValue : @"root.cern.ch" forKey : @"itemLink"];
+         [newFeedItem setValue : @"test_feed" forKey : @"feedName"];
+         [newFeedItem setValue : [NSDate date] forKey : @"itemDate"];
+         NSError *error = nil;
+         [context save : &error];
+         if (error) {
+            NSLog(@"could not save feed item %@", error);
+         } else {
+            NSLog(@"saved ....");
+         }
+      } else {
+         NSLog(@"can not insert feed item???");
+      }
+   } else {
+      NSLog(@"no context?!");
+   }
 }
 
 @end
