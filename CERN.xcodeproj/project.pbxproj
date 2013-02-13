@@ -125,6 +125,7 @@
 		41E618941614CFB500BAA7D4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E618921614CFB500BAA7D4 /* InfoPlist.strings */; };
 		7004A14516CBB7FA0097435D /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7004A14316CBB7FA0097435D /* Model.xcdatamodeld */; };
 		7004A14716CBB8E60097435D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7004A14616CBB8E60097435D /* CoreData.framework */; };
+		7004A14916CBF80F0097435D /* cern_info.png in Resources */ = {isa = PBXBuildFile; fileRef = 7004A14816CBF80F0097435D /* cern_info.png */; };
 		70086231169B56F2001C7BB5 /* MenuItemViews.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70086230169B56F2001C7BB5 /* MenuItemViews.mm */; };
 		700AF64F16B98ED600194E16 /* globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF64E16B98ED600194E16 /* globe.png */; };
 		700AF65116B9932500194E16 /* action.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF65016B9932500194E16 /* action.png */; };
@@ -223,7 +224,7 @@
 		70B10A4D16A04C2000CB8BC6 /* LHCb_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B10A4C16A04C2000CB8BC6 /* LHCb_about.png */; };
 		70B6B0B9169DD2790058DADA /* live_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0B8169DD2790058DADA /* live_color.png */; };
 		70B6B0BC169DD48E0058DADA /* news_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BB169DD48E0058DADA /* news_color.png */; };
-		70B6B0BE169DD6BE0058DADA /* about_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BD169DD6BE0058DADA /* about_color.png */; };
+		70B6B0BE169DD6BE0058DADA /* cern_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BD169DD6BE0058DADA /* cern_logo.png */; };
 		70B7878D16B951B100048CC9 /* zoomin.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B7878B16B951B100048CC9 /* zoomin.png */; };
 		70B7878E16B951B100048CC9 /* zoomout.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B7878C16B951B100048CC9 /* zoomout.png */; };
 		70B7879216B9692600048CC9 /* WebcastsGridViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B7879116B9692600048CC9 /* WebcastsGridViewController.mm */; };
@@ -396,6 +397,7 @@
 		41E618931614CFB500BAA7D4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		7004A14416CBB7FA0097435D /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		7004A14616CBB8E60097435D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		7004A14816CBF80F0097435D /* cern_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cern_info.png; sourceTree = "<group>"; };
 		7008622F169B56F2001C7BB5 /* MenuItemViews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItemViews.h; sourceTree = "<group>"; };
 		70086230169B56F2001C7BB5 /* MenuItemViews.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItemViews.mm; sourceTree = "<group>"; };
 		700AF64E16B98ED600194E16 /* globe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = globe.png; sourceTree = "<group>"; };
@@ -541,7 +543,7 @@
 		70B10A4C16A04C2000CB8BC6 /* LHCb_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LHCb_about.png; sourceTree = "<group>"; };
 		70B6B0B8169DD2790058DADA /* live_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = live_color.png; sourceTree = "<group>"; };
 		70B6B0BB169DD48E0058DADA /* news_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = news_color.png; sourceTree = "<group>"; };
-		70B6B0BD169DD6BE0058DADA /* about_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = about_color.png; sourceTree = "<group>"; };
+		70B6B0BD169DD6BE0058DADA /* cern_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cern_logo.png; sourceTree = "<group>"; };
 		70B7878B16B951B100048CC9 /* zoomin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoomin.png; sourceTree = "<group>"; };
 		70B7878C16B951B100048CC9 /* zoomout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoomout.png; sourceTree = "<group>"; };
 		70B7879016B9692600048CC9 /* WebcastsGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebcastsGridViewController.h; sourceTree = "<group>"; };
@@ -921,6 +923,7 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				7004A14816CBF80F0097435D /* cern_info.png */,
 				70BF706216C29E54002CEDC6 /* Email-01.png */,
 				70BF706016C29DA8002CEDC6 /* Facebook.png */,
 				70BF705E16C29C80002CEDC6 /* Twitter.png */,
@@ -944,7 +947,7 @@
 				7046DFDA16A4267A00F17445 /* 140-gradhat.png */,
 				7046DFD816A425D700F17445 /* 124-bullhorn@2x.png */,
 				7046DFD616A423AB00F17445 /* 18-puzzle@2x.png */,
-				70B6B0BD169DD6BE0058DADA /* about_color.png */,
+				70B6B0BD169DD6BE0058DADA /* cern_logo.png */,
 				70B6B0BB169DD48E0058DADA /* news_color.png */,
 				70B6B0B8169DD2790058DADA /* live_color.png */,
 				7064A35C169DA177006405B9 /* menu@2x.png */,
@@ -1337,7 +1340,7 @@
 				7064A35D169DA177006405B9 /* menu@2x.png in Resources */,
 				70B6B0B9169DD2790058DADA /* live_color.png in Resources */,
 				70B6B0BC169DD48E0058DADA /* news_color.png in Resources */,
-				70B6B0BE169DD6BE0058DADA /* about_color.png in Resources */,
+				70B6B0BE169DD6BE0058DADA /* cern_logo.png in Resources */,
 				70B10A4316A0145C00CB8BC6 /* PREV_about.png in Resources */,
 				70B10A4416A0145C00CB8BC6 /* LHC_about.png in Resources */,
 				70B10A4816A04A4C00CB8BC6 /* ATLAS_about.png in Resources */,
@@ -1369,6 +1372,7 @@
 				70BF705F16C29C80002CEDC6 /* Twitter.png in Resources */,
 				70BF706116C29DA8002CEDC6 /* Facebook.png in Resources */,
 				70BF706316C29E54002CEDC6 /* Email-01.png in Resources */,
+				7004A14916CBF80F0097435D /* cern_info.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

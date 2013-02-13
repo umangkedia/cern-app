@@ -8,7 +8,7 @@
 			<key>Expanded</key>
 			<integer>1</integer>
 			<key>Image name</key>
-			<string>news_color.png</string>
+			<string>cern_logo.png</string>
 			<key>Feeds</key>
 			<array>
 				<dict>
@@ -87,7 +87,7 @@
 			<key>Expanded</key>
 			<integer>0</integer>
 			<key>Image name</key>
-			<string>about_color.png</string>
+			<string>cern_info.png</string>
 			<key>Category name</key>
 			<string>StaticInfo</string>
 		</dict>

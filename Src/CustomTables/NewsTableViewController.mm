@@ -351,7 +351,7 @@
    }
    
    usingCache = NO;
-   
+
    [self.refreshControl endRefreshing];
    [self.tableView reloadData];
    pageLoaded = YES;
@@ -675,7 +675,7 @@
          }
       }
    }
-   
+
    return feedCache && feedCache.count;
 }
 
