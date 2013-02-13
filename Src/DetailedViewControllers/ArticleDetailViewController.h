@@ -23,5 +23,6 @@
 @property (nonatomic, copy) NSString *title;
 
 - (void) setContentForArticle : (MWFeedItem *) article;
+- (void) setLink : (NSString *) link title : (NSString *) title;
 
 @end

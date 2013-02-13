@@ -320,9 +320,22 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) setContentForArticle : (MWFeedItem *) article
 {
+   assert(article != nil && "setContentForArticle:, parameter 'article' is nil");
+   assert(article.link != nil && "setContentForArticle:, article link is nil");
+
    articleLink = article.link;
    title = article.title;
    //thumbnail = article.image;
+}
+
+//________________________________________________________________________________________
+- (void) setLink : (NSString *) link title : (NSString *) aTitle
+{
+   assert(link != nil && "setLink:title:, parameter 'link' is nil");
+   assert(aTitle != nil && "setLink:title:, parameter 'title' is nil");
+   
+   articleLink = link;
+   title = aTitle;
 }
 
 #pragma mark - UIWebViewDelegate protocol.

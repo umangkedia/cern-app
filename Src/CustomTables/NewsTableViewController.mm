@@ -414,11 +414,21 @@
 {
 #pragma unused(tableView)
 
-   if (usingCache) {
-      NSLog(@"TODO: did select row at index path");
-   } else {
-      assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
+   assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
+   if (usingCache) {
+      //TODO: check readability cached + (if no cache) check the network connection.
+      const NSUInteger row = indexPath.row;
+      assert(row < feedCache.count && "tableView:didSelectRowAtIndexPath:, row is out of bounds");
+
+      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+      ArticleDetailViewController * const viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+      NSManagedObject * const feedItem = feedCache[row];
+      [viewController setLink : (NSString *)[feedItem valueForKey : @"itemLink"]
+                      title : (NSString *)[feedItem valueForKey : @"itemTitle"]];
+      viewController.navigationItem.title = @"";
+      [self.navigationController pushViewController : viewController animated : YES];
+   } else {
       if (self.navigationController && !self.aggregator.isLoadingData) {
          if (aggregator.hasConnection) {
             UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
