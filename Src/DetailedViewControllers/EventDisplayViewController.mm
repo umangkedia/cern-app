@@ -170,10 +170,11 @@ using CernAPP::NetworkStatus;
    //We do not add anything into the navigation stack, so this method (in principle) is
    //called only once.
 
+   /*
    if (![self hasConnection]) {
-      //TODO: show error HUD.
+      [self showErrorHUD];
       return;
-   }
+   }*/
 
    [self refresh];
 }
