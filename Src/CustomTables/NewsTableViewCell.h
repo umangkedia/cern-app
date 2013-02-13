@@ -28,6 +28,7 @@
 
 - (void) setCellData : (MWFeedItem *) data imageOnTheRight : (BOOL) right;
 - (void) setCellData : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right;
+- (void) setCellData : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right date : (NSDate *) date;
 //For the bulletin table.
 - (void) setTitle : (NSString *) cellText image : (UIImage *) image;
 

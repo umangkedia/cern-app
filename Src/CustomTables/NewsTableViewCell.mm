@@ -409,7 +409,44 @@ TextGeometry PlaceText(NSString *text, CGFloat fixedWidth, NSString *fontName)
    }
 
    self.frame = cellFrame;
+   
+   [self setCellData : cellText source : source image : image imageOnTheRight : right date : nil];
+}
 
+//________________________________________________________________________________________
+- (void) setCellData : (NSString *) cellText source : (NSString *) source image : (UIImage *) image imageOnTheRight : (BOOL) right date : (NSDate *) aDate
+{
+   assert(cellText != nil && "setCellData:source:image:imageOnTheRight:, cellText parameter is nil");
+   assert(source != nil && "setCellData:source:image:imageOnTheRight:, source parameter is nil");
+
+   title.text = cellText;
+   author.text = source;
+ 
+   NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+   [dateFormatter setDateFormat:@"d MMM. yyyy"];
+   date.text = [dateFormatter stringFromDate : aDate ? aDate : [NSDate date]];
+
+   if (image && image.size.width > minImageSize && image.size.height > minImageSize)
+      imageView.image = image;
+   else
+      imageView.image = nil;
+
+   CGRect cellFrame = self.frame;
+   
+   if (right && imageView.image) {
+      CGRect textRect = CGRectMake(cellInset, 0, cellFrame.size.width - bigImageSize - 2 * cellInset, bigImageSize + 2 * cellInset);//130
+      cellFrame.size.height = [self layoutText : textRect];
+      imageView.frame = CGRectMake(cellFrame.size.width - bigImageSize - cellInset, cellFrame.size.height / 2 - bigImageSize / 2, bigImageSize, bigImageSize);
+   } else if (imageView.image) {
+      CGRect textRect = CGRectMake(defaultImageSize + 2 * cellInset, 0.f, cellFrame.size.width - defaultImageSize - 3 * cellInset, defaultImageSize + 2 * cellInset);
+      cellFrame.size.height = [self layoutText : textRect];
+      imageView.frame = CGRectMake(cellInset, cellFrame.size.height / 2 - defaultImageSize / 2, defaultImageSize, defaultImageSize);
+   } else {
+      CGRect textRect = CGRectMake(cellInset, 0.f, cellFrame.size.width - 2 * cellInset, defaultHeightNoImage);
+      cellFrame.size.height = [self layoutText : textRect];
+   }
+
+   self.frame = cellFrame;
 }
 
 //________________________________________________________________________________________

@@ -284,7 +284,7 @@
 
       //[cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
       [cell setCellData : [feedItem valueForKey : @"itemTitle"] source : [feedItem valueForKey : @"itemLink"]
-                          image : nil imageOnTheRight : NO];
+                          image : nil imageOnTheRight : NO date : (NSDate *)[feedItem valueForKey : @"itemDate"]];
       
       return cell;
    } else {
