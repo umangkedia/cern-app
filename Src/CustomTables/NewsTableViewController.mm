@@ -416,6 +416,9 @@
 
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
+   if (self.navigationController.topViewController != self)
+      return;
+
    if (usingCache) {
       //TODO: check readability cached + (if no cache) check the network connection.
       const NSUInteger row = indexPath.row;
