@@ -20,6 +20,7 @@
                                                            ImageDownloaderDelegate, ConnectionController>
 {
 @protected
+   BOOL canUseCache;
    UIActivityIndicatorView *spinner;
    MBProgressHUD *noConnectionHUD;
 }
@@ -35,6 +36,10 @@
 @property (nonatomic, strong) RSSAggregator *aggregator;
 @property (nonatomic, strong) NSMutableDictionary *imageDownloaders;
 @property (nonatomic) NSUInteger nLoadedImages;
+
+//
+@property (nonatomic, copy) NSString *feedStoreID;
+//
 
 - (IBAction) revealMenu : (id) sender;
 

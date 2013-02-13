@@ -36,6 +36,7 @@
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
+   canUseCache = NO;
    [super viewDidAppear : animated];
 }
 

@@ -89,6 +89,9 @@ void CancelConnections(UIViewController *controller)
  
    NewsTableViewController * const nt = (NewsTableViewController *)navController.topViewController;
    nt.navigationItem.title = feedName;
+   //
+   nt.feedStoreID = feedName;
+   //
    [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
 
    if (controller.slidingViewController.topViewController)

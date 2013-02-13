@@ -11,7 +11,7 @@
 //3. RSSAggregatorDelegate - rss aggregator calls feed parser,
 //   loads articles, images, etc. informing its delegate
 //   about possible errors or success.
-//4. PageController - before we have MultiPageViewController, which could
+//4. PageController - before we had MultiPageViewController, which could
 //   contain several tables as pages. Still, methods like reloadPage/reloadPageFromRefreshControl,
 //   pageLoaded property - are required.
 
@@ -46,9 +46,14 @@
    //it's a gray color.
    BOOL resetSeparatorColor;
    NSMutableArray *allArticles;
+   
+   NSArray *feedCache;
+   BOOL usingCache;
+   
+   UIActivityIndicatorView *navBarSpinner;
 }
 
-@synthesize pageLoaded, aggregator, imageDownloaders, nLoadedImages;
+@synthesize pageLoaded, aggregator, imageDownloaders, nLoadedImages, feedStoreID;
 
 #pragma mark - Construction/destruction.
 
@@ -59,6 +64,7 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
+      canUseCache = YES;
    }
 
    return self;
@@ -72,6 +78,7 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
+      canUseCache = YES;
    }
 
    return self;
@@ -84,6 +91,7 @@
       pageLoaded = NO;
       aggregator = [[RSSAggregator alloc] init];
       aggregator.delegate = self;
+      canUseCache = YES;
    }
 
    return self;
@@ -121,6 +129,8 @@
    
    if (!pageLoaded) {
       //read a cache?
+      if (canUseCache)
+         usingCache = [self readCache];
       [self reloadPage];
    }
 }
@@ -210,8 +220,12 @@
    [noConnectionHUD hide : YES];
    
    if (show) {
-      [spinner setHidden : NO];
-      [spinner startAnimating];
+      if (!usingCache) {
+         [spinner setHidden : NO];
+         [spinner startAnimating];
+      } else {
+         [self addNavBarSpinner];
+      }
    }
 
    [self.aggregator clearAllFeeds];
@@ -239,7 +253,10 @@
 {
 #pragma unused(tableView, section)
    // Return the number of rows in the section.
-   return allArticles.count;
+   if (usingCache)
+      return feedCache.count;
+   else
+      return allArticles.count;
 }
 
 //________________________________________________________________________________________
@@ -249,28 +266,46 @@
 
    assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
 
-   //Find feed item first.
    if (resetSeparatorColor) {
       resetSeparatorColor = NO;
       self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
    }
    
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [allArticles count]);
+   if (usingCache) {
+      const NSInteger row = indexPath.row;
+      assert(row >= 0 && row < feedCache.count);
 
-   MWFeedItem * const article = [allArticles objectAtIndex : row];
-   assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
 
-   NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
-   if (!cell)
-      cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+      NSManagedObject * const feedItem = feedCache[row];
 
-   [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
-   
-   if (!article.image)
-      [self startIconDownloadForIndexPath : indexPath];
+      NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
+      if (!cell)
+         cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
-   return cell;
+      //[cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
+      [cell setCellData : [feedItem valueForKey : @"itemTitle"] source : [feedItem valueForKey : @"itemLink"]
+                          image : nil imageOnTheRight : NO];
+      
+      return cell;
+   } else {
+      //Find feed item first.
+      const NSInteger row = indexPath.row;
+      assert(row >= 0 && row < allArticles.count);
+
+      MWFeedItem * const article = [allArticles objectAtIndex : row];
+      assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
+
+      NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
+      if (!cell)
+         cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+
+      [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
+      
+      if (!article.image)
+         [self startIconDownloadForIndexPath : indexPath];
+
+      return cell;
+   }
 }
 
 //________________________________________________________________________________________
@@ -279,12 +314,23 @@
 #pragma unused(tableView)
 
    assert(indexPath != nil && "tableView:heightForRowAtIndexPath:, parameter 'indexPath' is nil");
+   
+   if (usingCache) {
+      const NSInteger row = indexPath.row;
+      assert(row >= 0 && row < feedCache.count && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
-   const NSInteger row = indexPath.row;
-   assert(row >= 0 && row < [allArticles count] && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
+      NSManagedObject * const feedItem = feedCache[row];
+      return [NewsTableViewCell calculateCellHeightForText : [feedItem valueForKey : @"itemTitle"]
+                                source : [feedItem valueForKey : @"itemLink"]
+                                image : nil
+                                imageOnTheRight : NO];
+   } else {
+      const NSInteger row = indexPath.row;
+      assert(row >= 0 && row < allArticles.count && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
-   MWFeedItem * const article = [allArticles objectAtIndex : row];
-   return [NewsTableViewCell calculateCellHeightForData : article imageOnTheRight : (indexPath.row % 4) == 3];
+      MWFeedItem * const article = [allArticles objectAtIndex : row];
+      return [NewsTableViewCell calculateCellHeightForData : article imageOnTheRight : (indexPath.row % 4) == 3];
+   }
 }
 
 #pragma mark - RSSAggregatorDelegate methods
@@ -295,9 +341,17 @@
    assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
 
    [self copyArticlesFromAggregator];
+   [self writeCache];
 
-   [spinner stopAnimating];
-   [spinner setHidden : YES];
+   if (!usingCache) {
+      [spinner stopAnimating];
+      [spinner setHidden : YES];
+   } else {
+      [self hideNavBarSpinner];
+   }
+   
+   usingCache = NO;
+   
    [self.refreshControl endRefreshing];
    [self.tableView reloadData];
    pageLoaded = YES;
@@ -309,19 +363,24 @@
 #pragma unused(anAggregator)
 
    [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
-   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
 
-   noConnectionHUD.mode = MBProgressHUDModeText;
-   if (error)
-      noConnectionHUD.labelText = error;
-   else
-      noConnectionHUD.labelText = @"Load error";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;
-   
-   [spinner stopAnimating];
-   [spinner setHidden : YES];
-   [self.refreshControl  endRefreshing];
-   pageLoaded = NO;
+   if (usingCache) {
+      CernAPP::ShowErrorAlert(@"Please, check network connection", @"Close");
+      [self hideNavBarSpinner];
+   } else {
+      noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+      noConnectionHUD.mode = MBProgressHUDModeText;
+      if (error)
+         noConnectionHUD.labelText = error;
+      else
+         noConnectionHUD.labelText = @"Load error";
+      noConnectionHUD.removeFromSuperViewOnHide = YES;
+      
+      [spinner stopAnimating];
+      [spinner setHidden : YES];
+      [self.refreshControl  endRefreshing];
+      pageLoaded = NO;
+   }
 }
 
 //________________________________________________________________________________________
@@ -355,23 +414,27 @@
 {
 #pragma unused(tableView)
 
-   assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
+   if (usingCache) {
+      NSLog(@"TODO: did select row at index path");
+   } else {
+      assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
-   if (self.navigationController && !self.aggregator.isLoadingData) {
-      if (aggregator.hasConnection) {
-         UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+      if (self.navigationController && !self.aggregator.isLoadingData) {
+         if (aggregator.hasConnection) {
+            UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
 
-         ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-         const NSUInteger index = indexPath.row;
-         [viewController setContentForArticle : [allArticles objectAtIndex : index]];
-         viewController.navigationItem.title = @"";
-         [self.navigationController pushViewController : viewController animated : YES];
-      } else {
-         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+            ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+            const NSUInteger index = indexPath.row;
+            [viewController setContentForArticle : [allArticles objectAtIndex : index]];
+            viewController.navigationItem.title = @"";
+            [self.navigationController pushViewController : viewController animated : YES];
+         } else {
+            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+         }
       }
+      
+      [tableView deselectRowAtIndexPath : indexPath animated : NO];
    }
-   
-   [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 
 #pragma mark - Sliding view controller's "menu"
@@ -415,17 +478,21 @@
 - (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL) decelerate
 {
 #pragma unused(scrollView)
-   if (!decelerate) {
-      if (nLoadedImages != allArticles.count)
-         [self loadImagesForOnscreenRows];
+   if (!usingCache) {
+      if (!decelerate) {
+         if (nLoadedImages != allArticles.count)
+            [self loadImagesForOnscreenRows];
+      }
    }
 }
 
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
 {
-   if (nLoadedImages != allArticles.count)
-      [self loadImagesForOnscreenRows];
+   if (!usingCache) {
+      if (nLoadedImages != allArticles.count)
+         [self loadImagesForOnscreenRows];
+   }
 }
 
 #pragma mark - Download images for news' items in a table.
@@ -560,68 +627,111 @@
 #pragma mark - Previously loaded feeds.
 
 //________________________________________________________________________________________
-- (void) readCache
+- (BOOL) readCache
 {
-   assert(0 && "readCache, test version, can not be called.");
+   assert(feedStoreID != nil && "readCache, feedStoreID is nil");
+
    AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
    NSManagedObjectContext * const context = appDelegate.managedObjectContext;
    
+   feedCache = nil;
+
    if (context) {
       NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"FeedItem"
                                                             inManagedObjectContext : context];
       NSFetchRequest * const request = [[NSFetchRequest alloc] init];
       [request setEntity : entityDesc];
       
-      NSPredicate * const pred = [NSPredicate predicateWithFormat:@"(feedName = %@)", @"test_feed"];
+      NSPredicate * const pred = [NSPredicate predicateWithFormat:@"(feedName = %@)", feedStoreID];
       [request setPredicate : pred];
-      
-      NSManagedObject *matches = nil;
+
       NSError *error = nil;
       NSArray * const objects = [context executeFetchRequest : request error : &error];
-      if (error) {
-         NSLog(@"error, while fetching feed %@", error);
-      } else {
+
+      if (!error) {
          if (objects.count) {
-            matches = (NSManagedObject *)objects[0];
-            NSLog(@"found item, title: %@ link: %@ date: %@", [matches valueForKey : @"itemTitle"],
-                                                              [matches valueForKey : @"itemLink"],
-                                                              [matches valueForKey : @"itemDate"]);
-         } else
-            NSLog(@"no feed data found");
+            feedCache = [objects sortedArrayUsingComparator : ^ NSComparisonResult(id a, id b)
+                           {
+                              NSManagedObject * const left = (NSManagedObject *)a;
+                              NSManagedObject * const right = (NSManagedObject *)b;
+                              const NSComparisonResult cmp = [(NSDate *)[left valueForKey : @"itemDate"] compare : (NSDate *)[right valueForKey : @"itemDate"]];
+                              if (cmp == NSOrderedAscending)
+                                 return NSOrderedDescending;
+                              else if (cmp == NSOrderedDescending)
+                                 return NSOrderedAscending;
+                              return cmp;
+                           }
+                         ];
+         }
       }
-   } else {
-      NSLog(@"no managed object context found");
    }
+   
+   return feedCache && feedCache.count;
 }
 
 //________________________________________________________________________________________
 - (void) writeCache
 {
-   assert(0 && "writeCache, test version, can not be called.");
+   if (!allArticles.count)
+      return;
+
+   assert(feedStoreID != nil && "writeCache, feedStoreID is nil");
 
    AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
    NSManagedObjectContext * const context = appDelegate.managedObjectContext;
    if (context) {
-      NSManagedObject * const newFeedItem = [NSEntityDescription insertNewObjectForEntityForName : @"FeedItem"
-                                                                 inManagedObjectContext : context];
-      if (newFeedItem) {
-         [newFeedItem setValue : @"test title" forKey : @"itemTitle"];
-         [newFeedItem setValue : @"root.cern.ch" forKey : @"itemLink"];
-         [newFeedItem setValue : @"test_feed" forKey : @"feedName"];
-         [newFeedItem setValue : [NSDate date] forKey : @"itemDate"];
+      if (feedCache && feedCache.count) {
+         for (NSManagedObject *obj in feedCache) {
+            [context deleteObject : obj];
+         }
+         
+         feedCache = nil;
+      }
+
+      BOOL inserted = NO;
+
+      for (MWFeedItem *feedItem in allArticles) {
+         if (!feedItem.title || !feedItem.link)
+            continue;
+      
+         NSManagedObject * const saveFeedItem = [NSEntityDescription insertNewObjectForEntityForName : @"FeedItem"
+                                                                    inManagedObjectContext : context];
+         if (saveFeedItem) {
+            inserted = YES;
+            [saveFeedItem setValue : feedItem.title forKey : @"itemTitle"];
+            [saveFeedItem setValue : feedItem.link forKey : @"itemLink"];
+            [saveFeedItem setValue : feedStoreID forKey : @"feedName"];
+            if (feedItem.date)
+               [saveFeedItem setValue : feedItem.date forKey : @"itemDate"];
+            else
+               [saveFeedItem setValue : [NSDate date] forKey : @"itemDate"];
+         }
+      }
+
+      if (inserted) {
          NSError *error = nil;
          [context save : &error];
-         if (error) {
-            NSLog(@"could not save feed item %@", error);
-         } else {
-            NSLog(@"saved ....");
-         }
-      } else {
-         NSLog(@"can not insert feed item???");
       }
-   } else {
-      NSLog(@"no context?!");
    }
+}
+
+#pragma mark - GUI
+
+//________________________________________________________________________________________
+- (void) addNavBarSpinner
+{
+   navBarSpinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(0.f, 0.f, 20.f, 20.f)];
+   UIBarButtonItem * barButton = [[UIBarButtonItem alloc] initWithCustomView : navBarSpinner];
+   // Set to Left or Right
+   self.navigationItem.rightBarButtonItem = barButton;
+   [navBarSpinner startAnimating];
+}
+
+//________________________________________________________________________________________
+- (void) hideNavBarSpinner
+{
+   [navBarSpinner stopAnimating];
+   self.navigationItem.rightBarButtonItem = nil;
 }
 
 @end

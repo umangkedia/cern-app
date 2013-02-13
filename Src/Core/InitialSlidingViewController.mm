@@ -67,6 +67,7 @@
                
                tableController.navigationItem.title = (NSString *)feedInfo[@"Name"];
                [tableController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedInfo[@"Url"]]];
+               tableController.feedStoreID = (NSString *)feedInfo[@"Name"];
 
                return;
             }
