@@ -266,25 +266,24 @@ const NSUInteger fontIncreaseStep = 4;
 
    status = 200;
    stage = LoadStage::inactive;
+
+   if (!spinner) {
+      const CGFloat spinnerSize = 150.f;
+      const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
+
+      spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
+      spinner.color = [UIColor grayColor];
+      [self.view addSubview : spinner];
+   }
    
    if (articleID && [ArticleDetailViewController articleCached : articleID])
       [self getReadabilityCache];
 
    if (rdbCache && rdbCache.length) {
-      //
       [self switchToRdbView];
       [self startSpinner];
       [self loadReadabilityCache];
    } else {
-      if (!spinner) {
-         const CGFloat spinnerSize = 150.f;
-         const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
-
-         spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
-         spinner.color = [UIColor grayColor];
-         [self.view addSubview : spinner];
-      }
-      
 #ifndef READABILITY_CONTENT_API_DEFINED
       [self switchToPageView];
       [self startSpinner];
