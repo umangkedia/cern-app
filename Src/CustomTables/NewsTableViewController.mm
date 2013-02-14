@@ -106,6 +106,9 @@
 
    [super viewDidLoad];
 
+   self.tableView.showsHorizontalScrollIndicator = NO;
+   self.tableView.showsVerticalScrollIndicator = NO;
+
    self.tableView.separatorColor = [UIColor clearColor];
    resetSeparatorColor = YES;
    [self.tableView reloadData];
@@ -206,12 +209,18 @@
       return;
 
    if (!aggregator.hasConnection) {
-      [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
-      noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
-      noConnectionHUD.mode = MBProgressHUDModeText;
-      noConnectionHUD.labelText = @"No network";
-      noConnectionHUD.removeFromSuperViewOnHide = YES;
-
+      if (!usingCache) {
+         [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+         noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+         noConnectionHUD.mode = MBProgressHUDModeText;
+         noConnectionHUD.labelText = @"No network";
+         noConnectionHUD.removeFromSuperViewOnHide = YES;
+      } else {
+         //We still can reload the table using the "cached" feed.
+         pageLoaded = YES;//????
+         [self.tableView reloadData];
+         CernAPP::ShowErrorAlert(@"Please, check network connection", @"Close");
+      }
       return;
    }
    
