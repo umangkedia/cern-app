@@ -1197,7 +1197,7 @@ const NSUInteger fontIncreaseStep = 4;
       if (error)
          return NO;
       
-      if (nCachedArticles >= 30)
+      if (nCachedArticles >= 50)
          return [self purgeReadabilityCache];
       
       return YES;
