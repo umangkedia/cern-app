@@ -151,6 +151,12 @@
 			<key>Name</key>
 			<string>More</string>
 		</dict>
+		<dict>
+			<key>Image name</key>
+			<string>settings.png</string>
+			<key>Category name</key>
+			<string>AppSettings</string>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -371,6 +371,25 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadAppSettingsMenu : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadAppSettingsMenu:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadAppSettingsMenu:, 'Category name' not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"AppSettings"])
+      return NO;
+   
+   SettingsProvider * const provider = [[SettingsProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [menuItems addObject : menuItem];
+   [menuItem addMenuItemViewInto : scrollView controller : self];
+   menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+   
+   return YES;
+}
+
+//________________________________________________________________________________________
 - (void) setMenuGeometryHints
 {
    CGFloat whRatio = 0.f;
@@ -438,8 +457,10 @@ using CernAPP::ItemStyle;
       
       if ([self loadBulletin : (NSDictionary *)entryBase])
          continue;
-      //Latest videos;
-      //Jobs;
+
+      if ([self loadAppSettingsMenu : (NSDictionary *)entryBase])
+         continue;
+
       //Webcasts.
    }
    

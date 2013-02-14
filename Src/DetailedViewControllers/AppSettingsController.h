@@ -1,0 +1,20 @@
+//
+//  AppSettingsController.h
+//  CERN
+//
+//  Created by Timur Pocheptsov on 2/14/13.
+//  Copyright (c) 2013 CERN. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface AppSettingsController : UIViewController {
+
+   IBOutlet UIView *guiSettingsView;
+   IBOutlet UIView *rdbSettingsView;
+
+}
+
+- (IBAction) revealMenu : (id) sender;
+
+@end

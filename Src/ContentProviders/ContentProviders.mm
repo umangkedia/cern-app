@@ -10,6 +10,7 @@
 #import "NewsTableViewController.h"
 #import "ECSlidingViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "AppSettingsController.h"
 #import "ConnectionController.h"
 #import "ContentProviders.h"
 #import "KeyVal.h"
@@ -657,6 +658,58 @@ void CancelConnections(UIViewController *controller)
    if (controller.slidingViewController.topViewController)
       CancelConnections(controller.slidingViewController.topViewController);
 
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = navController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
+   }];
+}
+
+@end
+
+@implementation SettingsProvider {
+   UIImage *image;
+}
+
+@synthesize categoryName;
+
+//________________________________________________________________________________________
+- (id) initWithDictionary : (NSDictionary *) info
+{
+   assert(info != nil && "initWithDictionary:, parameter 'info' is nil");
+   
+   if (self = [super init]) {
+      categoryName = @"Settings";
+      if (info[@"Image name"]) {
+         assert([info[@"Image name"] isKindOfClass : [NSString class]] &&
+                "initWithDictionary:, 'Image name' has a wrong type");
+         image = [UIImage imageNamed : (NSString *)info[@"Image name"]];
+      }
+   }
+   
+   return self;
+}
+
+//________________________________________________________________________________________
+- (UIImage *) categoryImage
+{
+   return image;
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UIViewController *) controller
+{
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+   
+   using namespace CernAPP;
+   
+   MenuNavigationController * const navController =
+            (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : AppSettingsControllerID];
+
+   assert([navController.topViewController isKindOfClass : [AppSettingsController class]] &&
+          "loadControllerTo:, top view controller is either nil or has a wrong type");
+   
    [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
       CGRect frame = controller.slidingViewController.topViewController.view.frame;
       controller.slidingViewController.topViewController = navController;

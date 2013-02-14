@@ -127,6 +127,8 @@
 		7004A14716CBB8E60097435D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7004A14616CBB8E60097435D /* CoreData.framework */; };
 		7004A14916CBF80F0097435D /* cern_info.png in Resources */ = {isa = PBXBuildFile; fileRef = 7004A14816CBF80F0097435D /* cern_info.png */; };
 		70086231169B56F2001C7BB5 /* MenuItemViews.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70086230169B56F2001C7BB5 /* MenuItemViews.mm */; };
+		700A3FAE16CD3A080063B1B2 /* AppSettingsController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 700A3FAD16CD3A080063B1B2 /* AppSettingsController.mm */; };
+		700A3FB016CD3CEF0063B1B2 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 700A3FAF16CD3CEF0063B1B2 /* settings.png */; };
 		700AF64F16B98ED600194E16 /* globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF64E16B98ED600194E16 /* globe.png */; };
 		700AF65116B9932500194E16 /* action.png in Resources */ = {isa = PBXBuildFile; fileRef = 700AF65016B9932500194E16 /* action.png */; };
 		700B978416AEB03D0006EAD3 /* ImageDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 700B978316AEB03D0006EAD3 /* ImageDownloader.mm */; };
@@ -400,6 +402,9 @@
 		7004A14816CBF80F0097435D /* cern_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cern_info.png; sourceTree = "<group>"; };
 		7008622F169B56F2001C7BB5 /* MenuItemViews.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItemViews.h; sourceTree = "<group>"; };
 		70086230169B56F2001C7BB5 /* MenuItemViews.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItemViews.mm; sourceTree = "<group>"; };
+		700A3FAC16CD3A080063B1B2 /* AppSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSettingsController.h; sourceTree = "<group>"; };
+		700A3FAD16CD3A080063B1B2 /* AppSettingsController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppSettingsController.mm; sourceTree = "<group>"; };
+		700A3FAF16CD3CEF0063B1B2 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		700AF64E16B98ED600194E16 /* globe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = globe.png; sourceTree = "<group>"; };
 		700AF65016B9932500194E16 /* action.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = action.png; sourceTree = "<group>"; };
 		700B978216AEB03D0006EAD3 /* ImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageDownloader.h; sourceTree = "<group>"; };
@@ -923,6 +928,7 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				700A3FAF16CD3CEF0063B1B2 /* settings.png */,
 				7004A14816CBF80F0097435D /* cern_info.png */,
 				70BF706216C29E54002CEDC6 /* Email-01.png */,
 				70BF706016C29DA8002CEDC6 /* Facebook.png */,
@@ -1050,6 +1056,8 @@
 				707B1398169AF01500180E02 /* ArticleDetailViewController.mm */,
 				707B1399169AF01500180E02 /* EventDisplayViewController.h */,
 				707B139A169AF01500180E02 /* EventDisplayViewController.mm */,
+				700A3FAC16CD3A080063B1B2 /* AppSettingsController.h */,
+				700A3FAD16CD3A080063B1B2 /* AppSettingsController.mm */,
 			);
 			path = DetailedViewControllers;
 			sourceTree = "<group>";
@@ -1373,6 +1381,7 @@
 				70BF706116C29DA8002CEDC6 /* Facebook.png in Resources */,
 				70BF706316C29E54002CEDC6 /* Email-01.png in Resources */,
 				7004A14916CBF80F0097435D /* cern_info.png in Resources */,
+				700A3FB016CD3CEF0063B1B2 /* settings.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1469,6 +1478,7 @@
 				7069F76516C14D6D006BC78B /* OverlayView.mm in Sources */,
 				7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */,
 				7004A14516CBB7FA0097435D /* Model.xcdatamodeld in Sources */,
+				700A3FAE16CD3A080063B1B2 /* AppSettingsController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

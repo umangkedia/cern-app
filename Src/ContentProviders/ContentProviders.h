@@ -114,3 +114,16 @@
 - (void) loadControllerTo : (UIViewController *) controller;
 
 @end
+
+//
+//Application's settings.
+//
+
+@interface SettingsProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) info;
+@property (nonatomic, retain) NSString *categoryName;
+- (UIImage *) categoryImage;
+- (void) loadControllerTo : (UIViewController *) controller;
+
+@end
