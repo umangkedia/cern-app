@@ -12,6 +12,9 @@
 
    IBOutlet UIView *guiSettingsView;
    IBOutlet UIView *rdbSettingsView;
+   
+   IBOutlet UISlider *guiFontSizeSlider;
+   IBOutlet UISlider *rdbFontSizeSlider;
 
 }
 

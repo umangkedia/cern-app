@@ -35,10 +35,10 @@
    [super viewDidLoad];
 	// Do any additional setup after loading the view.
    //set group views.
-   guiSettingsView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent : 0.8f];
+   guiSettingsView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent : 0.5f];
    guiSettingsView.layer.cornerRadius = 10.f;
    
-   rdbSettingsView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent : 0.8f];
+   rdbSettingsView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent : 0.5f];
    rdbSettingsView.layer.cornerRadius = 10.f;
 }
 
