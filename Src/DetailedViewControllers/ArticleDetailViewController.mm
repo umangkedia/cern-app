@@ -1212,6 +1212,9 @@ const NSUInteger fontIncreaseStep = 4;
    assert(rdbCache != nil && "saveReadabilityCache, rdbCache is nil");
    assert(articleID != nil && "saveReadabilityCache, articleID is nil");
 
+   if (![responseEncoding isEqualToString : @"utf-8"])//TODO.
+      return;
+
    if ([self checkReadabilityCache]) {
       //TODO: this requires serious checks - if I really have to save as a binary data and
       //if I have any benefits at all.
