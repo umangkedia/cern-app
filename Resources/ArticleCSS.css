@@ -41,3 +41,9 @@ p.read img {
 p.main {
     text-align:justify;
 }
+
+div.field-image {
+   width: 85%;
+   margin-left: auto;
+   margin-right: auto;
+}
