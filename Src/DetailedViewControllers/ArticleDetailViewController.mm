@@ -156,9 +156,12 @@ const NSUInteger fontIncreaseStep = 4;
    BOOL animatingOverlay;
    
    MBProgressHUD *noConnectionHUD;
+   
+   //I need this for Readability + CoreData.
+   NSString *responseEncoding;
 }
 
-@synthesize rdbView, pageView, rdbCache, title;
+@synthesize rdbView, pageView, rdbCache, articleID, title;
 
 //It has to be included here, since the file can contain
 //methods.
@@ -263,10 +266,14 @@ const NSUInteger fontIncreaseStep = 4;
 
    status = 200;
    stage = LoadStage::inactive;
+   
+   if (articleID && [ArticleDetailViewController articleCached : articleID])
+      [self getReadabilityCache];
 
    if (rdbCache && rdbCache.length) {
       //
       [self switchToRdbView];
+      [self startSpinner];
       [self loadReadabilityCache];
    } else {
       if (!spinner) {
@@ -285,6 +292,7 @@ const NSUInteger fontIncreaseStep = 4;
 #else
       [self switchToRdbView];
       [self startSpinner];
+
       [self loadHtmlFromReadability];
 #endif
    }
@@ -542,6 +550,9 @@ const NSUInteger fontIncreaseStep = 4;
          [self switchToPageView];
          [self loadOriginalPage];
       }
+   } else if (stage == LoadStage::rdbRequest) {
+      //I'm not quite sure if I should do this at all.
+      responseEncoding = [response textEncodingName];
    }
 }
 
@@ -1134,5 +1145,153 @@ const NSUInteger fontIncreaseStep = 4;
 
    [self.view layoutSubviews];
 }
+
+#pragma mark - Core Data.
+
+//________________________________________________________________________________________
+- (BOOL) purgeReadabilityCache
+{
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+   if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
+      NSFetchRequest * const request = [[NSFetchRequest alloc] init];
+      [request setEntity : [NSEntityDescription entityForName : @"RDBArticle" inManagedObjectContext : context]];
+      [request setIncludesPropertyValues : NO]; //only fetch the managedObjectID
+
+      NSError * error = nil;
+      NSArray * const allArticles = [context executeFetchRequest : request error : &error];
+      if (error)
+         return NO;
+      
+      
+   
+      for (NSManagedObject * article in allArticles)
+        [context deleteObject : article];
+
+      NSError *saveError = nil;
+      [context save : &saveError];
+      
+      return !saveError;
+   }
+
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (BOOL) checkReadabilityCache
+{
+   //Check the current "size". This is not the real estimation, of course, but just an attempt to make one.
+   
+   //I'm calculating the total size of cached articles, if it's "already big enough", I'm
+   //deleteing all the previous information.
+   
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+
+   if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
+      NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"RDBArticle"
+                                                                    inManagedObjectContext : context];
+      NSFetchRequest * const request = [[NSFetchRequest alloc] init];
+      [request setEntity : entityDesc];
+      
+      NSError *error = nil;
+      const NSUInteger nCachedArticles = [context countForFetchRequest : request error : &error];
+      if (error)
+         return NO;
+      
+      if (nCachedArticles == 10)
+         return [self purgeReadabilityCache];
+      
+      return YES;
+   }
+   
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (void) saveReadabilityCache
+{
+   assert(rdbCache != nil && "saveReadabilityCache, rdbCache is nil");
+   assert(articleID != nil && "saveReadabilityCache, articleID is nil");
+
+   if ([self checkReadabilityCache]) {
+      //TODO: this requires serious checks - if I really have to save as a binary data and
+      //if I have any benefits at all.
+      
+      AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+
+      if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
+         //TODO: actually, I have to use responseEncoding to check, if it's really utf-8.
+         NSData * const binaryData = [rdbCache dataUsingEncoding : NSUTF8StringEncoding];
+
+         NSManagedObject * const saveItem = [NSEntityDescription insertNewObjectForEntityForName : @"RDBArticle"
+                                                                 inManagedObjectContext : context];
+         if (saveItem) {
+            [saveItem setValue : articleID forKey : @"articleID"];
+            [saveItem setValue : binaryData forKey : @"articleData"];
+
+            NSError *error = nil;
+            [context save : &error];
+         }
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (void) getReadabilityCache
+{
+   assert(articleID != nil && "getReadabilityCache:, parameter 'articleID' is nil");
+   
+
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+
+   if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
+      NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"RDBArticle"
+                                                                    inManagedObjectContext : context];
+      
+      NSFetchRequest * const request = [[NSFetchRequest alloc] init];
+      [request setEntity : entityDesc];
+      
+      NSPredicate * const pred = [NSPredicate predicateWithFormat : @"(articleID = %@)", articleID];
+      [request setPredicate : pred];
+      
+      NSError *error = nil;
+      NSArray * const objects = [context executeFetchRequest : request error : &error];
+      
+      if (!error && objects && objects.count) {
+         NSManagedObject * const cache = (NSManagedObject *)objects[0];
+         NSData * const binaryData = [cache valueForKey : @"articleData"];
+         if (binaryData && binaryData.length)
+            rdbCache = [[NSString alloc] initWithBytes : binaryData.bytes length : binaryData.length encoding : NSUTF8StringEncoding];
+      }
+   }
+}
+
+//________________________________________________________________________________________
++ (BOOL) articleCached : (NSString *) articleID
+{
+   assert(articleID != nil && "articleCached:, parameter 'articleID' is nil");
+   
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+
+   if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
+      NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"RDBArticle"
+                                                                    inManagedObjectContext : context];
+      
+      NSFetchRequest * const request = [[NSFetchRequest alloc] init];
+      [request setEntity : entityDesc];
+      
+      NSPredicate * const pred = [NSPredicate predicateWithFormat : @"(articleID = %@)", articleID];
+      [request setPredicate : pred];
+      [request setIncludesPropertyValues : NO]; //only fetch the managedObjectID
+      
+      NSError *error = nil;
+      NSArray * const objects = [context executeFetchRequest : request error : &error];
+      
+      if (!error && objects && objects.count)
+         return YES;
+   }
+   
+   return NO;
+}
+
 
 @end

@@ -20,6 +20,7 @@
 
 @property (nonatomic, strong) NSString *rdbCache;
 
+@property (nonatomic, copy) NSString *articleID;
 @property (nonatomic, copy) NSString *title;
 
 - (void) setContentForArticle : (MWFeedItem *) article;

@@ -6,7 +6,12 @@
         <attribute name="itemLink" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="itemTitle" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="RDBArticle" syncable="YES">
+        <attribute name="articleData" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="articleID" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
         <element name="FeedItem" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="RDBArticle" positionX="160" positionY="192" width="128" height="75"/>
     </elements>
 </model>

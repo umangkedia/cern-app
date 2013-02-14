@@ -439,6 +439,9 @@
       [viewController setLink : (NSString *)[feedItem valueForKey : @"itemLink"]
                       title : (NSString *)[feedItem valueForKey : @"itemTitle"]];
       viewController.navigationItem.title = @"";
+      //
+      viewController.articleID = [feedStoreID stringByAppendingString : (NSString *)[feedItem valueForKey : @"itemTitle"]];
+      //
       [self.navigationController pushViewController : viewController animated : YES];
    } else {
       if (self.navigationController && !self.aggregator.isLoadingData) {
@@ -447,8 +450,13 @@
 
             ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
             const NSUInteger index = indexPath.row;
-            [viewController setContentForArticle : [allArticles objectAtIndex : index]];
+            MWFeedItem * const feedItem = (MWFeedItem *)allArticles[index];
+            [viewController setContentForArticle : feedItem];
             viewController.navigationItem.title = @"";
+            //
+            if (feedItem.title)
+               viewController.articleID = [feedStoreID stringByAppendingString : feedItem.title];
+            //
             [self.navigationController pushViewController : viewController animated : YES];
          } else {
             CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
