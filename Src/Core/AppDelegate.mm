@@ -109,7 +109,10 @@
    if (persistentStoreCoordinator)
       return persistentStoreCoordinator;
 
-   NSURL * const storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent : @"CERN.sqlite"];
+   //TODO: add error handling!
+
+   NSString * const directory = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+   NSURL * const storeURL = [[NSURL fileURLWithPath : directory] URLByAppendingPathComponent : @"CERN.sqlite"];
 
    NSError *error = nil;
    persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel : [self managedObjectModel]];

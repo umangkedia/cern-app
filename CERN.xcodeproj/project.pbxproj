@@ -241,7 +241,7 @@
 		70CC55EF169EF80600292332 /* MenuNavigationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55ED169EF80500292332 /* MenuNavigationController.mm */; };
 		70FDADCE16CE604200933383 /* cern_info.png in Resources */ = {isa = PBXBuildFile; fileRef = 70FDADCD16CE604200933383 /* cern_info.png */; };
 		70FDADD016CE615600933383 /* credits.png in Resources */ = {isa = PBXBuildFile; fileRef = 70FDADCF16CE615600933383 /* credits.png */; };
-		70FDADD316CE690500933383 /* CreditsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70FDADD216CE690500933383 /* CreditsViewController.m */; };
+		70FDADD316CE690500933383 /* CreditsViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70FDADD216CE690500933383 /* CreditsViewController.mm */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
 		E1AB920D159BE44B006FBB40 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1AB920C159BE44B006FBB40 /* QuartzCore.framework */; };
 		E1D87E89159EEC880051104C /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1D87E88159EEC880051104C /* ImageIO.framework */; };
@@ -572,7 +572,7 @@
 		70FDADCD16CE604200933383 /* cern_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cern_info.png; sourceTree = "<group>"; };
 		70FDADCF16CE615600933383 /* credits.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = credits.png; sourceTree = "<group>"; };
 		70FDADD116CE690500933383 /* CreditsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreditsViewController.h; sourceTree = "<group>"; };
-		70FDADD216CE690500933383 /* CreditsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreditsViewController.m; sourceTree = "<group>"; };
+		70FDADD216CE690500933383 /* CreditsViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CreditsViewController.mm; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		E1830BC915744B9F003F16E2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		E1AB920C159BE44B006FBB40 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -1065,7 +1065,7 @@
 				700A3FAC16CD3A080063B1B2 /* AppSettingsController.h */,
 				700A3FAD16CD3A080063B1B2 /* AppSettingsController.mm */,
 				70FDADD116CE690500933383 /* CreditsViewController.h */,
-				70FDADD216CE690500933383 /* CreditsViewController.m */,
+				70FDADD216CE690500933383 /* CreditsViewController.mm */,
 			);
 			path = DetailedViewControllers;
 			sourceTree = "<group>";
@@ -1488,7 +1488,7 @@
 				7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */,
 				7004A14516CBB7FA0097435D /* Model.xcdatamodeld in Sources */,
 				700A3FAE16CD3A080063B1B2 /* AppSettingsController.mm in Sources */,
-				70FDADD316CE690500933383 /* CreditsViewController.m in Sources */,
+				70FDADD316CE690500933383 /* CreditsViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
