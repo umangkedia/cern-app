@@ -10,7 +10,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "ECSlidingViewController.h"
 #import "AppSettingsController.h"
 
 @implementation AppSettingsController
@@ -82,11 +81,10 @@
 
 #pragma mark - GUI events.
 
-//________________________________________________________________________________________
-- (IBAction) revealMenu : (id) sender
+//_______________________________________________________________________________________
+- (IBAction) donePressed : (id)sender
 {
-#pragma unused(sender)
-   [self.slidingViewController anchorTopViewTo : ECRight];
+   [self dismissViewControllerAnimated : YES completion : nil];
 }
 
 //_______________________________________________________________________________________

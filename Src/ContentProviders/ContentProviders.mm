@@ -704,18 +704,11 @@ void CancelConnections(UIViewController *controller)
    
    using namespace CernAPP;
    
-   MenuNavigationController * const navController =
-            (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : AppSettingsControllerID];
+   AppSettingsController * const appSettingscontroller =
+            (AppSettingsController *)[controller.storyboard instantiateViewControllerWithIdentifier : AppSettingsControllerID];
 
-   assert([navController.topViewController isKindOfClass : [AppSettingsController class]] &&
-          "loadControllerTo:, top view controller is either nil or has a wrong type");
-   
-   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
-      CGRect frame = controller.slidingViewController.topViewController.view.frame;
-      controller.slidingViewController.topViewController = navController;
-      controller.slidingViewController.topViewController.view.frame = frame;
-      [controller.slidingViewController resetTopView];
-   }];
+   //
+   [controller presentViewController:appSettingscontroller animated:YES completion:nil];
 }
 
 @end
