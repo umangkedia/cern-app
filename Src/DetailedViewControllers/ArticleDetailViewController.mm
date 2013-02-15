@@ -1214,27 +1214,27 @@ const NSUInteger fontIncreaseStep = 4;
    if (![responseEncoding isEqualToString : @"utf-8"])//TODO.
       return;
 
-   if ([self checkReadabilityCache]) {
+ //  if ([self checkReadabilityCache]) {
       //TODO: this requires serious checks - if I really have to save as a binary data and
       //if I have any benefits at all.
       
-      AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 
-      if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
-         //TODO: actually, I have to use responseEncoding to check, if it's really utf-8.
-         NSData * const binaryData = [rdbCache dataUsingEncoding : NSUTF8StringEncoding];
+   if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {
+      //TODO: actually, I have to use responseEncoding to check, if it's really utf-8.
+      NSData * const binaryData = [rdbCache dataUsingEncoding : NSUTF8StringEncoding];
 
-         NSManagedObject * const saveItem = [NSEntityDescription insertNewObjectForEntityForName : @"RDBArticle"
-                                                                 inManagedObjectContext : context];
-         if (saveItem) {
-            [saveItem setValue : articleID forKey : @"articleID"];
-            [saveItem setValue : binaryData forKey : @"articleData"];
+      NSManagedObject * const saveItem = [NSEntityDescription insertNewObjectForEntityForName : @"RDBArticle"
+                                                              inManagedObjectContext : context];
+      if (saveItem) {
+         [saveItem setValue : articleID forKey : @"articleID"];
+         [saveItem setValue : binaryData forKey : @"articleData"];
 
-            NSError *error = nil;
-            [context save : &error];
-         }
+         NSError *error = nil;
+         [context save : &error];
       }
    }
+ //  }
 }
 
 //________________________________________________________________________________________
