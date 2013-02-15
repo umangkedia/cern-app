@@ -119,7 +119,7 @@
 //Application's settings.
 //
 
-@interface SettingsProvider : NSObject<ContentProvider>
+@interface ModalViewProvider : NSObject<ContentProvider>
 
 - (id) initWithDictionary : (NSDictionary *) info;
 @property (nonatomic, retain) NSString *categoryName;

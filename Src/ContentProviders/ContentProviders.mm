@@ -668,8 +668,9 @@ void CancelConnections(UIViewController *controller)
 
 @end
 
-@implementation SettingsProvider {
+@implementation ModalViewProvider {
    UIImage *image;
+   NSString *controllerID;
 }
 
 @synthesize categoryName;
@@ -680,12 +681,20 @@ void CancelConnections(UIViewController *controller)
    assert(info != nil && "initWithDictionary:, parameter 'info' is nil");
    
    if (self = [super init]) {
-      categoryName = @"Settings";
+      assert([info[@"Name"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Name' is nil or has a wrong type");
+      categoryName = (NSString *)info[@"Name"];
+      
       if (info[@"Image name"]) {
          assert([info[@"Image name"] isKindOfClass : [NSString class]] &&
                 "initWithDictionary:, 'Image name' has a wrong type");
          image = [UIImage imageNamed : (NSString *)info[@"Image name"]];
       }
+      
+      assert([info[@"ControllerID"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'ControllerID' is nil or has a wrong type");
+      
+      controllerID = (NSString *)info[@"ControllerID"];
    }
    
    return self;
@@ -705,7 +714,7 @@ void CancelConnections(UIViewController *controller)
    using namespace CernAPP;
    
    AppSettingsController * const appSettingscontroller =
-            (AppSettingsController *)[controller.storyboard instantiateViewControllerWithIdentifier : AppSettingsControllerID];
+            (AppSettingsController *)[controller.storyboard instantiateViewControllerWithIdentifier : controllerID];
 
    //
    [controller presentViewController:appSettingscontroller animated:YES completion:nil];

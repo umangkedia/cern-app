@@ -371,22 +371,25 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (BOOL) loadAppSettingsMenu : (NSDictionary *) desc
+- (BOOL) loadStandaloneItem : (NSDictionary *) desc
 {
-   assert(desc != nil && "loadAppSettingsMenu:, parameter 'desc' is nil");
+   assert(desc != nil && "loadStandaloneItem:, parameter 'desc' is nil");
    assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
           "loadAppSettingsMenu:, 'Category name' not found or has a wrong type");
    
-   if (![(NSString *)desc[@"Category name"] isEqualToString : @"AppSettings"])
-      return NO;
+   NSString * const catName = (NSString *)desc[@"Category name"];
    
-   SettingsProvider * const provider = [[SettingsProvider alloc] initWithDictionary : desc];
-   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-   [menuItems addObject : menuItem];
-   [menuItem addMenuItemViewInto : scrollView controller : self];
-   menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+   if ([catName isEqualToString : @"ModalViewItem"]) {
+      ModalViewProvider * const provider = [[ModalViewProvider alloc] initWithDictionary : desc];
+      MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+      [menuItems addObject : menuItem];
+      [menuItem addMenuItemViewInto : scrollView controller : self];
+      menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+      
+      return YES;
+   }
    
-   return YES;
+   return NO;
 }
 
 //________________________________________________________________________________________
@@ -458,7 +461,7 @@ using CernAPP::ItemStyle;
       if ([self loadBulletin : (NSDictionary *)entryBase])
          continue;
 
-      if ([self loadAppSettingsMenu : (NSDictionary *)entryBase])
+      if ([self loadStandaloneItem : (NSDictionary *)entryBase])
          continue;
 
       //Webcasts.
