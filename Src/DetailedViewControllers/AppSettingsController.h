@@ -18,6 +18,9 @@
 
 }
 
+- (IBAction) guiFontSizeChanged : (UISlider *) sender;
+- (IBAction) htmlFontSizeChanged : (UISlider *) sender;
+
 - (IBAction) revealMenu : (id) sender;
 
 @end

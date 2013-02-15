@@ -271,7 +271,7 @@ const NSUInteger fontIncreaseStep = 4;
       const CGFloat spinnerSize = 150.f;
       const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
 
-      spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
+      spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
       spinner.color = [UIColor grayColor];
       [self.view addSubview : spinner];
    }
