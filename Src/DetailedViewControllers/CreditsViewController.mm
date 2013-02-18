@@ -34,11 +34,19 @@
    
    captionColor = [UIColor colorWithRed : 0.f green : 83.f / 255.f blue : 161.f / 255.f alpha : 1.f];
 
-   //Now, let's fill our text view with info.
    [self addDevelopersInfo];
    [self addReadabilityInfo];
-   [self addComponentInfo:@"\nMWFeedParser:" licenseFile:@"MWFeedParserLicense" author : @"Michael Waterfall"];
-   [self addComponentInfo:@"\nMWPhotoBrowser:" licenseFile:@"MWPhotoBrowserLicense" author : @"Michael Waterfall"];
+   
+  // [self addIconsInfo];
+   
+   [self addComponentInfo : @"\nECSlidingViewController:" licenseFile : @"ECSlidingViewControllerLicense" author : @"Michael Enriquez"];
+   [self addComponentInfo : @"\nMWFeedParser:" licenseFile : @"MWFeedParserLicense" author : @"Michael Waterfall"];
+   [self addComponentInfo : @"\nMWPhotoBrowser:" licenseFile : @"MWPhotoBrowserLicense" author : @"Michael Waterfall"];
+   [self addComponentInfo : @"\nMBProgressHUD:" licenseFile : @"MBProgressHUDLicense" author : @"Matej Bukovinski"];
+   [self addComponentInfo : @"\nSDWebImage:" licenseFile : @"SDWebImageLicense" author : @"Olivier Poitrey"];
+   [self addComponentInfo : @"\nGlyphsPro (v.1):" licenseFile : @"glyphspro_1_license" author : @"Joseph Wain"];
+   [self addComponentInfo : @"\nGlyphsPro (v.4):" licenseFile : @"glyphspro_4_license" author : @"Joseph Wain"];
+   [self addIconsInfo];
 
    textView.attributedText = text;
 }
@@ -118,6 +126,25 @@
    [self setFont : textFont color : [UIColor blackColor] forRange : infoRange];
 
    [text addAttribute : NSForegroundColorAttributeName value : [UIColor blueColor] range : linkRange];
+}
+
+//________________________________________________________________________________________
+- (void) addIconsInfo
+{
+   NSAttributedString * const caption = [[NSAttributedString alloc] initWithString : @"\nSocial networks' icons:\n\n"];
+   const NSRange captionRange = NSMakeRange(text.length, caption.length);
+   NSAttributedString * const link = [[NSAttributedString alloc] initWithString : @"Author: http://www.deleket.com/index.html\n"];
+   const NSRange linkRange = NSMakeRange(captionRange.location + captionRange.length + 8, link.length - 8);
+   NSAttributedString * const info = [[NSAttributedString alloc] initWithString : @"License: http://creativecommons.org/licenses/by-nc-nd/3.0/legalcode"];
+   const NSRange infoRange = NSMakeRange(linkRange.location + linkRange.length + 9, info.length - 9);//+9 -9 == not to include 'License: '
+   
+   [text appendAttributedString : caption];
+   [text appendAttributedString : link];
+   [text appendAttributedString : info];
+   
+   [self setCaptionAttribute:captionRange];
+   [text addAttribute : NSForegroundColorAttributeName value : [UIColor blueColor] range : linkRange];
+   [text addAttribute : NSForegroundColorAttributeName value : [UIColor blueColor] range : infoRange];
 }
 
 //________________________________________________________________________________________
