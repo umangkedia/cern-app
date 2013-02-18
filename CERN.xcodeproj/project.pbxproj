@@ -176,11 +176,6 @@
 		7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7069F76416C14D6D006BC78B /* PictureButtonView.mm */; };
 		70767DC716CE8F4D00164516 /* MWFeedParserLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 70767DC616CE8F4D00164516 /* MWFeedParserLicense.txt */; };
 		70767DC916CE922D00164516 /* MWPhotoBrowserLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 70767DC816CE922D00164516 /* MWPhotoBrowserLicense.txt */; };
-		707B133D169AE8BC00180E02 /* AQGridSelection.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1338169AE8BC00180E02 /* AQGridSelection.png */; };
-		707B133E169AE8BC00180E02 /* AQGridSelectionGray.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */; };
-		707B133F169AE8BC00180E02 /* AQGridSelectionGrayBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */; };
-		707B1340169AE8BC00180E02 /* AQGridSelectionGreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B133B169AE8BC00180E02 /* AQGridSelectionGreen.png */; };
-		707B1341169AE8BC00180E02 /* AQGridSelectionRed.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B133C169AE8BC00180E02 /* AQGridSelectionRed.png */; };
 		707B1373169AEA4700180E02 /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B136E169AEA4700180E02 /* back_btn.png */; };
 		707B1374169AEA4700180E02 /* back_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B136F169AEA4700180E02 /* back_button.png */; };
 		707B1375169AEA4700180E02 /* back_button_flat.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1370169AEA4700180E02 /* back_button_flat.png */; };
@@ -474,11 +469,6 @@
 		7069F76416C14D6D006BC78B /* PictureButtonView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PictureButtonView.mm; sourceTree = "<group>"; };
 		70767DC616CE8F4D00164516 /* MWFeedParserLicense.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWFeedParserLicense.txt; sourceTree = "<group>"; };
 		70767DC816CE922D00164516 /* MWPhotoBrowserLicense.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWPhotoBrowserLicense.txt; sourceTree = "<group>"; };
-		707B1338169AE8BC00180E02 /* AQGridSelection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelection.png; sourceTree = "<group>"; };
-		707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGray.png; sourceTree = "<group>"; };
-		707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGrayBlue.png; sourceTree = "<group>"; };
-		707B133B169AE8BC00180E02 /* AQGridSelectionGreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionGreen.png; sourceTree = "<group>"; };
-		707B133C169AE8BC00180E02 /* AQGridSelectionRed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AQGridSelectionRed.png; sourceTree = "<group>"; };
 		707B136E169AEA4700180E02 /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
 		707B136F169AEA4700180E02 /* back_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button.png; sourceTree = "<group>"; };
 		707B1370169AEA4700180E02 /* back_button_flat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_flat.png; sourceTree = "<group>"; };
@@ -746,7 +736,6 @@
 			isa = PBXGroup;
 			children = (
 				707B136D169AEA4700180E02 /* GUI */,
-				707B1337169AE8BC00180E02 /* AQGridView */,
 				41E617C91614CEB700BAA7D4 /* Cards */,
 				41C0659316271ED1000DC176 /* iTunesArtwork */,
 				4162A4541625BA87002B9D09 /* Default~iphone.png */,
@@ -905,18 +894,6 @@
 				7069F76416C14D6D006BC78B /* PictureButtonView.mm */,
 			);
 			path = CustomViews;
-			sourceTree = "<group>";
-		};
-		707B1337169AE8BC00180E02 /* AQGridView */ = {
-			isa = PBXGroup;
-			children = (
-				707B1338169AE8BC00180E02 /* AQGridSelection.png */,
-				707B1339169AE8BC00180E02 /* AQGridSelectionGray.png */,
-				707B133A169AE8BC00180E02 /* AQGridSelectionGrayBlue.png */,
-				707B133B169AE8BC00180E02 /* AQGridSelectionGreen.png */,
-				707B133C169AE8BC00180E02 /* AQGridSelectionRed.png */,
-			);
-			path = AQGridView;
 			sourceTree = "<group>";
 		};
 		707B1342169AE8C900180E02 /* Src */ = {
@@ -1351,11 +1328,6 @@
 				4162A4671625BD65002B9D09 /* Default-Portrait~ipad.png in Resources */,
 				41C0659416271ED1000DC176 /* iTunesArtwork in Resources */,
 				700F547916396A130082B89E /* CERNLive.plist in Resources */,
-				707B133D169AE8BC00180E02 /* AQGridSelection.png in Resources */,
-				707B133E169AE8BC00180E02 /* AQGridSelectionGray.png in Resources */,
-				707B133F169AE8BC00180E02 /* AQGridSelectionGrayBlue.png in Resources */,
-				707B1340169AE8BC00180E02 /* AQGridSelectionGreen.png in Resources */,
-				707B1341169AE8BC00180E02 /* AQGridSelectionRed.png in Resources */,
 				707B1373169AEA4700180E02 /* back_btn.png in Resources */,
 				707B1374169AEA4700180E02 /* back_button.png in Resources */,
 				707B1375169AEA4700180E02 /* back_button_flat.png in Resources */,
