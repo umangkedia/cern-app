@@ -32,6 +32,7 @@ void CancelConnections(UIViewController *controller)
    NSString *feedName;
    NSString *feed;
    UIImage *feedImage;
+   BOOL isTwitterFeed;
 }
 
 //________________________________________________________________________________________
@@ -52,6 +53,16 @@ void CancelConnections(UIViewController *controller)
       
       if ([feedInfo[@"Image"] isKindOfClass : [NSString class]])
          feedImage = [UIImage imageNamed:(NSString *)feedInfo[@"Image"]];
+      
+      if (feedInfo[@"Category name"]) {
+         assert([feedInfo[@"Category name"] isKindOfClass : [NSString class]] &&
+                "initWith:, 'Category name' has a wrong type");
+         
+         if ([(NSString *)feedInfo[@"Category name"] isEqualToString : @"Tweet"])
+            isTwitterFeed = YES;
+         else
+            isTwitterFeed = NO;
+      }
    }
    
    return self;
@@ -94,6 +105,8 @@ void CancelConnections(UIViewController *controller)
    nt.feedStoreID = feedName;
    //
    [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
+   
+   nt.isTwitterFeed = isTwitterFeed;
 
    if (controller.slidingViewController.topViewController)
       CancelConnections(controller.slidingViewController.topViewController);

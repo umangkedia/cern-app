@@ -23,6 +23,8 @@
 @property (nonatomic, copy) NSString *articleID;
 @property (nonatomic, copy) NSString *title;
 
+@property (nonatomic) BOOL canUseReadability;
+
 - (void) setContentForArticle : (MWFeedItem *) article;
 - (void) setLink : (NSString *) link title : (NSString *) title;
 

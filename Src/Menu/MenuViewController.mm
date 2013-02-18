@@ -96,61 +96,194 @@ using CernAPP::ItemStyle;
    }
 }
 
+#pragma mark - Different menu item "loaders" - read the description from plist and fill the menu.
+
+//1. These are simple "single-item loaders".
 
 //________________________________________________________________________________________
-- (BOOL) loadNewsSection : (NSDictionary *) desc
+- (BOOL) loadFeed : (NSDictionary *) desc into : (NSMutableArray *) items
 {
-   assert(scrollView != nil && "loadNewSection:, scrollView is not loaded yet!");
-   assert(desc != nil && "loadNewsSection:, parameter 'desc' is nil");
+   //This can be both the top-level and a nested item.
+
+   assert(desc != nil && "loadFeed:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadFeed:into:, parameter 'items' is nil");
+   
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadFeed:into:, 'Category name' not found or has a wrong type");
+   
+   NSString * const categoryName = (NSString *)desc[@"Category name"];
+   if (![categoryName isEqualToString : @"Feed"] && ![categoryName isEqualToString : @"Tweet"])
+      return NO;
+
+   FeedProvider * const provider = [[FeedProvider alloc] initWith : desc];
+   MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [items addObject : newItem];
+   
+   return YES;
+}
+
+//________________________________________________________________________________________
+- (BOOL) loadBulletin : (NSDictionary *) desc into : (NSMutableArray *) items
+{
+   //Both the top-level and nested item.
+
+   assert(desc != nil && "loadBulletin:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadBulletin:into:, parameter 'items' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadBulletin:into:, 'Category name' not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"Bulletin"])
+      return NO;
+
+   BulletinProvider * const provider = [[BulletinProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [items addObject : menuItem];
+   
+   return YES;
+}
+
+//________________________________________________________________________________________
+- (BOOL) loadPhotoSet : (NSDictionary *) desc into : (NSMutableArray *) items
+{
+   //Both the top-level and nested item.
+   
+   //This is an 'ad-hoc' provider (it does a lot of special work to find
+   //images in our quite  special sources).
+
+   assert(desc != nil && "loadPhotoSet:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadPhotoSet:into:, parameter 'items' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadPhotoSet:into:, 'Category name' is nil or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"PhotoSet"])
+      return NO;
+   
+   PhotoSetProvider * const provider = [[PhotoSetProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [items addObject : menuItem];
+
+   return YES;
+}
+
+//________________________________________________________________________________________
+- (BOOL) loadVideoSet : (NSDictionary *) desc into : (NSMutableArray *) items
+{
+   //Both the top-level and nested item.
+   
+   //This is an 'ad-hoc' content provider (it does a lot of special worn
+   //to extract video from our quite special source).
+   //That's why the provider is 'LatestVideosProvider'.
+
+   assert(desc != nil && "loadVideoSet:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadVideoSet:into:, parameter 'items' is nil");
+   assert([desc[@"Category name"] isKindOfClass:[NSString class]] &&
+          "loadVideoSet:into:, 'Category name' not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"VideoSet"])
+      return NO;
+   
+   LatestVideosProvider * const provider = [[LatestVideosProvider alloc] initWithDictionary : desc];
+   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+   [items addObject : menuItem];
+
+   return YES;
+}
+
+//________________________________________________________________________________________
+- (BOOL) loadSeparator : (NSDictionary *) desc
+{
+   //Can be top-level only.
+
+   assert(desc != nil && "loadSeparator:, parameter 'desc' is nil");
    
    id objBase = desc[@"Category name"];
-   assert([objBase isKindOfClass : [NSString class]] &&
-          "loadNewsSection:, either 'Category Name' not found, or it's not a NSString");
+   assert(objBase != nil && [objBase isKindOfClass : [NSString class]] &&
+          "loadSeparator:, 'Category name' either not found or has a wrong type");
    
-   NSString * const catName = (NSString *)objBase;
-   if (![catName isEqualToString : @"News"])
+   if ([(NSString *)objBase isEqualToString : @"Separator"]) {
+      MenuSeparator * const separator = [[MenuSeparator alloc] init];
+      [separator addMenuItemViewInto : scrollView controller : self];
+      [menuItems addObject : separator];
+      return YES;
+   }
+   
+   return NO;
+}
+
+//________________________________________________________________________________________
+- (BOOL) loadStandaloneItem : (NSDictionary *) desc
+{
+   assert(desc != nil && "loadStandaloneItem:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadAppSettingsMenu:, 'Category name' not found or has a wrong type");
+   
+   NSString * const catName = (NSString *)desc[@"Category name"];
+   
+   if ([catName isEqualToString : @"ModalViewItem"]) {
+      ModalViewProvider * const provider = [[ModalViewProvider alloc] initWithDictionary : desc];
+      MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+      [menuItems addObject : menuItem];
+      [menuItem addMenuItemViewInto : scrollView controller : self];
+      menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+      
+      return YES;
+   }
+   
+   return NO;
+}
+
+//These are more complex "loaders".
+
+//________________________________________________________________________________________
+- (BOOL) loadMenuGroup : (NSDictionary *) desc
+{
+   //This is a "TOP-level" menu group.
+   //This menu group can contain only simple, non-group items.
+
+   assert(scrollView != nil && "loadMenuGroup:, scrollView is not loaded yet!");
+   assert(desc != nil && "loadMenuGroup:, parameter 'desc' is nil");
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadMenuGroup:, 'Category Name' not found or has a wrong type");
+   
+   if (![(NSString *)desc[@"Category name"] isEqualToString : @"Menu group"])
       return NO;
    
    //Find a section name, it's a required property.
-   objBase = desc[@"Name"];
-   assert([objBase isKindOfClass : [NSString class]] &&
-          "loadNewsSection:, either 'Name' not found, or it's not a NSString");
+   assert([desc[@"Name"] isKindOfClass : [NSString class]] &&
+          "loadMenuGroup:, 'Name' is not found, or has a wrong type");
    
-   NSString * const sectionName = (NSString *)objBase;
-   
+   NSString * const sectionName = (NSString *)desc[@"Name"];
    //Now, we need an array of either feeds or tweets.
-   objBase = desc[@"Feeds"];
-   if (objBase) {
-      assert([objBase isKindOfClass:[NSArray class]] &&
-             "loadNewsSection:, 'Feeds' must have a NSArray type");
-      NSArray * const feeds = (NSArray *)objBase;
-
-      if (feeds.count) {
+   if (desc[@"Items"]) {
+      assert([desc[@"Items"] isKindOfClass : [NSArray class]] &&
+             "loadNewsSection:, 'Items' must have a NSArray type");
+      NSArray * const plistItems = (NSArray *)desc[@"Items"];
+      if (plistItems.count) {
          //Read news feeds.
-         NSMutableArray * const items = [[NSMutableArray alloc] init];
-         for (id info in feeds) {
+         NSMutableArray * const groupItems = [[NSMutableArray alloc] init];
+         for (id info in plistItems) {
             assert([info isKindOfClass : [NSDictionary class]] &&
-                   "loadNewsSection, feed info must be a dictionary");
+                   "loadNewsSection, item info must be a dictionary");
             
-            NSDictionary * const feedInfo = (NSDictionary *)info;
+            NSDictionary * const itemInfo = (NSDictionary *)info;
+            //Now, we try to initialize correct content provider,
+            //using item's 'Category name':
+            if ([self loadFeed : itemInfo into : groupItems])
+               continue;
             
-            if (feedInfo[@"Category name"]) {
-               assert([feedInfo[@"Category name"] isKindOfClass : [NSString class]] &&
-                      "loadNewsSection:, 'Category name' must be have the NSString type");
-               //Bulletin is a feed, but it's treated in a quite special way, it's not
-               //directly loaded in a news table view, but in a special table, which groups
-               //articles into bulletin's issues.
-               if ([(NSString *)feedInfo[@"Category name"] isEqualToString : @"Bulletin"]) {
-                  [self addBulletin : feedInfo into : items];
-               }
-            } else {
-               FeedProvider * const provider = [[FeedProvider alloc] initWith : feedInfo];
-               MenuItem * const newItem = [[MenuItem alloc] initWithContentProvider : provider];
-               [items addObject : newItem];
-            }
+            if ([self loadBulletin : itemInfo into : groupItems])
+               continue;
+            
+            if ([self loadPhotoSet : itemInfo into : groupItems])
+               continue;
+            
+            if ([self loadVideoSet : itemInfo into : groupItems])
+               continue;
+            
+            //Something else later?
          }
          
-         [self addMenuGroup : sectionName withImage : [self loadItemImage:desc] forItems : items];
+         [self addMenuGroup : sectionName withImage : [self loadItemImage : desc] forItems : groupItems];
          [self setStateForGroup : menuItems.count - 1 from : desc];
       }
    }
@@ -158,9 +291,15 @@ using CernAPP::ItemStyle;
    return YES;
 }
 
+
 //________________________________________________________________________________________
 - (BOOL) loadLIVESection : (NSDictionary *) desc
 {
+   //This is 'ad-hoc' solution, it's based on an old CERNLive.plist from app. v.1
+   //and the code to read this plist and create content providers.
+   
+   //LIVE is a top-level menu-group with (probably) nested menu-groups.
+
    assert(desc != nil && "loadLIVESection:, parameter 'desc' is nil");
    
    id objBase = desc[@"Category name"];
@@ -180,6 +319,9 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (BOOL) loadStaticInfo : (NSDictionary *) desc
 {
+   //This is another 'ad-hoc' menu-group, base on StaticInformation.plist from
+   //v.1 of our app. This menu-group can have nested sub-groups.
+
    assert(desc != nil && "loadStaticInfo, parameter 'desc' is nil");
 
    id objBase = desc[@"Category name"];
@@ -247,152 +389,6 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (BOOL) loadSeparator : (NSDictionary *) desc
-{
-   assert(desc != nil && "loadSeparator:, parameter 'desc' is nil");
-   
-   id objBase = desc[@"Category name"];
-   assert(objBase != nil && [objBase isKindOfClass : [NSString class]] &&
-          "loadSeparator:, 'Category name' either not found or has a wrong type");
-   
-   if ([(NSString *)objBase isEqualToString : @"Separator"]) {
-      MenuSeparator * const separator = [[MenuSeparator alloc] init];
-      [separator addMenuItemViewInto : scrollView controller : self];
-      [menuItems addObject : separator];
-      return YES;
-   }
-   
-   return NO;
-}
-
-//________________________________________________________________________________________
-- (BOOL) loadPhotos : (NSDictionary *) desc into : (NSMutableArray *) items
-{
-   assert(desc != nil && "loadPhotos:into:, parameter 'desc' is nil");
-   assert(items != nil && "loadPhotos:into:, parameter 'items' is nil");
-   
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadPhotos:into:, 'Category name' not found or has a wrong type");
-   
-   if (![(NSString *)desc[@"Category name"] isEqualToString:@"PhotoSet"])
-      return NO;
-
-   PhotoSetProvider * const provider = [[PhotoSetProvider alloc] initWithDictionary : desc];
-   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-   [items addObject : menuItem];
-   
-   return YES;
-}
-
-//________________________________________________________________________________________
-- (BOOL) loadLatestVideos : (NSDictionary *) desc into : (NSMutableArray *) items
-{
-   assert(desc != nil && "loadLatestVideos:into:, parameter 'desc' is nil");
-   assert(items != nil && "loadLatestVideos:into:, parameter 'items' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadLatestVideos:into:, 'Category name' not found or has a wrong type");
-
-   if (![(NSString *)desc[@"Category name"] isEqualToString : @"LatestVideos"])
-      return NO;
-
-   LatestVideosProvider * const provider = [[LatestVideosProvider alloc] initWithDictionary : desc];
-   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-   [items addObject : menuItem];
-   
-   return YES;
-}
-
-//________________________________________________________________________________________
-- (BOOL) loadPhotosAndVideos : (NSDictionary *) desc
-{
-   assert(desc != nil && "loadPhotosAndVideos:, parameter 'desc' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadPhotosAndVideos:, 'Category name' either not found or has a wrong type");
-   
-   if (![(NSString *)desc[@"Category name"] isEqualToString : @"PhotosVideosSection"])
-      return NO;
-
-   id obj = desc[@"Items"];
-   if (obj) {
-      assert([obj isKindOfClass:[NSArray class]] && "loadPhotosAndVideos:, 'Items' has a wrong type");
-      NSArray * const items = (NSArray *)obj;
-      if (items.count) {
-         assert([desc[@"Name"] isKindOfClass : [NSString class]] &&
-                "loadPhotosAndVideos:, 'Name' is not found or has a wrong type");
-   
-         NSMutableArray * const groupItems = [[NSMutableArray alloc] init];
-         for (obj in items) {
-            if ([self loadPhotos : (NSDictionary *)obj into : groupItems])
-               continue;
-            if ([self loadLatestVideos:(NSDictionary *)obj into : groupItems])
-               continue;
-         }
-         
-         [self addMenuGroup : (NSString *)desc[@"Name"] withImage : [self loadItemImage : desc] forItems : groupItems];
-         [self setStateForGroup : menuItems.count - 1 from : desc];
-      }
-   }
-   
-   return YES;
-}
-
-//________________________________________________________________________________________
-- (BOOL) loadBulletin : (NSDictionary *) desc
-{
-   assert(desc != nil && "loadBulletin:, parameter 'desc' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadBulletin:, 'Category name' not found or has a wrong type");
-   
-   if (![(NSString *)desc[@"Category name"] isEqualToString : @"Bulletin"])
-      return NO;
-   
-   BulletinProvider * const provider = [[BulletinProvider alloc] initWithDictionary : desc];
-   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-   [menuItems addObject : menuItem];
-   [menuItem addMenuItemViewInto : scrollView controller : self];
-   menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
-   
-   return YES;
-}
-
-//________________________________________________________________________________________
-- (void) addBulletin : (NSDictionary *) desc into : (NSMutableArray *) items
-{
-   assert(desc != nil && "addBulletin:into:, parameter 'desc' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "addBulletin:into:, 'Category name' not found or has a wrong type");
-   
-   assert([(NSString *)desc[@"Category name"] isEqualToString : @"Bulletin"] &&
-          "addBulletin:into, 'Category name' is expected to be 'Bulletin'");
-
-   BulletinProvider * const provider = [[BulletinProvider alloc] initWithDictionary : desc];
-   MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-   [items addObject : menuItem];
-}
-
-//________________________________________________________________________________________
-- (BOOL) loadStandaloneItem : (NSDictionary *) desc
-{
-   assert(desc != nil && "loadStandaloneItem:, parameter 'desc' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadAppSettingsMenu:, 'Category name' not found or has a wrong type");
-   
-   NSString * const catName = (NSString *)desc[@"Category name"];
-   
-   if ([catName isEqualToString : @"ModalViewItem"]) {
-      ModalViewProvider * const provider = [[ModalViewProvider alloc] initWithDictionary : desc];
-      MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-      [menuItems addObject : menuItem];
-      [menuItem addMenuItemViewInto : scrollView controller : self];
-      menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
-      
-      return YES;
-   }
-   
-   return NO;
-}
-
-//________________________________________________________________________________________
 - (void) setMenuGeometryHints
 {
    CGFloat whRatio = 0.f;
@@ -443,27 +439,25 @@ using CernAPP::ItemStyle;
       assert([entryBase isKindOfClass : [NSDictionary class]] &&
              "loadMenuContents, NSDictionary expected for menu item(s)");
       
-      if ([self loadNewsSection : (NSDictionary *)entryBase])
+      //Menu-groups:
+      if ([self loadMenuGroup : (NSDictionary *) entryBase])
          continue;
-      
       if ([self loadLIVESection : (NSDictionary *)entryBase])
          continue;
-      
       if ([self loadStaticInfo : (NSDictionary *)entryBase])
          continue;
-      
-      if ([self loadSeparator : (NSDictionary *)entryBase])
-         continue;
 
-      if ([self loadPhotosAndVideos : (NSDictionary *)entryBase])
-         continue;
-      
-      if ([self loadBulletin : (NSDictionary *)entryBase])
-         continue;
-
+      //Stand-alone non-group items:
       if ([self loadStandaloneItem : (NSDictionary *)entryBase])
          continue;
-
+      if ([self loadSeparator : (NSDictionary *)entryBase])
+         continue;
+      if ([self loadBulletin : (NSDictionary *)entryBase into : menuItems])
+         continue;
+      if ([self loadPhotoSet : (NSDictionary *)entryBase into : menuItems])
+         continue;
+      if ([self loadVideoSet : (NSDictionary *)entryBase into : menuItems])
+         continue;
       //Webcasts.
    }
    

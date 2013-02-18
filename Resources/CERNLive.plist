@@ -10,6 +10,8 @@
 			<key>Tweets</key>
 			<array>
 				<dict>
+					<key>Category name</key>
+					<string>Tweet</string>
 					<key>Url</key>
 					<string>http://api.twitter.com/1/statuses/user_timeline.rss?screen_name=LHCBExperiment</string>
 					<key>Name</key>
@@ -61,6 +63,8 @@
 			<key>Tweets</key>
 			<array>
 				<dict>
+					<key>Category name</key>
+					<string>Tweet</string>
 					<key>Url</key>
 					<string>http://api.twitter.com/1/statuses/user_timeline.rss?screen_name=ALICEexperiment</string>
 					<key>Name</key>
@@ -128,6 +132,8 @@
 			<key>Tweets</key>
 			<array>
 				<dict>
+					<key>Category name</key>
+					<string>Tweet</string>
 					<key>Url</key>
 					<string>http://api.twitter.com/1/statuses/user_timeline.rss?screen_name=ATLASexperiment</string>
 					<key>Name</key>
@@ -196,6 +202,8 @@
 			<key>Tweets</key>
 			<array>
 				<dict>
+					<key>Category name</key>
+					<string>Tweet</string>
 					<key>Url</key>
 					<string>http://api.twitter.com/1/statuses/user_timeline.rss?screen_name=CMSexperiment</string>
 					<key>Name</key>

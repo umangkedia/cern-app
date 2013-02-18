@@ -35,45 +35,58 @@
    NSArray * const menuContents = (NSArray *)objBase;
    assert(menuContents.count != 0 && "viewDidLoad, menu contents array is empty");
 
+   //We are looking either tweet or news feed in our list.
+   NSDictionary *feedDict = nil;
+
    for (id item in menuContents) {
-      assert([item isKindOfClass : [NSDictionary class]] && "loadFirstNewsFeed:, item has a wrong type");
-      NSDictionary * const itemDict = (NSDictionary *)item;
-      
-      id objBase = itemDict[@"Category name"];
+      assert([item isKindOfClass : [NSDictionary class]] && "loadFirstNewsFeed:, item in an array has a wrong type");
+      NSDictionary * const menuItemDict = (NSDictionary *)item;
+
+      id objBase = menuItemDict[@"Category name"];
       assert([objBase isKindOfClass : [NSString class]] &&
              "loadFirstNewsFeed:, 'Category Name' either not found, or has a wrong type");
    
       NSString * const catName = (NSString *)objBase;
 
-      if (![catName isEqualToString : @"News"])
-         continue;
-      
-      objBase = itemDict[@"Feeds"];
-      if (objBase) {
-         assert([objBase isKindOfClass : [NSArray class]] &&
-                "loadFirstNewsFeed:, 'Feeds' has a wrong type");
-         NSArray * const feeds = (NSArray *)objBase;
-         for (id info in feeds) {
-            assert([info isKindOfClass : [NSDictionary class]] &&
-                   "loadFirstNewsFeed:, feed info must be a dictionary");
-            NSDictionary * const feedInfo = (NSDictionary *)info;
-            
-            if (!feedInfo[@"Category name"]) {
-               //Simple news feed does not have a 'Category name' property.
-               assert([feedInfo[@"Name"] isKindOfClass : [NSString class]] &&
-                      "loadFirstNewsFeed:, 'Name' not found or has a wrong type");
-               assert([feedInfo[@"Url"] isKindOfClass : [NSString class]] &&
-                      "loadFirstNewsFeed:, 'Url' not found or has a wrong type");
-               
-               tableController.navigationItem.title = (NSString *)feedInfo[@"Name"];
-               [tableController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedInfo[@"Url"]]];
-               tableController.feedStoreID = (NSString *)feedInfo[@"Name"];
+      if ([catName isEqualToString : @"Feed"] || [catName isEqualToString : @"Tweet"]) {
+         //It's a feed at the top level.
+         feedDict = menuItemDict;
+      } else if ([catName isEqualToString : @"Menu group"]) {
+         //Scan the menu group for a tweet.
+         assert([menuItemDict[@"Items"] isKindOfClass : [NSArray class]] &&
+                "loadFirstNewsFeed:, 'Items' not found or has a wrong type");
 
-               return;
+         NSArray * const groupItems = (NSArray *)menuItemDict[@"Items"];
+         for (id info in groupItems) {
+            assert([info isKindOfClass : [NSDictionary class]] &&
+                   "loadFirstNewsFeed:, item has a wrong type");
+
+            NSDictionary * const childItemInfo = (NSDictionary *)info;
+            assert([childItemInfo[@"Category name"] isKindOfClass : [NSString class]] &&
+                   "'Category name' not found or has a wrong type");
+
+            NSString * const childCategoryName = (NSString *)childItemInfo[@"Category name"];
+            if ([childCategoryName isEqualToString : @"Feed"] || [childCategoryName isEqualToString : @"Tweet"]) {
+               feedDict = childItemInfo;
+               break;
             }
          }
       }
+
+      if (feedDict)
+         break;
    }
+
+   assert(feedDict != nil && "loadFirstNewsFeed:, no feed/tweet found");
+   
+   assert([feedDict[@"Name"] isKindOfClass : [NSString class]] &&
+          "loadFirstNewsFeed:, 'Name' not found or has a wrong type");
+   assert([feedDict[@"Url"] isKindOfClass : [NSString class]] &&
+          "loadFirstNewsFeed:, 'Url' not found or has a wrong type");
+               
+   tableController.navigationItem.title = (NSString *)feedDict[@"Name"];
+   tableController.feedStoreID = (NSString *)feedDict[@"Name"];
+   [tableController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedDict[@"Url"]]];
 }
 
 //________________________________________________________________________________________

@@ -9,9 +9,11 @@
 			<integer>1</integer>
 			<key>Image name</key>
 			<string>cern_logo.png</string>
-			<key>Feeds</key>
+			<key>Items</key>
 			<array>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>180-stickynote@2x.png</string>
 					<key>Url</key>
@@ -20,6 +22,8 @@
 					<string>General</string>
 				</dict>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>140-gradhat.png</string>
 					<key>Url</key>
@@ -28,6 +32,8 @@
 					<string>For students</string>
 				</dict>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>163-glasses-1.png</string>
 					<key>Url</key>
@@ -36,6 +42,8 @@
 					<string>For scientists</string>
 				</dict>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>112-group@2x.png</string>
 					<key>Url</key>
@@ -44,6 +52,8 @@
 					<string>For staff</string>
 				</dict>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>18-puzzle@2x.png</string>
 					<key>Url</key>
@@ -52,6 +62,8 @@
 					<string>Opinion pieces</string>
 				</dict>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>124-bullhorn@2x.png</string>
 					<key>Url</key>
@@ -70,6 +82,8 @@
 					<string>bulletin.png</string>
 				</dict>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>389-flash@2x.png</string>
 					<key>Url</key>
@@ -81,7 +95,7 @@
 			<key>Name</key>
 			<string>News</string>
 			<key>Category name</key>
-			<string>News</string>
+			<string>Menu group</string>
 		</dict>
 		<dict>
 			<key>Expanded</key>
@@ -120,22 +134,24 @@
 					<key>Image name</key>
 					<string>videos.png</string>
 					<key>Category name</key>
-					<string>LatestVideos</string>
+					<string>VideoSet</string>
 					<key>Name</key>
 					<string>Latest videos</string>
 				</dict>
 			</array>
 			<key>Category name</key>
-			<string>PhotosVideosSection</string>
+			<string>Menu group</string>
 			<key>Name</key>
 			<string>Photos and videos</string>
 		</dict>
 		<dict>
 			<key>Image name</key>
 			<string>more.png</string>
-			<key>Feeds</key>
+			<key>Items</key>
 			<array>
 				<dict>
+					<key>Category name</key>
+					<string>Feed</string>
 					<key>Image</key>
 					<string>jobs.png</string>
 					<key>Url</key>
@@ -147,7 +163,7 @@
 			<key>Expanded</key>
 			<integer>0</integer>
 			<key>Category name</key>
-			<string>News</string>
+			<string>Menu group</string>
 			<key>Name</key>
 			<string>More</string>
 		</dict>

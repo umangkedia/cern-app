@@ -36,7 +36,7 @@
 @property (nonatomic, strong) RSSAggregator *aggregator;
 @property (nonatomic, strong) NSMutableDictionary *imageDownloaders;
 @property (nonatomic) NSUInteger nLoadedImages;
-
+@property (nonatomic) BOOL isTwitterFeed;
 //
 @property (nonatomic, copy) NSString *feedStoreID;
 //

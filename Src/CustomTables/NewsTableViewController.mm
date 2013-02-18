@@ -53,7 +53,7 @@
    UIActivityIndicatorView *navBarSpinner;
 }
 
-@synthesize pageLoaded, aggregator, imageDownloaders, nLoadedImages, feedStoreID;
+@synthesize pageLoaded, aggregator, imageDownloaders, nLoadedImages, feedStoreID, isTwitterFeed;
 
 #pragma mark - Construction/destruction.
 
@@ -439,6 +439,8 @@
       [viewController setLink : (NSString *)[feedItem valueForKey : @"itemLink"]
                       title : (NSString *)[feedItem valueForKey : @"itemTitle"]];
       viewController.navigationItem.title = @"";
+      
+      viewController.canUseReadability = !isTwitterFeed;
       //
       viewController.articleID = [feedStoreID stringByAppendingString : (NSString *)[feedItem valueForKey : @"itemTitle"]];
       //
@@ -456,6 +458,8 @@
             //
             if (feedItem.title)
                viewController.articleID = [feedStoreID stringByAppendingString : feedItem.title];
+
+            viewController.canUseReadability = !isTwitterFeed;
             //
             [self.navigationController pushViewController : viewController animated : YES];
          } else {

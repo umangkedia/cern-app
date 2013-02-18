@@ -161,7 +161,7 @@ const NSUInteger fontIncreaseStep = 4;
    NSString *responseEncoding;
 }
 
-@synthesize rdbView, pageView, rdbCache, articleID, title;
+@synthesize rdbView, pageView, rdbCache, articleID, title, canUseReadability;
 
 //It has to be included here, since the file can contain
 //methods.
@@ -276,7 +276,7 @@ const NSUInteger fontIncreaseStep = 4;
       [self.view addSubview : spinner];
    }
    
-   if (articleID && [ArticleDetailViewController articleCached : articleID])
+   if (canUseReadability && articleID && [ArticleDetailViewController articleCached : articleID])
       [self getReadabilityCache];
 
    if (rdbCache && rdbCache.length) {
@@ -284,15 +284,20 @@ const NSUInteger fontIncreaseStep = 4;
       [self startSpinner];
       [self loadReadabilityCache];
    } else {
+      [self startSpinner];
+   
 #ifndef READABILITY_CONTENT_API_DEFINED
       [self switchToPageView];
-      [self startSpinner];
       [self loadOriginalPage];
 #else
-      [self switchToRdbView];
-      [self startSpinner];
-
-      [self loadHtmlFromReadability];
+      if (canUseReadability) {
+         [self switchToRdbView];
+         [self startSpinner];
+         [self loadHtmlFromReadability];
+      } else {
+         [self switchToPageView];
+         [self loadOriginalPage];
+      }
 #endif
    }
 }
@@ -493,7 +498,7 @@ const NSUInteger fontIncreaseStep = 4;
    
    for (NSString *component in components) {
       NSArray *pair = [component componentsSeparatedByString:@"="];
-      assert(pair.count == 2);
+      assert(pair.count == 2);//TODO: I had this assert once - check!
       if ([(NSString *)pair[0] isEqualToString : @"oauth_token_secret"])
          OAuthTokenSecret = (NSString *)pair[1];
       else if ([(NSString *)pair[0] isEqualToString : @"oauth_token"])
