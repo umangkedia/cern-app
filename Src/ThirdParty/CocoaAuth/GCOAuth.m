@@ -234,7 +234,7 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
    CFStringRef string = CFUUIDCreateString(0, uuid);
    CFRelease(uuid);
    
-   return (__bridge NSString *)string;
+   return (__bridge_transfer NSString *)string;
 }
 
 //________________________________________________________________________________________________
@@ -404,7 +404,7 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
                                                                  NULL,
                                                                  CFSTR("!*'();:@&=+$,/?%#[]"),
                                                                  kCFStringEncodingUTF8);
-    return (__bridge NSString *)string;
+    return (__bridge_transfer NSString *)string;
 }
 
 @end
