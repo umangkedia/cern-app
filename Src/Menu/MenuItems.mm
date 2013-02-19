@@ -1,3 +1,5 @@
+//Author: Timur Pocheptsov.
+
 #import <cassert>
 
 #import "StaticInfoScrollViewController.h"
@@ -42,7 +44,7 @@ CGFloat DefaultGUIFontSize()
    assert(provider != nil && "initWithTitle:contentProvider:, parameter 'provider' is nil");
    
    if (self = [super init]) {
-      itemTitle = provider.categoryName;// provider.categoryName;
+      itemTitle = provider.categoryName;
       contentProvider = provider;
    }
 

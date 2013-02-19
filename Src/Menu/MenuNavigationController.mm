@@ -6,6 +6,9 @@
 #import "ECSlidingViewController.h"
 #import "MenuViewController.h"
 
+//This controller is a base for all other controllers we load into the
+//sliding view controller (except trivial event displays, like CMS DAQ, etc.).
+
 @implementation MenuNavigationController
 
 //________________________________________________________________________________________
@@ -18,14 +21,14 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
-	// Do any additional setup after loading the view.
+	//Do any additional setup after loading the view.
 }
 
 //________________________________________________________________________________________
 - (void) didReceiveMemoryWarning
 {
    [super didReceiveMemoryWarning];
-   // Dispose of any resources that can be recreated.
+   //Dispose of any resources that can be recreated.
 }
 
 //________________________________________________________________________________________
@@ -38,25 +41,13 @@
    self.view.layer.shadowRadius = 10.f;
    self.view.layer.shadowColor = [UIColor blackColor].CGColor;
   
-//   self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect : self.view.frame].CGPath;
-//   self.view.layer.shadowPath = [UIBezierPath ]
-  
    if (![self.slidingViewController.underLeftViewController isKindOfClass : [MenuViewController class]])
-      self.slidingViewController.underLeftViewController  = [self.storyboard instantiateViewControllerWithIdentifier:@"Menu"];
+      self.slidingViewController.underLeftViewController  = [self.storyboard instantiateViewControllerWithIdentifier : @"Menu"];
 
    [self.view addGestureRecognizer : self.slidingViewController.panGesture];
 }
 
-//________________________________________________________________________________________
-- (void) cancelAnyConnections
-{
-   //Cancel all connections in the reversed range [top, self).
-   NSEnumerator * const enumerator = [self.viewControllers reverseObjectEnumerator];
-   for (id controller in enumerator) {
-      if ([controller respondsToSelector : @selector(cancelAnyConnections)])
-         [controller performSelector : @selector(cancelAnyConnections)];
-   }
-}
+#pragma mark - Interface orientation.
 
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
@@ -69,5 +60,19 @@
 {
    return [self.topViewController supportedInterfaceOrientations];
 }
+
+#pragma mark - ConnectionController.
+
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   //Cancel all connections in the reversed range [top, self).
+   NSEnumerator * const enumerator = [self.viewControllers reverseObjectEnumerator];
+   for (id controller in enumerator) {
+      if ([controller respondsToSelector : @selector(cancelAnyConnections)])
+         [controller performSelector : @selector(cancelAnyConnections)];
+   }
+}
+
 
 @end

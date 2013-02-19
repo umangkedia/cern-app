@@ -260,6 +260,10 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       if (groupItem.parentGroup) //Nested group.
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose_child.png"]];
       else {
+         //Unfortunately, these nice smooth shadows are very expensive, even
+         //if rasterized (unfortunately, we want our interface
+         //to rotate and this rotation is terribly jerky because of
+         //shadows).
          /*
          itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
          itemLabel.layer.shadowOffset = menuTextShadowOffset;

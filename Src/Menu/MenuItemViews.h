@@ -13,15 +13,16 @@
 namespace CernAPP {
 
 enum class ItemStyle {
-   standalone,
-   child,
-   separator
+   standalone,//View for a top-level item.
+   child,     //View for a member of a menu-group.
+   separator  //View for top-level separator.
 };
 
 }
 
 @class MenuViewController;
 
+//View for standalone items (also, child items in a group).
 @interface MenuItemView : UIView
 
 - (id) initWithFrame : (CGRect) frame item : (NSObject<MenuItemProtocol> *) item
@@ -40,7 +41,7 @@ enum class ItemStyle {
 
 @end
 
-//This is a group title.
+//View for a group item (title view).
 @interface MenuItemsGroupView : UIView
 
 - (id) initWithFrame : (CGRect) frame item : (MenuItemsGroup *) item

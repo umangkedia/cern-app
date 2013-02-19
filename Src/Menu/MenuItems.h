@@ -1,7 +1,6 @@
-#import <Foundation/Foundation.h>
+//Author: Timur Pocheptsov.
 
-//MenuItem is a cell in a special table view.
-//It can be selectable or not.
+#import <Foundation/Foundation.h>
 
 #import "ContentProviders.h"
 
@@ -11,7 +10,7 @@
 @class MenuItemView;
 
 //Protocol for menu items (not a class, not to
-//have stupid empty implementation)
+//have a stupid empty implementation)
 @protocol MenuItemProtocol <NSObject>
 @required
 
@@ -28,7 +27,7 @@
 @optional
 - (void) itemPressedIn : (UIViewController *) controller;
 
-//Since itemView also has a reference to menu item, reference is weak.
+//Since itemView also has a reference to menu item, this reference is weak.
 @property (nonatomic) __weak MenuItemsGroup *menuGroup;
 @property (nonatomic) __weak MenuItemView *itemView;
 
@@ -48,8 +47,8 @@
 - (CGFloat) layoutItemViewWithHint : (CGRect) frameHint;
 - (CGFloat) requiredHeight;
 
-- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
 - (void) setLabelFontSize : (CGFloat) sizeBase;
+- (void) setIndent : (CGFloat) indent imageHint : (CGSize) imageHint;
 
 - (void) itemPressedIn : (UIViewController *) controller;
 

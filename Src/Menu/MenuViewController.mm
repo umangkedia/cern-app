@@ -51,8 +51,8 @@ using CernAPP::ItemStyle;
           "setStateForGroup:from:, 'Expanded' is not found or has a wrong type");
    
    const NSInteger val = [(NSNumber *)desc[@"Expanded"] integerValue];
-   assert(!val || val == 1 || val == 2 && "setStateForGroup:from:, 'Expanded' can have a vlue only 0, 1 or 2");
-   
+   assert(val >= 0 && val <= 2 && "setStateForGroup:from:, 'Expanded' can have a vlue only 0, 1 or 2");
+
    if (!val) {
       group.collapsed = YES;
       group.containerView.hidden = YES;
@@ -145,7 +145,7 @@ using CernAPP::ItemStyle;
 //________________________________________________________________________________________
 - (BOOL) loadPhotoSet : (NSDictionary *) desc into : (NSMutableArray *) items
 {
-   //Both the top-level and nested item.
+   //Both a top-level and a nested item.
    
    //This is an 'ad-hoc' provider (it does a lot of special work to find
    //images in our quite  special sources).
@@ -157,7 +157,7 @@ using CernAPP::ItemStyle;
    
    if (![(NSString *)desc[@"Category name"] isEqualToString : @"PhotoSet"])
       return NO;
-   
+
    PhotoSetProvider * const provider = [[PhotoSetProvider alloc] initWithDictionary : desc];
    MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
    [items addObject : menuItem];
@@ -176,7 +176,7 @@ using CernAPP::ItemStyle;
 
    assert(desc != nil && "loadVideoSet:into:, parameter 'desc' is nil");
    assert(items != nil && "loadVideoSet:into:, parameter 'items' is nil");
-   assert([desc[@"Category name"] isKindOfClass:[NSString class]] &&
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
           "loadVideoSet:into:, 'Category name' not found or has a wrong type");
    
    if (![(NSString *)desc[@"Category name"] isEqualToString : @"VideoSet"])
@@ -227,7 +227,7 @@ using CernAPP::ItemStyle;
       menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
       
       return YES;
-   }
+   } //In a future I can have, for example, NavigationViewItem, and (possibly) with parameters.
    
    return NO;
 }

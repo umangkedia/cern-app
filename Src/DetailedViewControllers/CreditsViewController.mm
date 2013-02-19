@@ -37,8 +37,6 @@
    [self addDevelopersInfo];
    [self addReadabilityInfo];
    
-  // [self addIconsInfo];
-   
    [self addComponentInfo : @"\nECSlidingViewController:" licenseFile : @"ECSlidingViewControllerLicense" author : @"Michael Enriquez"];
    [self addComponentInfo : @"\nMWFeedParser:" licenseFile : @"MWFeedParserLicense" author : @"Michael Waterfall"];
    [self addComponentInfo : @"\nMWPhotoBrowser:" licenseFile : @"MWPhotoBrowserLicense" author : @"Michael Waterfall"];
