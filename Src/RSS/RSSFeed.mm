@@ -33,6 +33,14 @@
 }
 
 //________________________________________________________________________________________
+- (void) dealloc
+{
+   if ([parser isParsing])
+      [parser stopParsing];
+   parser = nil;
+}
+
+//________________________________________________________________________________________
 - (void) refresh
 {
    articles = [NSMutableArray array];
@@ -78,7 +86,11 @@
 {
    if ([parser isParsing])
       [parser stopParsing];
-   
+}
+
+//________________________________________________________________________________________
+- (void) releaseParser
+{
    parser = nil;
 }
 

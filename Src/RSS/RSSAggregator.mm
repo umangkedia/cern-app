@@ -24,18 +24,16 @@
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
 {
-   #pragma unused(current)
+#pragma unused(current)
 
    using CernAPP::NetworkStatus;
 
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       if (feedLoadCount) {
-         //[self cancelLoading];
+         //We were still loading, now let the delegate know
+         //and process this error as it wants.
          [self stopAggregator];
          [self cancelLoading];
-
-         if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
-            [delegate aggregator : self didFailWithError : @"No network"];
 
          if (delegate && [delegate respondsToSelector : @selector(lostConnection:)])
             [delegate lostConnection : self];
@@ -71,6 +69,7 @@
 - (void) dealloc
 {
    [self stopAggregator];
+   [self releaseParser];
    [internetReach stopNotifier];
    [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
@@ -136,7 +135,9 @@
    assert(feedLoadCount != 0 && "feedDidLoad:, no feeds are loading");
    assert(feed != nil && "feedDidLoad:, parameter 'feed' is nil");
 
-   // Keep track of how many feeds have loaded after refreshAllFeeds was called, and after all feeds have loaded, inform the delegate.
+   //Keep the track of how many feeds have loaded after refreshAllFeeds
+   //was called, and after all feeds have loaded, inform the delegate.
+
    if (--feedLoadCount == 0) {
       allArticles = [self aggregate];
       if (delegate && [delegate respondsToSelector : @selector(allFeedsDidLoadForAggregator:)])
@@ -147,6 +148,8 @@
 //________________________________________________________________________________________
 - (void) feed : (RSSFeed *) feed didFailWithError : (NSError *)error
 {
+#pragma unused(feed, error)
+
    assert(feedLoadCount != 0 && "feed:didFailWithError:, no feeds were loading");
    assert(feedFailCount < feeds.count && "feed:didFailWithError:, number of failed loads > number of feeds");
    assert(feed != nil && "feed:didFailWithError:, parameter 'feed' is nil");
@@ -158,7 +161,7 @@
       feedLoadCount = 0;
       //All feeds failed to load.
       if (delegate && [delegate respondsToSelector : @selector(aggregator:didFailWithError:)])
-         [delegate aggregator : self didFailWithError : @"Load error"];//[error description]];//Error messages from MWFeedParser are bad.
+         [delegate aggregator : self didFailWithError : @"Network error"];//[error description]];//Error messages from MWFeedParser are bad.
       [self cancelLoading];
    } else if (!feedLoadCount) {
       //Even if some feed was not loaded, still, some feeds are ok.
@@ -208,6 +211,15 @@
    //I do not care in what state we now.
    for (RSSFeed * feed in feeds)
       [feed stopParsing];
+}
+
+//________________________________________________________________________________________
+- (void) releaseParser
+{
+   //This one is called when controller is deleted,
+   //I do not care in what state we now.
+   for (RSSFeed * feed in feeds)
+      [feed releaseParser];
 }
 
 //________________________________________________________________________________________

@@ -31,8 +31,6 @@
 - (void) reloadPage;
 - (void) reloadPageFromRefreshControl;
 
-
-@property (nonatomic) BOOL pageLoaded;
 @property (nonatomic, strong) RSSAggregator *aggregator;
 @property (nonatomic, strong) NSMutableDictionary *imageDownloaders;
 @property (nonatomic) NSUInteger nLoadedImages;

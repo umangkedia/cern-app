@@ -31,5 +31,6 @@
 - (void) refresh;
 
 - (void) stopParsing;
+- (void) releaseParser;
 
 @end

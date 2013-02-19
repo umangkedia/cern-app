@@ -191,8 +191,6 @@
       
       [self.tableView reloadData];
    }
-
-   self.pageLoaded = YES;
 }
 
 //________________________________________________________________________________________
@@ -211,7 +209,6 @@
    [spinner stopAnimating];
    [spinner setHidden : YES];
    [self.refreshControl  endRefreshing];
-   self.pageLoaded = NO;
 }
 
 #pragma mark - Table view delegate

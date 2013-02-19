@@ -21,21 +21,41 @@
    BOOL usingCache;
    
    UIActivityIndicatorView *navBarSpinner;
+   BOOL firstViewDidAppear;
 }
 
-@synthesize pageLoaded, aggregator, imageDownloaders, nLoadedImages, feedStoreID, isTwitterFeed;
+@synthesize aggregator, imageDownloaders, nLoadedImages, feedStoreID, isTwitterFeed;
 
 #pragma mark - Construction/destruction.
 
 //________________________________________________________________________________________
+- (void) doInitTableViewController
+{
+   //Data in Obj-C's object is zero-filled,
+   //but still I prefer explicit initialization here
+   //(and some ivars/props are not 0).
+
+   allArticles = nil;
+   feedCache = nil;
+   usingCache = NO;
+   navBarSpinner = nil;
+   firstViewDidAppear = YES;
+   
+   canUseCache = YES;
+
+   aggregator = [[RSSAggregator alloc] init];
+   aggregator.delegate = self;
+
+   imageDownloaders = nil;
+   nLoadedImages = 0;
+   isTwitterFeed = NO;
+}
+
+//________________________________________________________________________________________
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
 {
-   if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
-      pageLoaded = NO;
-      aggregator = [[RSSAggregator alloc] init];
-      aggregator.delegate = self;
-      canUseCache = YES;
-   }
+   if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil])
+      [self doInitTableViewController];
 
    return self;
 }
@@ -44,12 +64,8 @@
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
-   if (self = [super initWithCoder : aDecoder]) {
-      pageLoaded = NO;
-      aggregator = [[RSSAggregator alloc] init];
-      aggregator.delegate = self;
-      canUseCache = YES;
-   }
+   if (self = [super initWithCoder : aDecoder])
+      [self doInitTableViewController];
 
    return self;
 }
@@ -57,12 +73,8 @@
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
 {
-   if (self = [super initWithStyle : style]) {
-      pageLoaded = NO;
-      aggregator = [[RSSAggregator alloc] init];
-      aggregator.delegate = self;
-      canUseCache = YES;
-   }
+   if (self = [super initWithStyle : style])
+      [self doInitTableViewController];
 
    return self;
 }
@@ -72,23 +84,27 @@
 //________________________________________________________________________________________
 - (void) viewDidLoad
 {
-   using CernAPP::spinnerSize;
+   //This method is called once somewhere at the beginning,
+   //we do some additional setup here.
 
    [super viewDidLoad];
 
    self.tableView.showsHorizontalScrollIndicator = NO;
    self.tableView.showsVerticalScrollIndicator = NO;
+   
+   //Allocate/initialize UIActivityIndicatorView to show at the center of a tableview:
+   //only the first time the table is loading (and if we do not have our feed in cache -
+   //in this case activity indicator will be in a navigation bar).
 
-   [self.tableView reloadData];
-   
+   using CernAPP::spinnerSize;
    const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
-   
    spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
    spinner.color = [UIColor grayColor];
    [self.view addSubview : spinner];
-   
    [spinner setHidden : YES];
    
+   //Nice refresh control at the top of a table-view (this shit kills application
+   //if combined with empty footer view, which is a standard trick to hide empty rows).
    self.refreshControl = [[UIRefreshControl alloc] init];
    [self.refreshControl addTarget : self action : @selector(reloadPageFromRefreshControl) forControlEvents : UIControlEventValueChanged];
 }
@@ -97,11 +113,18 @@
 - (void) viewDidAppear : (BOOL)animated
 {
    [super viewDidAppear : animated];
-   
-   if (!pageLoaded) {
+
+   //viewDidAppear can be called many times: the first time when controller
+   //created and view loaded, next time - for example, when article detailed view
+   //controller is poped from the navigation stack.
+
+   if (firstViewDidAppear) {
+      firstViewDidAppear = NO;
       //read a cache?
-      if (canUseCache)
+      if (canUseCache && feedStoreID)
          usingCache = [self readCache];
+      //May be, we have a cache already.
+      [self.tableView reloadData];
       [self reloadPage];
    }
 }
@@ -110,6 +133,8 @@
 - (void) viewWillAppear : (BOOL) animated
 {
    [super viewWillAppear : animated];
+   
+   //UITableView shows empty rows, though I did not ask it to do this.
    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
@@ -118,6 +143,8 @@
 {
    [super didReceiveMemoryWarning];
    // Dispose of any resources that can be recreated.
+   //TODO: memory warning??? Try to release images?
+   //Remove the controller at all? What else?
 }
 
 #pragma mark - Aux. methods to work with aggregators/articles.
@@ -143,8 +170,8 @@
 //________________________________________________________________________________________
 - (void) reloadPageFromRefreshControl
 {
-   if (self.aggregator.isLoadingData) {
-      //Do not try to reload if we are still loading.
+   if (aggregator.isLoadingData) {
+      //Do not try to reload if aggregator is still working.
       [self.refreshControl endRefreshing];
       return;
    }
@@ -152,6 +179,7 @@
    if (!aggregator.hasConnection) {
       CernAPP::ShowErrorAlert(@"Please, check network", @"Close");
       [self.refreshControl endRefreshing];
+
       if (spinner.isAnimating)
          [spinner stopAnimating];
       if (!spinner.isHidden)
@@ -165,7 +193,7 @@
 //________________________________________________________________________________________
 - (void) reloadPage
 {
-   if (self.aggregator.isLoadingData)
+   if (aggregator.isLoadingData)
       return;
 
    [self reloadPageShowHUD : YES];
@@ -174,30 +202,31 @@
 //________________________________________________________________________________________
 - (void) reloadPageShowHUD : (BOOL) show
 {
-   if (self.aggregator.isLoadingData)
+   //This function is called either the first time we are loading table
+   //(if we have a cache, we show spinner in a nav-bar, if no - in the center),
+   //and it can be also called after 'pull-refresh', in this case, we do not show
+   //spinner (it's done by refreshControl).
+
+   if (aggregator.isLoadingData)
       return;
+   
+   //Stop any image download if we have any.
+   [self cancelAllImageDownloaders];
 
    if (!aggregator.hasConnection) {
-      if (!usingCache) {
-         [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
-         noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
-         noConnectionHUD.mode = MBProgressHUDModeText;
-         noConnectionHUD.labelText = @"No network";
-         noConnectionHUD.removeFromSuperViewOnHide = YES;
-      } else {
-         //We still can reload the table using the "cached" feed.
-         pageLoaded = YES;//????
-         [self.tableView reloadData];
-         CernAPP::ShowErrorAlert(@"Please, check network connection", @"Close");
+      //Network problems, we can not reload
+      //and do not have any previous data to show.
+      if (!usingCache && !allArticles.count) {
+         [self showErrorHUD];
+         return;
       }
-      return;
    }
-   
-   [self cancelAllImageDownloaders];
 
    [noConnectionHUD hide : YES];
    
    if (show) {
+      //HUD: either spinner in the center
+      //or spinner in a navigation bar.
       if (!usingCache) {
          [spinner setHidden : NO];
          [spinner startAnimating];
@@ -208,9 +237,11 @@
 
    [self.aggregator clearAllFeeds];
    
-   [allArticles removeAllObjects];
-   [self.tableView reloadData];
-   //It will re-parse feed and show load indicator.
+   //Before I was reloading the table, now, I do not touch
+   //allArticles/tableView - they are valid until our feed
+   //is re-parsed.
+   
+   //It will re-parse feed and (probably) re-fill the table view.
    [self.aggregator refreshAllFeeds];
 }
 
@@ -248,33 +279,27 @@
    if (![cell.selectedBackgroundView isKindOfClass : [CellBackgroundView class]])
       cell.backgroundView = [[CellBackgroundView alloc] initWithFrame : CGRect()];
 
+   const NSInteger row = indexPath.row;
+
    if (usingCache) {
-      const NSInteger row = indexPath.row;
       assert(row >= 0 && row < feedCache.count);
 
-
-      NSManagedObject * const feedItem = feedCache[row];
-
-      //[cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
+      NSManagedObject * const feedItem = (NSManagedObject *)feedCache[row];
       [cell setCellData : [feedItem valueForKey : @"itemTitle"] source : [feedItem valueForKey : @"itemLink"]
                           image : nil imageOnTheRight : NO date : (NSDate *)[feedItem valueForKey : @"itemDate"]];
-      
-      return cell;
    } else {
-      //Find feed item first.
-      const NSInteger row = indexPath.row;
       assert(row >= 0 && row < allArticles.count);
 
-      MWFeedItem * const article = [allArticles objectAtIndex : row];
+      MWFeedItem * const article = (MWFeedItem *)allArticles[row];
       assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
 
       [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
-      
+
       if (!article.image)
          [self startIconDownloadForIndexPath : indexPath];
-
-      return cell;
    }
+
+   return cell;
 }
 
 //________________________________________________________________________________________
@@ -283,21 +308,21 @@
 #pragma unused(tableView)
 
    assert(indexPath != nil && "tableView:heightForRowAtIndexPath:, parameter 'indexPath' is nil");
-   
+
+   const NSInteger row = indexPath.row;
+
    if (usingCache) {
-      const NSInteger row = indexPath.row;
       assert(row >= 0 && row < feedCache.count && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
-      NSManagedObject * const feedItem = feedCache[row];
+      NSManagedObject * const feedItem = (NSManagedObject *)feedCache[row];
       return [NewsTableViewCell calculateCellHeightForText : [feedItem valueForKey : @"itemTitle"]
                                 source : [feedItem valueForKey : @"itemLink"]
                                 image : nil
                                 imageOnTheRight : NO];
    } else {
-      const NSInteger row = indexPath.row;
       assert(row >= 0 && row < allArticles.count && "tableView:heightForRowAtIndexPath:, indexPath.row is out of bounds");
 
-      MWFeedItem * const article = [allArticles objectAtIndex : row];
+      MWFeedItem * const article = (MWFeedItem *)allArticles[row];
       return [NewsTableViewCell calculateCellHeightForData : article imageOnTheRight : (indexPath.row % 4) == 3];
    }
 }
@@ -310,61 +335,32 @@
    assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
 
    [self copyArticlesFromAggregator];
+   //
    [self writeCache];
 
-   if (!usingCache) {
-      [spinner stopAnimating];
-      [spinner setHidden : YES];
-   } else {
-      [self hideNavBarSpinner];
-   }
-   
+   [self hideActivityIndicators];
+
    usingCache = NO;
 
-   [self.refreshControl endRefreshing];
-   [self.tableView reloadData];
-   pageLoaded = YES;
+   [self.refreshControl endRefreshing];//well, if we have it active.
+   [self.tableView reloadData];//we have new articles, now we can reload the table.
 }
 
 //________________________________________________________________________________________
 - (void) aggregator : (RSSAggregator *) anAggregator didFailWithError : (NSString *) error
 {
-#pragma unused(anAggregator)
+#pragma unused(anAggregator, error)
 
-   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+   [self hideActivityIndicators];
 
-   if (usingCache) {
+   if (usingCache || allArticles.count) {
+      //We have either cache, or articles from the previous parse.
+      //Do not use HUD (which hides the table's contents), just
+      //show an alert.
       CernAPP::ShowErrorAlert(@"Please, check network connection", @"Close");
-      [self hideNavBarSpinner];
    } else {
-      noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
-      noConnectionHUD.mode = MBProgressHUDModeText;
-      if (error)
-         noConnectionHUD.labelText = error;
-      else
-         noConnectionHUD.labelText = @"Load error";
-      noConnectionHUD.removeFromSuperViewOnHide = YES;
-      
-      [spinner stopAnimating];
-      [spinner setHidden : YES];
-      [self.refreshControl  endRefreshing];
-      pageLoaded = NO;
+      [self showErrorHUD];
    }
-}
-
-//________________________________________________________________________________________
-- (void) aggregator : (RSSAggregator *) rssAggregator didDownloadFirstImage : (UIImage *) image forArticle : (MWFeedItem *) article
-{
-#pragma unused(rssAggregator, image)
-
-   const NSUInteger index = [allArticles indexOfObject : article];
-
-   assert(index != NSNotFound &&
-          "aggregator:didDownloadFirstImage:forArticle:, article is not found in a list of articles");
-
-   const NSUInteger path[2] = {0, index};
-   NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-   [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
 }
 
 //________________________________________________________________________________________
@@ -372,8 +368,12 @@
 {
 #pragma unused(rssAggregator)
    
-   pageLoaded = NO;
+   //Reachability reported network status change, while parser was still working.
+   //Show an alert message.
    CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+
+   if (!usingCache && !allArticles.count)
+      [self showErrorHUD];
 }
 
 #pragma mark - Table view delegate
@@ -385,16 +385,19 @@
 
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, index path for selected table's row is nil");
 
+   //Yes, it's possible to tap a table cell many times (while table is still reloading), this
+   //leads to the navigation stack corruption :(((
    if (self.navigationController.topViewController != self)
       return;
 
-   if (usingCache) {
-      //TODO: check readability cached + (if no cache) check the network connection.
-      const NSUInteger row = indexPath.row;
-      assert(row < feedCache.count && "tableView:didSelectRowAtIndexPath:, row is out of bounds");
+   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+   ArticleDetailViewController * const viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+   const NSUInteger row = indexPath.row;
 
-      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
-      ArticleDetailViewController * const viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+   if (usingCache) {
+      if (row >= feedCache.count)//Ooops, cell was tapped while refreshing???
+         return;
+
       NSManagedObject * const feedItem = feedCache[row];
       [viewController setLink : (NSString *)[feedItem valueForKey : @"itemLink"]
                       title : (NSString *)[feedItem valueForKey : @"itemTitle"]];
@@ -406,29 +409,22 @@
       //
       [self.navigationController pushViewController : viewController animated : YES];
    } else {
-      if (self.navigationController && !self.aggregator.isLoadingData) {
-         if (aggregator.hasConnection) {
-            UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+      if (row >= allArticles.count)//Ooops, cell was tapped while refreshing???
+         return;
 
-            ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-            const NSUInteger index = indexPath.row;
-            MWFeedItem * const feedItem = (MWFeedItem *)allArticles[index];
-            [viewController setContentForArticle : feedItem];
-            viewController.navigationItem.title = @"";
-            //
-            if (feedItem.title)
-               viewController.articleID = [feedStoreID stringByAppendingString : feedItem.title];
+      MWFeedItem * const feedItem = (MWFeedItem *)allArticles[row];
 
-            viewController.canUseReadability = !isTwitterFeed;
-            //
-            [self.navigationController pushViewController : viewController animated : YES];
-         } else {
-            CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-         }
-      }
-      
-      [tableView deselectRowAtIndexPath : indexPath animated : NO];
+      [viewController setContentForArticle : feedItem];
+      viewController.navigationItem.title = @"";
+
+      if (feedItem.title)
+         viewController.articleID = [feedStoreID stringByAppendingString : feedItem.title];
+
+      viewController.canUseReadability = !isTwitterFeed;
+      [self.navigationController pushViewController : viewController animated : YES];
    }
+
+   [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
 
 #pragma mark - Sliding view controller's "menu"
@@ -467,11 +463,13 @@
 
 #pragma mark - UIScrollView delegate.
 
-// Load images for all onscreen rows when scrolling is finished
+// Load images for all onscreen rows (if not done yet) when scrolling is finished
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL) decelerate
 {
 #pragma unused(scrollView)
+
+   //Cached feeds do not have any images.
    if (!usingCache) {
       if (!decelerate) {
          if (nLoadedImages != allArticles.count)
@@ -483,6 +481,9 @@
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
 {
+#pragma unused(scrollView)
+
+   //No images in a cached feed.
    if (!usingCache) {
       if (nLoadedImages != allArticles.count)
          [self loadImagesForOnscreenRows];
@@ -494,7 +495,9 @@
 //________________________________________________________________________________________
 - (void) startIconDownloadForIndexPath : (NSIndexPath *) indexPath
 {
+   assert(usingCache == NO && "startIconDownloadForIndexPath, controller is in a wrong mode");
    assert(indexPath != nil && "startIconDownloadForIndexPath:, parameter 'indexPath' is nil");
+   
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < allArticles.count &&
           "startIconDownloadForIndexPath:, index is out of bounds");
@@ -528,6 +531,8 @@
 //________________________________________________________________________________________
 - (void) loadImagesForOnscreenRows
 {
+   assert(usingCache == NO && "loadImagesForOnscreenRows, controller is in a wrong mode");
+
    if (allArticles.count) {
       NSArray * const visiblePaths = [self.tableView indexPathsForVisibleRows];
       for (NSIndexPath *indexPath in visiblePaths) {
@@ -540,10 +545,12 @@
 
 #pragma mark - ImageDownloaderDelegate.
 
-
 //________________________________________________________________________________________
 + (NSString *) firstImageURLFromHTMLString : (NSString *) htmlString
 {
+   //This trick/method is taken from the v.1 of our app.
+   //Author - Eamon Ford (with my modifications).
+
    if (!htmlString)
       return nil;
 
@@ -569,19 +576,19 @@
 //________________________________________________________________________________________
 - (void) imageDidLoad : (NSIndexPath *) indexPath
 {
-   //
+   assert(usingCache == NO && "imageDidLoad:, controller is in a wrong mode");
+
    assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
    const NSInteger row = indexPath.row;
    assert(row >= 0 && row < allArticles.count && "imageDidLoad:, index is out of bounds");
    
    MWFeedItem * const article = (MWFeedItem *)allArticles[row];
-   
    //We should not load any image more when once.
    assert(article.image == nil && "imageDidLoad:, image was loaded already");
    
    ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[indexPath];
    assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
-   
+
    if (downloader.image) {
       article.image = downloader.image;
       [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
@@ -594,10 +601,10 @@
 //________________________________________________________________________________________
 - (void) imageDownloadFailed : (NSIndexPath *) indexPath
 {
+   assert(usingCache == NO && "imageDownloadFailed:, controller is in a wrong mode");
    assert(indexPath != nil && "imageDownloadFailed:, parameter 'indexPath' is nil");
 
    const NSInteger row = indexPath.row;
-
    //Even if download failed, index still must be valid.
    assert(row >= 0 && row < allArticles.count &&
           "imageDownloadFailed:, index is out of bounds");
@@ -606,7 +613,6 @@
    
    ++nLoadedImages;//Still, we count this image.
    [imageDownloaders removeObjectForKey : indexPath];
-
    //But no need to update the tableView.
 }
 
@@ -615,10 +621,11 @@
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
+   //We never rotate news table view.
    return NO;
 }
 
-#pragma mark - Previously loaded feeds.
+#pragma mark - Persistent storage for a feed data.
 
 //________________________________________________________________________________________
 - (BOOL) readCache
@@ -678,8 +685,14 @@
          for (NSManagedObject *obj in feedCache) {
             [context deleteObject : obj];
          }
-         
-         feedCache = nil;
+
+         feedCache = nil;//Even if delete operation fails
+                         //still release the cache.
+
+         //NSError *error = nil;
+         //[context save : &error];
+
+         //TODO: handle the possible error somehow?
       }
 
       BOOL inserted = NO;
@@ -712,6 +725,19 @@
 #pragma mark - GUI
 
 //________________________________________________________________________________________
+- (void) hideActivityIndicators
+{
+   if (spinner.isAnimating)
+      [spinner stopAnimating];
+   
+   if (!spinner.isHidden)
+      [spinner setHidden : YES];
+
+   [self.refreshControl  endRefreshing];
+   [self hideNavBarSpinner];
+}
+
+//________________________________________________________________________________________
 - (void) addNavBarSpinner
 {
    navBarSpinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(0.f, 0.f, 20.f, 20.f)];
@@ -726,6 +752,16 @@
 {
    [navBarSpinner stopAnimating];
    self.navigationItem.rightBarButtonItem = nil;
+}
+
+//________________________________________________________________________________________
+- (void) showErrorHUD
+{
+   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"Network error";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
 @end
