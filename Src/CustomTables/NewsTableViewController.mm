@@ -395,7 +395,7 @@
    const NSUInteger row = indexPath.row;
 
    if (usingCache) {
-      if (row >= feedCache.count)//Ooops, cell was tapped while refreshing???
+      if (row >= feedCache.count)
          return;
 
       NSManagedObject * const feedItem = feedCache[row];
