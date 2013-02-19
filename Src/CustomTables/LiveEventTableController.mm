@@ -27,10 +27,12 @@ using CernAPP::NetworkStatus;
    NSArray *tableData;
    BOOL refreshing;
    
+   BOOL firstViewDidAppear;
+   
    Reachability *internetReach;
 }
 
-@synthesize pageLoaded, provider, navController;
+@synthesize provider, navController;
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
@@ -43,6 +45,7 @@ using CernAPP::NetworkStatus;
          connection = nil;
          imageData = nil;
          [self.refreshControl endRefreshing];
+
          CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
          refreshing = NO;
       }
@@ -72,7 +75,11 @@ using CernAPP::NetworkStatus;
 //________________________________________________________________________________________
 - (id) initWithStyle : (UITableViewStyle) style
 {
-   return self = [super initWithStyle : style];
+   if (self = [super initWithStyle : style]) {
+      firstViewDidAppear = YES;
+   }
+
+   return self;
 }
 
 //________________________________________________________________________________________
@@ -90,7 +97,6 @@ using CernAPP::NetworkStatus;
 
    tableData = contents;
    sourceName = name;
-   pageLoaded = NO;
    tableEntryToLoad = 0;
    flatRowIndex = 0;
    refreshing = NO;
@@ -108,13 +114,22 @@ using CernAPP::NetworkStatus;
    [internetReach startNotifier];
    [self reachabilityStatusChanged : internetReach];
    
-   if (!pageLoaded)
-      [self reloadPage];
-   
    if ([self.navigationItem.title rangeOfString : @"Live Events"].location != NSNotFound)//Otherwise, name is too long.
       self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle : @"Events" style : UIBarButtonItemStylePlain target : nil action : nil];
    else if ([self.navigationItem.title rangeOfString : @"Status"].location != NSNotFound)//Otherwise, name is too long.
       self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle : @"Status" style : UIBarButtonItemStylePlain target : nil action : nil];
+}
+
+//________________________________________________________________________________________
+- (void) viewDidAppear : (BOOL)animated
+{
+   [super viewDidAppear : animated];
+
+   if (!firstViewDidAppear) {
+      firstViewDidAppear = YES;
+      [self reloadPage];
+   }
+
 }
 
 #pragma mark - Aux. function to search image data for a given row index.
@@ -173,8 +188,6 @@ using CernAPP::NetworkStatus;
    
    if (refreshing)
       return;
-   
-   pageLoaded = NO;
    
    if ([tableData count] && [self hasConnection]) {
       refreshing = YES;
@@ -310,15 +323,8 @@ using CernAPP::NetworkStatus;
 {
    assert(provider != nil && "tableView:didSelectRowAtIndexPath:, provider is nil");
    assert(navController != nil && "tableView:didSelectRowAtIndexPath:, navController is nil");
-   //assert(indexPath.row >= 0 && indexPath.row < [tableData count] && "tableView:didSelectRowAtIndexPath:, indexPath.row is out of bounds");
 
    [self.tableView deselectRowAtIndexPath : indexPath animated : NO];
-   
-   if (![self hasConnection]) {
-      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-      return;
-   }
-
    [provider pushEventDisplayInto : navController selectedImage : indexPath.row];
 }
 
@@ -420,7 +426,6 @@ using CernAPP::NetworkStatus;
    } else {
       imageData = nil;
       connection = nil;
-      pageLoaded = YES;
       [self.refreshControl endRefreshing];
       refreshing = NO;
    }
@@ -458,7 +463,6 @@ using CernAPP::NetworkStatus;
    } else {
       imageData = nil;
       connection = nil;
-      pageLoaded = YES;
       flatRowIndex = 0;
       tableEntryToLoad = 0;
       [self.refreshControl endRefreshing];
