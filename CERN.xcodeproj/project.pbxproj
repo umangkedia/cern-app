@@ -191,7 +191,7 @@
 		70A2533E16BBED0F00F9898A /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A2533D16BBED0F00F9898A /* refresh.png */; };
 		70A2534016BBEF8F00F9898A /* bookmarks.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A2533F16BBEF8F00F9898A /* bookmarks.png */; };
 		70B0F11016A825750037907B /* BulletinTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F10F16A825750037907B /* BulletinTableViewController.mm */; };
-		70B0F11416A846850037907B /* BulletinViewCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F11316A846850037907B /* BulletinViewCell.mm */; };
+		70B0F11416A846850037907B /* CellBackgroundView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B0F11316A846850037907B /* CellBackgroundView.mm */; };
 		70B6B0B9169DD2790058DADA /* live_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0B8169DD2790058DADA /* live_color.png */; };
 		70B6B0BC169DD48E0058DADA /* news_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BB169DD48E0058DADA /* news_color.png */; };
 		70B6B0BE169DD6BE0058DADA /* cern_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BD169DD6BE0058DADA /* cern_logo.png */; };
@@ -484,8 +484,8 @@
 		70A2533F16BBEF8F00F9898A /* bookmarks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bookmarks.png; sourceTree = "<group>"; };
 		70B0F10E16A825750037907B /* BulletinTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinTableViewController.h; sourceTree = "<group>"; };
 		70B0F10F16A825750037907B /* BulletinTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinTableViewController.mm; sourceTree = "<group>"; };
-		70B0F11216A846850037907B /* BulletinViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinViewCell.h; sourceTree = "<group>"; };
-		70B0F11316A846850037907B /* BulletinViewCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinViewCell.mm; sourceTree = "<group>"; };
+		70B0F11216A846850037907B /* CellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundView.h; sourceTree = "<group>"; };
+		70B0F11316A846850037907B /* CellBackgroundView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CellBackgroundView.mm; sourceTree = "<group>"; };
 		70B6B0B8169DD2790058DADA /* live_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = live_color.png; sourceTree = "<group>"; };
 		70B6B0BB169DD48E0058DADA /* news_color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = news_color.png; sourceTree = "<group>"; };
 		70B6B0BD169DD6BE0058DADA /* cern_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cern_logo.png; sourceTree = "<group>"; };
@@ -918,8 +918,8 @@
 				70E06EAE16A800B400FE17D1 /* ConnectionController.h */,
 				70B0F10E16A825750037907B /* BulletinTableViewController.h */,
 				70B0F10F16A825750037907B /* BulletinTableViewController.mm */,
-				70B0F11216A846850037907B /* BulletinViewCell.h */,
-				70B0F11316A846850037907B /* BulletinViewCell.mm */,
+				70B0F11216A846850037907B /* CellBackgroundView.h */,
+				70B0F11316A846850037907B /* CellBackgroundView.mm */,
 				701F048A16ADE609007E9463 /* BulletinIssueTableViewController.h */,
 				701F048B16ADE609007E9463 /* BulletinIssueTableViewController.mm */,
 			);
@@ -1327,7 +1327,7 @@
 				709CE67116A59C8E006D524E /* PhotoGridViewCell.mm in Sources */,
 				700FAD5D16A7068200FED28D /* PhotoSetInfoView.mm in Sources */,
 				70B0F11016A825750037907B /* BulletinTableViewController.mm in Sources */,
-				70B0F11416A846850037907B /* BulletinViewCell.mm in Sources */,
+				70B0F11416A846850037907B /* CellBackgroundView.mm in Sources */,
 				701F048C16ADE609007E9463 /* BulletinIssueTableViewController.mm in Sources */,
 				700B978416AEB03D0006EAD3 /* ImageDownloader.mm in Sources */,
 				41B3D9C816B12D6000AF4463 /* MWCaptionView.m in Sources */,

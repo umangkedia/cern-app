@@ -10,6 +10,7 @@
 #import "ArticleDetailViewController.h"
 #import "BulletinTableViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "CellBackgroundView.h"
 #import "ApplicationErrors.h"
 #import "NewsTableViewCell.h"
 #import "MWFeedItem.h"
@@ -39,6 +40,14 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+}
+
+//________________________________________________________________________________________
+- (void) viewWillAppear : (BOOL) animated
+{
+   [super viewWillAppear : animated];
+   //Stupid table with stupid empty rows.
+   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 //________________________________________________________________________________________
@@ -95,6 +104,11 @@
    NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"BulletinIssueCell"];
    if (!cell)
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+   
+   //
+   if (![cell.selectedBackgroundView isKindOfClass : [CellBackgroundView class]])
+      cell.backgroundView = [[CellBackgroundView alloc] initWithFrame : CGRect()];
+   //
 
    [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
    

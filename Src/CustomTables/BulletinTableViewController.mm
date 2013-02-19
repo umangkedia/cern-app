@@ -11,8 +11,8 @@
 #import "BulletinIssueTableViewController.h"
 #import "BulletinTableViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "CellBackgroundView.h"
 #import "NewsTableViewCell.h"
-#import "BulletinViewCell.h"
 #import "GUIHelpers.h"
 
 @implementation BulletinTableViewController {
@@ -113,10 +113,8 @@
    if (!cell)
       cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
-   if (![cell.selectedBackgroundView isKindOfClass : [BackgroundView class]]) {   
-      BackgroundView * const sbv = [[BackgroundView alloc] initWithFrame:CGRect()];
-      cell.backgroundView = sbv;
-   }
+   if (![cell.selectedBackgroundView isKindOfClass : [CellBackgroundView class]])
+      cell.backgroundView = [[CellBackgroundView alloc] initWithFrame : CGRect()];
 
    NewsTableViewCell * const newsCell = (NewsTableViewCell *)cell;
    UIImage * const image = [thumbnails objectForKey : indexPath];

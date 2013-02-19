@@ -1,5 +1,5 @@
 //
-//  BulletinViewCell.h
+//  CellBackgroundView.h
 //  CERN
 //
 //  Created by Timur Pocheptsov on 1/17/13.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BackgroundView : UIView
+@interface CellBackgroundView : UIView
 
 @property (nonatomic) BOOL selectedView;
 

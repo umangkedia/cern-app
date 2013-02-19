@@ -1,30 +1,6 @@
 //Author: Timur Pocheptsov.
 //Developed for CERN app.
 
-//This is a code for a table view controller, which shows author, title, short content, date for
-//an every news item.
-//It can be used ONLY for iPhone/iPod touch device, for iPad we'll have different approach.
-
-//NewsTableViewController supports several protocols:
-//1. UITableViewDataSource - provide data/cells to show in a table;
-//2. UITableViewDelegate - react on user touches in a table;
-//3. RSSAggregatorDelegate - rss aggregator calls feed parser,
-//   loads articles, images, etc. informing its delegate
-//   about possible errors or success.
-//4. PageController - before we had MultiPageViewController, which could
-//   contain several tables as pages. Still, methods like reloadPage/reloadPageFromRefreshControl,
-//   pageLoaded property - are required.
-
-//
-//Life cycle and approx. calls sequence:
-//1. created by either MenuViewController or InitialSlisingViewController:
-//   [storyboard instantiateViewControllerWithIdentifier : CernAPP::NewTableNavigationControllerID];
-//   This leads to initWithCoder, which create an empty (yet) but initialized aggregator.
-//   initWithStyle is automatically generated, it also create an empty aggregator.
-//2. After controller was created, feed must be specified.
-//3. viewDidLoad creates activity indicator (invisible at the beginning) and refreshControl (non animated at
-//   the beginning).
-//4. viewDidAppear: if feed was not loaded yet (!pageLoaded) - call reloadPage.
 
 #import <cassert>
 
@@ -32,19 +8,13 @@
 #import "ECSlidingViewController.h"
 #import "NewsTableViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "CellBackgroundView.h"
 #import "NewsTableViewCell.h"
 #import "ApplicationErrors.h"
 #import "AppDelegate.h"
 #import "GUIHelpers.h"
 
 @implementation NewsTableViewController {
-   //I need a stupid hack - table view shows ugly empty rows,
-   //when data is not loaded yet. Before I was using empty footers,
-   //but they lead to stupid crashes with UIRefreshController
-   //(and it looks like a bug in UIKit). So now I simply set the separator's color:
-   //when no data present, it's a clear color, when we have at least one row with data -
-   //it's a gray color.
-   BOOL resetSeparatorColor;
    NSMutableArray *allArticles;
    
    NSArray *feedCache;
@@ -109,8 +79,6 @@
    self.tableView.showsHorizontalScrollIndicator = NO;
    self.tableView.showsVerticalScrollIndicator = NO;
 
-   self.tableView.separatorColor = [UIColor clearColor];
-   resetSeparatorColor = YES;
    [self.tableView reloadData];
    
    const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
@@ -142,6 +110,7 @@
 - (void) viewWillAppear : (BOOL) animated
 {
    [super viewWillAppear : animated];
+   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 //________________________________________________________________________________________
@@ -240,8 +209,6 @@
    [self.aggregator clearAllFeeds];
    
    [allArticles removeAllObjects];
-   self.tableView.separatorColor = [UIColor clearColor];
-   resetSeparatorColor = YES;
    [self.tableView reloadData];
    //It will re-parse feed and show load indicator.
    [self.aggregator refreshAllFeeds];
@@ -275,21 +242,18 @@
 
    assert(indexPath != nil && "tableView:cellForRowAtIndexPath:, parameter 'indexPath' is nil");
 
-   if (resetSeparatorColor) {
-      resetSeparatorColor = NO;
-      self.tableView.separatorColor = [UIColor colorWithRed : 0.88 green : 0.88 blue : 0.88 alpha : 1.];
-   }
-   
+   NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
+   if (!cell)
+      cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
+   if (![cell.selectedBackgroundView isKindOfClass : [CellBackgroundView class]])
+      cell.backgroundView = [[CellBackgroundView alloc] initWithFrame : CGRect()];
+
    if (usingCache) {
       const NSInteger row = indexPath.row;
       assert(row >= 0 && row < feedCache.count);
 
 
       NSManagedObject * const feedItem = feedCache[row];
-
-      NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
-      if (!cell)
-         cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
       //[cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
       [cell setCellData : [feedItem valueForKey : @"itemTitle"] source : [feedItem valueForKey : @"itemLink"]
@@ -303,10 +267,6 @@
 
       MWFeedItem * const article = [allArticles objectAtIndex : row];
       assert(article != nil && "tableView:cellForRowAtIndexPath:, article was not found");
-
-      NewsTableViewCell *cell = (NewsTableViewCell *)[tableView dequeueReusableCellWithIdentifier : @"NewsCell"];
-      if (!cell)
-         cell = [[NewsTableViewCell alloc] initWithFrame : [NewsTableViewCell defaultCellFrame]];
 
       [cell setCellData : article imageOnTheRight : (indexPath.row % 4) == 3];
       
