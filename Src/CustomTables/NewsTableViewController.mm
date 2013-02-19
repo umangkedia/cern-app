@@ -179,11 +179,7 @@
    if (!aggregator.hasConnection) {
       CernAPP::ShowErrorAlert(@"Please, check network", @"Close");
       [self.refreshControl endRefreshing];
-
-      if (spinner.isAnimating)
-         [spinner stopAnimating];
-      if (!spinner.isHidden)
-         [spinner setHidden : YES];
+      [self hideActivityIndicators];
       return;
    }
 

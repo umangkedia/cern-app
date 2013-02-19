@@ -13,15 +13,21 @@
 #import "CellBackgroundView.h"
 #import "ApplicationErrors.h"
 #import "NewsTableViewCell.h"
+#import "Reachability.h"
 #import "MWFeedItem.h"
+
+//This controller/table does not have to load/parse any feeds, it already has
+//a tableData from one level up. It only has to load images.
+//It does not support refresh - refresh is on one level up ("Bulletin" view).
 
 @implementation BulletinIssueTableViewController {
    BOOL loaded;
    
    NSMutableDictionary *imageDownloaders;
+   Reachability *internetReach;
 }
 
-@synthesize tableData, prevController;
+@synthesize tableData, issueID;
 
 //________________________________________________________________________________________
 - (void) setTableData : (NSArray *) aData
@@ -40,6 +46,7 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   internetReach = [Reachability reachabilityForInternetConnection];
 }
 
 //________________________________________________________________________________________
@@ -137,40 +144,23 @@
 - (void) tableView : (UITableView *) tableView didSelectRowAtIndexPath : (NSIndexPath *) indexPath
 {
    assert(self.navigationController != nil && "tableView:didSelectRowAtIndexPath: navigation controller is nil");
-   assert(prevController != nil && "tableView:didSelectRowAtIndexPath: prevController is nil");
 
-   if (prevController.aggregator.hasConnection) {
-      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
-      ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
-      const NSInteger row = indexPath.row;
-      assert(row >= 0 && row < tableData.count &&
-             "tableView:didSelectRowAtIndexPath:, index is out of bounds");
-      [viewController setContentForArticle : (MWFeedItem *)tableData[row]];
-      viewController.navigationItem.title = @"";
-      [self.navigationController pushViewController : viewController animated : YES];
-   } else {
-      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
-   }
+   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+   ArticleDetailViewController *viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+   const NSInteger row = indexPath.row;
+   assert(row >= 0 && row < tableData.count &&
+          "tableView:didSelectRowAtIndexPath:, index is out of bounds");
+   MWFeedItem * const article = (MWFeedItem *)tableData[row];
+   [viewController setContentForArticle : article];
+   viewController.navigationItem.title = @"";
+   viewController.canUseReadability = YES;
+
+   if (issueID)
+      viewController.articleID = [issueID stringByAppendingString : article.title];
+
+   [self.navigationController pushViewController : viewController animated : YES];
 
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
-}
-
-#pragma mark - Aux.
-
-//________________________________________________________________________________________
-- (void) reloadRowFor : (MWFeedItem *) article
-{
-   assert(article != nil && "reloadRowFor:, parameter 'article' is nil");
-   assert(tableData.count && "reloadRowFor:, tableData is nil or is empty");
-
-   const NSUInteger index = [tableData indexOfObject : article];
-   assert(index != NSNotFound &&
-          "reloadRowFor:, article is not found in a list of articles");
-
-   const NSUInteger path[2] = {0, index};
-   NSIndexPath * const indexPath = [NSIndexPath indexPathWithIndexes : path length : 2];
-   
-   [self.tableView reloadRowsAtIndexPaths : @[indexPath] withRowAnimation : UITableViewRowAnimationNone];
 }
 
 #pragma mark - ConnectionController
@@ -202,6 +192,7 @@
 - (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL) decelerate
 {
 #pragma unused(scrollView)
+
    if (!decelerate)
       [self loadImagesForOnscreenRows];
 }
@@ -209,6 +200,8 @@
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
 {
+#pragma unused(scrollView)
+
    [self loadImagesForOnscreenRows];
 }
 
@@ -251,6 +244,9 @@
 //________________________________________________________________________________________
 - (void) loadImagesForOnscreenRows
 {
+   if ([internetReach currentReachabilityStatus] == CernAPP::NetworkStatus::notReachable)
+      return;
+
    if (tableData.count) {
       NSArray * const visiblePaths = [self.tableView indexPathsForVisibleRows];
       for (NSIndexPath *indexPath in visiblePaths) {
@@ -309,12 +305,5 @@
 {
    return NO;
 }
-
-//________________________________________________________________________________________
-- (NSUInteger) supportedInterfaceOrientations
-{
-   return  UIInterfaceOrientationMaskPortrait;
-}
-
 
 @end

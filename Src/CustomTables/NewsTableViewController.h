@@ -40,5 +40,8 @@
 //
 
 - (IBAction) revealMenu : (id) sender;
+//
+- (void) cancelAllImageDownloaders;
+- (void) showErrorHUD;
 
 @end

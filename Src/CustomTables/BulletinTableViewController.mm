@@ -13,7 +13,15 @@
 #import "StoryboardIdentifiers.h"
 #import "CellBackgroundView.h"
 #import "NewsTableViewCell.h"
+#import "ApplicationErrors.h"
 #import "GUIHelpers.h"
+
+@interface NewsTableViewController(Private)
+
+- (void) hideActivityIndicators;
+- (void) showErrorHUD;
+
+@end
 
 @implementation BulletinTableViewController {
    NSMutableArray *bulletins;
@@ -45,6 +53,46 @@
 {
    [super didReceiveMemoryWarning];
    //Dispose of any resources that can be recreated.
+}
+
+//
+
+//This method is overriden (it differs from what I have in NewsTableViewController.
+
+//________________________________________________________________________________________
+- (void) reloadPageShowHUD : (BOOL) show
+{
+   //This function is called either the first time we are loading table
+   //(if we have a cache, we show spinner in a nav-bar, if no - in the center),
+   //and it can be also called after 'pull-refresh', in this case, we do not show
+   //spinner (it's done by refreshControl).
+
+   if (self.aggregator.isLoadingData)
+      return;
+   
+   //Stop any image download if we have any.
+   [self cancelAllImageDownloaders];
+
+   if (!self.aggregator.hasConnection) {
+      //Network problems, we can not reload
+      //and do not have any previous data to show.
+      if (!bulletins || !bulletins.count) {
+         [self showErrorHUD];
+         return;
+      }
+   }
+
+   [noConnectionHUD hide : YES];
+   
+   if (show) {
+      //HUD: either spinner in the center
+      //or spinner in a navigation bar.
+      [spinner setHidden : NO];
+      [spinner startAnimating];
+   }
+
+   [self.aggregator clearAllFeeds];
+   [self.aggregator refreshAllFeeds];
 }
 
 #pragma mark - Aux. functions.
@@ -147,18 +195,17 @@
 {
    assert(theAggregator != nil && "allFeedsDidLoadForAggregator:, parameter 'theAggregator' is nil");
 
-   [spinner stopAnimating];
-   [spinner setHidden : YES];
-   [self.refreshControl endRefreshing];
+   [self hideActivityIndicators];
 
    //
    //Split articles into groups using week number.
    //
+
    if (theAggregator.allArticles.count) {
       bulletins = [[NSMutableArray alloc] init];
       thumbnails = [[NSMutableDictionary alloc] init];
    
-      NSArray * const articles = theAggregator.allArticles;//They are sorted by date (by an aggregator).
+      NSArray * const articles = theAggregator.allArticles;//Aggregator already has sorted them by date.
    
       NSMutableArray *weekData = [[NSMutableArray alloc] init];
       MWFeedItem * const firstArticle = [articles objectAtIndex : 0];
@@ -211,6 +258,19 @@
    [self.refreshControl  endRefreshing];
 }
 
+//________________________________________________________________________________________
+- (void) lostConnection : (RSSAggregator *) rssAggregator
+{
+#pragma unused(rssAggregator)
+   
+   //Reachability reported network status change, while parser was still working.
+   //Show an alert message.
+   CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+
+   if (bulletins || !bulletins.count)
+      [self showErrorHUD];
+}
+
 #pragma mark - Table view delegate
 
 //________________________________________________________________________________________
@@ -218,16 +278,15 @@
 {
    assert(tableView != nil && "tableView:didSelectRowAtIndexPath:, parameter 'tableView' is nil");
    assert(indexPath != nil && "tableView:didSelectRowAtIndexPath, parameter 'indexPath' is nil");
-   assert(indexPath.row >= 0 && indexPath.row < bulletins.count &&
-          "tableView:didSelectRowAtIndexPath, row index is out of bounds");
+   
+   if (indexPath.row < 0 || indexPath.row >= bulletins.count)
+      return;
 
-   if (self.navigationController) {
-      UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
-      BulletinIssueTableViewController * const vc = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::BulletinIssueTableControllerID];
-      vc.tableData = bulletins[indexPath.row];
-      vc.prevController = self;
-      [self.navigationController pushViewController : vc animated : YES];
-   }
+   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
+   BulletinIssueTableViewController * const vc = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::BulletinIssueTableControllerID];
+   vc.tableData = bulletins[indexPath.row];
+   vc.issueID = [self titleForIssue : indexPath.row];
+   [self.navigationController pushViewController : vc animated : YES];
 
    [tableView deselectRowAtIndexPath : indexPath animated : NO];
 }
@@ -312,12 +371,6 @@
 - (BOOL) shouldAutorotate
 {
    return NO;
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) supportedInterfaceOrientations
-{
-   return  UIInterfaceOrientationMaskPortrait;
 }
 
 @end

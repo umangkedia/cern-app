@@ -17,9 +17,7 @@
 @interface BulletinIssueTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate,
                                                                     ImageDownloaderDelegate, ConnectionController>
 
-@property (nonatomic) __weak NSArray *tableData;
-@property (nonatomic) __weak BulletinTableViewController *prevController;
-
-- (void) reloadRowFor : (MWFeedItem *) article;
+@property (nonatomic, strong) NSArray *tableData;
+@property (nonatomic, copy) NSString *issueID;
 
 @end
