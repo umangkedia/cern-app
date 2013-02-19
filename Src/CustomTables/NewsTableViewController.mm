@@ -677,18 +677,44 @@
    AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
    NSManagedObjectContext * const context = appDelegate.managedObjectContext;
    if (context) {
+      BOOL deleted = NO;
+   
       if (feedCache && feedCache.count) {
          for (NSManagedObject *obj in feedCache) {
+            deleted = YES;
             [context deleteObject : obj];
          }
 
          feedCache = nil;//Even if delete operation fails
                          //still release the cache.
+      } else {
+         //We still have to remove the old data for this feed!
+         NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"FeedItem"
+                                                              inManagedObjectContext : context];
+         NSFetchRequest * const request = [[NSFetchRequest alloc] init];
+         [request setEntity : entityDesc];
+      
+         NSPredicate * const pred = [NSPredicate predicateWithFormat:@"(feedName = %@)", feedStoreID];
+         [request setPredicate : pred];
+         [request setIncludesPropertyValues : NO]; //only fetch the managedObjectID
 
-         //NSError *error = nil;
-         //[context save : &error];
+         NSError * error = nil;
+         NSArray * const feedItems = [context executeFetchRequest : request error : &error];
+         if (!error) {
+            for (NSManagedObject * obj in feedItems) {
+               [context deleteObject : obj];
+               deleted = YES;
+            }
+         }
+      }
 
+      if (deleted) {
+         NSError *saveError = nil;
+         [context save : &saveError];
+         
          //TODO: handle the possible error somehow?
+         if (saveError)//Actually, this is really bad :)
+            return;
       }
 
       BOOL inserted = NO;
