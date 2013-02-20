@@ -26,6 +26,7 @@
 @property (nonatomic) BOOL canUseReadability;
 
 - (void) setContentForArticle : (MWFeedItem *) article;
+//Setup view controller from the cached feed.
 - (void) setLink : (NSString *) link title : (NSString *) title;
 
 @end

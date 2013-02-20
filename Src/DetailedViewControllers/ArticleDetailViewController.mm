@@ -101,6 +101,7 @@
 #import "NSString+HTML.h"
 #import "Reachability.h"
 #import "AppDelegate.h"
+#import "GUIHelpers.h"
 #import "GCOAuth.h"
 
 namespace {
@@ -163,7 +164,7 @@ const NSUInteger fontIncreaseStep = 4;
 
 @synthesize rdbView, pageView, rdbCache, articleID, title, canUseReadability;
 
-//It has to be included here, since the file can contain
+//It has to be included here, since the file contains
 //methods.
 #import "Readability.h"
 
@@ -172,6 +173,8 @@ const NSUInteger fontIncreaseStep = 4;
 {
    return stage != LoadStage::inactive && stage != LoadStage::lostNetworkConnection;
 }
+
+#pragma mark - Notifications (from the Reachability and NSUserDefaults).
 
 //________________________________________________________________________________________
 - (void) reachabilityStatusChanged : (Reachability *) current
@@ -204,6 +207,31 @@ const NSUInteger fontIncreaseStep = 4;
 }
 
 //________________________________________________________________________________________
+- (void) defaultsChanged : (NSNotification *) notification
+{
+   //Defaults for the article are the font size in a readability view.
+   if ([notification.object isKindOfClass : [NSUserDefaults class]]) {
+      NSUserDefaults * const defaults = (NSUserDefaults *)notification.object;
+      if (id sz = [defaults objectForKey : @"HTMLBodyFontSize"]) {
+         assert([sz isKindOfClass : [NSNumber class]] && "defaultsChanged:, GUIFontSize has a wrong type");
+
+         const NSUInteger newZoom = NSUInteger([(NSNumber *)sz floatValue]) / fontIncreaseStep;
+         if (newZoom != zoomLevel) {
+            zoomLevel = newZoom;
+            
+            if (rdbView.superview) {//Is the Readability view active now?
+               [self changeTextSize];
+               zoomInBtn.enabled = zoomLevel < 5 ? YES : NO;
+               zoomOutBtn.enabled = zoomLevel != 0 ? YES : NO;
+            }
+         }       
+      }
+   }
+}
+
+#pragma mark - Life cycle.
+
+//________________________________________________________________________________________
 - (id) initWithNibName : (NSString *) nibNameOrNil bundle : (NSBundle *) nibBundleOrNil
 {
    if (self = [super initWithNibName : nibNameOrNil bundle : nibBundleOrNil]) {
@@ -217,26 +245,6 @@ const NSUInteger fontIncreaseStep = 4;
 }
 
 //________________________________________________________________________________________
-- (void) defaultsChanged : (NSNotification *) notification
-{
-    if ([notification.object isKindOfClass : [NSUserDefaults class]]) {
-      NSUserDefaults * const defaults = (NSUserDefaults *)notification.object;
-      if (id sz = [defaults objectForKey : @"HTMLBodyFontSize"]) {
-         assert([sz isKindOfClass : [NSNumber class]] && "defaultsChanged:, GUIFontSize has a wrong type");
-
-         const NSUInteger newZoom = NSUInteger([(NSNumber *)sz floatValue]) / fontIncreaseStep;
-         if (newZoom != zoomLevel) {
-            zoomLevel = newZoom;
-            [self changeTextSize];
-            
-            zoomInBtn.enabled = zoomLevel < 5 ? YES : NO;
-            zoomOutBtn.enabled = zoomLevel != 0 ? YES : NO;
-         }       
-      }
-   }
-}
-
-//________________________________________________________________________________________
 - (void) dealloc
 {
    [internetReach stopNotifier];
@@ -246,6 +254,8 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
+   //Called only once (?)
+   
    [super viewDidAppear : animated];
 
    CGRect frame = self.view.frame;
@@ -268,9 +278,9 @@ const NSUInteger fontIncreaseStep = 4;
    stage = LoadStage::inactive;
 
    if (!spinner) {
-      const CGFloat spinnerSize = 150.f;
-      const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
+      using CernAPP::spinnerSize;
 
+      const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
       spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
       spinner.color = [UIColor grayColor];
       [self.view addSubview : spinner];
@@ -279,20 +289,18 @@ const NSUInteger fontIncreaseStep = 4;
    if (canUseReadability && articleID && [ArticleDetailViewController articleCached : articleID])
       [self getReadabilityCache];
 
+   [self startSpinner];
+
    if (rdbCache && rdbCache.length) {
       [self switchToRdbView];
-      [self startSpinner];
       [self loadReadabilityCache];
    } else {
-      [self startSpinner];
-   
 #ifndef READABILITY_CONTENT_API_DEFINED
       [self switchToPageView];
       [self loadOriginalPage];
 #else
       if (canUseReadability) {
          [self switchToRdbView];
-         [self startSpinner];
          [self loadHtmlFromReadability];
       } else {
          [self switchToPageView];
@@ -355,7 +363,7 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (BOOL) webView : (UIWebView *) webView shouldStartLoadWithRequest : (NSURLRequest *)request navigationType : (UIWebViewNavigationType) navigationType
 {
-   if (navigationType == UIWebViewNavigationTypeLinkClicked ) {
+   if (navigationType == UIWebViewNavigationTypeLinkClicked) {
       [[UIApplication sharedApplication] openURL : [request URL]];
       return NO;
    }
@@ -369,15 +377,15 @@ const NSUInteger fontIncreaseStep = 4;
 #pragma unused(error)
 
    if (stage == LoadStage::originalPageLoad && webView == pageView) {
-      [self stopSpinner];
       [webView stopLoading];
-      
+
+      [self stopSpinner];
       [self showErrorHUD];
       stage = LoadStage::lostNetworkConnection;
-      
       [self addWebBrowserButtons];
    } else if (stage == LoadStage::rdbCacheLoad && webView == rdbView) {
       [webView stopLoading];
+
       //Due to some reason, we can not load html processed by readability.
       //I can not assume anything about it - may be, some part (e.g. referenced image)
       //not found, may be something else, since webViewDidFinishLoad was not called before,
@@ -419,6 +427,9 @@ const NSUInteger fontIncreaseStep = 4;
 - (void) loadHtmlFromReadability
 {
    assert(currentConnection == nil && "loadHtmlFromReadability, connection is active");
+   
+   //We do not have a cached html from Readability yet,
+   //try to either auth and parse, or pars (if auth was done already).
 
    id delegateBase = [UIApplication sharedApplication].delegate;
    assert([delegateBase isKindOfClass : [AppDelegate class]] &&
@@ -457,10 +468,9 @@ const NSUInteger fontIncreaseStep = 4;
 
    if (internetReach && [internetReach currentReachabilityStatus] == NetworkStatus::notReachable) {
       [self stopSpinner];
+      
       stage = LoadStage::lostNetworkConnection;
-
       [self showErrorHUD];
-
       [self addWebBrowserButtons];
    } else {
       //Load original page.
@@ -494,8 +504,8 @@ const NSUInteger fontIncreaseStep = 4;
    NSString *OAuthConfirm = nil;
 
    NSString * const response = [[NSString alloc] initWithData : responseData encoding : NSUTF8StringEncoding];
+
    NSArray * const components = [response componentsSeparatedByString : @"&"];
-   
    for (NSString *component in components) {
       NSArray *pair = [component componentsSeparatedByString:@"="];
       if (pair.count != 2) {
@@ -533,7 +543,7 @@ const NSUInteger fontIncreaseStep = 4;
 {
 #pragma unused(connection)
 
-   assert(stage == LoadStage::auth || stage == LoadStage::rdbRequest &&
+   assert((stage == LoadStage::auth || stage == LoadStage::rdbRequest) &&
           "connection:didReceiveResponse:, wrong stage");
    assert(response != nil && "connection:didReceiveResponse:, parameter 'response' is nil");
 
@@ -551,7 +561,8 @@ const NSUInteger fontIncreaseStep = 4;
       currentConnection = nil;
       
       if (stage == LoadStage::auth) {
-         //Load original page, we can not try authorization again (it can fail again and again).
+         //Load original page, we can not try authorization again
+         //(it can fail again and again).
          [self switchToPageView];
          [self loadOriginalPage];
       } else if (status == 401 && !authDone) {
@@ -620,6 +631,7 @@ const NSUInteger fontIncreaseStep = 4;
    //Something is wrong with readability, either auth. failed
    //or readability parse stage, do not try anything else,
    //load the original page.
+   [self switchToPageView];
    [self loadOriginalPage];
 }
 
@@ -763,6 +775,12 @@ const NSUInteger fontIncreaseStep = 4;
    assert(stage == LoadStage::lostNetworkConnection && "refresh, wrong stage");
    assert((rdbView.superview != nil || pageView.superview != nil) &&
           "refresh, neither rdbView, nor pageView is active");
+
+   [self hideWebBrowserButtons];
+
+   //
+   [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
+   //
 
    [self startSpinner];
    //Remove error HUD.
@@ -1116,7 +1134,7 @@ const NSUInteger fontIncreaseStep = 4;
    noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
    noConnectionHUD.color = [UIColor redColor];
    noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"No network";
+   noConnectionHUD.labelText = @"Network error";
    noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
