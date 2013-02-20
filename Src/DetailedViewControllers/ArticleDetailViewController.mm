@@ -498,7 +498,16 @@ const NSUInteger fontIncreaseStep = 4;
    
    for (NSString *component in components) {
       NSArray *pair = [component componentsSeparatedByString:@"="];
-      assert(pair.count == 2);//TODO: I had this assert once - check!
+      if (pair.count != 2) {
+         //Before I had an assert here and was assuming, this can
+         //never happen, but it can :) I still did not check what
+         //is the response in such a case (happens 1-2 times a day) :)
+         OAuthConfirm = nil;
+         OAuthToken = nil;
+         OAuthTokenSecret = nil;
+         break;
+      }
+
       if ([(NSString *)pair[0] isEqualToString : @"oauth_token_secret"])
          OAuthTokenSecret = (NSString *)pair[1];
       else if ([(NSString *)pair[0] isEqualToString : @"oauth_token"])
