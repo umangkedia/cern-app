@@ -18,6 +18,8 @@
 #import "GUIHelpers.h"
 
 @implementation PhotosGridViewController {
+   UIActivityIndicatorView *spinner;
+
    MBProgressHUD *noConnectionHUD;
    
    NSUInteger selectedSection;
@@ -42,14 +44,22 @@
 - (void) viewDidLoad
 {
    [super viewDidLoad];
+   //
+   using CernAPP::spinnerSize;
+
+   const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
+   spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
+   spinner.color = [UIColor grayColor];
+   [self.view addSubview : spinner];
+   [self hideSpinner];
 }
 
 //________________________________________________________________________________________
 - (void) viewDidAppear : (BOOL) animated
 {
    if (!loaded) {
-      [self refresh];
       loaded = YES;
+      [self refresh];
    }
 }
 
@@ -68,7 +78,8 @@
 {
    if (!photoDownloader.isDownloading) {
       [noConnectionHUD hide : YES];
-      [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+
+      [self showSpinner];
       self.navigationItem.rightBarButtonItem.enabled = NO;
       [self.photoDownloader parse];
    }
@@ -220,12 +231,11 @@
 - (void) photoDownloader : (PhotoDownloader *) photoDownloader didFailWithError : (NSError *) error
 {
 #pragma unused(error)
-   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
-   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : YES];
-   noConnectionHUD.delegate = self;
-   noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"Load error";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;
+   
+   self.navigationItem.rightBarButtonItem.enabled = YES;
+   
+   [self hideSpinner];
+   [self showErrorHUD];
 }
 
 //________________________________________________________________________________________
@@ -287,6 +297,37 @@
 - (void) cancelAnyConnections
 {
    [photoDownloader stop];
+}
+
+#pragma mark - HUD/GUI
+
+//________________________________________________________________________________________
+- (void) showSpinner
+{
+   if (spinner.hidden)
+      spinner.hidden = NO;
+   if (!spinner.isAnimating)
+      [spinner startAnimating];
+}
+
+//________________________________________________________________________________________
+- (void) hideSpinner
+{
+   if (spinner.isAnimating)
+      [spinner stopAnimating];
+   spinner.hidden = YES;
+}
+
+//________________________________________________________________________________________
+- (void) showErrorHUD
+{
+   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : YES];
+   noConnectionHUD.delegate = self;
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.color = [UIColor redColor];
+   noConnectionHUD.labelText = @"Network error";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
 #pragma mark - Interface rotations.
