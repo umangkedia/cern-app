@@ -267,7 +267,7 @@
    //Show an alert message.
    CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
 
-   if (bulletins || !bulletins.count)
+   if (!bulletins || !bulletins.count)
       [self showErrorHUD];
 }
 
