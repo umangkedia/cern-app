@@ -289,8 +289,17 @@
 
    NSDictionary * const video = (NSDictionary *)videoMetadata[indexPath.section];
    NSURL * const url = (NSURL *)video[@"mp40600"];
-   MPMoviePlayerViewController *playerController = [[MPMoviePlayerViewController alloc] initWithContentURL : url];
-   [self presentMoviePlayerViewControllerAnimated : (MPMoviePlayerViewController *)playerController];
+   
+   //Hmm, I have to do this stupid Voodoo magic, otherwise, I have error messages
+   //from the Quartz about invalid context.
+   //Manu thanks to these guys: http://stackoverflow.com/questions/13203336/iphone-mpmovieplayerviewcontroller-cgcontext-errors
+   //I beleive, at some point, BeginImageContext/EndImageContext can be removed after
+   //Apple fixes the bug.
+   UIGraphicsBeginImageContext(CGSizeMake(1,1));
+   MPMoviePlayerViewController * const playerController = [[MPMoviePlayerViewController alloc] initWithContentURL : url];
+   UIGraphicsEndImageContext();
+   
+   [self presentMoviePlayerViewControllerAnimated : playerController];
 }
 
 #pragma mark - Connection controller.
