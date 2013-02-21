@@ -11,8 +11,10 @@
 #import "VideosGridViewController.h"
 #import "ECSlidingViewController.h"
 #import "PhotoGridViewCell.h"
+#import "ApplicationErrors.h"
 #import "PhotoSetInfoView.h"
 #import "MBProgressHUD.h"
+#import "Reachability.h"
 #import "GUIHelpers.h"
 
 @implementation VideosGridViewController {
@@ -23,6 +25,9 @@
    NSMutableArray *videoMetadata;
    NSMutableDictionary *videoThumbnails;
    NSMutableDictionary *imageDownloaders;
+   
+   Reachability *internetReach;
+   UIActivityIndicatorView *spinner;
 }
 
 //________________________________________________________________________________________
@@ -33,14 +38,31 @@
       videoThumbnails = [NSMutableDictionary dictionary];
 
       parser = [[CernMediaMARCParser alloc] init];
-      parser.url = [NSURL URLWithString : @"http://cdsweb.cern.ch/search?ln=en&cc=Press+Office+Video+Selection&p=internalnote%3A%22ATLAS%22&f=&action_search=Search&c=Press+Office+Video+Selection&c=&sf=year&so=d&rm=&rg=100&sc=0&of=xm"];
+      parser.url = [NSURL URLWithString : @"http://cdsweb.cern.ch/search?ln=en&cc=Press+Office+Video+Selection&p"
+                                           "=internalnote%3A%22ATLAS%22&f=&action_search=Search&c=Press+Office+V"
+                                           "ideo+Selection&c=&sf=year&so=d&rm=&rg=100&sc=0&of=xm"];
       parser.resourceTypes = @[@"mp40600", @"jpgposterframe"];
       parser.delegate = self;
 
       loaded = NO;
    }
-   
+
    return self;
+}
+
+//________________________________________________________________________________________
+- (void) viewDidLoad
+{
+   [super viewDidLoad];
+   internetReach = [Reachability reachabilityForInternetConnection];
+
+   using CernAPP::spinnerSize;
+
+   const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
+   spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
+   spinner.color = [UIColor grayColor];
+   [self.view addSubview : spinner];
+   [self hideSpinner];
 }
 
 //________________________________________________________________________________________
@@ -56,6 +78,10 @@
 - (IBAction) refresh : (id) sender
 {
 #pragma unused(sender)
+   if (internetReach && [internetReach currentReachabilityStatus] == CernAPP::NetworkStatus::notReachable) {
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      return;
+   }
 
    [self refresh];
 }
@@ -64,7 +90,7 @@
 - (void) refresh
 {
    assert(parser.isFinishedParsing == YES && "refresh, called while parser is active");
-
+   
    self.navigationItem.rightBarButtonItem.enabled = NO;
    videoMetadata = [[NSMutableArray alloc] init];
    videoThumbnails = [[NSMutableDictionary alloc] init];
@@ -72,14 +98,8 @@
    [self.collectionView reloadData];
    
    [noConnectionHUD hide : YES];
+   [self showSpinner];
    [parser parse];
-   [MBProgressHUD showHUDAddedTo : self.view animated : YES];
-}
-
-//________________________________________________________________________________________
-- (void) viewDidLoad
-{
-   [super viewDidLoad];
 }
 
 //________________________________________________________________________________________
@@ -94,9 +114,9 @@
 - (void) parserDidFinish : (CernMediaMARCParser *) parser
 {
    [MBProgressHUD hideHUDForView : self.view animated : YES];
+
    [self downloadVideoThumbnails];
    [self.collectionView reloadData];
-   self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
 //________________________________________________________________________________________
@@ -120,16 +140,17 @@
 }
 
 //________________________________________________________________________________________
-- (void) parser : (CernMediaMARCParser *) parser didFailWithError : (NSError *) error
+- (void) parser : (CernMediaMARCParser *) aParser didFailWithError : (NSError *) error
 {
-   //TODO: report/handle errors correctly.
+#pragma unused(error)
+
+   [self hideSpinner];
+   [self showErrorHUD];
    
-   [MBProgressHUD hideAllHUDsForView : self.view animated : YES];
-   noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-   noConnectionHUD.delegate = self;
-   noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"No internet connection";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;
+   [aParser stop];
+   
+   //Refresh button.
+   self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
 #pragma mark - ImageDownloader.
@@ -169,6 +190,11 @@
    }
 
    [imageDownloaders removeObjectForKey : indexPath];
+   
+   if (!imageDownloaders.count) {
+      [self hideSpinner];
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+   }
 }
 
 //________________________________________________________________________________________
@@ -185,6 +211,11 @@
    
    [imageDownloaders removeObjectForKey : indexPath];
    //But no need to update the collectionView.
+
+   if (!imageDownloaders.count) {
+      [self hideSpinner];
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+   }
 }
 
 #pragma mark - UICollectionViewDataSource.
@@ -295,10 +326,10 @@
    //Manu thanks to these guys: http://stackoverflow.com/questions/13203336/iphone-mpmovieplayerviewcontroller-cgcontext-errors
    //I beleive, at some point, BeginImageContext/EndImageContext can be removed after
    //Apple fixes the bug.
-   UIGraphicsBeginImageContext(CGSizeMake(1,1));
+   UIGraphicsBeginImageContext(CGSizeMake(1.f, 1.f));
    MPMoviePlayerViewController * const playerController = [[MPMoviePlayerViewController alloc] initWithContentURL : url];
    UIGraphicsEndImageContext();
-   
+
    [self presentMoviePlayerViewControllerAnimated : playerController];
 }
 
@@ -342,10 +373,36 @@
    return NO;
 }
 
+#pragma mark - GUI/HUD
+
 //________________________________________________________________________________________
-- (NSUInteger) supportedInterfaceOrientations
+- (void) showErrorHUD
 {
-   return  UIInterfaceOrientationMaskPortrait;
+   [MBProgressHUD hideHUDForView : self.view animated : YES];
+
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+   noConnectionHUD.delegate = self;
+   noConnectionHUD.color = [UIColor redColor];
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"Network error";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
+}
+
+//________________________________________________________________________________________
+- (void) showSpinner
+{
+   if (spinner.hidden)
+      spinner.hidden = NO;
+   if (!spinner.isAnimating)
+      [spinner startAnimating];
+}
+
+//________________________________________________________________________________________
+- (void) hideSpinner
+{
+   if (spinner.isAnimating)
+      [spinner stopAnimating];
+   spinner.hidden = YES;
 }
 
 @end

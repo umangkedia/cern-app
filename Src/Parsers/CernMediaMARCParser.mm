@@ -66,6 +66,7 @@
       if (xmlParser)
          [xmlParser abortParsing];
       xmlParser = nil;
+      isFinishedParsing = YES;
    }
 }
 
