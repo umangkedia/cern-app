@@ -213,7 +213,6 @@
 //________________________________________________________________________________________
 - (void) photoDownloaderDidFinish : (PhotoDownloader *) aPhotoDownloader
 {
-   [MBProgressHUD hideHUDForView : self.view animated : YES];
    photoSets = [aPhotoDownloader.photoSets copy];//This is non-compacted sets without images.
    [self.collectionView reloadData];
 }
@@ -242,6 +241,7 @@
 - (void) photoDownloaderDidFinishLoadingThumbnails : (PhotoDownloader *) aPhotoDownloader
 {
 #pragma unused(aPhotoDownloader)
+   [self hideSpinner];
    [photoDownloader compactData];
    photoSets = [photoDownloader.photoSets copy];
    self.navigationItem.rightBarButtonItem.enabled = YES;
