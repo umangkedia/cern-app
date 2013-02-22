@@ -781,8 +781,9 @@
 {
    [MBProgressHUD hideAllHUDsForView : self.view animated : NO];
    noConnectionHUD = [MBProgressHUD showHUDAddedTo : self.view animated : NO];
+   noConnectionHUD.color = [UIColor redColor];
    noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"Network error";
+   noConnectionHUD.labelText = @"Network error, pull to refresh";
    noConnectionHUD.removeFromSuperViewOnHide = YES;
 }
 
