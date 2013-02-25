@@ -10,13 +10,18 @@
 
 #import "ConnectionController.h"
 #import "CernMediaMARCParser.h"
+#import "HUDRefreshProtocol.h"
 #import "ImageDownloader.h"
 #import "MBProgressHUD.h"
 
-@interface VideosGridViewController : UICollectionViewController<CernMediaMarcParserDelegate, MBProgressHUDDelegate, ImageDownloaderDelegate, ConnectionController,
-                                                                 UICollectionViewDataSource, UICollectionViewDelegate>
+@interface VideosGridViewController : UICollectionViewController<CernMediaMarcParserDelegate, ImageDownloaderDelegate, ConnectionController,
+                                                                 UICollectionViewDataSource, UICollectionViewDelegate, HUDRefreshProtocol>
 
 - (IBAction)refresh : (id) sender;
 - (IBAction) revealMenu : (id) sender;
+
+//HUD/Refresh protocol.
+@property (nonatomic, strong) MBProgressHUD *noConnectionHUD;
+@property (nonatomic, strong) UIActivityIndicatorView *spinner;
 
 @end

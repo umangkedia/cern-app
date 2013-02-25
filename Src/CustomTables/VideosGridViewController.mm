@@ -36,6 +36,8 @@
    UIActivityIndicatorView *spinner;
 }
 
+@synthesize spinner, noConnectionHUD;
+
 //________________________________________________________________________________________
 - (id) initWithCoder : (NSCoder *) aDecoder
 {
@@ -62,13 +64,8 @@
    [super viewDidLoad];
    internetReach = [Reachability reachabilityForInternetConnection];
 
-   using CernAPP::spinnerSize;
-
-   const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
-   spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
-   spinner.color = [UIColor grayColor];
-   [self.view addSubview : spinner];
-   [self hideSpinner];
+   CernAPP::AddSpinner(self);
+   CernAPP::HideSpinner(self);
 }
 
 //________________________________________________________________________________________
@@ -104,14 +101,8 @@
    [self.collectionView reloadData];
    
    [noConnectionHUD hide : YES];
-   [self showSpinner];
+   CernAPP::ShowSpinner(self);
    [parser parse];
-}
-
-//________________________________________________________________________________________
-- (void) hudWasTapped : (MBProgressHUD *) hud
-{
-   [self refresh];
 }
 
 #pragma mark - CernMediaMARCParserDeleate methods
@@ -150,8 +141,8 @@
 {
 #pragma unused(error)
 
-   [self hideSpinner];
-   [self showErrorHUD];
+   CernAPP::HideSpinner(self);
+   CernAPP::ShowErrorHUD(self, @"Network error");
    
    [aParser stop];
    
@@ -198,7 +189,7 @@
    [imageDownloaders removeObjectForKey : indexPath];
    
    if (!imageDownloaders.count) {
-      [self hideSpinner];
+      CernAPP::HideSpinner(self);
       self.navigationItem.rightBarButtonItem.enabled = YES;
    }
 }
@@ -219,7 +210,7 @@
    //But no need to update the collectionView.
 
    if (!imageDownloaders.count) {
-      [self hideSpinner];
+      CernAPP::HideSpinner(self);
       self.navigationItem.rightBarButtonItem.enabled = YES;
    }
 }
@@ -377,40 +368,6 @@
 - (BOOL) shouldAutorotate
 {
    return NO;
-}
-
-#pragma mark - GUI/HUD
-
-//TODO: this must be a category already.
-
-//________________________________________________________________________________________
-- (void) showErrorHUD
-{
-   [MBProgressHUD hideHUDForView : self.view animated : YES];
-
-   noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-   noConnectionHUD.delegate = self;
-   noConnectionHUD.color = [UIColor redColor];
-   noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"Network error";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;
-}
-
-//________________________________________________________________________________________
-- (void) showSpinner
-{
-   if (spinner.hidden)
-      spinner.hidden = NO;
-   if (!spinner.isAnimating)
-      [spinner startAnimating];
-}
-
-//________________________________________________________________________________________
-- (void) hideSpinner
-{
-   if (spinner.isAnimating)
-      [spinner stopAnimating];
-   spinner.hidden = YES;
 }
 
 @end

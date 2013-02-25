@@ -23,19 +23,19 @@
 //have all this ugly copy and paste everywhere.
 
 @implementation WebcastsGridViewController {
-   MBProgressHUD *noConnectionHUD;
    BOOL loaded;
 
    WebcastsParser *parser;
 
    Reachability *internetReach;
-   UIActivityIndicatorView *spinner;
    
    NSMutableDictionary *videoThumbnails;
    NSMutableDictionary *imageDownloaders;//Thumbnail downloaders.
    
    NSMutableArray *webcasts;
 }
+
+@synthesize noConnectionHUD, spinner;
 
 #pragma mark - Life cycle.
 
@@ -55,13 +55,8 @@
 {
    [super viewDidLoad];
    
-   using CernAPP::spinnerSize;
-
-   const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
-   spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
-   spinner.color = [UIColor grayColor];
-   [self.view addSubview : spinner];
-   [self hideSpinner];
+   CernAPP::AddSpinner(self);
+   CernAPP::HideSpinner(self);
    
    internetReach = [Reachability reachabilityForInternetConnection];
 }
@@ -106,7 +101,9 @@
 
    [self.collectionView reloadData];
    [noConnectionHUD hide : YES];
-   [self showSpinner];
+
+   CernAPP::ShowSpinner(self);
+
    [parser parseRecentWebcasts];
 }
 
@@ -142,8 +139,8 @@
 //________________________________________________________________________________________
 - (void) webcastsParser : (WebcastsParser *) parser didFailWithError : (NSError *) error
 {
-   [self hideSpinner];
-   [self showErrorHUD];
+   CernAPP::HideSpinner(self);
+   CernAPP::ShowErrorHUD(self, @"Network error");
    self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
@@ -154,40 +151,6 @@
 {
    return NO;
 }
-
-#pragma mark - GUI/HUD
-
-//TODO: this must be a category already.
-
-//________________________________________________________________________________________
-- (void) showErrorHUD
-{
-   [MBProgressHUD hideHUDForView : self.view animated : YES];
-
-   noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-   noConnectionHUD.color = [UIColor redColor];
-   noConnectionHUD.mode = MBProgressHUDModeText;
-   noConnectionHUD.labelText = @"Network error";
-   noConnectionHUD.removeFromSuperViewOnHide = YES;
-}
-
-//________________________________________________________________________________________
-- (void) showSpinner
-{
-   if (spinner.hidden)
-      spinner.hidden = NO;
-   if (!spinner.isAnimating)
-      [spinner startAnimating];
-}
-
-//________________________________________________________________________________________
-- (void) hideSpinner
-{
-   if (spinner.isAnimating)
-      [spinner stopAnimating];
-   spinner.hidden = YES;
-}
-
 
 #pragma mark - sliding view controller.
 
@@ -252,7 +215,7 @@
    [imageDownloaders removeObjectForKey : indexPath];
    
    if (!imageDownloaders.count) {
-      [self hideSpinner];
+      CernAPP::HideSpinner(self);
       self.navigationItem.rightBarButtonItem.enabled = YES;
    }
 }
@@ -273,7 +236,7 @@
    //But no need to update the collectionView.
 
    if (!imageDownloaders.count) {
-      [self hideSpinner];
+      CernAPP::HideSpinner(self);
       self.navigationItem.rightBarButtonItem.enabled = YES;
    }
 }
