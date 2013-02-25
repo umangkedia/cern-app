@@ -34,6 +34,7 @@
    
    captionColor = [UIColor colorWithRed : 0.f green : 83.f / 255.f blue : 161.f / 255.f alpha : 1.f];
 
+   [self addVersionInfo];
    [self addDevelopersInfo];
    [self addReadabilityInfo];
    
@@ -82,6 +83,24 @@
    
    [text addAttribute : NSFontAttributeName value : font range : range];
    [text addAttribute : NSForegroundColorAttributeName value : color range : range];
+}
+
+//________________________________________________________________________________________
+- (void) addVersionInfo
+{
+   NSAttributedString * const caption = [[NSAttributedString alloc] initWithString : @"\nVersion:\n\n"];
+   const NSRange captionRange = NSMakeRange(text.length, caption.length);
+   NSAttributedString * const versionInfo = [[NSAttributedString alloc] initWithString : @"\tCERN.app 1.01.00\n"];
+   const NSRange versionInfoRange = NSMakeRange(captionRange.location + captionRange.length, versionInfo.length);
+   
+   [text appendAttributedString : caption];
+   [text appendAttributedString : versionInfo];
+
+   //Let's do some nice formatting here!
+   [self setCaptionAttribute : captionRange];
+   //
+   UIFont * const textFont = [UIFont fontWithName : @"PTSans-Caption" size : 14.f];
+   [self setFont : textFont color : [UIColor blackColor] forRange : versionInfoRange];
 }
 
 //________________________________________________________________________________________
