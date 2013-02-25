@@ -190,6 +190,37 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
+- (BOOL) loadSpecialItem : (NSDictionary *) desc into : (NSMutableArray *) items
+{
+   assert(desc != nil && "loadSpecialItem:into:, parameter 'desc' is nil");
+   assert(items != nil && "loadSpecialItem:into:, parameter 'items' is nil");
+   
+   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
+          "loadStandaloneItem:, 'Category name' not found or has a wrong type");
+   
+   NSString * const catName = (NSString *)desc[@"Category name"];
+   
+   if ([catName isEqualToString : @"ModalViewItem"] || [catName isEqualToString : @"NavigationViewItem"]) {
+      NSObject<ContentProvider> *provider = nil;
+      
+      if ([catName isEqualToString : @"ModalViewItem"])
+         provider = [[ModalViewProvider alloc] initWithDictionary : desc];
+      else
+         provider = [[NavigationViewProvider alloc] initWithDictionary : desc];
+      
+      MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
+      [items addObject : menuItem];
+      [menuItem addMenuItemViewInto : scrollView controller : self];
+      if (items == menuItems)//it's a top-level item ('standalone').
+         menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
+
+      return YES;
+   } //Something else special.
+   
+   return NO;
+}
+
+//________________________________________________________________________________________
 - (BOOL) loadSeparator : (NSDictionary *) desc
 {
    //Can be top-level only.
@@ -211,25 +242,9 @@ using CernAPP::ItemStyle;
 }
 
 //________________________________________________________________________________________
-- (BOOL) loadStandaloneItem : (NSDictionary *) desc
+- (BOOL) loadSpecialItem : (NSDictionary *) desc
 {
-   assert(desc != nil && "loadStandaloneItem:, parameter 'desc' is nil");
-   assert([desc[@"Category name"] isKindOfClass : [NSString class]] &&
-          "loadAppSettingsMenu:, 'Category name' not found or has a wrong type");
-   
-   NSString * const catName = (NSString *)desc[@"Category name"];
-   
-   if ([catName isEqualToString : @"ModalViewItem"]) {
-      ModalViewProvider * const provider = [[ModalViewProvider alloc] initWithDictionary : desc];
-      MenuItem * const menuItem = [[MenuItem alloc] initWithContentProvider : provider];
-      [menuItems addObject : menuItem];
-      [menuItem addMenuItemViewInto : scrollView controller : self];
-      menuItem.itemView.itemStyle = CernAPP::ItemStyle::standalone;
-      
-      return YES;
-   } //In a future I can have, for example, NavigationViewItem, and (possibly) with parameters.
-   
-   return NO;
+   return [self loadSpecialItem : desc into : menuItems];
 }
 
 //These are more complex "loaders".
@@ -280,7 +295,8 @@ using CernAPP::ItemStyle;
             if ([self loadVideoSet : itemInfo into : groupItems])
                continue;
             
-            //Something else later?
+            if ([self loadSpecialItem : itemInfo into : groupItems])
+               continue;
          }
          
          [self addMenuGroup : sectionName withImage : [self loadItemImage : desc] forItems : groupItems];
@@ -448,7 +464,7 @@ using CernAPP::ItemStyle;
          continue;
 
       //Stand-alone non-group items:
-      if ([self loadStandaloneItem : (NSDictionary *)entryBase])
+      if ([self loadSpecialItem : (NSDictionary *)entryBase])
          continue;
       if ([self loadSeparator : (NSDictionary *)entryBase])
          continue;

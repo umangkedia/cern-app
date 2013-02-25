@@ -138,6 +138,16 @@
 					<key>Name</key>
 					<string>Latest videos</string>
 				</dict>
+				<dict>
+					<key>ControllerID</key>
+					<string>WebcastsControllerID</string>
+					<key>Image name</key>
+					<string>webcasts.png</string>
+					<key>Category name</key>
+					<string>NavigationViewItem</string>
+					<key>Name</key>
+					<string>Webcasts</string>
+				</dict>
 			</array>
 			<key>Category name</key>
 			<string>Menu group</string>

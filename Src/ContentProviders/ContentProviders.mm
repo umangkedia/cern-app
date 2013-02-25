@@ -730,7 +730,51 @@ void CancelConnections(UIViewController *controller)
             (AppSettingsController *)[controller.storyboard instantiateViewControllerWithIdentifier : controllerID];
 
    //
-   [controller presentViewController:appSettingscontroller animated:YES completion:nil];
+   [controller presentViewController : appSettingscontroller animated : YES completion : nil];
+}
+
+@end 
+
+@implementation NavigationViewProvider {
+   UIImage *image;
+   NSString *controllerID;
+}
+
+@synthesize categoryName;
+
+//________________________________________________________________________________________
+- (id) initWithDictionary : (NSDictionary *) dict
+{
+   assert(dict != nil && "initWithDictionary:, parameter 'dict' is nil");
+
+   if (self = [super init]) {
+      assert([dict[@"Name"] isKindOfClass : [NSString class]] &&
+             "initWithDictionary:, 'Name' is nil or has a wrong type");
+      categoryName = (NSString *)dict[@"Name"];
+      
+      if (dict[@"Image name"]) {
+         assert([dict[@"Image name"] isKindOfClass : [NSString class]] &&
+                "initWithDictionary:, 'Image name' has a wrong type");
+         image = [UIImage imageNamed:(NSString *)dict[@"Image name"]];
+      }
+      
+      assert([dict[@"ControllerID"] isKindOfClass : [NSString class]] &&
+             "'ControllerID' not found or has a wrong type");
+      controllerID = (NSString *)dict[@"ControllerID"];
+   }
+   
+   return self;
+}
+
+- (UIImage *) categoryImage
+{
+   return image;
+}
+
+//________________________________________________________________________________________
+- (void) loadControllerTo : (UIViewController *) controller
+{
+   assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
 }
 
 @end

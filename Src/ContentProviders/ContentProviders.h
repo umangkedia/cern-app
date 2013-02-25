@@ -116,13 +116,28 @@
 @end
 
 //
-//Application's settings.
+//Content provider for a modal view controller.
 //
 
 @interface ModalViewProvider : NSObject<ContentProvider>
 
 - (id) initWithDictionary : (NSDictionary *) info;
 @property (nonatomic, retain) NSString *categoryName;
+- (UIImage *) categoryImage;
+- (void) loadControllerTo : (UIViewController *) controller;
+
+@end
+
+//
+//Content provider for a navigation view controller.
+//
+
+@interface NavigationViewProvider : NSObject<ContentProvider>
+
+- (id) initWithDictionary : (NSDictionary *) dict;
+
+@property (nonatomic, retain) NSString *categoryName;
+
 - (UIImage *) categoryImage;
 - (void) loadControllerTo : (UIViewController *) controller;
 
