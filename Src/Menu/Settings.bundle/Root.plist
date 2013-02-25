@@ -7,6 +7,14 @@
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>CERN.app v. 1.01.00</string>
+			<key>Title</key>
+			<string>Version</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>GUI font size</string>
 		</dict>
