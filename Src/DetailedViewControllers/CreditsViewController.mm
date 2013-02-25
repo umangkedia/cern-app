@@ -90,7 +90,7 @@
 {
    NSAttributedString * const caption = [[NSAttributedString alloc] initWithString : @"\nVersion:\n\n"];
    const NSRange captionRange = NSMakeRange(text.length, caption.length);
-   NSAttributedString * const versionInfo = [[NSAttributedString alloc] initWithString : @"\tCERN.app 1.01.00\n"];
+   NSAttributedString * const versionInfo = [[NSAttributedString alloc] initWithString : @"\tCERN.app v. 1.01.00\n"];
    const NSRange versionInfoRange = NSMakeRange(captionRange.location + captionRange.length, versionInfo.length);
    
    [text appendAttributedString : caption];
