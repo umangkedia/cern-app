@@ -7,14 +7,6 @@
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>CERN.app version 1.01.00</string>
-			<key>Title</key>
-			<string>Version</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>GUI font size</string>
 		</dict>
@@ -47,6 +39,22 @@
 			<integer>0</integer>
 			<key>MaximumValue</key>
 			<integer>20</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+			<key>Title</key>
+			<string>Version</string>
+			<key>DefaultValue</key>
+			<string>1.01.00</string>
+			<key>Key</key>
+			<string>VersionID</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>
