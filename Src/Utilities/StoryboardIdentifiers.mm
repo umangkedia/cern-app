@@ -19,5 +19,6 @@ NSString * const BulletinTableViewControllerID = @"BulletinTableViewControllerID
 NSString * const BulletinIssueTableControllerID = @"BulletinIssueTableControllerID";
 NSString * const VideosCollectionViewControllerID = @"VideosCollectionViewControllerID";
 NSString * const AppSettingsControllerID = @"AppSettingsControllerID";
+NSString * const WebcastsControllerID = @"WebcastsControllerID";
 
 }

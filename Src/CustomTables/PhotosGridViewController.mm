@@ -301,6 +301,8 @@
 
 #pragma mark - HUD/GUI
 
+//TODO: this must be a category already.
+
 //________________________________________________________________________________________
 - (void) showSpinner
 {

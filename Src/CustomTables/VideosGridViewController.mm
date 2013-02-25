@@ -17,6 +17,12 @@
 #import "Reachability.h"
 #import "GUIHelpers.h"
 
+//
+//TODO: refactoring is required- this class can be a base for a more specialized
+//WebcastsGridViewController,
+//or they can be even merged into the single video grid view controller.
+//
+
 @implementation VideosGridViewController {
    MBProgressHUD *noConnectionHUD;
    BOOL loaded;
@@ -374,6 +380,8 @@
 }
 
 #pragma mark - GUI/HUD
+
+//TODO: this must be a category already.
 
 //________________________________________________________________________________________
 - (void) showErrorHUD

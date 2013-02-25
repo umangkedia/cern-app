@@ -7,22 +7,15 @@
 //
 
 
+#import "ConnectionController.h"
+#import "ImageDownloader.h"
 #import "WebcastsParser.h"
-#import "MBProgressHUD.h"
 
-enum WebcastMode {
-    WebcastModeRecent,
-    WebcastModeUpcoming
-};
 
-@interface WebcastsGridViewController : UICollectionViewController<WebcastsParserDelegate, MBProgressHUDDelegate>
+@interface WebcastsGridViewController : UICollectionViewController<WebcastsParserDelegate, ConnectionController,
+                                                                   ImageDownloaderDelegate>
 
-@property (nonatomic, strong) WebcastsParser *parser;
-@property BOOL finishedParsingRecent;
-@property BOOL finishedParsingUpcoming;
-@property WebcastMode mode;
-
-- (void) refresh;
-- (IBAction) segmentedControlTapped : (UISegmentedControl *) sender;
+- (IBAction) refresh : (id) sender;
+- (IBAction) revealMenu : (id) sender;
 
 @end

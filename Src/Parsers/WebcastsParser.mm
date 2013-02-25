@@ -16,6 +16,8 @@ NSString * const webcastURL = @"http://webcast.web.cern.ch/webcast/";
    NSString *htmlString;
    NSMutableData *asyncData;
    NSUInteger numParsersLoading;
+   
+   NSURLConnection *currentConnection;
 }
 
 @synthesize recentWebcasts, upcomingWebcasts;
@@ -36,7 +38,7 @@ NSString * const webcastURL = @"http://webcast.web.cern.ch/webcast/";
       self.recentWebcasts = [[NSMutableArray alloc] init];
       self.upcomingWebcasts = [[NSMutableArray alloc] init];
       NSURLRequest *request = [NSURLRequest requestWithURL : [NSURL URLWithString : webcastURL]];
-      [NSURLConnection connectionWithRequest : request delegate : self];
+      currentConnection = [NSURLConnection connectionWithRequest : request delegate : self];
    }
 }
 
@@ -219,6 +221,17 @@ NSString * const webcastURL = @"http://webcast.web.cern.ch/webcast/";
 
       if (delegate && [delegate respondsToSelector : @selector(webcastsParserDidFinishParsingRecentWebcasts:)])
          [delegate webcastsParserDidFinishParsingRecentWebcasts : self];
+   }
+}
+
+#pragma mark - stop parser.
+
+//________________________________________________________________________________________
+- (void) stopParser
+{
+   if (currentConnection) {
+      [currentConnection cancel];
+      currentConnection = nil;
    }
 }
 

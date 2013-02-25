@@ -775,6 +775,17 @@ void CancelConnections(UIViewController *controller)
 - (void) loadControllerTo : (UIViewController *) controller
 {
    assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
+   
+   MenuNavigationController *navController = [controller.storyboard instantiateViewControllerWithIdentifier : controllerID];
+   if (controller.slidingViewController.topViewController)
+      CancelConnections(controller.slidingViewController.topViewController);
+
+   [controller.slidingViewController anchorTopViewOffScreenTo : ECRight animations : nil onComplete:^{
+      CGRect frame = controller.slidingViewController.topViewController.view.frame;
+      controller.slidingViewController.topViewController = navController;
+      controller.slidingViewController.topViewController.view.frame = frame;
+      [controller.slidingViewController resetTopView];
+   }];
 }
 
 @end

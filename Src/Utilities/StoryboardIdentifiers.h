@@ -20,5 +20,6 @@ extern NSString * const BulletinTableViewControllerID;
 extern NSString * const BulletinIssueTableControllerID;
 extern NSString * const VideosCollectionViewControllerID;
 extern NSString * const AppSettingsControllerID;
+extern NSString * const WebcastsControllerID;
 
 }

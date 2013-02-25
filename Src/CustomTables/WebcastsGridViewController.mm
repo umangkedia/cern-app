@@ -6,138 +6,416 @@
 //  Copyright (c) 2012 CERN. All rights reserved.
 //
 
+#import <cassert>
+
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "WebcastsGridViewController.h"
+#import "ECSlidingViewController.h"
+#import "PhotoGridViewCell.h"
+#import "ApplicationErrors.h"
+#import "PhotoSetInfoView.h"
+#import "MBProgressHUD.h"
+#import "Reachability.h"
+#import "GUIHelpers.h"
 
+//TODO: inherit web casts controller from videos grid view controller not to
+//have all this ugly copy and paste everywhere.
 
 @implementation WebcastsGridViewController {
-    MBProgressHUD *noConnectionHUD;
+   MBProgressHUD *noConnectionHUD;
+   BOOL loaded;
+
+   WebcastsParser *parser;
+
+   Reachability *internetReach;
+   UIActivityIndicatorView *spinner;
+   
+   NSMutableDictionary *videoThumbnails;
+   NSMutableDictionary *imageDownloaders;//Thumbnail downloaders.
+   
+   NSMutableArray *webcasts;
 }
 
-//________________________________________________________________________________________
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-   if (self = [super initWithCoder:aDecoder]) {
-      //self.gridView.backgroundColor = [UIColor whiteColor];
-      noConnectionHUD.delegate = self;
-      noConnectionHUD.mode = MBProgressHUDModeText;
-      noConnectionHUD.labelText = @"No internet connection";
-      noConnectionHUD.removeFromSuperViewOnHide = YES;
+#pragma mark - Life cycle.
 
-      self.parser = [[WebcastsParser alloc] init];
-      self.parser.delegate = self;
-      [self refresh];
+//________________________________________________________________________________________
+- (id) initWithCoder : (NSCoder *) aDecoder
+{
+   if (self = [super initWithCoder : aDecoder]) {
+      parser = [[WebcastsParser alloc] init];
+      parser.delegate = self;
    }
 
    return self;
 }
 
 //________________________________________________________________________________________
-- (void)refresh
+- (void) viewDidLoad
 {
-    if (!self.parser.recentWebcasts.count && !self.parser.upcomingWebcasts.count) {
-        [noConnectionHUD hide:YES];
+   [super viewDidLoad];
+   
+   using CernAPP::spinnerSize;
 
-        self.finishedParsingRecent = NO;
-        self.finishedParsingUpcoming = NO;
-        
-        [self.parser parseRecentWebcasts];
-        [self.parser parseUpcomingWebcasts];
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    }
+   const CGPoint spinnerOrigin = CGPointMake(self.view.frame.size.width / 2 - spinnerSize / 2, self.view.frame.size.height / 2 - spinnerSize / 2);
+   spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
+   spinner.color = [UIColor grayColor];
+   [self.view addSubview : spinner];
+   [self hideSpinner];
+   
+   internetReach = [Reachability reachabilityForInternetConnection];
 }
 
 //________________________________________________________________________________________
-- (void)hudWasTapped:(MBProgressHUD *)hud
+- (void) viewDidAppear : (BOOL) animated
 {
-    [self refresh];
+   [super viewDidAppear : animated];
+   
+   if (!loaded) {
+      loaded = YES;
+      [self refresh];
+   }
 }
 
 //________________________________________________________________________________________
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) didReceiveMemoryWarning
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-    else
-        return (interfaceOrientation == UIInterfaceOrientationPortrait);
+   [super didReceiveMemoryWarning];
+   //TODO.
+}
+
+#pragma mark - refresh logic
+
+//________________________________________________________________________________________
+- (IBAction) refresh : (id) sender
+{
+#pragma unused(sender)
+
+   if (internetReach && [internetReach currentReachabilityStatus] == CernAPP::NetworkStatus::notReachable) {
+      CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      return;
+   }
+
+   [self refresh];
 }
 
 //________________________________________________________________________________________
-- (void)viewDidLoad
+- (void) refresh
 {
-    [super viewDidLoad];
-    // When we call self.view this will reload the view after a didReceiveMemoryWarning.
-    self.view.backgroundColor = [UIColor whiteColor];
-}
+   self.navigationItem.rightBarButtonItem.enabled = NO;
 
-//________________________________________________________________________________________
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-//________________________________________________________________________________________
-- (IBAction)segmentedControlTapped:(UISegmentedControl *)sender
-{
-    self.mode = WebcastMode(sender.selectedSegmentIndex);
-    if (self.mode == WebcastModeRecent)
-        ;//self.gridView.allowsSelection = YES;
-    else
-        ;//self.gridView.allowsSelection = NO;
-    
-//    [self.gridView reloadData];
+   [self.collectionView reloadData];
+   [noConnectionHUD hide : YES];
+   [self showSpinner];
+   [parser parseRecentWebcasts];
 }
 
 #pragma mark WebcastsParserDelegate methods
 
 //________________________________________________________________________________________
-- (void)webcastsParserDidFinishParsingRecentWebcasts:(WebcastsParser *)parser
+- (void) webcastsParserDidFinishParsingRecentWebcasts : (WebcastsParser *) aParser
 {
-    self.finishedParsingRecent = YES;
-    if (self.finishedParsingUpcoming)
-        [MBProgressHUD hideHUDForView : self.view animated : YES];
-    if (self.mode == WebcastModeRecent) {
-        //[self.gridView reloadData];
-    }
+#pragma unused(aParser)
+
+   webcasts = [parser.recentWebcasts copy];
+   [self.collectionView reloadData];
+   [self downloadVideoThumbnails];
 }
 
 //________________________________________________________________________________________
-- (void)webcastsParserDidFinishParsingUpcomingWebcasts:(WebcastsParser *)parser
+- (void) webcastsParserDidFinishParsingUpcomingWebcasts : (WebcastsParser *) parser
 {
-    self.finishedParsingUpcoming = YES;
-    if (self.finishedParsingRecent)
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-    if (self.mode == WebcastModeUpcoming) {
-        //[self.gridView reloadData];
-    }
+   //
+   assert(0 && "noop");
 }
 
 //________________________________________________________________________________________
-- (void)webcastsParser:(WebcastsParser *)parser didDownloadThumbnailForRecentWebcastIndex:(int)index
+- (void) webcastsParser : (WebcastsParser *) parser didDownloadThumbnailForRecentWebcastIndex : (int) index
 {
-    if (self.mode == WebcastModeRecent)
-        ;//[self.gridView reloadItemsAtIndices:[NSIndexSet indexSetWithIndex:index] withAnimation:AQGridViewItemAnimationFade];
 }
 
 //________________________________________________________________________________________
-- (void)webcastsParser:(WebcastsParser *)parser didDownloadThumbnailForUpcomingWebcastIndex:(int)index
+- (void) webcastsParser : (WebcastsParser *) parser didDownloadThumbnailForUpcomingWebcastIndex : (int)index
 {
-    if (self.mode == WebcastModeUpcoming)
-        ;//[self.gridView reloadItemsAtIndices:[NSIndexSet indexSetWithIndex:index] withAnimation:AQGridViewItemAnimationFade];
 }
 
 //________________________________________________________________________________________
-- (void)webcastsParser:(WebcastsParser *)parser didFailWithError:(NSError *)error
+- (void) webcastsParser : (WebcastsParser *) parser didFailWithError : (NSError *) error
 {
-    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
-	noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
-    noConnectionHUD.delegate = self;
-    noConnectionHUD.mode = MBProgressHUDModeText;
-    noConnectionHUD.labelText = @"No internet connection";
-    noConnectionHUD.removeFromSuperViewOnHide = YES;
+   [self hideSpinner];
+   [self showErrorHUD];
+   self.navigationItem.rightBarButtonItem.enabled = YES;
+}
+
+#pragma mark - Interface orientation
+
+//________________________________________________________________________________________
+- (BOOL) shouldAutorotate
+{
+   return NO;
+}
+
+#pragma mark - GUI/HUD
+
+//TODO: this must be a category already.
+
+//________________________________________________________________________________________
+- (void) showErrorHUD
+{
+   [MBProgressHUD hideHUDForView : self.view animated : YES];
+
+   noConnectionHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+   noConnectionHUD.color = [UIColor redColor];
+   noConnectionHUD.mode = MBProgressHUDModeText;
+   noConnectionHUD.labelText = @"Network error";
+   noConnectionHUD.removeFromSuperViewOnHide = YES;
+}
+
+//________________________________________________________________________________________
+- (void) showSpinner
+{
+   if (spinner.hidden)
+      spinner.hidden = NO;
+   if (!spinner.isAnimating)
+      [spinner startAnimating];
+}
+
+//________________________________________________________________________________________
+- (void) hideSpinner
+{
+   if (spinner.isAnimating)
+      [spinner stopAnimating];
+   spinner.hidden = YES;
+}
+
+
+#pragma mark - sliding view controller.
+
+//________________________________________________________________________________________
+- (IBAction) revealMenu : (id) sender
+{
+#pragma unused(sender)
+   [self.slidingViewController anchorTopViewTo : ECRight];
+}
+
+#pragma mark - ImageDownloader.
+
+//________________________________________________________________________________________
+- (void) downloadVideoThumbnails
+{
+   assert(!imageDownloaders || !imageDownloaders.count &&
+          "downloadVideoThumbnails, there are still active downloads");
+
+   NSUInteger section = 0;
+   imageDownloaders = [[NSMutableDictionary alloc] init];
+   videoThumbnails = [[NSMutableDictionary alloc] init];
+   for (NSDictionary *metaData in webcasts) {
+      NSDictionary * const resources = (NSDictionary *)metaData[@"resources"];
+   
+      NSURL *url = nil;
+      if ([resources objectForKey : @"jpgthumbnail"])
+         url = [[resources objectForKey : @"jpgthumbnail"] objectAtIndex : 0];
+      else
+         url = [[resources objectForKey : @"pngthumbnail"] objectAtIndex : 0];
+      
+      if (url) {
+         ImageDownloader * const downloader = [[ImageDownloader alloc] initWithURL : url];
+         NSIndexPath * const indexPath = [NSIndexPath indexPathForRow : 0 inSection : section];
+         downloader.indexPathInTableView = indexPath;
+         downloader.delegate = self;
+         [imageDownloaders setObject : downloader forKey : indexPath];
+         [downloader startDownload];
+      }
+ 
+      ++section;
+   }
+}
+
+//________________________________________________________________________________________
+- (void) imageDidLoad : (NSIndexPath *) indexPath
+{
+   //
+   assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
+
+   assert(indexPath.row == 0 && "imageDidLoad:, row is out of bounds");
+   assert(indexPath.section < webcasts.count && "imageDidLoad:, section is out of bounds");
+   
+   ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[indexPath];
+   assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
+   
+   if (downloader.image) {
+      assert(videoThumbnails[indexPath] == nil && "imageDidLoad:, image was loaded already");
+      [videoThumbnails setObject : downloader.image forKey : indexPath];
+      [self.collectionView reloadItemsAtIndexPaths : @[indexPath]];//may be, simply set an image for image view?
+   }
+
+   [imageDownloaders removeObjectForKey : indexPath];
+   
+   if (!imageDownloaders.count) {
+      [self hideSpinner];
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+   }
+}
+
+//________________________________________________________________________________________
+- (void) imageDownloadFailed : (NSIndexPath *) indexPath
+{
+   assert(indexPath != nil && "imageDownloadFailed:, parameter 'indexPath' is nil");
+
+   //Even if download failed, index still must be valid.
+   assert(indexPath.row == 0 && "imageDownloadFailed:, row is out of bounds");
+   assert(indexPath.section < webcasts.count && "imageDownloadFailed:, section is out of bounds");
+
+   assert(imageDownloaders[indexPath] != nil &&
+          "imageDownloadFailed:, no downloader for the given path");
+   
+   [imageDownloaders removeObjectForKey : indexPath];
+   //But no need to update the collectionView.
+
+   if (!imageDownloaders.count) {
+      [self hideSpinner];
+      self.navigationItem.rightBarButtonItem.enabled = YES;
+   }
+}
+
+#pragma mark - UICollectionView data source
+
+//________________________________________________________________________________________
+- (NSInteger) numberOfSectionsInCollectionView : (UICollectionView *) collectionView
+{
+#pragma unused(collectionView)
+   return webcasts.count;
+}
+
+//________________________________________________________________________________________
+- (NSInteger) collectionView : (UICollectionView *) collectionView numberOfItemsInSection : (NSInteger) section
+{
+#pragma unused(collectionView)
+
+   return 1;
+}
+
+//________________________________________________________________________________________
+- (UICollectionViewCell *) collectionView : (UICollectionView *) collectionView cellForItemAtIndexPath : (NSIndexPath *) indexPath
+{
+   assert(collectionView != nil && "collectionView:cellForItemAtIndexPath:, parameter 'collectionView' is nil");
+   assert(indexPath != nil && "collectionView:cellForItemAtIndexPath:, parameter 'indexPath' is nil");
+
+   UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier : @"VideoCell" forIndexPath : indexPath];
+   assert(!cell || [cell isKindOfClass : [PhotoGridViewCell class]] &&
+          "collectionView:cellForItemAtIndexPath:, reusable cell has a wrong type");
+   
+   if (!cell)
+      cell = [[PhotoGridViewCell alloc] initWithFrame : CGRect()];
+   
+   PhotoGridViewCell * const photoCell = (PhotoGridViewCell *)cell;
+   
+   assert(indexPath.section >= 0 && indexPath.section < webcasts.count &&
+          "collectionView:cellForItemAtIndexPath:, section is out of bounds");
+   assert(indexPath.row == 0 && "collectionView:cellForItemAtIndexPath:, row is out of bounds");
+
+   if (UIImage * const thumbnail = (UIImage *)videoThumbnails[indexPath])
+      photoCell.imageView.image = thumbnail;
+   
+   return photoCell;
+}
+
+//________________________________________________________________________________________
+- (UICollectionReusableView *) collectionView : (UICollectionView *) collectionView
+                               viewForSupplementaryElementOfKind : (NSString *) kind atIndexPath : (NSIndexPath *) indexPath
+{
+   assert(collectionView != nil &&
+          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'collectionView' is nil");
+   assert(indexPath != nil &&
+          "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, parameter 'indexPath' is nil");
+   assert(indexPath.section < webcasts.count &&
+         "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, section is out of bounds");
+
+   UICollectionReusableView *view = nil;
+   if ([kind isEqualToString : UICollectionElementKindSectionHeader]) {
+      view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
+                             withReuseIdentifier : @"VideoInfoView" forIndexPath : indexPath];
+
+      assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
+             "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
+      
+      if (!view)
+         view = [[PhotoSetInfoView alloc] initWithFrame : CGRect()];
+
+      PhotoSetInfoView * const infoView = (PhotoSetInfoView *)view;
+      
+      NSDictionary * const metaData = (NSDictionary *)webcasts[indexPath.section];
+      
+      
+      infoView.descriptionLabel.text = (NSString *)metaData[@"title"];
+      
+      UIFont * const font = [UIFont fontWithName : CernAPP::childMenuFontName size : 12.f];
+      assert(font != nil && "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, font not found");
+      infoView.descriptionLabel.font = font;
+   } else {
+      //Footer.
+      view = [collectionView dequeueReusableSupplementaryViewOfKind : kind
+                             withReuseIdentifier : @"VideoCellFooter" forIndexPath : indexPath];
+
+      assert(!view || [view isKindOfClass : [PhotoSetInfoView class]] &&
+             "collectionView:viewForSupplementaryElementOfKinf:atIndexPath:, reusable view has a wrong type");
+   }
+   
+   return view;
+}
+
+#pragma mark - UICollectionView delegate.
+
+//________________________________________________________________________________________
+- (void) collectionView : (UICollectionView *) collectionView didSelectItemAtIndexPath : (NSIndexPath *) indexPath
+{
+#pragma unused(collectionView)
+
+   assert(indexPath != nil && "collectionView:didSelectItemAtIndexPath:, parameter 'indexPath' is nil");
+   assert(indexPath.section >= 0 && indexPath.section < webcasts.count &&
+          "collectionView:didSelectItemAtIndexPath:, section is out of bounds");
+
+   NSDictionary * const webcast = (NSDictionary *)webcasts[indexPath.row];
+   NSDictionary * const resources = (NSDictionary *)webcast[@"resources"];
+   
+   NSURL *url = (NSURL *)resources[@"mp40600"][0];
+   if (!url)
+      url = (NSURL *)resources[@"mp4mobile"][0];
+   
+   if (!url)
+      return;
+   //Hmm, I have to do this stupid Voodoo magic, otherwise, I have error messages
+   //from the Quartz about invalid context.
+   //Manu thanks to these guys: http://stackoverflow.com/questions/13203336/iphone-mpmovieplayerviewcontroller-cgcontext-errors
+   //I beleive, at some point, BeginImageContext/EndImageContext can be removed after
+   //Apple fixes the bug.
+   UIGraphicsBeginImageContext(CGSizeMake(1.f, 1.f));
+   MPMoviePlayerViewController * const playerController = [[MPMoviePlayerViewController alloc] initWithContentURL : url];
+   UIGraphicsEndImageContext();
+   [self presentMoviePlayerViewControllerAnimated : playerController];
+}
+
+#pragma mark - Connection controller.
+
+//________________________________________________________________________________________
+- (void) cancelAllDownloaders
+{
+   if (imageDownloaders && imageDownloaders.count) {
+      NSEnumerator * const keyEnumerator = [imageDownloaders keyEnumerator];
+      for (id key in keyEnumerator) {
+         ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[key];
+         [downloader cancelDownload];
+      }
+      
+      imageDownloaders = nil;
+   }
+}
+
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
+   [parser stopParser];
+   [self cancelAllDownloaders];
 }
 
 @end

@@ -37,4 +37,7 @@
 - (void) parseUpcomingWebcasts;
 - (void) loadHTMLString;
 
+//
+- (void) stopParser;
+
 @end
