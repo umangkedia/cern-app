@@ -53,6 +53,7 @@ NSString * const webcastURL = @"http://webcast.web.cern.ch/webcast/";
 
    NSScanner *scanner = [NSScanner scannerWithString:htmlString];
    numParsersLoading = 0;
+   [recentWebcasts removeAllObjects];
    while ([scanner scanUpToString : @"<div class=\"recentEvents\"" intoString : nil]) {
       NSString * const beginningOfLink = @"<a href=\"https://cdsweb.cern.ch/record/";
       if ([scanner scanUpToString : beginningOfLink intoString : nil]) {
@@ -83,7 +84,7 @@ NSString * const webcastURL = @"http://webcast.web.cern.ch/webcast/";
    }
    
    NSScanner * const scanner = [NSScanner scannerWithString : htmlString];
-
+   [upcomingWebcasts removeAllObjects];
    while ([scanner scanUpToString : @"<div class=\"upcomEvents timezoneChange\"" intoString : nil]) {
       NSMutableDictionary * const webcast = [NSMutableDictionary dictionary];
       // Extract the image URL
