@@ -696,13 +696,13 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 #pragma mark - Notifications
 
 - (void)registerForNotifications {
-	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self selector:@selector(deviceOrientationDidChange:) 
-			   name:UIDeviceOrientationDidChangeNotification object:nil];
+//	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+//	[nc addObserver:self selector:@selector(deviceOrientationDidChange:)
+//			   name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)unregisterFromNotifications {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification *)notification { 
