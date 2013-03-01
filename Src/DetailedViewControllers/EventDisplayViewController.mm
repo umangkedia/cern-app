@@ -280,7 +280,7 @@ using CernAPP::NetworkStatus;
 {
    if (![self hasConnection]) {
       if (pages.count) {//we already have pages.
-         CernAPP::ShowErrorAlert(@"Please, check network connection", @"Close");
+         CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
          [self checkCurrentPage];
       } else {
          [self showErrorHUD];
@@ -333,8 +333,10 @@ using CernAPP::NetworkStatus;
 - (IBAction) refresh : (id) sender
 {
    //This method is connected to the "reload" button.
-   if (![self hasConnection])
+   if (![self hasConnection]) {
       CernAPP::ShowErrorAlert(@"Please, check network!", @"Close");
+      return;
+   }
 
    [self refresh];
 }
