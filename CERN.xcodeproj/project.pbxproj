@@ -211,6 +211,14 @@
 		70D98B0C16F73ABA003C42E7 /* StaticInfoItemViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B0516F73ABA003C42E7 /* StaticInfoItemViewController.mm */; };
 		70D98B0D16F73ABA003C42E7 /* StaticInfoScrollViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B0716F73ABA003C42E7 /* StaticInfoScrollViewController.mm */; };
 		70D98B1116F7561E003C42E7 /* NewsTileViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1016F7561E003C42E7 /* NewsTileViewController.mm */; };
+		70D98B1416F76430003C42E7 /* TiledPageView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1316F76430003C42E7 /* TiledPageView.mm */; };
+		70D98B1716F76565003C42E7 /* TileView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1616F76565003C42E7 /* TileView.mm */; };
+		70D98B1E16F7726D003C42E7 /* testimage1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 70D98B1916F7726D003C42E7 /* testimage1.jpg */; };
+		70D98B1F16F7726D003C42E7 /* testimage2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 70D98B1A16F7726D003C42E7 /* testimage2.jpg */; };
+		70D98B2016F7726D003C42E7 /* testimage3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 70D98B1B16F7726D003C42E7 /* testimage3.jpg */; };
+		70D98B2116F7726D003C42E7 /* testimage4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 70D98B1C16F7726D003C42E7 /* testimage4.jpg */; };
+		70D98B2216F7726D003C42E7 /* testimage5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 70D98B1D16F7726D003C42E7 /* testimage5.jpg */; };
+		70D98B2416F77A6A003C42E7 /* paper.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 70D98B2316F77A6A003C42E7 /* paper.jpg */; };
 		70FDADCE16CE604200933383 /* cern_info.png in Resources */ = {isa = PBXBuildFile; fileRef = 70FDADCD16CE604200933383 /* cern_info.png */; };
 		70FDADD016CE615600933383 /* credits.png in Resources */ = {isa = PBXBuildFile; fileRef = 70FDADCF16CE615600933383 /* credits.png */; };
 		E1830BCA15744B9F003F16E2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E1830BC915744B9F003F16E2 /* libxml2.dylib */; };
@@ -516,6 +524,16 @@
 		70D98B0716F73ABA003C42E7 /* StaticInfoScrollViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoScrollViewController.mm; sourceTree = "<group>"; };
 		70D98B0F16F7561E003C42E7 /* NewsTileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTileViewController.h; sourceTree = "<group>"; };
 		70D98B1016F7561E003C42E7 /* NewsTileViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTileViewController.mm; sourceTree = "<group>"; };
+		70D98B1216F76430003C42E7 /* TiledPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledPageView.h; sourceTree = "<group>"; };
+		70D98B1316F76430003C42E7 /* TiledPageView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TiledPageView.mm; sourceTree = "<group>"; };
+		70D98B1516F76564003C42E7 /* TileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TileView.h; sourceTree = "<group>"; };
+		70D98B1616F76565003C42E7 /* TileView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TileView.mm; sourceTree = "<group>"; };
+		70D98B1916F7726D003C42E7 /* testimage1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = testimage1.jpg; sourceTree = "<group>"; };
+		70D98B1A16F7726D003C42E7 /* testimage2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = testimage2.jpg; sourceTree = "<group>"; };
+		70D98B1B16F7726D003C42E7 /* testimage3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = testimage3.jpg; sourceTree = "<group>"; };
+		70D98B1C16F7726D003C42E7 /* testimage4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = testimage4.jpg; sourceTree = "<group>"; };
+		70D98B1D16F7726D003C42E7 /* testimage5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = testimage5.jpg; sourceTree = "<group>"; };
+		70D98B2316F77A6A003C42E7 /* paper.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = paper.jpg; sourceTree = "<group>"; };
 		70FDADCD16CE604200933383 /* cern_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cern_info.png; sourceTree = "<group>"; };
 		70FDADCF16CE615600933383 /* credits.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = credits.png; sourceTree = "<group>"; };
 		E15CC7B81593E9E40016CC95 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
@@ -646,6 +664,7 @@
 		41E617C31614CEB700BAA7D4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				70D98B1816F7726D003C42E7 /* TestImages */,
 				705D9FB2166F387D007C7611 /* Sounds */,
 				703FD35A161DDB2F00B8BB8C /* Fonts */,
 				41E617C41614CEB700BAA7D4 /* Images */,
@@ -1077,8 +1096,26 @@
 			children = (
 				70D98B0F16F7561E003C42E7 /* NewsTileViewController.h */,
 				70D98B1016F7561E003C42E7 /* NewsTileViewController.mm */,
+				70D98B1216F76430003C42E7 /* TiledPageView.h */,
+				70D98B1316F76430003C42E7 /* TiledPageView.mm */,
+				70D98B1516F76564003C42E7 /* TileView.h */,
+				70D98B1616F76565003C42E7 /* TileView.mm */,
 			);
 			path = iPad;
+			sourceTree = "<group>";
+		};
+		70D98B1816F7726D003C42E7 /* TestImages */ = {
+			isa = PBXGroup;
+			children = (
+				70D98B2316F77A6A003C42E7 /* paper.jpg */,
+				70D98B1916F7726D003C42E7 /* testimage1.jpg */,
+				70D98B1A16F7726D003C42E7 /* testimage2.jpg */,
+				70D98B1B16F7726D003C42E7 /* testimage3.jpg */,
+				70D98B1C16F7726D003C42E7 /* testimage4.jpg */,
+				70D98B1D16F7726D003C42E7 /* testimage5.jpg */,
+			);
+			name = TestImages;
+			path = Images/TestImages;
 			sourceTree = "<group>";
 		};
 		E1F7B67B156EDC7C0092367F = {
@@ -1303,6 +1340,12 @@
 				701AE0FE16D268DF003F6533 /* ECSlidingViewControllerLicense.txt in Resources */,
 				701AE10016D26A87003F6533 /* glyphspro_1_license.txt in Resources */,
 				701AE10216D26AEE003F6533 /* glyphspro_4_license.txt in Resources */,
+				70D98B1E16F7726D003C42E7 /* testimage1.jpg in Resources */,
+				70D98B1F16F7726D003C42E7 /* testimage2.jpg in Resources */,
+				70D98B2016F7726D003C42E7 /* testimage3.jpg in Resources */,
+				70D98B2116F7726D003C42E7 /* testimage4.jpg in Resources */,
+				70D98B2216F7726D003C42E7 /* testimage5.jpg in Resources */,
+				70D98B2416F77A6A003C42E7 /* paper.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1403,6 +1446,8 @@
 				70D98B0C16F73ABA003C42E7 /* StaticInfoItemViewController.mm in Sources */,
 				70D98B0D16F73ABA003C42E7 /* StaticInfoScrollViewController.mm in Sources */,
 				70D98B1116F7561E003C42E7 /* NewsTileViewController.mm in Sources */,
+				70D98B1416F76430003C42E7 /* TiledPageView.mm in Sources */,
+				70D98B1716F76565003C42E7 /* TileView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

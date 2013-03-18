@@ -1,8 +1,11 @@
 #import <UIKit/UIKit.h>
 
 
-//This inheritance is temporary, only for testing.
-@interface NewsTileViewController : UITableViewController
+@interface NewsTileViewController : UIViewController {
+
+   IBOutlet UIScrollView *scrollView;
+
+}
 
 - (IBAction) revealMenu : (id) sender;
 
