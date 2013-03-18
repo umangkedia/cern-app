@@ -103,16 +103,19 @@
 
    assert(storyboard != nil && "viewDidLoad, storyboard is nil");
 
-
    MenuNavigationController * const top = (MenuNavigationController *)[storyboard instantiateViewControllerWithIdentifier :
                                                                        CernAPP::TableNavigationControllerNewsID];
 
-   assert([top.topViewController isKindOfClass : [NewsTableViewController class]] &&
-          "viewDidLoad:, top view controller is either nil or has a wrong type");
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+      assert([top.topViewController isKindOfClass : [NewsTableViewController class]] &&
+             "viewDidLoad:, top view controller is either nil or has a wrong type");
 
-   //The very first view a user see - is a news table. We create a navigation controller
-   //with such a table here, also, we have to add a news feed here.
-   [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
+      //The very first view a user see - is a news table. We create a navigation controller
+      //with such a table here, also, we have to add a news feed here.
+      [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
+   } else {
+      //
+   }
 
    self.topViewController = top;
 }
@@ -120,10 +123,15 @@
 //________________________________________________________________________________________
 - (BOOL) shouldAutorotate
 {
-   if ([self underLeftShowing])
-      return NO;
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 
-   return [self.topViewController shouldAutorotate];
+      if ([self underLeftShowing])
+         return NO;
+      
+      return [self.topViewController shouldAutorotate];
+   }
+
+   return YES;
 }
 
 //________________________________________________________________________________________
