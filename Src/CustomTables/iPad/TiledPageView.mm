@@ -63,7 +63,6 @@
    if (!tiles.count)
       return;
 
-   NSLog(@"do layout!");
    //Layout tiles
    const CGRect frame = self.frame;
    //We always place 6 tiles on the page (if we have 6).
