@@ -46,19 +46,6 @@
 }
 
 //________________________________________________________________________________________
-- (void) drawRect : (CGRect) rect
-{
-   CGContextRef ctx = UIGraphicsGetCurrentContext();
-   CGContextSetRGBFillColor(ctx, 0.4f, 0.4f ,0.4f ,1.f);
-   CGContextFillRect(ctx, rect);
-   
-   CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
-   CGContextMoveToPoint(ctx, 0.f, 0.f);
-   CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
-   CGContextStrokePath(ctx);
-}
-
-//________________________________________________________________________________________
 - (void) layoutSubviews
 {
    if (!tiles.count)
@@ -76,9 +63,9 @@
    
    NSUInteger index = 0;
    for (TileView *tile in tiles) {
-      const CGFloat x = (index % nItemsPerRow) * width;
-      const CGFloat y = (index / nItemsPerRow) * height;
-      const CGRect frame = CGRectMake(x, y, width, height);
+      const CGFloat x = (index % nItemsPerRow) * width + 2.f;
+      const CGFloat y = (index / nItemsPerRow) * height + 2.f;
+      const CGRect frame = CGRectMake(x, y, width - 4.f, height - 4.f);
 
       tile.frame = frame;
       ++index;

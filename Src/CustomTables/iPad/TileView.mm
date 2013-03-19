@@ -88,6 +88,9 @@ bool IsWideImage(UIImage *image)
 {
    if (self = [super initWithFrame : frame]) {
       thumbnailView = [[UIImageView alloc] initWithFrame : CGRect()];
+      thumbnailView.contentMode = UIViewContentModeScaleAspectFill;
+      thumbnailView.clipsToBounds = YES;
+      [self addSubview : thumbnailView];
       
       self.backgroundColor = [UIColor whiteColor];
       
@@ -195,7 +198,6 @@ bool IsWideImage(UIImage *image)
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y1 + textH * 0.5 * h);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y2);
          CGPathCloseSubpath(path);
-         //Image frame.
          break;
       case 1:
          CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
@@ -275,7 +277,36 @@ bool IsWideImage(UIImage *image)
 - (void) layoutThumbnail
 {
    if (thumbnailView.image) {
-   
+      const CGFloat w = self.frame.size.width;
+      const CGFloat h = self.frame.size.height;
+
+      if (IsWideImage(thumbnailView.image)) {
+         CGRect imageRect = {};
+         if (wideImageOnTop)
+            imageRect = CGRectMake(wideImageMargin * w, titleH * h, w - 2 * wideImageMargin * w, 0.5f * h * textH);
+         else
+            imageRect = CGRectMake(wideImageMargin * w, titleH * h + textH * h * 0.5f, w - 2 * wideImageMargin * w, 0.5f * h * textH);
+
+         thumbnailView.frame = imageRect;
+      } else {
+         switch (imageCut) {
+         case 0:
+            thumbnailView.frame = CGRectMake(wideImageMargin * w + 5, titleH * h + 5, (w - 2 * w * wideImageMargin) * 0.5 - 10, h * textH * 0.5 - 10);
+            break;
+         case 1:
+            thumbnailView.frame = CGRectMake(w / 2 + 5, titleH * h + 5, (w - 2 * w * wideImageMargin) * 0.5 - 10, h * textH * 0.5 - 10);
+            break;
+         case 2:
+            thumbnailView.frame = CGRectMake(wideImageMargin * w + 5, titleH * h + 5 + textH * 0.5 * h, (w - 2 * w * wideImageMargin) * 0.5 - 10, h * textH * 0.5 - 10);
+            break;
+         case 3:
+            thumbnailView.frame = CGRectMake(w / 2 + 5, titleH * h + 5 + textH * 0.5 * h, (w - 2 * w * wideImageMargin) * 0.5 - 10, h * textH * 0.5 - 10);
+            break;
+         default:
+            assert(0 && "layoutThumbnail, unknown layout");
+            break;
+         }
+      }
    }
 }
 
