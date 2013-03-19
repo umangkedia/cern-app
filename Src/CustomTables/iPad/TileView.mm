@@ -195,8 +195,8 @@ bool IsWideImage(UIImage *image)
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y1);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1 + textH * 0.5 * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y1 + textH * 0.5 * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y1 + textH * 0.5 * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
          CGPathCloseSubpath(path);
          break;
       case 1:
@@ -204,8 +204,8 @@ bool IsWideImage(UIImage *image)
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2 + textH * h);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
          CGPathCloseSubpath(path);
          
          
@@ -213,8 +213,8 @@ bool IsWideImage(UIImage *image)
       case 2:
          CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y1);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
          CGPathCloseSubpath(path);
@@ -223,8 +223,8 @@ bool IsWideImage(UIImage *image)
       case 3:
          CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - 2 * w * wideImageMargin, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w -  w * wideImageMargin, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w -  w * wideImageMargin, y1);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
          CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2);
          CGPathCloseSubpath(path);

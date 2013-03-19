@@ -73,6 +73,11 @@
 
    TiledPageView * const page = (TiledPageView *)pages[pageBeforeRotation];
    [page startTileAnimationTo : toInterfaceOrientation];
+   
+   if (pageBeforeRotation)
+      ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = YES;
+   if (pageBeforeRotation < pages.count - 1)
+      ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = YES;
 }
 
 //________________________________________________________________________________________
@@ -81,16 +86,13 @@
    [UIView animateWithDuration : 0.15f animations : ^ {
          [self layoutPages : YES];
       } completion : ^ (BOOL) {
-   }];
-}
+         if (pageBeforeRotation)
+            ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = NO;
+         if (pageBeforeRotation < pages.count - 1)
+            ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = NO;
 
-//________________________________________________________________________________________
-- (void) animateLayout
-{
-   [UIView animateWithDuration : 0.25f animations : ^ {
-      [self layoutPages : YES];
-   } completion : ^ (BOOL) {
-   }];
+      }
+   ];
 }
 
 #pragma mark - Sliding view.
