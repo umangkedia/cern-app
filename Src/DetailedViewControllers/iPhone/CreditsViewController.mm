@@ -69,6 +69,8 @@
 - (void) setCaptionAttribute : (NSRange) range
 {
    UIFont * const titleFont = [UIFont fontWithName : @"PTSans-Bold" size : 20.f];
+   assert(titleFont != nil && "setCaptionAttribute:, font is nil");
+   
    [text addAttribute : NSFontAttributeName value : titleFont range : range];
    [text addAttribute : NSForegroundColorAttributeName value : captionColor range : range];
 }

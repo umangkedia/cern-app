@@ -37,6 +37,7 @@
    //Test only.
    for (NSUInteger i = 0; i < 6; ++i) {
       TileView *newTile = [[TileView alloc] initWithFrame : CGRect()];
+      [newTile setTileData : nil];
       [tiles addObject : newTile];
       [self addSubview : newTile];
    }

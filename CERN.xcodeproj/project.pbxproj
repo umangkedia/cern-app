@@ -198,6 +198,7 @@
 		70C0E948169C75F10004ED1E /* PTS56F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70C0E947169C75F10004ED1E /* PTS56F.ttf */; };
 		70C0E94A169C85FA0004ED1E /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C0E949169C85FA0004ED1E /* menu.png */; };
 		70CC55EF169EF80600292332 /* MenuNavigationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70CC55ED169EF80500292332 /* MenuNavigationController.mm */; };
+		70D2629516F8948600883316 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70D2629416F8948600883316 /* CoreText.framework */; };
 		70D98AF516F73826003C42E7 /* BulletinIssueTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98AEA16F73826003C42E7 /* BulletinIssueTableViewController.mm */; };
 		70D98AF616F73826003C42E7 /* BulletinTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98AEC16F73826003C42E7 /* BulletinTableViewController.mm */; };
 		70D98AF716F73826003C42E7 /* CellBackgroundView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98AEE16F73826003C42E7 /* CellBackgroundView.mm */; };
@@ -499,6 +500,7 @@
 		70C0E949169C85FA0004ED1E /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		70CC55ED169EF80500292332 /* MenuNavigationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuNavigationController.mm; sourceTree = "<group>"; };
 		70CC55EE169EF80600292332 /* MenuNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuNavigationController.h; sourceTree = "<group>"; };
+		70D2629416F8948600883316 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		70D98AE916F73826003C42E7 /* BulletinIssueTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinIssueTableViewController.h; sourceTree = "<group>"; };
 		70D98AEA16F73826003C42E7 /* BulletinIssueTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BulletinIssueTableViewController.mm; sourceTree = "<group>"; };
 		70D98AEB16F73826003C42E7 /* BulletinTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinTableViewController.h; sourceTree = "<group>"; };
@@ -557,6 +559,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70D2629516F8948600883316 /* CoreText.framework in Frameworks */,
 				7004A14716CBB8E60097435D /* CoreData.framework in Frameworks */,
 				7098286616C404C500311025 /* Social.framework in Frameworks */,
 				702A4B7C1678E4D7005EBD1B /* SystemConfiguration.framework in Frameworks */,
@@ -1144,6 +1147,7 @@
 		E1F7B689156EDC7C0092367F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70D2629416F8948600883316 /* CoreText.framework */,
 				7004A14616CBB8E60097435D /* CoreData.framework */,
 				7098286516C404C500311025 /* Social.framework */,
 				E1FFFC2A15A651B40093462B /* MediaPlayer.framework */,
