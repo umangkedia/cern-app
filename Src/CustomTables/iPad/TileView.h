@@ -13,5 +13,6 @@
 @interface TileView : UIView
 
 - (void) setTileData : (MWFeedItem *) feedItem;
+//- (void) layoutTileContents
 
 @end

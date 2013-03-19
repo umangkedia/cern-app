@@ -11,5 +11,8 @@
 @interface TiledPageView : UIView
 
 - (void) setPageItems : (NSArray *) feedItems startingFrom : (NSUInteger) index;
+- (void) layoutTiles;
+
+- (void) startTileAnimationTo : (UIInterfaceOrientation) orientation;
 
 @end

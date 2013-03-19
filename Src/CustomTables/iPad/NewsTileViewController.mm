@@ -35,6 +35,7 @@
    //Test only.
    ////////////////////////////////
    [self layoutPages];
+   [scrollView setContentOffset : CGPoint()];
 }
 
 #pragma mark - Layout.
@@ -48,26 +49,45 @@
    for (TiledPageView *page in pages) {
       page.frame = currentFrame;
       currentFrame.origin.x += currentFrame.size.width;
+      [page layoutTiles];
    }
    
    [scrollView setContentSize : CGSizeMake(currentFrame.size.width * pages.count, currentFrame.size.height)];
-   [scrollView setContentOffset : CGPointMake(pageBeforeRotation * currentFrame.size.width, 0.f)];
 }
 
 
 #pragma mark - Device orientation changes.
 
 //________________________________________________________________________________________
-- (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
+- (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
    pageBeforeRotation = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
 }
 
+//________________________________________________________________________________________
+- (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
+{
+   [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f)];
+   //TiledPageView * const page = (TiledPageView *)pages[pageBeforeRotation];
+   //[page startTileAnimationTo : toInterfaceOrientation];
+}
 
 //________________________________________________________________________________________
 - (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
 {
-   [self layoutPages];
+   [UIView animateWithDuration : 0.25f animations : ^ {
+         [self layoutPages];
+      } completion : ^ (BOOL) {
+   }];
+}
+
+//________________________________________________________________________________________
+- (void) animateLayout
+{
+   [UIView animateWithDuration : 0.25f animations : ^ {
+      [self layoutPages];
+   } completion : ^ (BOOL) {
+   }];
 }
 
 #pragma mark - Sliding view.
