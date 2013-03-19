@@ -122,15 +122,15 @@
          x -= width / 2;
       else if (col + 1 == nItemsPerRow)
          x += width / 2;
-      else if (UIInterfaceOrientationIsLandscape(orientation))
-         x = width / 3.f;
+     // else if (UIInterfaceOrientationIsLandscape(orientation))
+     //    x = width / 3.f;
 
       if (!row)
          y -= height / 2;
       else if (row + 1 == nRows)
          y += height / 2;
-      else if (UIInterfaceOrientationIsLandscape(orientation))
-         y = height / 2.f;
+     // else if (UIInterfaceOrientationIsLandscape(orientation))
+     //    y = height / 2.f;
       
       frame.origin = CGPointMake(x, y);
       tile.frame = frame;
