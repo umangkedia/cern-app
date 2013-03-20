@@ -7,7 +7,8 @@
 #import "RSSAggregator.h"
 
 @interface NewsTileViewController : UIViewController<HUDRefreshProtocol, RSSAggregatorDelegate, PageController,
-                                                     ImageDownloaderDelegate, ConnectionController>
+                                                     ImageDownloaderDelegate, ConnectionController,
+                                                     UIScrollViewDelegate>
 {
    IBOutlet UIScrollView *scrollView;
 }
@@ -24,7 +25,7 @@
 
 //PageController:
 - (void) reloadPage;
-- (void) reloadPageFromRefreshControl;
+- (IBAction) reloadPageFromRefreshControl;
 
 //ImageDownloaderDelegate:
 - (void) imageDidLoad : (NSIndexPath *) indexPath;

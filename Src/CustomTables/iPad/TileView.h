@@ -13,6 +13,7 @@
 @interface TileView : UIView
 
 - (void) setTileData : (MWFeedItem *) feedItem;
-//- (void) layoutTileContents
+- (void) setTileThumbnail : (UIImage *) image;
+- (void) layoutTile;
 
 @end

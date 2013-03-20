@@ -14,5 +14,6 @@
 - (void) layoutTiles;
 
 - (void) startTileAnimationTo : (UIInterfaceOrientation) orientation;
+- (void) setThumbnail : (UIImage *) thumbnailImage forTile : (NSUInteger) tileIndex;
 
 @end

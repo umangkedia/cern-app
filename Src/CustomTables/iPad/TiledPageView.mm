@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 CERN. All rights reserved.
 //
 
+#import <algorithm>
 #import <cassert>
 
 #import "TiledPageView.h"
@@ -28,21 +29,19 @@
 //________________________________________________________________________________________
 - (void) setPageItems : (NSArray *) feedItems startingFrom : (NSUInteger) index
 {
-//   assert(feedItems != nil && "setPageItems:startingFrom:, parameter 'feedItems' is nil");
-//   assert(index < feedItems.count && "setPageItems:startingFrom:, parameter 'index' is out of range");
+   assert(feedItems != nil && "setPageItems:startingFrom:, parameter 'feedItems' is nil");
+   assert(index < feedItems.count && "setPageItems:startingFrom:, parameter 'index' is out of range");
 
    tiles = [[NSMutableArray alloc] init];
 
-   /////////////////////
-   //Test only.
-   for (NSUInteger i = 0; i < 6; ++i) {
+   const NSUInteger endOfRange = std::min(feedItems.count, index + 6);
+   
+   for (NSUInteger i = index; i < endOfRange; ++i) {
       TileView *newTile = [[TileView alloc] initWithFrame : CGRect()];
-      [newTile setTileData : nil];
+      [newTile setTileData : (MWFeedItem *)feedItems[i]];
       [tiles addObject : newTile];
       [self addSubview : newTile];
    }
-   //Test only.
-   /////////////////////
 }
 
 //________________________________________________________________________________________
@@ -68,6 +67,7 @@
       const CGRect frame = CGRectMake(x, y, width - 4.f, height - 4.f);
 
       tile.frame = frame;
+      [tile layoutTile];
       
       ++index;
    }
@@ -119,23 +119,29 @@
       CGRect frame = tile.frame;
       
       if (!col)
-         x -= width / 2;
+         x -= width / 4.;
       else if (col + 1 == nItemsPerRow)
-         x += width / 2;
-     // else if (UIInterfaceOrientationIsLandscape(orientation))
-     //    x = width / 3.f;
+         x += width / 4.;
 
       if (!row)
-         y -= height / 2;
+         y -= height / 4.;
       else if (row + 1 == nRows)
-         y += height / 2;
-     // else if (UIInterfaceOrientationIsLandscape(orientation))
-     //    y = height / 2.f;
+         y += height / 4.;
       
       frame.origin = CGPointMake(x, y);
       tile.frame = frame;
       ++index;
    }
+}
+
+//________________________________________________________________________________________
+- (void) setThumbnail : (UIImage *) thumbnailImage forTile : (NSUInteger) tileIndex
+{
+   assert(thumbnailImage != nil && "setThumbnail:forTile, parameter 'thumbnailImage' is nil");
+   assert(tileIndex < tiles.count && "setThumbnail:forTile, parameter 'tileIndex' is out of range");
+   
+   TileView * const tile = (TileView *)tiles[tileIndex];
+   [tile setTileThumbnail : thumbnailImage];
 }
 
 @end

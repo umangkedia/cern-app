@@ -15,6 +15,7 @@
 #import "InitialSlidingViewController.h"
 #import "MenuNavigationController.h"
 #import "NewsTableViewController.h"
+#import "NewsTileViewController.h"
 #import "StoryboardIdentifiers.h"
 
 @implementation InitialSlidingViewController
@@ -114,7 +115,16 @@
       //with such a table here, also, we have to add a news feed here.
       [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
    } else {
-      //
+      //Special case, unfortunately: we do not have any interesting feeds with images and articles,
+      //only CMS or ATLAS feeds or the CERN's bulletin. To be more neutral, let's use the Bulletin.
+      
+      assert([top.topViewController isKindOfClass:[NewsTileViewController class]] &&
+             "viewDidLoad:, top view controller is either nil or has a wrong type");
+      
+      NewsTileViewController *tileController = (NewsTileViewController *)top.topViewController;
+      tileController.navigationItem.title = @"Bulletin";
+      //TODO: ID for cache!!!
+      [tileController.aggregator addFeedForURL : [NSURL URLWithString : @"http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&ln=en"]];
    }
 
    self.topViewController = top;

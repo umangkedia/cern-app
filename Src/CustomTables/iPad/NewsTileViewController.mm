@@ -1,12 +1,17 @@
+#import <algorithm>
+
 #import "ECSlidingViewController.h"
+#import "NewsTableViewController.h"
 #import "NewsTileViewController.h"
+#import "ApplicationErrors.h"
 #import "TiledPageView.h"
+#import "MWFeedItem.h"
 
 @implementation NewsTileViewController {
    NSMutableArray *pages;
    NSUInteger pageBeforeRotation;
    
-   NSMutableArray *imageDownloaders;
+   NSMutableDictionary *imageDownloaders;
    BOOL viewDidAppear;
    
    NSMutableArray *allArticles;
@@ -61,25 +66,11 @@
 
    if (!viewDidAppear) {
       viewDidAppear = YES;
-      //read a cache?
-      //May be, we have a cache already.
+
+      //TODO: cache!
+
       [self reloadPage];
    }
-
-   //Let's create the pages.
-   ////////////////////////////////
-   //Test only.
-   const CGRect currentFrame = self.view.frame;
-   for (NSUInteger i = 0; i < 3; ++i) {
-      TiledPageView * const newPage = [[TiledPageView alloc] initWithFrame : currentFrame ];
-      [newPage setPageItems : nil startingFrom : 0];//nil and 0 are illegal, just for test here!
-      [pages addObject : newPage];
-      [scrollView addSubview : newPage];
-   }
-   //Test only.
-   ////////////////////////////////
-   [self layoutPages : YES];
-   [scrollView setContentOffset : CGPoint()];
 }
 
 #pragma mark - Layout.
@@ -117,7 +108,7 @@
 
    TiledPageView * const page = (TiledPageView *)pages[pageBeforeRotation];
    [page startTileAnimationTo : toInterfaceOrientation];
-   
+
    if (pageBeforeRotation)
       ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = YES;
    if (pageBeforeRotation < pages.count - 1)
@@ -127,7 +118,7 @@
 //________________________________________________________________________________________
 - (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
 {
-   [UIView animateWithDuration : 0.15f animations : ^ {
+   [UIView animateWithDuration : 0.2f animations : ^ {
          [self layoutPages : YES];
       } completion : ^ (BOOL) {
          if (pageBeforeRotation)
@@ -148,8 +139,42 @@
 
 #pragma mark - RSSAggregatorDelegate.
 //________________________________________________________________________________________
-- (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator
+- (void) allFeedsDidLoadForAggregator : (RSSAggregator *) anAggregator
 {
+#pragma unused(anAggregator)
+
+   allArticles = [aggregator.allArticles mutableCopy];
+   
+   //TODO: update a cache???
+   
+   CernAPP::HideSpinner(self);
+
+   //Let's create tiled view now.
+   
+   //At the moment, I'm using simple layout - 6 items per page.
+   if (!pages)
+      pages = [[NSMutableArray alloc] init];
+   else {
+      for (UIView *v in pages)
+         [v removeFromSuperview];
+
+      [pages removeAllObjects];
+   }
+   
+   const NSUInteger nPages = allArticles.count / 6 + 1;
+   
+   for (NSUInteger pageIndex = 0; pageIndex < nPages; ++pageIndex) {
+      TiledPageView * const newPage = [[TiledPageView alloc] initWithFrame : CGRect()];
+      [newPage setPageItems : allArticles startingFrom : pageIndex * 6];
+      [scrollView addSubview : newPage];
+      [pages addObject : newPage];
+   }
+   
+   [self layoutPages : YES];
+   [scrollView setContentOffset : CGPointMake(0.f, 0.f)];
+   
+   //The first page is visible now, let's download ... IMAGES NOW!!! :)
+   [self loadImagesForVisiblePage];
 }
 
 //________________________________________________________________________________________
@@ -166,11 +191,44 @@
 //________________________________________________________________________________________
 - (void) reloadPage
 {
+   if (aggregator.isLoadingData)
+      return;
+   //Stop any image download if we have any.
+   [self cancelAllImageDownloaders];
+
+   if (!aggregator.hasConnection) {
+      //Network problems, we can not reload
+      //and do not have any previous data to show.
+      if (!allArticles.count) {//TODO: cache also!!!
+         CernAPP::ShowErrorHUD(self, @"No network");
+         return;
+      }
+   }
+
+   [noConnectionHUD hide : YES];
+
+   //TODO: Cache will also affect the logic here!
+   
+   CernAPP::ShowSpinner(self);
+
+   [self.aggregator clearAllFeeds];
+   //It will re-parse feed and (probably) re-fill the tiled view.
+   [self.aggregator refreshAllFeeds];
 }
 
 //________________________________________________________________________________________
 - (void) reloadPageFromRefreshControl
 {
+   if (aggregator.isLoadingData)//assert? can this ever happen?
+      return;
+
+   if (!aggregator.hasConnection) {
+      CernAPP::ShowErrorAlert(@"Please, check network", @"Close");
+      CernAPP::HideSpinner(self);
+      return;
+   }
+
+   [self reloadPage];
 }
 
 
@@ -178,17 +236,124 @@
 //________________________________________________________________________________________
 - (void) imageDidLoad : (NSIndexPath *) indexPath
 {
+   assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
+   const NSInteger page = indexPath.row;
+   assert(page >= 0 && page < allArticles.count / 6 + 1 && "imageDidLoad:, index is out of bounds");
+   
+   MWFeedItem * const article = (MWFeedItem *)allArticles[indexPath.section];
+
+   //We should not load any image more when once.
+   assert(article.image == nil && "imageDidLoad:, image was loaded already");
+   
+   ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[indexPath];
+   assert(downloader != nil && "imageDidLoad:, no downloader found for the given index path");
+
+   if (downloader.image) {
+      article.image = downloader.image;
+      //
+      TiledPageView * const pageToUpdate = (TiledPageView *)pages[page];
+      [pageToUpdate setThumbnail : article.image forTile : indexPath.section % 6];
+      //
+   }
+   
+   [imageDownloaders removeObjectForKey : indexPath];
+   if (!imageDownloaders.count)
+      imageDownloaders = nil;
 }
 
 //________________________________________________________________________________________
 - (void) imageDownloadFailed : (NSIndexPath *) indexPath
 {
+   assert(indexPath != nil && "imageDownloadFailed:, parameter 'indexPath' is nil");
+
+   const NSInteger page = indexPath.row;
+   //Even if download failed, index still must be valid.
+   assert(page >= 0 && page < allArticles.count / 6 &&
+          "imageDownloadFailed:, index is out of bounds");
+   assert(imageDownloaders[indexPath] != nil &&
+          "imageDownloadFailed:, no downloader for the given path");
+
+   [imageDownloaders removeObjectForKey : indexPath];
+   //But no need to update the tableView.
+   if (!imageDownloaders.count)
+      imageDownloaders = nil;
 }
 
 #pragma mark - Connection controller.
 //________________________________________________________________________________________
 - (void) cancelAnyConnections
 {
+}
+
+
+#pragma mark - UIScrollView delegate.
+
+// Load images for all onscreen rows (if not done yet) when scrolling is finished
+//________________________________________________________________________________________
+- (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL) decelerate
+{
+#pragma unused(scrollView)
+   //Cached feeds do not have any images.
+   if (!decelerate)
+      [self loadImagesForVisiblePage];
+
+}
+
+//________________________________________________________________________________________
+- (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
+{
+#pragma unused(scrollView)
+   [self loadImagesForVisiblePage];
+}
+
+#pragma mark - Aux.
+//________________________________________________________________________________________
+- (void) cancelAllImageDownloaders
+{
+   if (imageDownloaders && imageDownloaders.count) {
+      NSEnumerator * const keyEnumerator = [imageDownloaders keyEnumerator];
+      for (id key in keyEnumerator) {
+         ImageDownloader * const downloader = (ImageDownloader *)imageDownloaders[key];
+         [downloader cancelDownload];
+      }
+      
+      imageDownloaders = nil;
+   }
+}
+
+//________________________________________________________________________________________
+- (void) loadImagesForVisiblePage
+{
+   const NSUInteger visiblePage = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
+   
+   //At the moment I have a very simple layout - up to 6 tiles on a page.
+   const NSUInteger endOfRange = std::min(visiblePage * 6 + 6, allArticles.count);
+   for (NSUInteger i = visiblePage * 6; i < endOfRange; ++i) {
+      MWFeedItem * const article = (MWFeedItem *)allArticles[i];
+      if (!article.image) {
+         if (!imageDownloaders)
+            imageDownloaders = [[NSMutableDictionary alloc] init];
+      
+
+         //May be, we already have a downloader for this item?
+         NSIndexPath * const indexPath = [NSIndexPath indexPathForRow : visiblePage inSection : i];//Using absolute index i, not relative (on a page).
+         ImageDownloader *downloader = (ImageDownloader *)imageDownloaders[indexPath];
+         
+         if (!downloader) {
+            NSString * body = article.content;
+            if (!body)
+               body = article.summary;
+
+            if (NSString * const urlString = [NewsTableViewController firstImageURLFromHTMLString : body]) {
+               downloader = [[ImageDownloader alloc] initWithURLString : urlString];
+               downloader.indexPathInTableView = indexPath;
+               downloader.delegate = self;
+               [imageDownloaders setObject : downloader forKey : indexPath];
+               [downloader startDownload];//Power on.
+            }
+         }
+      }
+   }
 }
 
 @end
