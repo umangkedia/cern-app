@@ -100,6 +100,7 @@
    pageBeforeRotation = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
 }
 
+
 //________________________________________________________________________________________
 - (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
@@ -113,10 +114,12 @@
       ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = YES;
    if (pageBeforeRotation < pages.count - 1)
       ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = YES;
+   
+   [self performSelector : @selector(layoutAnimation) withObject : nil afterDelay : 0.001f];
 }
 
 //________________________________________________________________________________________
-- (void) didRotateFromInterfaceOrientation : (UIInterfaceOrientation) fromInterfaceOrientation
+- (void) layoutAnimation
 {
    [UIView animateWithDuration : 0.2f animations : ^ {
          [self layoutPages : YES];
@@ -128,6 +131,7 @@
 
       }
    ];
+
 }
 
 #pragma mark - Sliding view.
