@@ -183,6 +183,7 @@
 		709CE6CA16A5C287006D524E /* 180-stickynote@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709CE6C916A5C287006D524E /* 180-stickynote@2x.png */; };
 		70A2533E16BBED0F00F9898A /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A2533D16BBED0F00F9898A /* refresh.png */; };
 		70A2534016BBEF8F00F9898A /* bookmarks.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A2533F16BBEF8F00F9898A /* bookmarks.png */; };
+		70B22F0516F9DCAC007D88EF /* action_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B22F0416F9DCAA007D88EF /* action_blue.png */; };
 		70B2A75416DBBE5E00BC8657 /* HUDRefreshProtocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70B2A75316DBBE5E00BC8657 /* HUDRefreshProtocol.mm */; };
 		70B6B0B9169DD2790058DADA /* live_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0B8169DD2790058DADA /* live_color.png */; };
 		70B6B0BC169DD48E0058DADA /* news_color.png in Resources */ = {isa = PBXBuildFile; fileRef = 70B6B0BB169DD48E0058DADA /* news_color.png */; };
@@ -479,6 +480,7 @@
 		709CE6C916A5C287006D524E /* 180-stickynote@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "180-stickynote@2x.png"; sourceTree = "<group>"; };
 		70A2533D16BBED0F00F9898A /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
 		70A2533F16BBEF8F00F9898A /* bookmarks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bookmarks.png; sourceTree = "<group>"; };
+		70B22F0416F9DCAA007D88EF /* action_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = action_blue.png; sourceTree = "<group>"; };
 		70B2A75016DBBD5200BC8657 /* ConnectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionController.h; sourceTree = "<group>"; };
 		70B2A75116DBBD5200BC8657 /* PageControllerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageControllerProtocol.h; sourceTree = "<group>"; };
 		70B2A75216DBBE5E00BC8657 /* HUDRefreshProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUDRefreshProtocol.h; sourceTree = "<group>"; };
@@ -868,6 +870,7 @@
 		707B136D169AEA4700180E02 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				70B22F0416F9DCAA007D88EF /* action_blue.png */,
 				70FDADCF16CE615600933383 /* credits.png */,
 				70FDADCD16CE604200933383 /* cern_info.png */,
 				700A3FAF16CD3CEF0063B1B2 /* settings.png */,
@@ -1355,6 +1358,7 @@
 				70D98B2116F7726D003C42E7 /* testimage4.jpg in Resources */,
 				70D98B2216F7726D003C42E7 /* testimage5.jpg in Resources */,
 				70D98B2416F77A6A003C42E7 /* paper.jpg in Resources */,
+				70B22F0516F9DCAC007D88EF /* action_blue.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1541,7 +1545,7 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = "$(SRCROOT)/CERN.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-lxml2",
@@ -1569,7 +1573,7 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = "$(SRCROOT)/CERN.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-lxml2",

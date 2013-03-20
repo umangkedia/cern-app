@@ -5,6 +5,37 @@
 @implementation NewsTileViewController {
    NSMutableArray *pages;
    NSUInteger pageBeforeRotation;
+   
+   NSMutableArray *imageDownloaders;
+   BOOL viewDidAppear;
+   
+   NSMutableArray *allArticles;
+}
+
+@synthesize aggregator, noConnectionHUD, spinner;
+
+//________________________________________________________________________________________
+- (void) doInitController
+{
+   //Shared method for different "ctors".
+   pages = nil;
+   pageBeforeRotation = 0;
+   imageDownloaders = nil;
+   viewDidAppear = NO;
+   allArticles = nil;
+   
+   aggregator = [[RSSAggregator alloc] init];
+   aggregator.delegate = self;
+}
+
+//________________________________________________________________________________________
+- (id) initWithCoder : (NSCoder *) aDecoder
+{
+   if (self = [super initWithCoder : aDecoder]) {
+      [self doInitController];
+   }
+
+   return self;
 }
 
 //________________________________________________________________________________________
@@ -14,6 +45,9 @@
    
    //
    pages = [[NSMutableArray alloc] init];
+
+   CernAPP::AddSpinner(self);
+   CernAPP::HideSpinner(self);
 }
 
 //________________________________________________________________________________________
@@ -21,8 +55,18 @@
 {
    [super viewDidAppear : animated];
 
+   //viewDidAppear can be called many times: the first time when controller
+   //created and view loaded, next time - for example, when article detailed view
+   //controller is poped from the navigation stack.
+
+   if (!viewDidAppear) {
+      viewDidAppear = YES;
+      //read a cache?
+      //May be, we have a cache already.
+      [self reloadPage];
+   }
+
    //Let's create the pages.
-   
    ////////////////////////////////
    //Test only.
    const CGRect currentFrame = self.view.frame;
@@ -100,6 +144,51 @@
 - (void) revealMenu : (id) sender
 {
    [self.slidingViewController anchorTopViewTo : ECRight];
+}
+
+#pragma mark - RSSAggregatorDelegate.
+//________________________________________________________________________________________
+- (void) allFeedsDidLoadForAggregator : (RSSAggregator *) aggregator
+{
+}
+
+//________________________________________________________________________________________
+- (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSString *) errorDescription
+{
+}
+
+//________________________________________________________________________________________
+- (void) lostConnection : (RSSAggregator *) aggregator
+{
+}
+
+#pragma mark - PageController.
+//________________________________________________________________________________________
+- (void) reloadPage
+{
+}
+
+//________________________________________________________________________________________
+- (void) reloadPageFromRefreshControl
+{
+}
+
+
+#pragma mark - ImageDownloaderDelegate.
+//________________________________________________________________________________________
+- (void) imageDidLoad : (NSIndexPath *) indexPath
+{
+}
+
+//________________________________________________________________________________________
+- (void) imageDownloadFailed : (NSIndexPath *) indexPath
+{
+}
+
+#pragma mark - Connection controller.
+//________________________________________________________________________________________
+- (void) cancelAnyConnections
+{
 }
 
 @end

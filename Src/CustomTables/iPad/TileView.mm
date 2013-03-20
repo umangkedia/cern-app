@@ -11,6 +11,8 @@
 
 #import <CoreText/CoreText.h>
 
+#import "PictureButtonView.h"
+#import "NewsTableViewCell.h"
 #import "TileView.h"
 
 namespace {
@@ -75,6 +77,10 @@ bool IsWideImage(UIImage *image)
    int imageCut;
    
    NSUInteger choise;
+   
+   UILabel *infoLabel;//Article's date and author.
+
+   PictureButtonView *actionButton;
 }
 
 //________________________________________________________________________________________
@@ -99,6 +105,17 @@ bool IsWideImage(UIImage *image)
       
       wideImageOnTop = std::rand() % 2;
       imageCut = std::rand() % 4;
+      
+      infoLabel = [[UILabel alloc] initWithFrame : CGRect()];
+      infoLabel.textColor = [[UIColor blueColor] colorWithAlphaComponent : 0.5];
+      UIFont * const font = [UIFont fontWithName : [NewsTableViewCell authorLabelFontName] size : 14.f];
+      assert(font != nil && "initWithFrame, custom font is nil");
+      infoLabel.font = font;
+      [self addSubview : infoLabel];
+      
+      actionButton = [[PictureButtonView alloc] initWithFrame:CGRect() image : [UIImage imageNamed : @"action_blue.png"]];
+      [actionButton addTarget : self selector : @selector(sendArticle)];
+      [self addSubview : actionButton];
    }
 
    return self;
@@ -128,6 +145,11 @@ bool IsWideImage(UIImage *image)
    thumbnailView.image = [UIImage imageNamed : imageNames[choise]];
 
    title = [[NSMutableAttributedString alloc] initWithString : titles[choise]];
+
+   NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+   [dateFormatter setDateFormat:@"d MMM. yyyy"];
+   infoLabel.text = [dateFormatter stringFromDate : [NSDate date]];//Article's date needed.
+
    //Test only.
    ///////////////////////////////////////////////////
 
@@ -311,22 +333,42 @@ bool IsWideImage(UIImage *image)
 }
 
 //________________________________________________________________________________________
+- (void) layoutUIElements
+{
+   const CGFloat hugeH = 1000.f;
+   const CGSize viewSize = self.frame.size;
+   const CGSize dateSize = [infoLabel.text sizeWithFont : infoLabel.font constrainedToSize : CGSizeMake(viewSize.width / 2, hugeH)];
+   const CGFloat y = footerY * viewSize.height + (1 - footerY) * viewSize.height * 0.5 - dateSize.height / 2;
+   infoLabel.frame = CGRectMake(wideImageMargin * viewSize.width, y, dateSize.width, dateSize.height);
+   
+   const CGFloat btnSz = (1 - footerY) * viewSize.height;//quite arbitrary choise
+   actionButton.frame = CGRectMake(viewSize.width - btnSz, viewSize.height - btnSz, btnSz, btnSz);
+}
+
+//________________________________________________________________________________________
 - (void) layoutSubviews
 {
    [self layoutTitle];
    [self layoutText];
    [self layoutThumbnail];
+   [self layoutUIElements];
    
    [self setNeedsDisplay];
 }
 
-#pragma mark - Layout test.
+//________________________________________________________________________________________
+- (void) sendArticle
+{
+}
+
+#pragma mark - text rendering.
 //________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
    [super drawRect : rect];
    
    CGContextRef ctx = UIGraphicsGetCurrentContext();
+
    CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
 
    CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);

@@ -24,22 +24,7 @@
    if (self = [super initWithFrame : frame]) {
       // Initialization code
       pict = image;
-      self.backgroundColor = [UIColor clearColor];
-      /*
-      CALayer * const layer = self.layer;
-      layer.cornerRadius = 8.0f;
-      layer.masksToBounds = YES;
-      layer.borderWidth = 1.0f;
-      layer.borderColor = [UIColor colorWithWhite:1.f alpha : 0.2f].CGColor;
-
-      CAGradientLayer * const shineLayer = [CAGradientLayer layer];
-      shineLayer.frame = layer.bounds;
-      shineLayer.colors = @[(id)[UIColor colorWithWhite:1.0f alpha:0.4f].CGColor, (id)[UIColor colorWithWhite:1.0f alpha:0.2f].CGColor,
-                            (id)[UIColor colorWithWhite:0.75f alpha:0.2f].CGColor, (id)[UIColor colorWithWhite:0.4f alpha:0.2f].CGColor,
-                            (id)[UIColor colorWithWhite:1.0f alpha:0.4f].CGColor];
-      shineLayer.locations = @[@0.f, @0.5f, @0.5f, @0.8f, @1.f];
-      [layer addSublayer : shineLayer];*/
-      
+      self.backgroundColor = [UIColor clearColor];      
       UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap)];
       [self addGestureRecognizer : tapRecognizer];
    }
@@ -68,7 +53,6 @@
 //________________________________________________________________________________________
 - (void) drawRect : (CGRect)rect
 {
-//   [pict drawInRect : CGRectMake(rect.origin.x + 20, rect.origin.y + 20, rect.size.width - 40, rect.size.height - 40)];
    [pict drawInRect : rect];
 }
 
