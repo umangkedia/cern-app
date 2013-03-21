@@ -104,6 +104,9 @@
 //________________________________________________________________________________________
 - (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
+   if (!pages.count)
+      return;
+
    [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f)];
    [self layoutPages : NO];
 
