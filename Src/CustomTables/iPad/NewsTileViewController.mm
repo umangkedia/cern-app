@@ -48,11 +48,10 @@
 {
    [super viewDidLoad];
    
-   //
-   pages = [[NSMutableArray alloc] init];
-
    CernAPP::AddSpinner(self);
    CernAPP::HideSpinner(self);
+
+   pages = [[NSMutableArray alloc] init];
 }
 
 //________________________________________________________________________________________
@@ -66,9 +65,7 @@
 
    if (!viewDidAppear) {
       viewDidAppear = YES;
-
       //TODO: cache!
-
       [self reloadPage];
    }
 }

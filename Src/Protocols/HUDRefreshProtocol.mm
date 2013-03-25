@@ -20,9 +20,19 @@ void AddSpinner(UIViewController<HUDRefreshProtocol> *controller)
 
    using CernAPP::spinnerSize;
 
+
+
    const CGPoint spinnerOrigin = CGPointMake(controller.view.frame.size.width / 2 - spinnerSize / 2, controller.view.frame.size.height / 2 - spinnerSize / 2);
+
    UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithFrame : CGRectMake(spinnerOrigin.x, spinnerOrigin.y, spinnerSize, spinnerSize)];
    spinner.color = [UIColor grayColor];
+   
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+      spinner.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
+                                 UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+   }
+   
    [controller.view addSubview : spinner];
    controller.spinner = spinner;
 }
@@ -63,6 +73,5 @@ void ShowErrorHUD(UIViewController<HUDRefreshProtocol> *controller, NSString *er
    noConnectionHUD.removeFromSuperViewOnHide = YES;
    controller.noConnectionHUD = noConnectionHUD;
 }
-
 
 }
