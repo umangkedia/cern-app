@@ -1,5 +1,7 @@
 #import <algorithm>
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "ECSlidingViewController.h"
 #import "NewsTableViewController.h"
 #import "NewsTileViewController.h"
@@ -78,16 +80,17 @@
    CGRect currentFrame = self.view.frame;
    currentFrame.origin = CGPoint();
 
+   NSUInteger index = 0;
    for (TiledPageView *page in pages) {
       page.frame = currentFrame;
       currentFrame.origin.x += currentFrame.size.width;
       if (layoutTiles)
          [page layoutTiles];
+      ++index;
    }
    
    [scrollView setContentSize : CGSizeMake(currentFrame.size.width * pages.count, currentFrame.size.height)];
 }
-
 
 #pragma mark - Device orientation changes.
 
@@ -104,34 +107,27 @@
    if (!pages.count)
       return;
 
-   [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f)];
-   [self layoutPages : NO];
-
-   TiledPageView * const page = (TiledPageView *)pages[pageBeforeRotation];
-   [page startTileAnimationTo : toInterfaceOrientation];
+   [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f) animated : NO];
 
    if (pageBeforeRotation)
       ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = YES;
    if (pageBeforeRotation < pages.count - 1)
       ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = YES;
-   
-   [self performSelector : @selector(layoutAnimation) withObject : nil afterDelay : 0.001f];
+
+   [self layoutPages : YES];
+      
+   TiledPageView * const page = (TiledPageView *)pages[pageBeforeRotation];
+   [page explodeTiles : toInterfaceOrientation];
+   [page collectTilesAnimatedForOrientation : toInterfaceOrientation from : CACurrentMediaTime() + duration withDuration : 0.5f];
 }
 
 //________________________________________________________________________________________
-- (void) layoutAnimation
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-   [UIView animateWithDuration : 0.2f animations : ^ {
-         [self layoutPages : YES];
-      } completion : ^ (BOOL) {
-         if (pageBeforeRotation)
-            ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = NO;
-         if (pageBeforeRotation < pages.count - 1)
-            ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = NO;
-
-      }
-   ];
-
+   if (pageBeforeRotation)
+      ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = NO;
+   if (pageBeforeRotation < pages.count - 1)
+      ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = NO;
 }
 
 #pragma mark - Sliding view.

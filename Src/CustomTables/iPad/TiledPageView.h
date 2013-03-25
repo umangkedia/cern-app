@@ -11,9 +11,13 @@
 @interface TiledPageView : UIView
 
 - (void) setPageItems : (NSArray *) feedItems startingFrom : (NSUInteger) index;
+- (void) setThumbnail : (UIImage *) thumbnailImage forTile : (NSUInteger) tileIndex;
+
 - (void) layoutTiles;
 
-- (void) startTileAnimationTo : (UIInterfaceOrientation) orientation;
-- (void) setThumbnail : (UIImage *) thumbnailImage forTile : (NSUInteger) tileIndex;
+//Animations:
+- (void) explodeTiles : (UIInterfaceOrientation) orientation;
+//Actually, both CFTimeInterval and NSTimeInterval are typedefs for double.
+- (void) collectTilesAnimatedForOrientation : (UIInterfaceOrientation) orientation from : (CFTimeInterval) start withDuration : (CFTimeInterval) duration;
 
 @end
