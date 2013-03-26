@@ -132,7 +132,16 @@ bool IsWideImage(UIImage *image)
    [style setAlignment : NSTextAlignmentCenter];
    [title addAttribute : NSParagraphStyleAttributeName value : style range : titleRange];
    
-   text = [[NSMutableAttributedString alloc] initWithString : feedItem.summary ? [feedItem.summary stringByConvertingHTMLToPlainText] : @""];
+   NSString *summary = feedItem.summary ? [feedItem.summary stringByConvertingHTMLToPlainText] : @"";
+   if (summary.length) {
+      NSCharacterSet * const whitespaces = [NSCharacterSet whitespaceCharacterSet];
+      NSPredicate * const noEmptyStrings = [NSPredicate predicateWithFormat : @"SELF != ''"];
+      NSArray *parts = [summary componentsSeparatedByCharactersInSet : whitespaces];
+      NSArray *filteredArray = [parts filteredArrayUsingPredicate : noEmptyStrings];
+      summary = [filteredArray componentsJoinedByString:@" "];
+   }
+   
+   text = [[NSMutableAttributedString alloc] initWithString : summary];   
    //Let's set text attributes:
    
    //1. Font.
