@@ -136,7 +136,7 @@ bool IsWideImage(UIImage *image)
    //Let's set text attributes:
    
    //1. Font.
-   UIFont * const textFont = [UIFont fontWithName : @"PTSans-Caption" size : 16.f];
+   UIFont * const textFont = [UIFont fontWithName : @"PTSans-Caption" size : 14.f];
    assert(textFont != nil && "setTileData:, text's font is nil");
    const NSRange textRange = NSMakeRange(0, text.length);
    [text addAttribute : NSFontAttributeName value : textFont range : textRange];

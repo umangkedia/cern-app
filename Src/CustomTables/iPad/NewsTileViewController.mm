@@ -124,6 +124,9 @@
 //________________________________________________________________________________________
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+   if (!pages.count)
+      return;
+
    if (pageBeforeRotation)
       ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = NO;
    if (pageBeforeRotation < pages.count - 1)
