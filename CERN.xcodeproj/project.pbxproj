@@ -131,6 +131,12 @@
 		70501E3D16B6E180002C0F48 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 70501E3A16B6E180002C0F48 /* NSData+Base64.m */; };
 		705082061701F0AF00326DE7 /* hnjalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 705082011701F0AF00326DE7 /* hnjalloc.c */; };
 		705082071701F0AF00326DE7 /* hyphen.c in Sources */ = {isa = PBXBuildFile; fileRef = 705082031701F0AF00326DE7 /* hyphen.c */; };
+		705082101701F40800326DE7 /* hyph_en_CA.dic in Resources */ = {isa = PBXBuildFile; fileRef = 7050820A1701F40800326DE7 /* hyph_en_CA.dic */; };
+		705082111701F40800326DE7 /* hyph_en_GB.dic in Resources */ = {isa = PBXBuildFile; fileRef = 7050820B1701F40800326DE7 /* hyph_en_GB.dic */; };
+		705082121701F40800326DE7 /* hyph_en_US.dic in Resources */ = {isa = PBXBuildFile; fileRef = 7050820C1701F40800326DE7 /* hyph_en_US.dic */; };
+		705082131701F40800326DE7 /* README_hyph_en_CA.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7050820D1701F40800326DE7 /* README_hyph_en_CA.txt */; };
+		705082141701F40800326DE7 /* README_hyph_en_GB.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7050820E1701F40800326DE7 /* README_hyph_en_GB.txt */; };
+		705082151701F40800326DE7 /* README_hyph_en_US.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7050820F1701F40800326DE7 /* README_hyph_en_US.txt */; };
 		7054DEEC169AFD7A00B025C7 /* MENU.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7054DEEB169AFD7A00B025C7 /* MENU.plist */; };
 		705D9FB4166F3A00007C7611 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 705D9FB3166F3A00007C7611 /* AudioToolbox.framework */; };
 		70600A18169AF9B300F9E833 /* about.png in Resources */ = {isa = PBXBuildFile; fileRef = 70600A07169AF9B300F9E833 /* about.png */; };
@@ -403,6 +409,12 @@
 		705082021701F0AF00326DE7 /* hnjalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hnjalloc.h; sourceTree = "<group>"; };
 		705082031701F0AF00326DE7 /* hyphen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hyphen.c; sourceTree = "<group>"; };
 		705082041701F0AF00326DE7 /* hyphen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hyphen.h; sourceTree = "<group>"; };
+		7050820A1701F40800326DE7 /* hyph_en_CA.dic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hyph_en_CA.dic; sourceTree = "<group>"; };
+		7050820B1701F40800326DE7 /* hyph_en_GB.dic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hyph_en_GB.dic; sourceTree = "<group>"; };
+		7050820C1701F40800326DE7 /* hyph_en_US.dic */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hyph_en_US.dic; sourceTree = "<group>"; };
+		7050820D1701F40800326DE7 /* README_hyph_en_CA.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README_hyph_en_CA.txt; sourceTree = "<group>"; };
+		7050820E1701F40800326DE7 /* README_hyph_en_GB.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README_hyph_en_GB.txt; sourceTree = "<group>"; };
+		7050820F1701F40800326DE7 /* README_hyph_en_US.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README_hyph_en_US.txt; sourceTree = "<group>"; };
 		70533AEC16CA5B4C00077B0E /* PhotoBrowserProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoBrowserProtocol.h; sourceTree = "<group>"; };
 		7054DEEB169AFD7A00B025C7 /* MENU.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = MENU.plist; sourceTree = "<group>"; };
 		705D9FB0166F3867007C7611 /* scrollerClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = scrollerClick.wav; path = Sounds/scrollerClick.wav; sourceTree = "<group>"; };
@@ -822,6 +834,7 @@
 		705082001701F0AF00326DE7 /* Hyphen */ = {
 			isa = PBXGroup;
 			children = (
+				705082091701F40800326DE7 /* dictionaries */,
 				705082011701F0AF00326DE7 /* hnjalloc.c */,
 				705082021701F0AF00326DE7 /* hnjalloc.h */,
 				705082031701F0AF00326DE7 /* hyphen.c */,
@@ -830,6 +843,19 @@
 			name = Hyphen;
 			path = Src/ThirdParty/Hyphen;
 			sourceTree = SOURCE_ROOT;
+		};
+		705082091701F40800326DE7 /* dictionaries */ = {
+			isa = PBXGroup;
+			children = (
+				7050820A1701F40800326DE7 /* hyph_en_CA.dic */,
+				7050820B1701F40800326DE7 /* hyph_en_GB.dic */,
+				7050820C1701F40800326DE7 /* hyph_en_US.dic */,
+				7050820D1701F40800326DE7 /* README_hyph_en_CA.txt */,
+				7050820E1701F40800326DE7 /* README_hyph_en_GB.txt */,
+				7050820F1701F40800326DE7 /* README_hyph_en_US.txt */,
+			);
+			path = dictionaries;
+			sourceTree = "<group>";
 		};
 		705D9FB2166F387D007C7611 /* Sounds */ = {
 			isa = PBXGroup;
@@ -1378,6 +1404,12 @@
 				70D98B2216F7726D003C42E7 /* testimage5.jpg in Resources */,
 				70D98B2416F77A6A003C42E7 /* paper.jpg in Resources */,
 				70B22F0516F9DCAC007D88EF /* action_blue.png in Resources */,
+				705082101701F40800326DE7 /* hyph_en_CA.dic in Resources */,
+				705082111701F40800326DE7 /* hyph_en_GB.dic in Resources */,
+				705082121701F40800326DE7 /* hyph_en_US.dic in Resources */,
+				705082131701F40800326DE7 /* README_hyph_en_CA.txt in Resources */,
+				705082141701F40800326DE7 /* README_hyph_en_GB.txt in Resources */,
+				705082151701F40800326DE7 /* README_hyph_en_US.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
