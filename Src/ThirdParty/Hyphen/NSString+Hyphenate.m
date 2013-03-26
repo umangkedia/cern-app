@@ -11,6 +11,7 @@
 
 @implementation NSString (Hyphenate)
 
+//________________________________________________________________________________________
 - (NSString*) stringByHyphenatingWithLocale : (NSLocale*) locale
 {
    static HyphenDict* dict = NULL;
