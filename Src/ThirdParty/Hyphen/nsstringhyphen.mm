@@ -7,23 +7,6 @@
 namespace {
 
 //________________________________________________________________________________________
-std::size_t utf8_strlen(const char *s)
-{
-   //This code was taken from http://canonical.org/~kragen/strlen-utf8.html
-   
-   assert(s != nullptr && "utf8_strlen, parameter 's' is null");
-   std::size_t i = 0, j = 0;
-
-   while (s[i]) {
-      if ((s[i] & 0xc0) != 0x80)
-         j++;
-      i++;
-   }
-
-   return j;
-}
-
-//________________________________________________________________________________________
 NSLocale *GuessLocaleFromNSString(NSString *text)
 {
    assert(text != nil && "GuessLocaleFromNSString, parameter 'text' is nil");
@@ -88,9 +71,9 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
       if (tokenType & kCFStringTokenizerTokenHasNonLettersMask) {
          [result appendString : token];
       } else {
-         char const *tokenChars = [[token lowercaseString] UTF8String];//null-terminated string.
-         const std::size_t wordLength = utf8_strlen(tokenChars);
-
+         NSString * const lcToken = [token lowercaseString];
+         char const *tokenChars = [lcToken UTF8String];//null-terminated string.
+         const int wordLength = (int)[lcToken lengthOfBytesUsingEncoding : NSUTF8StringEncoding];
          // This is the buffer size the algorithm needs.
          hyphens.assign(wordLength + 5, 0); //// +5, see hypen.h
          rep = 0;
@@ -99,7 +82,7 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
 
          // rep, pos and cut are not currently used, but the simpler
          // hyphenation function is deprecated.
-         const int rez = hnj_hyphen_hyphenate2((HyphenDict *)dictionary, tokenChars, wordLength, &hyphens[0], 0, &rep, &pos, &cut);
+         const int rez = hnj_hyphen_hyphenate2((HyphenDict *)dictionary, tokenChars, wordLength - 1, &hyphens[0], 0, &rep, &pos, &cut);
 
          if (!rez) {
             //Now we have to somehow compose the new string with 'soft' hyphens.
