@@ -46,6 +46,9 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
    assert(dictionary != nullptr && "HyphenateNSString, parameter 'dictionary' is null");
    assert(source != nil && "HyphenateNSString, parameter 'source' is nil");
    
+   //I have a really bad feeling about this :) It looks like a crap :) TODO: fix it!
+   static NSString * const softHyphen = [NSString stringWithFormat : @"%C", (unsigned short)0xad];
+   
    NSMutableString *result = [[NSMutableString alloc] init];
    
    if (!locale && !(locale = GuessLocaleFromNSString(source)))
@@ -73,7 +76,11 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
       } else {
          NSString * const lcToken = [token lowercaseString];
          char const *tokenChars = [lcToken UTF8String];//null-terminated string.
-         const int wordLength = (int)[lcToken lengthOfBytesUsingEncoding : NSUTF8StringEncoding];
+         const NSUInteger wordLength = [lcToken lengthOfBytesUsingEncoding : NSUTF8StringEncoding];
+         
+         if (!wordLength)
+            continue;
+         
          // This is the buffer size the algorithm needs.
          hyphens.assign(wordLength + 5, 0); //// +5, see hypen.h
          rep = 0;
@@ -82,11 +89,29 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
 
          // rep, pos and cut are not currently used, but the simpler
          // hyphenation function is deprecated.
-         const int rez = hnj_hyphen_hyphenate2((HyphenDict *)dictionary, tokenChars, wordLength - 1, &hyphens[0], 0, &rep, &pos, &cut);
+         const int rez = hnj_hyphen_hyphenate2((HyphenDict *)dictionary, tokenChars, (int)wordLength - 1, &hyphens[0], 0, &rep, &pos, &cut);
 
          if (!rez) {
             //Now we have to somehow compose the new string with 'soft' hyphens.
             //Do some magic here!
+            //- (id)initWithBytes:(const void *)bytes length:(NSUInteger)length encoding:(NSStringEncoding)encoding
+
+            //Let's test hyphenation.
+
+            NSMutableString * const testHyphen = [[NSMutableString alloc] init];
+            NSUInteger start = 0;
+            for (NSUInteger i = 0; i < wordLength; ++i) {
+               if (hyphens[i] & 1) {
+                  [testHyphen appendString : [[NSString alloc] initWithBytes : tokenChars + start length : i - start + 1 encoding : NSUTF8StringEncoding]];
+                  [testHyphen appendString : @"-"];
+                  start = i + 1;
+               }
+            }
+            
+            if (start < wordLength)
+               [testHyphen appendString : [[NSString alloc] initWithBytes : tokenChars + start length : wordLength - start encoding : NSUTF8StringEncoding]];
+            
+            NSLog(@"test result is: %@", testHyphen);
          }
 
          if (rep) {

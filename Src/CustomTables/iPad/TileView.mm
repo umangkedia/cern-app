@@ -11,6 +11,10 @@
 
 #import <CoreText/CoreText.h>
 
+#import "nsstringhyphen.h"
+#import "hnjalloc.h"
+#import "hyphen.h"
+
 #import "PictureButtonView.h"
 #import "NewsTableViewCell.h"
 #import "NSString+HTML.h"
@@ -138,7 +142,7 @@ bool IsWideImage(UIImage *image)
       NSPredicate * const noEmptyStrings = [NSPredicate predicateWithFormat : @"SELF != ''"];
       NSArray *parts = [summary componentsSeparatedByCharactersInSet : whitespaces];
       NSArray *filteredArray = [parts filteredArrayUsingPredicate : noEmptyStrings];
-      summary = [filteredArray componentsJoinedByString:@" "];
+      summary = [filteredArray componentsJoinedByString : @" "];
    }
    
    text = [[NSMutableAttributedString alloc] initWithString : summary];   
