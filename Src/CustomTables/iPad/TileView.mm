@@ -138,6 +138,12 @@ bool IsWideImage(UIImage *image)
    
    NSString *summary = feedItem.summary ? [feedItem.summary stringByConvertingHTMLToPlainText] : @"";
    if (summary.length) {
+      /*
+      if (const HyphenDict * dict = CernAPP::CreateHyphenationDictionary([NSLocale currentLocale], nil)) {
+         summary = CernAPP::HyphenateNSString([NSLocale currentLocale], dict, summary);
+      }
+      */
+
       NSCharacterSet * const whitespaces = [NSCharacterSet whitespaceCharacterSet];
       NSPredicate * const noEmptyStrings = [NSPredicate predicateWithFormat : @"SELF != ''"];
       NSArray *parts = [summary componentsSeparatedByCharactersInSet : whitespaces];
@@ -158,7 +164,7 @@ bool IsWideImage(UIImage *image)
    //3. Alignment.
    NSMutableParagraphStyle * const textStyle = [[NSMutableParagraphStyle alloc] init];
    [textStyle setAlignment : NSTextAlignmentNatural];//NSTextAlignmentJustified];
-   [textStyle setLineBreakMode : NSLineBreakByCharWrapping];
+   //[textStyle setLineBreakMode : NSLineBreakByCharWrapping];
    [text addAttribute : NSParagraphStyleAttributeName value : textStyle range : textRange];
 }
 

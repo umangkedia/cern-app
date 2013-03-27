@@ -4,6 +4,11 @@
 
 #import "nsstringhyphen.h"
 
+//
+//This code is a total mess and I'm simply not using it at the moment.
+//TODO: may be later I'll try to revive it.
+//
+
 namespace {
 
 //________________________________________________________________________________________
@@ -75,7 +80,7 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
          [result appendString : token];
       } else {
          NSString * const lcToken = [token lowercaseString];
-         char const *tokenChars = [lcToken UTF8String];//null-terminated string.
+         char const *lcTokenChars = [lcToken UTF8String];//null-terminated string.
          const NSUInteger wordLength = [lcToken lengthOfBytesUsingEncoding : NSUTF8StringEncoding];
          
          if (!wordLength)
@@ -89,29 +94,38 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
 
          // rep, pos and cut are not currently used, but the simpler
          // hyphenation function is deprecated.
-         const int rez = hnj_hyphen_hyphenate2((HyphenDict *)dictionary, tokenChars, (int)wordLength - 1, &hyphens[0], 0, &rep, &pos, &cut);
-
-         if (!rez) {
+         const int rez = hnj_hyphen_hyphenate2((HyphenDict *)dictionary, lcTokenChars, (int)wordLength - 1, &hyphens[0], 0, &rep, &pos, &cut);
+         
+         if (rez) {
+            [result appendString : token];
+         } else {
             //Now we have to somehow compose the new string with 'soft' hyphens.
             //Do some magic here!
-            //- (id)initWithBytes:(const void *)bytes length:(NSUInteger)length encoding:(NSStringEncoding)encoding
 
             //Let's test hyphenation.
+            if (result.length)
+               [result appendString : @" "];
 
-            NSMutableString * const testHyphen = [[NSMutableString alloc] init];
+            const char *tokenChars = [token UTF8String];
             NSUInteger start = 0;
             for (NSUInteger i = 0; i < wordLength; ++i) {
                if (hyphens[i] & 1) {
-                  [testHyphen appendString : [[NSString alloc] initWithBytes : tokenChars + start length : i - start + 1 encoding : NSUTF8StringEncoding]];
-                  [testHyphen appendString : @"-"];
+                  NSString * const substring =  [[NSString alloc] initWithBytes : tokenChars + start length : i - start + 1 encoding : NSUTF8StringEncoding];
+                  if (!substring) {
+                     [result appendString : token];
+                     start = wordLength;
+                     break;
+                  }
+
+                  [result appendString : substring];
+                  [result appendString : softHyphen];
+                  
                   start = i + 1;
                }
             }
             
             if (start < wordLength)
-               [testHyphen appendString : [[NSString alloc] initWithBytes : tokenChars + start length : wordLength - start encoding : NSUTF8StringEncoding]];
-            
-            NSLog(@"test result is: %@", testHyphen);
+               [result appendString : [[NSString alloc] initWithBytes : tokenChars + start length : wordLength - start encoding : NSUTF8StringEncoding]];
          }
 
          if (rep) {
@@ -122,11 +136,6 @@ NSString *HyphenateNSString(NSLocale *locale, const HyphenDict *dictionary, NSSt
          free(rep);
          free(pos);
          free(cut);
-         
-         if (rez) {
-            result = nil;
-            break;
-         }
       }
    }
    
