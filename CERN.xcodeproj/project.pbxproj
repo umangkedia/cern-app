@@ -147,10 +147,6 @@
 		7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7069F76416C14D6D006BC78B /* PictureButtonView.mm */; };
 		70767DC716CE8F4D00164516 /* MWFeedParserLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 70767DC616CE8F4D00164516 /* MWFeedParserLicense.txt */; };
 		70767DC916CE922D00164516 /* MWPhotoBrowserLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 70767DC816CE922D00164516 /* MWPhotoBrowserLicense.txt */; };
-		707B1373169AEA4700180E02 /* back_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B136E169AEA4700180E02 /* back_btn.png */; };
-		707B1374169AEA4700180E02 /* back_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B136F169AEA4700180E02 /* back_button.png */; };
-		707B1375169AEA4700180E02 /* back_button_flat.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1370169AEA4700180E02 /* back_button_flat.png */; };
-		707B1376169AEA4700180E02 /* navbarback.png in Resources */ = {isa = PBXBuildFile; fileRef = 707B1371169AEA4700180E02 /* navbarback.png */; };
 		707B137C169AEB6300180E02 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137A169AEB6300180E02 /* AppDelegate.mm */; };
 		707B137D169AEB6300180E02 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137B169AEB6300180E02 /* main.mm */; };
 		707B1380169AEC4700180E02 /* InitialSlidingViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137E169AEC4700180E02 /* InitialSlidingViewController.mm */; };
@@ -413,10 +409,6 @@
 		7069F76416C14D6D006BC78B /* PictureButtonView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PictureButtonView.mm; sourceTree = "<group>"; };
 		70767DC616CE8F4D00164516 /* MWFeedParserLicense.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWFeedParserLicense.txt; sourceTree = "<group>"; };
 		70767DC816CE922D00164516 /* MWPhotoBrowserLicense.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWPhotoBrowserLicense.txt; sourceTree = "<group>"; };
-		707B136E169AEA4700180E02 /* back_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_btn.png; sourceTree = "<group>"; };
-		707B136F169AEA4700180E02 /* back_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button.png; sourceTree = "<group>"; };
-		707B1370169AEA4700180E02 /* back_button_flat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_flat.png; sourceTree = "<group>"; };
-		707B1371169AEA4700180E02 /* navbarback.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbarback.png; sourceTree = "<group>"; };
 		707B1379169AEB6300180E02 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		707B137A169AEB6300180E02 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		707B137B169AEB6300180E02 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
@@ -899,10 +891,6 @@
 				70600A12169AF9B300F9E833 /* live.png */,
 				70600A14169AF9B300F9E833 /* news.png */,
 				70600A16169AF9B300F9E833 /* webcasts.png */,
-				707B136E169AEA4700180E02 /* back_btn.png */,
-				707B136F169AEA4700180E02 /* back_button.png */,
-				707B1370169AEA4700180E02 /* back_button_flat.png */,
-				707B1371169AEA4700180E02 /* navbarback.png */,
 			);
 			path = GUI;
 			sourceTree = "<group>";
@@ -1268,10 +1256,6 @@
 				4162A4671625BD65002B9D09 /* Default-Portrait~ipad.png in Resources */,
 				41C0659416271ED1000DC176 /* iTunesArtwork in Resources */,
 				700F547916396A130082B89E /* CERNLive.plist in Resources */,
-				707B1373169AEA4700180E02 /* back_btn.png in Resources */,
-				707B1374169AEA4700180E02 /* back_button.png in Resources */,
-				707B1375169AEA4700180E02 /* back_button_flat.png in Resources */,
-				707B1376169AEA4700180E02 /* navbarback.png in Resources */,
 				70600A18169AF9B300F9E833 /* about.png in Resources */,
 				70600A1A169AF9B300F9E833 /* arrow.png in Resources */,
 				70600A1B169AF9B300F9E833 /* bulletin.png in Resources */,
