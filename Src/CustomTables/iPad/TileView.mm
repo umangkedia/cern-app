@@ -11,10 +11,6 @@
 
 #import <CoreText/CoreText.h>
 
-#import "nsstringhyphen.h"
-#import "hnjalloc.h"
-#import "hyphen.h"
-
 #import "PictureButtonView.h"
 #import "NewsTableViewCell.h"
 #import "NSString+HTML.h"
@@ -138,12 +134,6 @@ bool IsWideImage(UIImage *image)
    
    NSString *summary = feedItem.summary ? [feedItem.summary stringByConvertingHTMLToPlainText] : @"";
    if (summary.length) {
-      /*
-      if (const HyphenDict * dict = CernAPP::CreateHyphenationDictionary([NSLocale currentLocale], nil)) {
-         summary = CernAPP::HyphenateNSString([NSLocale currentLocale], dict, summary);
-      }
-      */
-
       NSCharacterSet * const whitespaces = [NSCharacterSet whitespaceCharacterSet];
       NSPredicate * const noEmptyStrings = [NSPredicate predicateWithFormat : @"SELF != ''"];
       NSArray *parts = [summary componentsSeparatedByCharactersInSet : whitespaces];
@@ -152,8 +142,8 @@ bool IsWideImage(UIImage *image)
    }
    
    text = [[NSMutableAttributedString alloc] initWithString : summary];   
-   //Let's set text attributes:
-   
+
+   //Let's set text attributes:   
    //1. Font.
    UIFont * const textFont = [UIFont fontWithName : @"PTSans-Caption" size : 14.f];
    assert(textFont != nil && "setTileData:, text's font is nil");
@@ -164,7 +154,6 @@ bool IsWideImage(UIImage *image)
    //3. Alignment.
    NSMutableParagraphStyle * const textStyle = [[NSMutableParagraphStyle alloc] init];
    [textStyle setAlignment : NSTextAlignmentNatural];//NSTextAlignmentJustified];
-   //[textStyle setLineBreakMode : NSLineBreakByCharWrapping];
    [text addAttribute : NSParagraphStyleAttributeName value : textStyle range : textRange];
 }
 
