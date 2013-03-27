@@ -202,6 +202,7 @@
 		70BF705F16C29C80002CEDC6 /* Twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 70BF705E16C29C80002CEDC6 /* Twitter.png */; };
 		70BF706116C29DA8002CEDC6 /* Facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 70BF706016C29DA8002CEDC6 /* Facebook.png */; };
 		70BF706316C29E54002CEDC6 /* Email-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 70BF706216C29E54002CEDC6 /* Email-01.png */; };
+		70BFDFBF17032A1A001EECD5 /* nsstringhyphen.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70BFDFBD17032A1A001EECD5 /* nsstringhyphen.mm */; };
 		70C0E944169C4D740004ED1E /* disclose.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C0E943169C4D740004ED1E /* disclose.png */; };
 		70C0E946169C73BA0004ED1E /* PTC55F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70C0E945169C73BA0004ED1E /* PTC55F.ttf */; };
 		70C0E948169C75F10004ED1E /* PTS56F.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70C0E947169C75F10004ED1E /* PTS56F.ttf */; };
@@ -514,6 +515,8 @@
 		70BF705E16C29C80002CEDC6 /* Twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Twitter.png; sourceTree = "<group>"; };
 		70BF706016C29DA8002CEDC6 /* Facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Facebook.png; sourceTree = "<group>"; };
 		70BF706216C29E54002CEDC6 /* Email-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Email-01.png"; sourceTree = "<group>"; };
+		70BFDFBD17032A1A001EECD5 /* nsstringhyphen.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = nsstringhyphen.mm; sourceTree = "<group>"; };
+		70BFDFBE17032A1A001EECD5 /* nsstringhyphen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsstringhyphen.h; sourceTree = "<group>"; };
 		70C0E943169C4D740004ED1E /* disclose.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = disclose.png; sourceTree = "<group>"; };
 		70C0E945169C73BA0004ED1E /* PTC55F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTC55F.ttf; sourceTree = "<group>"; };
 		70C0E947169C75F10004ED1E /* PTS56F.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PTS56F.ttf; sourceTree = "<group>"; };
@@ -839,6 +842,8 @@
 				705082021701F0AF00326DE7 /* hnjalloc.h */,
 				705082031701F0AF00326DE7 /* hyphen.c */,
 				705082041701F0AF00326DE7 /* hyphen.h */,
+				70BFDFBD17032A1A001EECD5 /* nsstringhyphen.mm */,
+				70BFDFBE17032A1A001EECD5 /* nsstringhyphen.h */,
 			);
 			name = Hyphen;
 			path = Src/ThirdParty/Hyphen;
@@ -1515,6 +1520,7 @@
 				70D98B2B16F786D8003C42E7 /* SlideScrollView.mm in Sources */,
 				705082061701F0AF00326DE7 /* hnjalloc.c in Sources */,
 				705082071701F0AF00326DE7 /* hyphen.c in Sources */,
+				70BFDFBF17032A1A001EECD5 /* nsstringhyphen.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
