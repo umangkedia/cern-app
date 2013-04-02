@@ -7,7 +7,6 @@
 //
 
 #import <cassert>
-#import <cstdlib>
 
 #import <CoreText/CoreText.h>
 
@@ -87,8 +86,9 @@ bool IsWideImage(UIImage *image)
       titleFrame = nullptr;
       textFrame = nullptr;
       
-      wideImageOnTop = std::rand() % 2;
-      imageCut = std::rand() % 4;
+      //To be set from MWFeedItem later.
+      wideImageOnTop = false;
+      imageCut = 0;
       
       infoLabel = [[UILabel alloc] initWithFrame : CGRect()];
       infoLabel.textColor = [[UIColor blueColor] colorWithAlphaComponent : 0.5];
@@ -178,6 +178,11 @@ bool IsWideImage(UIImage *image)
    [textStyle setAlignment : NSTextAlignmentNatural];//NSTextAlignmentJustified];
    [text addAttribute : NSParagraphStyleAttributeName value : textStyle range : textRange];
    
+   thumbnailView.image = feedItem.image;
+   imageCut = feedItem.imageCut;
+   wideImageOnTop = feedItem.wideImageOnTop;
+      
+   
    [self calculateTextFontMetrics];
 }
 
@@ -187,6 +192,12 @@ bool IsWideImage(UIImage *image)
    assert(image != nil && "setTileThumbnail, parameter 'image' is nil");
    thumbnailView.image = image;
    [self layoutTile];
+}
+
+//________________________________________________________________________________________
+- (BOOL) hasThumbnail
+{
+   return thumbnailView.image != nil;
 }
 
 //________________________________________________________________________________________
@@ -371,25 +382,6 @@ bool IsWideImage(UIImage *image)
 //________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
-   /*
-   [super drawRect : rect];
-   
-   CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-   CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
-
-   CGContextSaveGState(ctx);
-
-   CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
-   CGContextTranslateCTM(ctx, 0, rect.size.height);
-   CGContextScaleCTM(ctx, 1.f, -1.f);
-
-   if (titleFrame)
-      CTFrameDraw(titleFrame, ctx);
-
-   CGContextRestoreGState(ctx);
-   
-   [self drawText : ctx];*/
    [super drawRect : rect];
    
    CGContextRef ctx = UIGraphicsGetCurrentContext();

@@ -1,4 +1,5 @@
 #import <algorithm>
+#import <cstdlib>
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -10,7 +11,11 @@
 #import "MWFeedItem.h"
 
 @implementation NewsTileViewController {
-   NSMutableArray *pages;
+   NSUInteger nPages;
+   TiledPageView *leftPage;
+   TiledPageView *currPage;
+   TiledPageView *rightPage;
+   
    NSUInteger pageBeforeRotation;
    
    NSMutableDictionary *imageDownloaders;
@@ -25,7 +30,11 @@
 - (void) doInitController
 {
    //Shared method for different "ctors".
-   pages = nil;
+   nPages = 0;
+   leftPage = nil;
+   currPage = nil;
+   rightPage = nil;
+
    pageBeforeRotation = 0;
    imageDownloaders = nil;
    viewDidAppear = NO;
@@ -52,8 +61,10 @@
    
    CernAPP::AddSpinner(self);
    CernAPP::HideSpinner(self);
-
-   pages = [[NSMutableArray alloc] init];
+   
+   leftPage = [[TiledPageView alloc] initWithFrame : CGRect()];
+   currPage = [[TiledPageView alloc] initWithFrame : CGRect()];
+   rightPage = [[TiledPageView alloc] initWithFrame : CGRect()];
 }
 
 //________________________________________________________________________________________
@@ -77,19 +88,49 @@
 //________________________________________________________________________________________
 - (void) layoutPages : (BOOL) layoutTiles
 {
+   if (!nPages)
+      return;
+   
    CGRect currentFrame = self.view.frame;
    currentFrame.origin = CGPoint();
 
-   NSUInteger index = 0;
-   for (TiledPageView *page in pages) {
-      page.frame = currentFrame;
-      currentFrame.origin.x += currentFrame.size.width;
-      if (layoutTiles)
-         [page layoutTiles];
-      ++index;
+   if (nPages <= 3) {
+      TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
+      //Do not do any magic, we have only <= 3 pages.
+      for (NSUInteger i = 0; i < nPages; ++i) {
+         pages[i].frame = currentFrame;
+         if (layoutTiles)
+            [pages[i] layoutTiles];
+         currentFrame.origin.x += currentFrame.size.width;
+      }
+   } else {
+      currentFrame.origin.x = currPage.pageNumber * currentFrame.size.width;
+      currPage.frame = currentFrame;
+      
+      CGRect leftFrame = currentFrame;
+      if (currPage.pageNumber)
+         leftFrame.origin.x -= leftFrame.size.width;
+      else
+         leftFrame.origin.x += 2 * leftFrame.size.width;
+      
+      leftPage.frame = leftFrame;
+      
+      CGRect rightFrame = currentFrame;
+      if (currPage.pageNumber + 1 < nPages)
+         rightFrame.origin.x += rightFrame.size.width;
+      else
+         rightFrame.origin.x -= 2 * rightFrame.size.width;
+      
+      rightPage.frame = rightFrame;
+      
+      if (layoutTiles) {
+         [leftPage layoutTiles];
+         [currPage layoutTiles];
+         [rightPage layoutTiles];
+      }
    }
    
-   [scrollView setContentSize : CGSizeMake(currentFrame.size.width * pages.count, currentFrame.size.height)];
+   [scrollView setContentSize : CGSizeMake(currentFrame.size.width * nPages, currentFrame.size.height)];
 }
 
 #pragma mark - Device orientation changes.
@@ -104,33 +145,50 @@
 //________________________________________________________________________________________
 - (void) willAnimateRotationToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
-   if (!pages.count)
+   if (!nPages)
       return;
 
    [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f) animated : NO];
 
-   if (pageBeforeRotation)
-      ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = YES;
-   if (pageBeforeRotation < pages.count - 1)
-      ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = YES;
-
-   [self layoutPages : YES];
+   if (nPages <= 3) {
+      TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
       
-   TiledPageView * const page = (TiledPageView *)pages[pageBeforeRotation];
-   [page explodeTiles : toInterfaceOrientation];
-   [page collectTilesAnimatedForOrientation : toInterfaceOrientation from : CACurrentMediaTime() + duration withDuration : 0.5f];
+      if (pageBeforeRotation)
+         pages[pageBeforeRotation - 1].hidden = YES;
+      if (pageBeforeRotation + 1 < nPages)
+         pages[pageBeforeRotation + 1].hidden = YES;
+
+      [self layoutPages : YES];
+
+      [pages[pageBeforeRotation] explodeTiles : toInterfaceOrientation];
+      [pages[pageBeforeRotation] collectTilesAnimatedForOrientation : toInterfaceOrientation from : CACurrentMediaTime() + duration withDuration : 0.5f];
+   } else {
+      leftPage.hidden = YES;
+      rightPage.hidden = YES;
+
+      [self layoutPages : YES];
+
+      [currPage explodeTiles : toInterfaceOrientation];
+      [currPage collectTilesAnimatedForOrientation : toInterfaceOrientation from : CACurrentMediaTime() + duration withDuration : 0.5f];
+   }
 }
 
 //________________________________________________________________________________________
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-   if (!pages.count)
+   if (!nPages)
       return;
 
-   if (pageBeforeRotation)
-      ((TiledPageView *)pages[pageBeforeRotation - 1]).hidden = NO;
-   if (pageBeforeRotation < pages.count - 1)
-      ((TiledPageView *)pages[pageBeforeRotation + 1]).hidden = NO;
+   if (nPages <= 3) {
+      TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
+      if (pageBeforeRotation)
+         pages[pageBeforeRotation - 1].hidden = NO;
+      if (pageBeforeRotation + 1 < nPages)
+         pages[pageBeforeRotation + 1].hidden = NO;
+   } else {
+      leftPage.hidden = NO;
+      rightPage.hidden = NO;
+   }
 }
 
 #pragma mark - Sliding view.
@@ -151,25 +209,28 @@
    //TODO: update a cache???
    
    CernAPP::HideSpinner(self);
-
-   //Let's create tiled view now.
    
-   //At the moment, I'm using simple layout - 6 items per page.
-   if (!pages)
-      pages = [[NSMutableArray alloc] init];
-   else {
-      for (UIView *v in pages)
-         [v removeFromSuperview];
-
-      [pages removeAllObjects];
+   for (MWFeedItem *item in allArticles) {
+      item.wideImageOnTop = std::rand() % 2;
+      item.imageCut = std::rand() % 4;
    }
    
-   if (const NSUInteger nPages = (allArticles.count + 5) / 6) {
-      for (NSUInteger pageIndex = 0; pageIndex < nPages; ++pageIndex) {
-         TiledPageView * const newPage = [[TiledPageView alloc] initWithFrame : CGRect()];
-         [newPage setPageItems : allArticles startingFrom : pageIndex * 6];
-         [scrollView addSubview : newPage];
-         [pages addObject : newPage];
+   //At the moment, I'm using simple layout - 6 items per page.
+   if ((nPages = (allArticles.count + 5) / 6)) {
+      //nPages = 3;
+      //Let's create tiled view now.
+      TiledPageView * pages[3] = {};
+      if (nPages <= 3)
+         pages[0] = leftPage, pages[1] = currPage, pages[2] = rightPage;
+      else
+         pages[0] = currPage, pages[1] = rightPage, pages[2] = leftPage;
+
+      for (NSUInteger pageIndex = 0; pageIndex < 3; ++pageIndex) {
+         TiledPageView * const page = pages[pageIndex];
+         page.pageNumber = pageIndex;
+         [page setPageItems : allArticles startingFrom : pageIndex * 6];
+         if (!page.superview)
+            [scrollView addSubview : page];
       }
       
       [self layoutPages : YES];
@@ -177,17 +238,26 @@
       
       //The first page is visible now, let's download ... IMAGES NOW!!! :)
       [self loadImagesForVisiblePage];
+   } else {
+      if (leftPage.superview)
+         [leftPage removeFromSuperview];
+      if (currPage.superview)
+         [currPage removeFromSuperview];
+      if (rightPage.superview)
+         [rightPage removeFromSuperview];
    }
 }
 
 //________________________________________________________________________________________
 - (void) aggregator : (RSSAggregator *) aggregator didFailWithError : (NSString *) errorDescription
 {
+   //TODO: error handling.
 }
 
 //________________________________________________________________________________________
 - (void) lostConnection : (RSSAggregator *) aggregator
 {
+   //TODO: error handling.
 }
 
 #pragma mark - PageController.
@@ -254,9 +324,20 @@
    if (downloader.image) {
       article.image = downloader.image;
       //
-      TiledPageView * const pageToUpdate = (TiledPageView *)pages[page];
-      [pageToUpdate setThumbnail : article.image forTile : indexPath.section % 6];
-      //
+      if (nPages <= 3) {
+         TiledPageView * pageToUpdate = nil;
+         if (!page)
+            pageToUpdate = leftPage;
+         else if (page == 1)
+            pageToUpdate = currPage;
+         else
+            pageToUpdate = rightPage;
+
+         [pageToUpdate setThumbnail : article.image forTile : indexPath.section % 6];
+      } else {
+         if (currPage.pageNumber == page)
+            [currPage setThumbnail : article.image forTile : indexPath.section % 6];
+      }
    }
    
    [imageDownloaders removeObjectForKey : indexPath];
@@ -293,23 +374,83 @@
 
 // Load images for all onscreen rows (if not done yet) when scrolling is finished
 //________________________________________________________________________________________
-- (void) scrollViewDidEndDragging : (UIScrollView *) scrollView willDecelerate : (BOOL) decelerate
+- (void) scrollViewDidEndDragging : (UIScrollView *) aScrollView willDecelerate : (BOOL) decelerate
 {
-#pragma unused(scrollView)
+#pragma unused(aScrollView)
    //Cached feeds do not have any images.
-   if (!decelerate)
+   if (!decelerate) {
+      if (nPages > 3)
+         [self adjustPages];
+
       [self loadImagesForVisiblePage];
+   }
 
 }
 
 //________________________________________________________________________________________
-- (void) scrollViewDidEndDecelerating : (UIScrollView *) scrollView
+- (void) scrollViewDidEndDecelerating : (UIScrollView *) aScrollView
 {
-#pragma unused(scrollView)
+#pragma unused(aScrollView)
+
+   if (nPages > 3)
+      [self adjustPages];
+   
    [self loadImagesForVisiblePage];
 }
 
 #pragma mark - Aux.
+
+//________________________________________________________________________________________
+- (void) adjustPages
+{
+   assert(nPages > 3 && "adjustPages, nPages must be > 3");
+   
+   const NSUInteger newCurrentPageIndex = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
+   
+   if (newCurrentPageIndex > currPage.pageNumber) {
+      //We scrolled to the left.
+      //The old 'current' becomes the new 'left'.
+      //The old 'right' becomes the new 'current'.
+      //The old 'left' becomes the new 'right' and we either have to set this the page or not.
+
+      TiledPageView * const oldLeft = leftPage;
+      leftPage = currPage;
+      currPage = rightPage;
+      rightPage = oldLeft;
+
+      if (newCurrentPageIndex + 1 < nPages) {
+         //Set the frame first.
+         CGRect frame = rightPage.frame;
+         frame.origin.x = currPage.frame.origin.x + frame.size.width;
+         rightPage.frame = frame;
+         //Set the data now.
+         [rightPage setPageItems : allArticles startingFrom : (newCurrentPageIndex + 1) * 6];
+         [rightPage layoutTiles];
+      }
+   } else {
+      //We scrolled to the right.
+      //The old 'current' becomes the new 'right.
+      //The old 'left' becomes the new 'current'.
+      //The old 'right' becomes the new 'left' and we either have to set this page or not.
+      
+      TiledPageView * const oldRight = rightPage;
+      currPage = leftPage;
+      rightPage = currPage;
+      leftPage = oldRight;
+      
+      if (newCurrentPageIndex) {
+         CGRect frame = leftPage.frame;
+         frame.origin.x = currPage.frame.origin.x - frame.size.width;
+         leftPage.frame = frame;
+         //Set the data now.
+         [leftPage setPageItems : allArticles startingFrom : (newCurrentPageIndex - 1) * 6];
+         [leftPage layoutTiles];
+      }
+   }
+   
+   currPage.pageNumber = newCurrentPageIndex;
+}
+
 //________________________________________________________________________________________
 - (void) cancelAllImageDownloaders
 {
@@ -355,6 +496,10 @@
                [downloader startDownload];//Power on.
             }
          }
+      } else if (nPages > 3 && ![currPage tileHasThumbnail : i % 6]) {
+         //Image was loaded already, but not tile's thumbnailView and
+         //tile's layout has to be corrected yet.
+         [currPage setThumbnail : article.image forTile : i % 6];
       }
    }
 }

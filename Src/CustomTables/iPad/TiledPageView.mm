@@ -20,6 +20,8 @@ const NSUInteger shiftPart = 2;
    NSMutableArray *tiles;
 }
 
+@synthesize pageNumber;
+
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect) frame
 {
@@ -36,10 +38,15 @@ const NSUInteger shiftPart = 2;
    assert(feedItems != nil && "setPageItems:startingFrom:, parameter 'feedItems' is nil");
    assert(index < feedItems.count && "setPageItems:startingFrom:, parameter 'index' is out of range");
 
-   tiles = [[NSMutableArray alloc] init];
+   if (tiles) {
+      for (TileView *v in tiles)
+         [v removeFromSuperview];
+      [tiles removeAllObjects];
+   } else
+      tiles = [[NSMutableArray alloc] init];
 
    const NSUInteger endOfRange = std::min(feedItems.count, index + 6);
-   
+
    for (NSUInteger i = index; i < endOfRange; ++i) {
       TileView *newTile = [[TileView alloc] initWithFrame : CGRect()];
       [newTile setTileData : (MWFeedItem *)feedItems[i]];
@@ -57,6 +64,14 @@ const NSUInteger shiftPart = 2;
    
    TileView * const tile = (TileView *)tiles[tileIndex];
    [tile setTileThumbnail : thumbnailImage];
+}
+
+//________________________________________________________________________________________
+- (BOOL) tileHasThumbnail : (NSUInteger) tileIndex
+{
+   assert(tileIndex < tiles.count && "tileHasThumbnail, parameter 'tileIndex' is out of bounds");
+   
+   return [(TileView *)tiles[tileIndex] hasThumbnail];
 }
 
 //________________________________________________________________________________________

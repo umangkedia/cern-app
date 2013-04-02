@@ -14,6 +14,7 @@
 
 - (void) setTileData : (MWFeedItem *) feedItem;
 - (void) setTileThumbnail : (UIImage *) image;
+- (BOOL) hasThumbnail;
 - (void) layoutTile;
 
 @end

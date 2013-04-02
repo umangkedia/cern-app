@@ -57,7 +57,10 @@
 @property (nonatomic, copy) NSString *content;
 @property (nonatomic, copy) NSArray *enclosures;
 
-//
+//I have to save this properties here, since ...
+//it's required by tiled view controller and tile views.
+@property (nonatomic) unsigned char imageCut;
+@property (nonatomic) BOOL wideImageOnTop;
 @property (nonatomic, strong) UIImage *image;
 //Subset is a bulletin issue.
 @property (nonatomic) NSUInteger subsetIndex;
