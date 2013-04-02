@@ -36,7 +36,6 @@ const CGFloat hyphenShift = 5.f;
 bool IsWideImage(UIImage *image)
 {
    assert(image != nil && "IsWideImage, parameter 'image' is nil");
-return false;
    const CGSize imageSize = image.size;
 
    if (!imageSize.width || !imageSize.height)
@@ -89,7 +88,7 @@ return false;
       textFrame = nullptr;
       
       wideImageOnTop = std::rand() % 2;
-      imageCut = 0;//std::rand() % 4;
+      imageCut = std::rand() % 4;
       
       infoLabel = [[UILabel alloc] initWithFrame : CGRect()];
       infoLabel.textColor = [[UIColor blueColor] colorWithAlphaComponent : 0.5];
