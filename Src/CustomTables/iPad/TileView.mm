@@ -154,6 +154,7 @@ bool IsWideImage(UIImage *image)
    }
    
    text = [[NSMutableAttributedString alloc] initWithString : summary];
+   /*
    if (!tokenizer) {
       tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)summary,
                                           CFRangeMake(0, summary.length),
@@ -162,6 +163,7 @@ bool IsWideImage(UIImage *image)
       if (!tokenizer)
          NSLog(@"TileView: -setTileData: - warning, CFStringTokenizerCreate failed");
    }
+   */
 
    //Let's set text attributes:   
    //1. Font.
@@ -188,6 +190,84 @@ bool IsWideImage(UIImage *image)
 }
 
 //________________________________________________________________________________________
+- (CGPathRef) createTextPath
+{
+   const CGFloat w = self.frame.size.width;
+   const CGFloat h = self.frame.size.height;
+
+   if (!thumbnailView.image) {
+      //The simplest possible case.
+      CGRect textRect = CGRectMake(wideImageMargin * w, [self translateY : titleH * h + textH * h], w - 2 * wideImageMargin * w, h * textH);
+
+      return CGPathCreateWithRect(textRect, &CGAffineTransformIdentity);
+   } else if (IsWideImage(thumbnailView.image)) {
+      CGRect textRect = {};
+      if (wideImageOnTop)
+         textRect = CGRectMake(wideImageMargin * w, [self translateY : titleH * h + textH * h], w - 2 * wideImageMargin * w, 0.5f * h * textH);
+      else
+         textRect = CGRectMake(wideImageMargin * w, [self translateY : titleH * h + 0.5f * textH * h], w - 2 * wideImageMargin * w, 0.5f * h * textH);
+
+      return CGPathCreateWithRect(textRect, &CGAffineTransformIdentity);
+      //Layout image view!
+   } else {
+      CGMutablePathRef path = CGPathCreateMutable();
+      const CGFloat y1 = [self translateY : textH * h * 0.5f + titleH * h];
+      const CGFloat y2 = [self translateY : textH * h + titleH * h];
+   
+      //At the beginning I was adding rectangle sub-paths, but ...
+      //there is a visible gap between text in these rectangles.
+
+      switch (imageCut) {
+      case 0 :
+         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1 + textH * 0.5 * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y1 + textH * 0.5 * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
+         CGPathCloseSubpath(path);
+         break;
+      case 1:
+         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
+         CGPathCloseSubpath(path);
+         
+         
+         break;
+      case 2:
+         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
+         CGPathCloseSubpath(path);
+
+         break;
+      case 3:
+         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w -  w * wideImageMargin, y2 + textH * h);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w -  w * wideImageMargin, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
+         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2);
+         CGPathCloseSubpath(path);
+
+         break;
+      default:
+         assert(0 && "createTextPathAndLayoutImage, unknown layout");
+         break;
+      }
+
+      return path;
+   }
+}
+
+//________________________________________________________________________________________
 - (void) layoutTitle
 {
    if (titleFrame)
@@ -204,6 +284,21 @@ bool IsWideImage(UIImage *image)
    
    CGPathRelease(titlePath);
    CFRelease(titleSetter);
+}
+
+//________________________________________________________________________________________
+- (void) layoutText
+{
+   if (textFrame)
+      CFRelease(textFrame);
+
+   CGPathRef textPath = [self createTextPath];
+   if (textPath) {
+      CTFramesetterRef textSetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)text);
+      textFrame = CTFramesetterCreateFrame(textSetter, CFRangeMake(0, [text length]), textPath, nullptr);
+      CFRelease(textSetter);
+      CFRelease(textPath);
+   }
 }
 
 //________________________________________________________________________________________
@@ -260,6 +355,7 @@ bool IsWideImage(UIImage *image)
 - (void) layoutTile
 {
    [self layoutTitle];
+   [self layoutText];
    [self layoutThumbnail];
    [self layoutUIElements];
 
@@ -275,6 +371,7 @@ bool IsWideImage(UIImage *image)
 //________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
+   /*
    [super drawRect : rect];
    
    CGContextRef ctx = UIGraphicsGetCurrentContext();
@@ -292,8 +389,30 @@ bool IsWideImage(UIImage *image)
 
    CGContextRestoreGState(ctx);
    
-   [self drawText : ctx];
+   [self drawText : ctx];*/
+   [super drawRect : rect];
+   
+   CGContextRef ctx = UIGraphicsGetCurrentContext();
+
+   CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
+
+   CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
+   CGContextTranslateCTM(ctx, 0, rect.size.height);
+   CGContextScaleCTM(ctx, 1.f, -1.f);
+
+   if (titleFrame)
+      CTFrameDraw(titleFrame, ctx);
+   
+   if (textFrame)
+      CTFrameDraw(textFrame, ctx);
 }
+
+#pragma mark - Manual text layout.
+
+//The code below is my first attempt to draw a text with hyphenation.
+//It failed:
+//1. Code is not spaced well between to rectangles, from which text region is built.
+//2. Code is slow (substrings for attributed string???).
 
 //________________________________________________________________________________________
 - (void) drawText : (CGContextRef) ctx
