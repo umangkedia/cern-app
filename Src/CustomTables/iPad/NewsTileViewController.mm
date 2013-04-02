@@ -164,20 +164,20 @@
       [pages removeAllObjects];
    }
    
-   const NSUInteger nPages = allArticles.count / 6 + 1;
-   
-   for (NSUInteger pageIndex = 0; pageIndex < nPages; ++pageIndex) {
-      TiledPageView * const newPage = [[TiledPageView alloc] initWithFrame : CGRect()];
-      [newPage setPageItems : allArticles startingFrom : pageIndex * 6];
-      [scrollView addSubview : newPage];
-      [pages addObject : newPage];
+   if (const NSUInteger nPages = (allArticles.count + 5) / 6) {
+      for (NSUInteger pageIndex = 0; pageIndex < nPages; ++pageIndex) {
+         TiledPageView * const newPage = [[TiledPageView alloc] initWithFrame : CGRect()];
+         [newPage setPageItems : allArticles startingFrom : pageIndex * 6];
+         [scrollView addSubview : newPage];
+         [pages addObject : newPage];
+      }
+      
+      [self layoutPages : YES];
+      [scrollView setContentOffset : CGPointMake(0.f, 0.f)];
+      
+      //The first page is visible now, let's download ... IMAGES NOW!!! :)
+      [self loadImagesForVisiblePage];
    }
-   
-   [self layoutPages : YES];
-   [scrollView setContentOffset : CGPointMake(0.f, 0.f)];
-   
-   //The first page is visible now, let's download ... IMAGES NOW!!! :)
-   [self loadImagesForVisiblePage];
 }
 
 //________________________________________________________________________________________
