@@ -64,6 +64,8 @@ return false;
    UILabel *infoLabel;//Article's date and author.
 
    PictureButtonView *actionButton;
+   
+   CFStringTokenizerRef tokenizer;
 }
 
 //________________________________________________________________________________________
@@ -101,6 +103,7 @@ return false;
       [self addSubview : actionButton];
       
       textMetricHeight = 0.f;
+      tokenizer = nullptr;
    }
 
    return self;
@@ -114,6 +117,9 @@ return false;
    
    if (textFrame)
       CFRelease(textFrame);
+   
+   if (tokenizer)
+      CFRelease(tokenizer);
 }
 
 //________________________________________________________________________________________
@@ -148,7 +154,15 @@ return false;
       summary = [filteredArray componentsJoinedByString : @" "];
    }
    
-   text = [[NSMutableAttributedString alloc] initWithString : summary];   
+   text = [[NSMutableAttributedString alloc] initWithString : summary];
+   if (!tokenizer) {
+      tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)summary,
+                                          CFRangeMake(0, summary.length),
+                                          kCFStringTokenizerUnitWordBoundary,
+                                          (__bridge CFLocaleRef)[NSLocale currentLocale]);
+      if (!tokenizer)
+         NSLog(@"TileView: -setTileData: - warning, CFStringTokenizerCreate failed");
+   }
 
    //Let's set text attributes:   
    //1. Font.
@@ -301,7 +315,7 @@ return false;
    if (!thumbnailView.image) {
       //The simplest possible case - 1.
       CGRect textRect = CGRectMake(wideImageMargin * w, titleH * h, w - 2 * wideImageMargin * w, h * textH);
-      [self drawText : ctx fitInRect : textRect fromIndex : 0 insertEllipsis : YES];
+      [self drawText : ctx inRect : textRect startIndex : 0 insertEllipsis : YES];
    } else if (IsWideImage(thumbnailView.image)) {
       //Case 2.
       CGRect textRect = {};
@@ -310,20 +324,20 @@ return false;
       else
          textRect = CGRectMake(wideImageMargin * w, titleH * h, w - 2 * wideImageMargin * w, 0.5f * h * textH);
 
-      [self drawText : ctx fitInRect : textRect fromIndex : 0 insertEllipsis : YES];
+      [self drawText : ctx inRect : textRect startIndex : 0 insertEllipsis : YES];
    } else {
       CGRect textRect = [self getFirstTextRectangle];
-      const NSUInteger next = [self drawText : ctx fitInRect : textRect fromIndex : 0 insertEllipsis : NO];
+      const NSUInteger next = [self drawText : ctx inRect : textRect startIndex : 0 insertEllipsis : NO];
       if (next < text.length) {
          //We have even more text.
          textRect = [self getSecondTextRectangle];
-         [self drawText:ctx fitInRect : textRect fromIndex : next insertEllipsis : YES];
+         [self drawText : ctx inRect : textRect startIndex : next insertEllipsis : YES];
       }
    }
 }
 
 //________________________________________________________________________________________
-- (NSUInteger) drawText : (CGContextRef) ctx fitInRect : (CGRect) rect fromIndex : (NSUInteger) startIndex insertEllipsis : (BOOL) ellipsis
+- (NSUInteger) drawText : (CGContextRef) ctx inRect : (CGRect) rect startIndex : (NSUInteger) startIndex insertEllipsis : (BOOL) insertEllipsis
 {
    assert(ctx != nullptr && "drawText:fitInRect:fromIndex:, parameter 'ctx' is null");
    assert(rect.size.width > 0.f && rect.size.height > 0.f &&
@@ -346,20 +360,22 @@ return false;
    NSUInteger nSymbolsRendered = 0;
    const NSUInteger nLines = NSUInteger(rect.size.height / textMetricHeight);
    CGPoint currentTextPos = rect.origin;
+
    for (NSUInteger i = 0; i < nLines && startIndex < text.length; ++i) {
+      if (i + 1 == nLines && insertEllipsis) {
+         [self drawLastTextLine : ctx from : startIndex atPoint : currentTextPos maxWidth : rect.size.width];
+         continue;
+      }
+   
       const CFIndex lineBreak = CTTypesetterSuggestLineBreak(typesetter, startIndex, rect.size.width);
       assert(lineBreak >= 0 && "drawText:fitInRect:fromIndex:insertEllipsis:, negative number of symbols");
       assert(startIndex + lineBreak <= text.length &&
              "drawText:fitInRect:fromIndex:insertEllipsis:, suggested line break position is out of bounds");
 
-      if (startIndex + lineBreak < text.length) {
-         CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)summary,
-                                                                  CFRangeMake(startIndex + lineBreak, summary.length - startIndex - lineBreak),
-                                                                  kCFStringTokenizerUnitWordBoundary,
-                                                                  (__bridge CFLocaleRef)[NSLocale currentLocale]);
+      if (startIndex + lineBreak < text.length && tokenizer) {
+         CFStringTokenizerSetString(tokenizer, (__bridge CFStringRef)summary, CFRangeMake(startIndex + lineBreak, summary.length - startIndex - lineBreak));
 
-         CFStringTokenizerTokenType tokenType =  CFStringTokenizerAdvanceToNextToken(tokenizer);
-
+         const CFStringTokenizerTokenType tokenType =  CFStringTokenizerAdvanceToNextToken(tokenizer);
          if (tokenType == kCFStringTokenizerTokenNone || tokenType == kCFStringTokenizerTokenHasNonLettersMask) {
             //Do nothing special, just draw a line till suggested line break.
             [self drawTextLine : ctx from : startIndex withLength : lineBreak atPoint : currentTextPos];
@@ -390,6 +406,12 @@ return false;
 }
 
 //________________________________________________________________________________________
+- (void) drawLastTextLine : (CGContextRef) ctx from : (NSUInteger) startIndex atPoint : (CGPoint) xy maxWidth : (CGFloat) maxWidth
+{
+   //Draw a text line and insert an ellipsis at the end of a line if required.
+}
+
+//________________________________________________________________________________________
 - (void) drawTextLine : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length atPoint : (CGPoint) xy
 {
    //This function draws a text line.
@@ -400,6 +422,11 @@ return false;
    CGContextSetTextPosition(ctx, xy.x, xy.y);
    CTLineDraw(ctLine, ctx);
    CFRelease(ctLine);
+}
+
+- (void) drawTextLineWithHyphen : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length atPoint : (CGPoint) xy
+{
+   //Add '-' at the end of line.
 }
 
 //________________________________________________________________________________________
