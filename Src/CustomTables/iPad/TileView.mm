@@ -30,13 +30,13 @@ const CGFloat upCutH = 0.2;
 const CGFloat downCutH = textH - upCutH;
 
 //
-const CGFloat hyphenShift = 8.f;
+const CGFloat hyphenShift = 5.f;
 
 //________________________________________________________________________________________
 bool IsWideImage(UIImage *image)
 {
    assert(image != nil && "IsWideImage, parameter 'image' is nil");
-
+return false;
    const CGSize imageSize = image.size;
 
    if (!imageSize.width || !imageSize.height)
@@ -87,7 +87,7 @@ bool IsWideImage(UIImage *image)
       textFrame = nullptr;
       
       wideImageOnTop = std::rand() % 2;
-      imageCut = std::rand() % 4;
+      imageCut = 0;//std::rand() % 4;
       
       infoLabel = [[UILabel alloc] initWithFrame : CGRect()];
       infoLabel.textColor = [[UIColor blueColor] colorWithAlphaComponent : 0.5];
@@ -167,89 +167,11 @@ bool IsWideImage(UIImage *image)
 }
 
 //________________________________________________________________________________________
-- (void) setTileThumbnail:(UIImage *) image
+- (void) setTileThumbnail : (UIImage *) image
 {
    assert(image != nil && "setTileThumbnail, parameter 'image' is nil");
    thumbnailView.image = image;
    [self layoutTile];
-}
-
-//________________________________________________________________________________________
-- (CGPathRef) createTextPath
-{
-   const CGFloat w = self.frame.size.width;
-   const CGFloat h = self.frame.size.height;
-
-   if (!thumbnailView.image) {
-      //The simplest possible case.
-      CGRect textRect = CGRectMake(wideImageMargin * w, [self translateY : titleH * h + textH * h], w - 2 * wideImageMargin * w, h * textH);
-
-      return CGPathCreateWithRect(textRect, &CGAffineTransformIdentity);
-   } else if (IsWideImage(thumbnailView.image)) {
-      CGRect textRect = {};
-      if (wideImageOnTop)
-         textRect = CGRectMake(wideImageMargin * w, [self translateY : titleH * h + textH * h], w - 2 * wideImageMargin * w, 0.5f * h * textH);
-      else
-         textRect = CGRectMake(wideImageMargin * w, [self translateY : titleH * h + 0.5f * textH * h], w - 2 * wideImageMargin * w, 0.5f * h * textH);
-
-      return CGPathCreateWithRect(textRect, &CGAffineTransformIdentity);
-      //Layout image view!
-   } else {
-      CGMutablePathRef path = CGPathCreateMutable();
-      const CGFloat y1 = [self translateY : textH * h * 0.5f + titleH * h];
-      const CGFloat y2 = [self translateY : textH * h + titleH * h];
-   
-      //At the beginning I was adding rectangle sub-paths, but ...
-      //there is a visible gap between text in these rectangles.
-
-      switch (imageCut) {
-      case 0 :
-         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1 + textH * 0.5 * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y1 + textH * 0.5 * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
-         CGPathCloseSubpath(path);
-         break;
-      case 1:
-         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
-         CGPathCloseSubpath(path);
-         
-         
-         break;
-      case 2:
-         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w - w * wideImageMargin, y2);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
-         CGPathCloseSubpath(path);
-
-         break;
-      case 3:
-         CGPathMoveToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, wideImageMargin * w, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w -  w * wideImageMargin, y2 + textH * h);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w -  w * wideImageMargin, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y1);
-         CGPathAddLineToPoint(path, &CGAffineTransformIdentity, w / 2, y2);
-         CGPathCloseSubpath(path);
-
-         break;
-      default:
-         assert(0 && "createTextPathAndLayoutImage, unknown layout");
-         break;
-      }
-
-      return path;
-   }
 }
 
 //________________________________________________________________________________________
@@ -269,21 +191,6 @@ bool IsWideImage(UIImage *image)
    
    CGPathRelease(titlePath);
    CFRelease(titleSetter);
-}
-
-//________________________________________________________________________________________
-- (void) layoutText
-{
-   if (textFrame)
-      CFRelease(textFrame);
-
-   CGPathRef textPath = [self createTextPath];
-   if (textPath) {
-      CTFramesetterRef textSetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)text);
-      textFrame = CTFramesetterCreateFrame(textSetter, CFRangeMake(0, [text length]), textPath, nullptr);
-      CFRelease(textSetter);
-      CFRelease(textPath);
-   }
 }
 
 //________________________________________________________________________________________
@@ -340,10 +247,9 @@ bool IsWideImage(UIImage *image)
 - (void) layoutTile
 {
    [self layoutTitle];
-   [self layoutText];
    [self layoutThumbnail];
    [self layoutUIElements];
-   
+
    [self setNeedsDisplay];
 }
 
@@ -362,35 +268,18 @@ bool IsWideImage(UIImage *image)
 
    CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
 
-   CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
-   CGContextTranslateCTM(ctx, 0, rect.size.height);
-   CGContextScaleCTM(ctx, 1.f, -1.f);
-
-   if (titleFrame)
-      CTFrameDraw(titleFrame, ctx);
-   
-   if (textFrame)
-      CTFrameDraw(textFrame, ctx);
-   
-   /*
-   [super drawRect : rect];
-   
-   CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-   CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
-
    CGContextSaveGState(ctx);
+
    CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
    CGContextTranslateCTM(ctx, 0, rect.size.height);
    CGContextScaleCTM(ctx, 1.f, -1.f);
 
    if (titleFrame)
       CTFrameDraw(titleFrame, ctx);
-   
+
    CGContextRestoreGState(ctx);
    
    [self drawText : ctx];
-   */
 }
 
 //________________________________________________________________________________________
@@ -441,14 +330,10 @@ bool IsWideImage(UIImage *image)
           "drawText:fitInRect:fromIndex:, parameter 'rect' is not a valid rectangle");
    assert(startIndex < text.length && "drawText:fitInRect:fromIndex:, parameter 'startIndex' is out of range");
    
-   //test test test!
-   CGContextSetRGBStrokeColor(ctx, 1.f, 0.f, 0.f, 1.f);
-   CGContextStrokeRect(ctx, rect);
-   
    CGContextSaveGState(ctx);
    //
    CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
-   CGContextTranslateCTM(ctx, 0, rect.size.height);
+   CGContextTranslateCTM(ctx, 0, self.frame.size.height);
    CGContextScaleCTM(ctx, 1.f, -1.f);
    
    //Time for the magic.
@@ -458,39 +343,50 @@ bool IsWideImage(UIImage *image)
       return text.length;//We'll stop text rendering for this tile.
    }
    
+   NSUInteger nSymbolsRendered = 0;
+   const NSUInteger nLines = NSUInteger(rect.size.height / textMetricHeight);
    CGPoint currentTextPos = rect.origin;
-   while (true) {
+   for (NSUInteger i = 0; i < nLines && startIndex < text.length; ++i) {
       const CFIndex lineBreak = CTTypesetterSuggestLineBreak(typesetter, startIndex, rect.size.width);
-      assert(lineBreak >= 0 && "drawText:fitInRect:fromIndex:insertEllipsis:, suggested line break is negative");
-      assert(startIndex + lineBreak <= text.length && "drawText:fitInRect:fromIndex:insertEllipsis:, suggested line break is out of bounds");
+      assert(lineBreak >= 0 && "drawText:fitInRect:fromIndex:insertEllipsis:, negative number of symbols");
+      assert(startIndex + lineBreak <= text.length &&
+             "drawText:fitInRect:fromIndex:insertEllipsis:, suggested line break position is out of bounds");
 
       if (startIndex + lineBreak < text.length) {
-         CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)summary, CFRangeMake(startIndex + lineBreak, summary.length - startIndex - lineBreak),
-                                                            kCFStringTokenizerUnitWordBoundary, (__bridge CFLocaleRef)[NSLocale currentLocale]);
+         CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)summary,
+                                                                  CFRangeMake(startIndex + lineBreak, summary.length - startIndex - lineBreak),
+                                                                  kCFStringTokenizerUnitWordBoundary,
+                                                                  (__bridge CFLocaleRef)[NSLocale currentLocale]);
+
          CFStringTokenizerTokenType tokenType =  CFStringTokenizerAdvanceToNextToken(tokenizer);
 
          if (tokenType == kCFStringTokenizerTokenNone || tokenType == kCFStringTokenizerTokenHasNonLettersMask) {
             //Do nothing special, just draw a line till suggested line break.
-            [self drawTextLine : ctx from : startIndex withLength : lineBreak - startIndex atPoint : currentTextPos];
+            [self drawTextLine : ctx from : startIndex withLength : lineBreak atPoint : currentTextPos];
             currentTextPos.y += textMetricHeight;
-            startIndex = lineBreak;
+            startIndex += lineBreak;
+            nSymbolsRendered += lineBreak;
          } else {
             //Aha, we try to do a hyphenation!
             const CFRange tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
             const CGRect textRect = CGRectMake(currentTextPos.x, currentTextPos.y, rect.size.width, textMetricHeight);
-            startIndex = [self drawHiphenated:ctx from:startIndex withLength:lineBreak - startIndex inArea : textRect addToken : tokenRange];
+            const NSUInteger lenRendered = [self drawLineHyphenated : ctx from : startIndex withLength : lineBreak inArea : textRect addToken : tokenRange];
+            startIndex += lenRendered;
+            nSymbolsRendered += lenRendered;
          }
       } else {
-         [self drawTextLine : ctx from : startIndex withLength : lineBreak - startIndex atPoint : currentTextPos];
+         [self drawTextLine : ctx from : startIndex withLength : lineBreak atPoint : currentTextPos];
+         startIndex += lineBreak;
+         nSymbolsRendered += lineBreak;
       }
       
-      break;
+      currentTextPos.y += textMetricHeight;
    }
 
    //
    CGContextRestoreGState(ctx);
    
-   return 1;
+   return nSymbolsRendered;
 }
 
 //________________________________________________________________________________________
@@ -499,23 +395,22 @@ bool IsWideImage(UIImage *image)
    //This function draws a text line.
    NSAttributedString * const substring = [text attributedSubstringFromRange : NSMakeRange(startIndex, length)];
    CTLineRef ctLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)substring);
-   
-   xy.y = [self translateY : xy.y];
 
+   xy.y = [self translateY : xy.y + textMetricHeight];
    CGContextSetTextPosition(ctx, xy.x, xy.y);
    CTLineDraw(ctLine, ctx);
    CFRelease(ctLine);
 }
 
 //________________________________________________________________________________________
-- (NSUInteger) drawHiphenated : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length inArea : (CGRect) area
-            addToken : (CFRange) tokenToSplit
+- (NSUInteger) drawLineHyphenated : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length inArea : (CGRect) area
+               addToken : (CFRange) tokenToSplit
 {
    //We have a line that fits (somehow) into the area.size.width. We also have a next token,
    //which is, probably, a legal word. Try to add a hyphen and draw a part of this word, if
    //it still fits into the rectangle.
-   area.origin.y = [self translateY : area.origin.y - textMetricHeight];
-   
+
+   NSUInteger nSymbolsRendered = 0;   
    while (true) {
       const CFIndex hyphenIndex = CFStringGetHyphenationLocationBeforeIndex((__bridge CFStringRef)summary, tokenToSplit.location + tokenToSplit.length,
                                                                             tokenToSplit, 0, (__bridge CFLocaleRef)[NSLocale currentLocale], nullptr);
@@ -526,20 +421,20 @@ bool IsWideImage(UIImage *image)
          const CGFloat width = CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading);
          CFRelease(ctLine);
          if (width <= area.size.width + hyphenShift) {
-            [self drawTextLine : ctx from : startIndex withLength : hyphenIndex - startIndex atPoint:area.origin];
+            [self drawTextLine : ctx from : startIndex withLength : hyphenIndex - startIndex atPoint : area.origin];
+            nSymbolsRendered = hyphenIndex - startIndex;
             break;
          } else {
             tokenToSplit.length = hyphenIndex - tokenToSplit.location;
          }
       } else {
-         [self drawTextLine:ctx from:startIndex withLength:length atPoint:area.origin];
+         [self drawTextLine : ctx from : startIndex withLength : length atPoint : area.origin];
+         nSymbolsRendered = length;
          break;
       }
-      
-      break;//The code does not really work at the moment, just a test.
    }
    
-   return 0;
+   return nSymbolsRendered;
 }
 
 #pragma mark - Aux. text rendering functions.
@@ -615,7 +510,6 @@ bool IsWideImage(UIImage *image)
    //Font metric - height.
    CTLineRef ctLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)text);
    assert(ctLine != nullptr && "calculateTextFontMetrics, CTLineCreateWithAttributedString failed");
-
 
    CGFloat ascent = 0.f, descent = 0.f, leading = 0.f;
    CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading);
