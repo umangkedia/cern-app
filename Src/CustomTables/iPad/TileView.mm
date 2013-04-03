@@ -52,6 +52,7 @@ bool IsWideImage(UIImage *image)
    
    NSString *summary;
    NSMutableAttributedString * text;
+   CGFloat textLineHeight;
    
    CTFrameRef titleFrame;
    CTFrameRef textFrame;
@@ -85,6 +86,9 @@ bool IsWideImage(UIImage *image)
       
       self.backgroundColor = [UIColor whiteColor];
       
+      summary = nullptr;
+      text = nullptr;
+      textLineHeight = 0.f;
       titleFrame = nullptr;
       textFrame = nullptr;
       
@@ -173,6 +177,7 @@ bool IsWideImage(UIImage *image)
    //1. Font.
    UIFont * const textFont = [UIFont fontWithName : @"PTSans-Caption" size : 14.f];
    assert(textFont != nil && "setTileData:, text's font is nil");
+   textLineHeight = [textFont lineHeight];
    const NSRange textRange = NSMakeRange(0, text.length);
    [text addAttribute : NSFontAttributeName value : textFont range : textRange];
    //2. Color
@@ -383,7 +388,7 @@ bool IsWideImage(UIImage *image)
 //________________________________________________________________________________________
 - (void) drawRect : (CGRect) rect
 {
-   [super drawRect : rect];
+  /* [super drawRect : rect];
    
    CGContextRef ctx = UIGraphicsGetCurrentContext();
 
@@ -397,7 +402,105 @@ bool IsWideImage(UIImage *image)
       CTFrameDraw(titleFrame, ctx);
    
    if (textFrame)
-      CTFrameDraw(textFrame, ctx);
+      CTFrameDraw(textFrame, ctx);*/
+
+   [super drawRect : rect];
+   
+   CGContextRef ctx = UIGraphicsGetCurrentContext();
+
+   CGContextSetRGBStrokeColor(ctx, 0.f, 0.f, 0.f, 1.f);
+
+   CGContextSaveGState(ctx);
+
+   CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
+   CGContextTranslateCTM(ctx, 0, rect.size.height);
+   CGContextScaleCTM(ctx, 1.f, -1.f);
+
+   if (titleFrame)
+      CTFrameDraw(titleFrame, ctx);
+
+   CGContextRestoreGState(ctx);
+   
+   if (textFrame)
+      [self drawText : ctx];
+}
+
+//________________________________________________________________________________________
+- (void) drawText : (CGContextRef) ctx
+{
+   assert(ctx != nullptr && "drawText, parameter 'ctx' is null");
+   
+   //We have 6 possible tile's layouts:
+   //1. Text fills the full tile (no thumbnails found)
+   //2. Text fills half of a tile area (we have wide thumbnail image) - either upper or lower half.
+   //3. Tuhmbnail image occupies 1/4 of tile's area, it in the top-left, top-right, bottom-left,
+   //   bottom-right quarter of a tile. (4 possible layouts).
+   //In any case, the text is filling some rectangle, and even in case 3 we can split
+   //a text area into 2 rectangles.
+   
+   const CGFloat w = self.frame.size.width;
+   const CGFloat h = self.frame.size.height;
+   
+   CGFloat topY = 0.f;
+
+   if (!thumbnailView.image) {
+      //The simplest possible case - text fills the whole tile.
+      topY = titleH * h;
+   } else if (IsWideImage(thumbnailView.image)) {
+      //Tile's top or bottom is occupied by a wide image.
+      if (wideImageOnTop)
+         topY = titleH * h + textH * h * 0.5f;
+      else
+         topY = titleH * h;
+   } else {
+      topY = titleH * h;
+   }
+   
+   CGContextSaveGState(ctx);
+   //
+   CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
+   CGContextTranslateCTM(ctx, 0, self.frame.size.height);
+   CGContextScaleCTM(ctx, 1.f, -1.f);
+
+   //We have a rect and a CTFrame created from this rect.
+   //We still have to insert '-' sumbol in case we have a soft-hyphen at the end of CTLine
+   //(Core Text does not insert hard-hyphen, unfortunately) :(
+   
+   if (CFArrayRef ctLines = CTFrameGetLines(textFrame)) {
+      if (CFIndex nLines = CFArrayGetCount(ctLines)) {
+         assert(nLines > 0 && "drawTextInRect, array count is negative");//CFIndex is signed long, so API can return crap. :)
+
+         std::vector<CGPoint> lineOrigins(nLines);
+         CTFrameGetLineOrigins(textFrame, CFRangeMake(0, nLines), &lineOrigins[0]);
+
+         for (CFIndex i = 0; i < nLines; ++i) {
+            topY += textLineHeight;
+            const CGFloat x = lineOrigins[i].x + w * wideImageMargin;
+            CGContextSetTextPosition(ctx, x, [self translateY : topY]);
+            
+            //Now check, if this CTLine end with a soft hyphen.
+            CTLineRef ctLine = (CTLineRef)CFArrayGetValueAtIndex(ctLines, i);
+            const CFRange cfStringRange = CTLineGetStringRange(ctLine);
+            const NSRange stringRange = NSMakeRange(cfStringRange.location, cfStringRange.length);
+            const UniChar lastChar = [summary characterAtIndex : stringRange.location + stringRange.length - 1];
+            
+            if (lastChar != 0xAD)
+               CTLineDraw(ctLine, ctx);
+            else {
+               NSMutableAttributedString * const lineAttrString = [[text attributedSubstringFromRange : stringRange] mutableCopy];
+               const NSRange replaceRange = NSMakeRange(stringRange.length - 1, 1);
+               [lineAttrString replaceCharactersInRange : replaceRange withString : @"-"];
+
+               if (CTLineRef hyphenLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)lineAttrString)) {
+                  CTLineDraw(hyphenLine, ctx);
+                  CFRelease(hyphenLine);
+               }
+            }
+         }
+      }
+   }
+
+   CGContextRestoreGState(ctx);
 }
 
 #pragma mark - Soft hyphens
