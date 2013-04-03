@@ -22,6 +22,8 @@
    BOOL viewDidAppear;
    
    NSMutableArray *allArticles;
+   
+   BOOL pageAdjustment;
 }
 
 @synthesize aggregator, noConnectionHUD, spinner;
@@ -65,6 +67,8 @@
    leftPage = [[TiledPageView alloc] initWithFrame : CGRect()];
    currPage = [[TiledPageView alloc] initWithFrame : CGRect()];
    rightPage = [[TiledPageView alloc] initWithFrame : CGRect()];
+   
+   scrollView.checkDragging = YES;
 }
 
 //________________________________________________________________________________________
@@ -138,7 +142,7 @@
 //________________________________________________________________________________________
 - (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
-   pageBeforeRotation = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
+//   pageBeforeRotation = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
 }
 
 
@@ -148,7 +152,7 @@
    if (!nPages)
       return;
 
-   [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f) animated : NO];
+   [scrollView setContentOffset : CGPointMake(currPage.pageNumber * self.view.frame.size.width, 0.f) animated : NO];
 
    if (nPages <= 3) {
       TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
@@ -373,6 +377,8 @@
 #pragma mark - UIScrollView delegate.
 
 // Load images for all onscreen rows (if not done yet) when scrolling is finished
+
+
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDragging : (UIScrollView *) aScrollView willDecelerate : (BOOL) decelerate
 {
@@ -384,14 +390,12 @@
 
       [self loadImagesForVisiblePage];
    }
-
 }
 
 //________________________________________________________________________________________
 - (void) scrollViewDidEndDecelerating : (UIScrollView *) aScrollView
 {
 #pragma unused(aScrollView)
-
    if (nPages > 3)
       [self adjustPages];
    
@@ -406,6 +410,8 @@
    assert(nPages > 3 && "adjustPages, nPages must be > 3");
    
    const NSUInteger newCurrentPageIndex = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
+   if (newCurrentPageIndex == currPage.pageNumber)
+      return;
    
    if (newCurrentPageIndex > currPage.pageNumber) {
       //We scrolled to the left.
@@ -413,12 +419,13 @@
       //The old 'right' becomes the new 'current'.
       //The old 'left' becomes the new 'right' and we either have to set this the page or not.
 
+      const bool leftEdge = !currPage.pageNumber;
       TiledPageView * const oldLeft = leftPage;
       leftPage = currPage;
       currPage = rightPage;
       rightPage = oldLeft;
 
-      if (newCurrentPageIndex + 1 < nPages) {
+      if (newCurrentPageIndex + 1 < nPages && !leftEdge) {
          //Set the frame first.
          CGRect frame = rightPage.frame;
          frame.origin.x = currPage.frame.origin.x + frame.size.width;
@@ -426,19 +433,20 @@
          //Set the data now.
          [rightPage setPageItems : allArticles startingFrom : (newCurrentPageIndex + 1) * 6];
          [rightPage layoutTiles];
-      }
+      } 
    } else {
       //We scrolled to the right.
       //The old 'current' becomes the new 'right.
       //The old 'left' becomes the new 'current'.
       //The old 'right' becomes the new 'left' and we either have to set this page or not.
       
+      const bool rightEdge = currPage.pageNumber + 1 == nPages;
       TiledPageView * const oldRight = rightPage;
-      currPage = leftPage;
       rightPage = currPage;
+      currPage = leftPage;
       leftPage = oldRight;
       
-      if (newCurrentPageIndex) {
+      if (newCurrentPageIndex && !rightEdge) {
          CGRect frame = leftPage.frame;
          frame.origin.x = currPage.frame.origin.x - frame.size.width;
          leftPage.frame = frame;

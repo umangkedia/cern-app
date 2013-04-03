@@ -124,7 +124,7 @@
       NewsTileViewController *tileController = (NewsTileViewController *)top.topViewController;
       tileController.navigationItem.title = @"Bulletin";
       //TODO: ID for cache!!!
-//      [tileController.aggregator addFeedForURL : [NSURL URLWithString : @"http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&ln=en"]];
+      //[tileController.aggregator addFeedForURL : [NSURL URLWithString : @"http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&ln=en"]];
       [tileController.aggregator addFeedForURL : [NSURL URLWithString : @"http://home.web.cern.ch/about/updates/feed"]];
    }
 

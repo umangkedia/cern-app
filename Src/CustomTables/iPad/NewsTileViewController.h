@@ -3,6 +3,7 @@
 #import "PageControllerProtocol.h"
 #import "ConnectionController.h"
 #import "HUDRefreshProtocol.h"
+#import "SlideScrollView.h"
 #import "ImageDownloader.h"
 #import "RSSAggregator.h"
 
@@ -10,7 +11,7 @@
                                                      ImageDownloaderDelegate, ConnectionController,
                                                      UIScrollViewDelegate>
 {
-   IBOutlet UIScrollView *scrollView;
+   IBOutlet SlideScrollView *scrollView;
 }
 
 @property (nonatomic, strong) RSSAggregator *aggregator;

@@ -2,6 +2,8 @@
 
 @implementation SlideScrollView
 
+@synthesize checkDragging;
+
 //________________________________________________________________________________________
 - (UIView *) hitTest : (CGPoint) point withEvent : (UIEvent *) event
 {  
@@ -9,6 +11,9 @@
    //(slide a view) let's use 30/50 pixels at the left (on any page) as a 'dead' zone - scrollview
    //is inactive here and the underlaying view will have a touch (and slide).
    
+   if (checkDragging && (self.isDragging || self.isDecelerating))
+      return nil;
+
    if (point.x >= 0) {
       const CGFloat margin = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 30.f : 50.f;
       const CGFloat x = point.x - NSUInteger(point.x / self.frame.size.width) * self.frame.size.width;
