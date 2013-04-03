@@ -404,63 +404,68 @@ bool IsWideImage(UIImage *image)
 //________________________________________________________________________________________
 - (void) hypenize
 {
-   //TODO: that function looks terrible, fix it.
+   //TODO: this function looks terrible, fix it.
+   
+   //Tokens - I think, I can not avoid this.
+   //Substrings - I do not know, may be there is another way.
 
    if (!tokenizer || !summary.length)
       return;
    
-   CFStringTokenizerSetString(tokenizer, (__bridge CFStringRef)summary, CFRangeMake(0, summary.length));
-   CFRange tokenRange = CFRangeMake(0, summary.length);
+   @autoreleasepool {   
+      CFStringTokenizerSetString(tokenizer, (__bridge CFStringRef)summary, CFRangeMake(0, summary.length));
+      CFRange tokenRange = CFRangeMake(0, summary.length);
 
-   std::vector<NSUInteger> hyphens;
-   std::vector<NSUInteger> tokenHyphens;
-   tokenHyphens.reserve(8);//hehe
-   
-   while (true) {
-      tokenHyphens.clear();
-      const CFStringTokenizerTokenType tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer);
-      if (tokenType == kCFStringTokenizerTokenNone)
-         break;//????
+      std::vector<NSUInteger> hyphens;
+      std::vector<NSUInteger> tokenHyphens;
+      tokenHyphens.reserve(8);//hehe
+      
+      while (true) {
+         tokenHyphens.clear();
+         const CFStringTokenizerTokenType tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer);
+         if (tokenType == kCFStringTokenizerTokenNone)
+            break;//????
 
-      tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
-      if (tokenRange.location == kCFNotFound)
-         break;
+         tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
+         if (tokenRange.location == kCFNotFound)
+            break;
 
-      if (tokenType != kCFStringTokenizerTokenHasNonLettersMask) {
-         //Try to find hyphen positions.
-         while (tokenRange.length) {
-            const CFIndex newPos = CFStringGetHyphenationLocationBeforeIndex((__bridge CFStringRef)summary, tokenRange.location + tokenRange.length,
-                                                                             tokenRange, 0,
-                                                                             (__bridge CFLocaleRef)[NSLocale currentLocale],
-                                                                             nullptr);
-            if (newPos == kCFNotFound)
-               break;
+         if (tokenType != kCFStringTokenizerTokenHasNonLettersMask) {
+            //Try to find hyphen positions.
+            while (tokenRange.length) {
+               const CFIndex newPos = CFStringGetHyphenationLocationBeforeIndex((__bridge CFStringRef)summary, tokenRange.location + tokenRange.length,
+                                                                                tokenRange, 0,
+                                                                                (__bridge CFLocaleRef)[NSLocale currentLocale],
+                                                                                nullptr);
+               if (newPos == kCFNotFound)
+                  break;
+               
+               assert(newPos >= tokenRange.location && newPos < tokenRange.location + tokenRange.length &&
+                      "hyphenize, invalid hyphen location");
+               
+               tokenHyphens.push_back(newPos);
+               tokenRange.length = newPos - tokenRange.location;
+            }
             
-            assert(newPos >= tokenRange.location && newPos < tokenRange.location + tokenRange.length &&
-                   "hyphenize, invalid hyphen location");
-            
-            tokenHyphens.push_back(newPos);
-            tokenRange.length = newPos - tokenRange.location;
+            if (tokenHyphens.size())
+               hyphens.insert(hyphens.end(), tokenHyphens.rbegin(), tokenHyphens.rend());
          }
-         
-         if (tokenHyphens.size())
-            hyphens.insert(hyphens.end(), tokenHyphens.rbegin(), tokenHyphens.rend());
       }
-   }
-   
-   NSMutableString *hyphenized = [[NSMutableString alloc] init];
-   //:((( append requires only string, can not be a range :(((
-   NSUInteger start = 0;
-   for (auto hyphenPos : hyphens) {
-      assert(hyphenPos > 0 && hyphenPos < summary.length && "hyphenize, invalid hyphen location");
-      NSString * const subs = [summary substringWithRange : NSMakeRange(start, hyphenPos - start)];
-      [hyphenized appendString : subs];
-      [hyphenized appendString : softHyphen];
-      start = hyphenPos;
-   }
+      
+      NSMutableString *hyphenized = [[NSMutableString alloc] init];
+      //:((( append requires only string, can not be a range :(((
+      NSUInteger start = 0;
+      for (auto hyphenPos : hyphens) {
+         assert(hyphenPos > 0 && hyphenPos < summary.length && "hyphenize, invalid hyphen location");
+         NSString * const subs = [summary substringWithRange : NSMakeRange(start, hyphenPos - start)];
+         [hyphenized appendString : subs];
+         [hyphenized appendString : softHyphen];
+         start = hyphenPos;
+      }
 
-   [hyphenized appendString : [summary substringWithRange:NSMakeRange(start, summary.length - start)]];
-   summary = hyphenized;
+      [hyphenized appendString : [summary substringWithRange:NSMakeRange(start, summary.length - start)]];
+      summary = hyphenized;
+   }
 }
 
 @end
