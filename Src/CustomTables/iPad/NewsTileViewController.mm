@@ -142,7 +142,7 @@
 //________________________________________________________________________________________
 - (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
-//   pageBeforeRotation = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
+   pageBeforeRotation = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
 }
 
 
