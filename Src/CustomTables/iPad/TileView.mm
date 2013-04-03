@@ -7,6 +7,7 @@
 //
 
 #import <cassert>
+#import <vector>
 
 #import <CoreText/CoreText.h>
 
@@ -51,7 +52,6 @@ bool IsWideImage(UIImage *image)
    
    NSString *summary;
    NSMutableAttributedString * text;
-   CGFloat textMetricHeight;
    
    CTFrameRef titleFrame;
    CTFrameRef textFrame;
@@ -64,6 +64,8 @@ bool IsWideImage(UIImage *image)
    PictureButtonView *actionButton;
    
    CFStringTokenizerRef tokenizer;
+   
+   NSString *softHyphen;
 }
 
 //________________________________________________________________________________________
@@ -100,9 +102,10 @@ bool IsWideImage(UIImage *image)
       actionButton = [[PictureButtonView alloc] initWithFrame:CGRect() image : [UIImage imageNamed : @"action_blue.png"]];
       [actionButton addTarget : self selector : @selector(sendArticle)];
       [self addSubview : actionButton];
-      
-      textMetricHeight = 0.f;
+
       tokenizer = nullptr;
+
+      softHyphen = [NSString stringWithCString : "\u00AD" encoding : NSUTF8StringEncoding];
    }
 
    return self;
@@ -152,9 +155,7 @@ bool IsWideImage(UIImage *image)
       NSArray *filteredArray = [parts filteredArrayUsingPredicate : noEmptyStrings];
       summary = [filteredArray componentsJoinedByString : @" "];
    }
-   
-   text = [[NSMutableAttributedString alloc] initWithString : summary];
-   /*
+
    if (!tokenizer) {
       tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)summary,
                                           CFRangeMake(0, summary.length),
@@ -163,7 +164,10 @@ bool IsWideImage(UIImage *image)
       if (!tokenizer)
          NSLog(@"TileView: -setTileData: - warning, CFStringTokenizerCreate failed");
    }
-   */
+   
+   [self hypenize];   
+   text = [[NSMutableAttributedString alloc] initWithString : summary];
+
 
    //Let's set text attributes:   
    //1. Font.
@@ -181,9 +185,6 @@ bool IsWideImage(UIImage *image)
    thumbnailView.image = feedItem.image;
    imageCut = feedItem.imageCut;
    wideImageOnTop = feedItem.wideImageOnTop;
-      
-   
-   [self calculateTextFontMetrics];
 }
 
 //________________________________________________________________________________________
@@ -399,261 +400,67 @@ bool IsWideImage(UIImage *image)
       CTFrameDraw(textFrame, ctx);
 }
 
-#pragma mark - Manual text layout.
-
-//The code below is my first attempt to draw a text with hyphenation.
-//It failed:
-//1. Code is not spaced well between to rectangles, from which text region is built.
-//2. Code is slow (substrings for attributed string???).
-
+#pragma mark - Soft hyphens
 //________________________________________________________________________________________
-- (void) drawText : (CGContextRef) ctx
+- (void) hypenize
 {
-   assert(ctx != nullptr && "drawText, parameter 'ctx' is null");
+   //TODO: that function looks terrible, fix it.
+
+   if (!tokenizer || !summary.length)
+      return;
    
-   //We have 6 possible tile's layouts:
-   //1. Text fills the full tile (no thumbnails found)
-   //2. Text fills half of a tile area (we have wide thumbnail image) - either upper or lower half.
-   //3. Tuhmbnail image occupies 1/4 of tile's area, it in the top-left, top-right, bottom-left,
-   //   bottom-right quarter of a tile. (4 possible layouts).
-   //In any case, the text is filling some rectangle, and even in case 3 we can split
-   //a text area into 2 rectangles.
+   CFStringTokenizerSetString(tokenizer, (__bridge CFStringRef)summary, CFRangeMake(0, summary.length));
+   CFRange tokenRange = CFRangeMake(0, summary.length);
 
-   const CGFloat w = self.frame.size.width;
-   const CGFloat h = self.frame.size.height;
-
-   if (!thumbnailView.image) {
-      //The simplest possible case - 1.
-      CGRect textRect = CGRectMake(wideImageMargin * w, titleH * h, w - 2 * wideImageMargin * w, h * textH);
-      [self drawText : ctx inRect : textRect startIndex : 0 insertEllipsis : YES];
-   } else if (IsWideImage(thumbnailView.image)) {
-      //Case 2.
-      CGRect textRect = {};
-      if (wideImageOnTop)
-         textRect = CGRectMake(wideImageMargin * w, titleH * h + textH * h * 0.5f, w - 2 * wideImageMargin * w, 0.5f * h * textH);
-      else
-         textRect = CGRectMake(wideImageMargin * w, titleH * h, w - 2 * wideImageMargin * w, 0.5f * h * textH);
-
-      [self drawText : ctx inRect : textRect startIndex : 0 insertEllipsis : YES];
-   } else {
-      CGRect textRect = [self getFirstTextRectangle];
-      const NSUInteger next = [self drawText : ctx inRect : textRect startIndex : 0 insertEllipsis : NO];
-      if (next < text.length) {
-         //We have even more text.
-         textRect = [self getSecondTextRectangle];
-         [self drawText : ctx inRect : textRect startIndex : next insertEllipsis : YES];
-      }
-   }
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) drawText : (CGContextRef) ctx inRect : (CGRect) rect startIndex : (NSUInteger) startIndex insertEllipsis : (BOOL) insertEllipsis
-{
-   assert(ctx != nullptr && "drawText:fitInRect:fromIndex:, parameter 'ctx' is null");
-   assert(rect.size.width > 0.f && rect.size.height > 0.f &&
-          "drawText:fitInRect:fromIndex:, parameter 'rect' is not a valid rectangle");
-   assert(startIndex < text.length && "drawText:fitInRect:fromIndex:, parameter 'startIndex' is out of range");
+   std::vector<NSUInteger> hyphens;
+   std::vector<NSUInteger> tokenHyphens;
+   tokenHyphens.reserve(8);//hehe
    
-   CGContextSaveGState(ctx);
-   //
-   CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
-   CGContextTranslateCTM(ctx, 0, self.frame.size.height);
-   CGContextScaleCTM(ctx, 1.f, -1.f);
-   
-   //Time for the magic.
-   CTTypesetterRef typesetter = CTTypesetterCreateWithAttributedString((__bridge CFAttributedStringRef)text);
-   if (!typesetter) {
-      NSLog(@"drawText:fitInRect:fromIndex:insertEllipsis:, typesetter creation failed");
-      return text.length;//We'll stop text rendering for this tile.
-   }
-   
-   NSUInteger nSymbolsRendered = 0;
-   const NSUInteger nLines = NSUInteger(rect.size.height / textMetricHeight);
-   CGPoint currentTextPos = rect.origin;
-
-   for (NSUInteger i = 0; i < nLines && startIndex < text.length; ++i) {
-      if (i + 1 == nLines && insertEllipsis) {
-         [self drawLastTextLine : ctx from : startIndex atPoint : currentTextPos maxWidth : rect.size.width];
-         continue;
-      }
-   
-      const CFIndex lineBreak = CTTypesetterSuggestLineBreak(typesetter, startIndex, rect.size.width);
-      assert(lineBreak >= 0 && "drawText:fitInRect:fromIndex:insertEllipsis:, negative number of symbols");
-      assert(startIndex + lineBreak <= text.length &&
-             "drawText:fitInRect:fromIndex:insertEllipsis:, suggested line break position is out of bounds");
-
-      if (startIndex + lineBreak < text.length && tokenizer) {
-         CFStringTokenizerSetString(tokenizer, (__bridge CFStringRef)summary, CFRangeMake(startIndex + lineBreak, summary.length - startIndex - lineBreak));
-
-         const CFStringTokenizerTokenType tokenType =  CFStringTokenizerAdvanceToNextToken(tokenizer);
-         if (tokenType == kCFStringTokenizerTokenNone || tokenType == kCFStringTokenizerTokenHasNonLettersMask) {
-            //Do nothing special, just draw a line till suggested line break.
-            [self drawTextLine : ctx from : startIndex withLength : lineBreak atPoint : currentTextPos];
-            currentTextPos.y += textMetricHeight;
-            startIndex += lineBreak;
-            nSymbolsRendered += lineBreak;
-         } else {
-            //Aha, we try to do a hyphenation!
-            const CFRange tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
-            const CGRect textRect = CGRectMake(currentTextPos.x, currentTextPos.y, rect.size.width, textMetricHeight);
-            const NSUInteger lenRendered = [self drawLineHyphenated : ctx from : startIndex withLength : lineBreak inArea : textRect addToken : tokenRange];
-            startIndex += lenRendered;
-            nSymbolsRendered += lenRendered;
-         }
-      } else {
-         [self drawTextLine : ctx from : startIndex withLength : lineBreak atPoint : currentTextPos];
-         startIndex += lineBreak;
-         nSymbolsRendered += lineBreak;
-      }
-      
-      currentTextPos.y += textMetricHeight;
-   }
-
-   //
-   CGContextRestoreGState(ctx);
-   
-   return nSymbolsRendered;
-}
-
-//________________________________________________________________________________________
-- (void) drawLastTextLine : (CGContextRef) ctx from : (NSUInteger) startIndex atPoint : (CGPoint) xy maxWidth : (CGFloat) maxWidth
-{
-   //Draw a text line and insert an ellipsis at the end of a line if required.
-}
-
-//________________________________________________________________________________________
-- (void) drawTextLine : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length atPoint : (CGPoint) xy
-{
-   //This function draws a text line.
-   NSAttributedString * const substring = [text attributedSubstringFromRange : NSMakeRange(startIndex, length)];
-   CTLineRef ctLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)substring);
-
-   xy.y = [self translateY : xy.y + textMetricHeight];
-   CGContextSetTextPosition(ctx, xy.x, xy.y);
-   CTLineDraw(ctLine, ctx);
-   CFRelease(ctLine);
-}
-
-- (void) drawTextLineWithHyphen : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length atPoint : (CGPoint) xy
-{
-   //Add '-' at the end of line.
-}
-
-//________________________________________________________________________________________
-- (NSUInteger) drawLineHyphenated : (CGContextRef) ctx from : (NSUInteger) startIndex withLength : (NSUInteger) length inArea : (CGRect) area
-               addToken : (CFRange) tokenToSplit
-{
-   //We have a line that fits (somehow) into the area.size.width. We also have a next token,
-   //which is, probably, a legal word. Try to add a hyphen and draw a part of this word, if
-   //it still fits into the rectangle.
-
-   NSUInteger nSymbolsRendered = 0;   
    while (true) {
-      const CFIndex hyphenIndex = CFStringGetHyphenationLocationBeforeIndex((__bridge CFStringRef)summary, tokenToSplit.location + tokenToSplit.length,
-                                                                            tokenToSplit, 0, (__bridge CFLocaleRef)[NSLocale currentLocale], nullptr);
-      if (hyphenIndex != kCFNotFound && hyphenIndex > tokenToSplit.location) {
-         NSAttributedString * const test = [text attributedSubstringFromRange : NSMakeRange(startIndex, hyphenIndex - startIndex)];
-         CTLineRef ctLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)test);
-         CGFloat ascent = 0.f, descent = 0.f, leading = 0.f;
-         const CGFloat width = CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading);
-         CFRelease(ctLine);
-         if (width <= area.size.width + hyphenShift) {
-            [self drawTextLine : ctx from : startIndex withLength : hyphenIndex - startIndex atPoint : area.origin];
-            nSymbolsRendered = hyphenIndex - startIndex;
-            break;
-         } else {
-            tokenToSplit.length = hyphenIndex - tokenToSplit.location;
-         }
-      } else {
-         [self drawTextLine : ctx from : startIndex withLength : length atPoint : area.origin];
-         nSymbolsRendered = length;
+      tokenHyphens.clear();
+      const CFStringTokenizerTokenType tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer);
+      if (tokenType == kCFStringTokenizerTokenNone)
+         break;//????
+
+      tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
+      if (tokenRange.location == kCFNotFound)
          break;
+
+      if (tokenType != kCFStringTokenizerTokenHasNonLettersMask) {
+         //Try to find hyphen positions.
+         while (tokenRange.length) {
+            const CFIndex newPos = CFStringGetHyphenationLocationBeforeIndex((__bridge CFStringRef)summary, tokenRange.location + tokenRange.length,
+                                                                             tokenRange, 0,
+                                                                             (__bridge CFLocaleRef)[NSLocale currentLocale],
+                                                                             nullptr);
+            if (newPos == kCFNotFound)
+               break;
+            
+            assert(newPos >= tokenRange.location && newPos < tokenRange.location + tokenRange.length &&
+                   "hyphenize, invalid hyphen location");
+            
+            tokenHyphens.push_back(newPos);
+            tokenRange.length = newPos - tokenRange.location;
+         }
+         
+         if (tokenHyphens.size())
+            hyphens.insert(hyphens.end(), tokenHyphens.rbegin(), tokenHyphens.rend());
       }
    }
    
-   return nSymbolsRendered;
-}
-
-#pragma mark - Aux. text rendering functions.
-
-//________________________________________________________________________________________
-- (CGRect) getFirstTextRectangle
-{
-   //At the moment, if I have a thumbnail (not a wide image),
-   //image fills 1/4 of tile's area.
-   //I split the remaining text area into two rectangles.
-   //This is the "first" rectangle.
-   const CGFloat w = self.frame.size.width;
-   const CGFloat h = self.frame.size.height;
-
-   CGRect textRect = {};
-   
-   switch (imageCut) {
-   case 0:
-      textRect = CGRectMake(w / 2, titleH * h, (w - 2 * w * wideImageMargin) / 2, textH * h * 0.5f);
-      break;
-   case 1:
-      textRect = CGRectMake(w * wideImageMargin, titleH * h, (w - 2 * w * wideImageMargin) / 2 - hyphenShift, textH * h * 0.5f);
-      break;
-   case 2:
-   case 3:
-      textRect = CGRectMake(wideImageMargin * w, titleH * h, w - 2 * w * wideImageMargin, textH * h * 0.5f);
-      break;
-   default:
-      assert(0 && "getFirstTextRectangle, unknown layout");
-      break;
+   NSMutableString *hyphenized = [[NSMutableString alloc] init];
+   //:((( append requires only string, can not be a range :(((
+   NSUInteger start = 0;
+   for (auto hyphenPos : hyphens) {
+      assert(hyphenPos > 0 && hyphenPos < summary.length && "hyphenize, invalid hyphen location");
+      NSString * const subs = [summary substringWithRange : NSMakeRange(start, hyphenPos - start)];
+      [hyphenized appendString : subs];
+      [hyphenized appendString : softHyphen];
+      start = hyphenPos;
    }
-   
-   return textRect;
-}
 
-//________________________________________________________________________________________
-- (CGRect) getSecondTextRectangle
-{
-   //At the moment, if I have a thumbnail (not a wide image),
-   //image fills 1/4 of tile's area.
-   //I split the remaining text area into two rectangles.
-   //This is the "second" rectangle.
-   const CGFloat w = self.frame.size.width;
-   const CGFloat h = self.frame.size.height;
-   const CGFloat y1 = textH * h * 0.5f + titleH * h;
-
-   CGRect textRect = {};
-   
-   switch (imageCut) {
-   case 0:
-   case 1:
-      textRect = CGRectMake(wideImageMargin * w, y1, w - 2 * w * wideImageMargin, textH * h * 0.5f);
-      break;
-   case 2:
-      textRect = CGRectMake(w / 2, y1, (w - 2 * w * wideImageMargin) * 0.5f, textH * h * 0.5f);
-      break;
-   case 3:
-      textRect = CGRectMake(wideImageMargin * w, y1, (w - 2 * w * wideImageMargin) * 0.5f - hyphenShift, textH * h * 0.5f);
-      break;
-   default:
-      assert(0 && "getFirstTextRectangle, unknown layout");
-      break;
-   }
-   
-   return textRect;
-}
-
-//________________________________________________________________________________________
-- (void) calculateTextFontMetrics
-{
-   assert(text != nil && "calculateTextFontMetrics, text string is nil");
-   
-   //Font metric - height.
-   CTLineRef ctLine = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)text);
-   assert(ctLine != nullptr && "calculateTextFontMetrics, CTLineCreateWithAttributedString failed");
-
-   CGFloat ascent = 0.f, descent = 0.f, leading = 0.f;
-   CTLineGetTypographicBounds(ctLine, &ascent, &descent, &leading);
-   
-   textMetricHeight = ascent + descent;//hehehe
-
-   CFRelease(ctLine);
+   [hyphenized appendString : [summary substringWithRange:NSMakeRange(start, summary.length - start)]];
+   summary = hyphenized;
 }
 
 @end
