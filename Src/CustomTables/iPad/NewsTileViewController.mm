@@ -152,7 +152,7 @@
    if (!nPages)
       return;
 
-   [scrollView setContentOffset : CGPointMake(currPage.pageNumber * self.view.frame.size.width, 0.f) animated : NO];
+   [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f) animated : NO];
 
    if (nPages <= 3) {
       TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
