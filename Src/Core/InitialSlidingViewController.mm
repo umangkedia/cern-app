@@ -96,11 +96,15 @@
    [super viewDidLoad];
   
    UIStoryboard *storyboard = nil;
-  
+   
    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
       storyboard = [UIStoryboard storyboardWithName : @"iPhone" bundle : nil];
-   else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+   else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
       storyboard = [UIStoryboard storyboardWithName : @"iPad" bundle : nil];
+      //For iPad, limit the visible width of under left view.
+      self.shouldAllowPanningPastAnchor = NO;
+      self.anchorLeftRevealAmount = 320.f;
+   }
 
    assert(storyboard != nil && "viewDidLoad, storyboard is nil");
 
