@@ -18,14 +18,20 @@ namespace {
 //________________________________________________________________________________________
 CGFloat DefaultGUIFontSize()
 {
+   //The "GUI font size" is the text size in a menu.
+   //On iPhone it is in the range [13, 17] (this version was developed first),
+   //on iPad fonts are bigger.
+
+   const CGFloat add = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 1.5f : 0.f;
+
    NSUserDefaults * const defaults = [NSUserDefaults standardUserDefaults];
    if (id sz = [defaults objectForKey:@"GUIFontSize"]) {
       assert([sz isKindOfClass : [NSNumber class]] && "DefaultGUIFontSize, 'GUIFontSize' has a wrong type");
-      return [(NSNumber *)sz floatValue];
+      return [(NSNumber *)sz floatValue] + add;
    }
    
    //Ooops.
-   return 13.f;
+   return 13.f + add;
 }
 
 }
@@ -83,17 +89,17 @@ CGFloat DefaultGUIFontSize()
 {
    assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
 
-   hint.size.height = CernAPP::childMenuItemHeight;
+   hint.size.height = CernAPP::ChildMenuItemHeight();
    itemView.frame = hint;   
    [itemView layoutContent];
 
-   return CernAPP::childMenuItemHeight;
+   return CernAPP::ChildMenuItemHeight();
 }
 
 //________________________________________________________________________________________
 - (CGFloat) requiredHeight
 {
-   return CernAPP::childMenuItemHeight;
+   return CernAPP::ChildMenuItemHeight();
 }
 
 //________________________________________________________________________________________
@@ -204,9 +210,9 @@ CGFloat DefaultGUIFontSize()
    CGFloat totalHeight = 0.f;
    
    if (!parentGroup)
-      hint.size.height = CernAPP::groupMenuItemHeight;
+      hint.size.height = CernAPP::GroupMenuItemHeight();
    else
-      hint.size.height = CernAPP::childMenuItemHeight;
+      hint.size.height = CernAPP::ChildMenuItemHeight();
    
    titleView.frame = hint;
    [titleView layoutContent];
@@ -216,9 +222,9 @@ CGFloat DefaultGUIFontSize()
 
    hint.size.height = [self requiredHeight];
    if (!parentGroup)
-      hint.size.height -= CernAPP::groupMenuItemHeight;
+      hint.size.height -= CernAPP::GroupMenuItemHeight();
    else
-      hint.size.height -= CernAPP::childMenuItemHeight;
+      hint.size.height -= CernAPP::ChildMenuItemHeight();
 
    containerView.frame = hint;
 
@@ -242,9 +248,9 @@ CGFloat DefaultGUIFontSize()
 
    if (collapsed) {
       if (parentGroup)
-         return CernAPP::childMenuItemHeight;
+         return CernAPP::ChildMenuItemHeight();
       else
-         return CernAPP::groupMenuItemHeight;
+         return CernAPP::GroupMenuItemHeight();
    }
 
    return totalHeight;
@@ -257,9 +263,9 @@ CGFloat DefaultGUIFontSize()
    CGFloat totalHeight = 0.f;
 
    if (!parentGroup)
-      totalHeight = CernAPP::groupMenuItemHeight;
+      totalHeight = CernAPP::GroupMenuItemHeight();
    else
-      totalHeight = CernAPP::childMenuItemHeight;
+      totalHeight = CernAPP::ChildMenuItemHeight();
    
    //If it's open, also calculate the height of sub-items.
    for (NSObject<MenuItemProtocol> *menuItem in items) {
@@ -269,7 +275,7 @@ CGFloat DefaultGUIFontSize()
          if (!subGroup.collapsed)
             totalHeight += [menuItem requiredHeight];
          else
-            totalHeight += CernAPP::childMenuItemHeight;
+            totalHeight += CernAPP::ChildMenuItemHeight();
       } else
          totalHeight += [menuItem requiredHeight];
    }
@@ -375,16 +381,16 @@ CGFloat DefaultGUIFontSize()
 {
    assert(itemView != nil && "layoutItemViewWithHint:, itemView is nil");
 
-   frameHint.size.height = CernAPP::separatorItemHeight;
+   frameHint.size.height = CernAPP::SeparatorItemHeight();
    itemView.frame = frameHint;
 
-   return CernAPP::separatorItemHeight;
+   return CernAPP::SeparatorItemHeight();
 }
 
 //________________________________________________________________________________________
 - (CGFloat) requiredHeight
 {
-   return CernAPP::separatorItemHeight;
+   return CernAPP::SeparatorItemHeight();
 }
 
 //________________________________________________________________________________________

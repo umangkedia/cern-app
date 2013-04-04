@@ -7,9 +7,10 @@ extern const CGSize navBarBackButtonSize;
 extern const CGFloat navBarHeight;
 
 //Menu.
-extern const CGFloat groupMenuItemHeight;
-extern const CGFloat childMenuItemHeight;
-extern const CGFloat separatorItemHeight;
+CGFloat GroupMenuItemHeight();
+CGFloat ChildMenuItemHeight();
+CGFloat SeparatorItemHeight();
+
 extern const CGFloat childMenuItemTextIndent;
 extern NSString * const childMenuFontName;
 extern NSString * const groupMenuFontName;

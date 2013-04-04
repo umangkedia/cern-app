@@ -15,12 +15,35 @@ namespace CernAPP {
 const CGFloat spinnerSize = 150.f;
 const CGSize navBarBackButtonSize  = CGSizeMake(35.f, 35.f);
 const CGFloat navBarHeight = 44.f;
-const CGFloat separatorItemHeight = 20.f;
 
 //Menu.
-const CGFloat groupMenuItemHeight = 44.f;
-const CGFloat childMenuItemHeight = 30.f;
+
+//________________________________________________________________________________________
+CGFloat GroupMenuItemHeight()
+{
+   return 44.f;
+}
+
+//________________________________________________________________________________________
+CGFloat ChildMenuItemHeight()
+{
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      return 40.f;
+
+   return 30.f;
+}
+
+//________________________________________________________________________________________
+CGFloat SeparatorItemHeight()
+{
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      return 25.f;
+
+   return 20.f;
+}
+
 const CGFloat childMenuItemTextIndent = 15.f;
+
 NSString * const childMenuFontName = @"PTSans-Caption";
 NSString * const groupMenuFontName = @"PTSans-Bold";
 const CGFloat groupMenuItemImageHeight = 24.f;
