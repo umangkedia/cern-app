@@ -152,8 +152,10 @@
 //________________________________________________________________________________________
 - (NSUInteger) supportedInterfaceOrientations
 {
-   if ([self underLeftShowing])
-      return UIInterfaceOrientationMaskPortrait;
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+      if ([self underLeftShowing])
+         return UIInterfaceOrientationMaskPortrait;
+   }
 
    return [self.topViewController supportedInterfaceOrientations];
 }
