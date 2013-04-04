@@ -18,6 +18,18 @@ const CGFloat navBarHeight = 44.f;
 
 //Menu.
 
+const CGFloat childMenuItemTextIndent = 15.f;
+
+NSString * const childMenuFontName = @"PTSans-Caption";
+NSString * const groupMenuFontName = @"PTSans-Bold";
+const CGFloat groupMenuItemImageHeight = 24.f;
+const CGFloat childMenuItemImageHeight = 15.f;
+const CGFloat childTextColor[] = {0.772f, 0.796f, 0.847f};
+const CGFloat childMenuFillColor[] = {0.215f, 0.231f, 0.29f};
+const CGFloat menuBackgroundColor[4] = {0.242f, 0.258f, 0.321f, 1.f};
+const CGFloat menuItemHighlightColor[2][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
+const CGFloat menuWidthPad = 320.f;
+
 //________________________________________________________________________________________
 CGFloat GroupMenuItemHeight()
 {
@@ -41,17 +53,6 @@ CGFloat SeparatorItemHeight()
 
    return 20.f;
 }
-
-const CGFloat childMenuItemTextIndent = 15.f;
-
-NSString * const childMenuFontName = @"PTSans-Caption";
-NSString * const groupMenuFontName = @"PTSans-Bold";
-const CGFloat groupMenuItemImageHeight = 24.f;
-const CGFloat childMenuItemImageHeight = 15.f;
-const CGFloat childTextColor[] = {0.772f, 0.796f, 0.847f};
-const CGFloat childMenuFillColor[] = {0.215f, 0.231f, 0.29f};
-const CGFloat menuBackgroundColor[4] = {0.242f, 0.258f, 0.321f, 1.f};
-const CGFloat menuItemHighlightColor[2][4] = {{0.f, 0.564f, 0.949f, 1.f}, {0.f, 0.431f, .901, 1.f}};
 
 //________________________________________________________________________________________
 void GradientFillRect(CGContextRef ctx, const CGRect &rect, const CGFloat *gradientColor)

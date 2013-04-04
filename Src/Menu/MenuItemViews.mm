@@ -332,6 +332,9 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    CGRect frame = self.frame;
    
    frame.origin.x = indent;
+   
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      frame.size.width = CernAPP::menuWidthPad;
 
    if (imageHint.width) {
       frame.origin.x += 2 * itemImageMargin + imageHint.width;

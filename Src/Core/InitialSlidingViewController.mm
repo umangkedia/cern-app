@@ -17,6 +17,7 @@
 #import "NewsTableViewController.h"
 #import "NewsTileViewController.h"
 #import "StoryboardIdentifiers.h"
+#import "GUIHelpers.h"
 
 @implementation InitialSlidingViewController
 
@@ -115,7 +116,7 @@
       storyboard = [UIStoryboard storyboardWithName : @"iPad" bundle : nil];
       //For iPad, limit the visible width of under left view.
       self.shouldAllowPanningPastAnchor = NO;
-      self.anchorLeftRevealAmount = 320.f;
+      self.anchorLeftRevealAmount = CernAPP::menuWidthPad;
    }
 
    assert(storyboard != nil && "viewDidLoad, storyboard is nil");
