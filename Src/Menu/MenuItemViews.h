@@ -29,7 +29,7 @@ enum class ItemStyle {
        style : (CernAPP::ItemStyle) style controller : (MenuViewController *) controller;
 - (void) drawRect : (CGRect) rect;
 
-- (void) layoutText;
+- (void) layoutContent;
 
 - (void) setLabelFontSize : (CGFloat) size;
 
@@ -48,7 +48,7 @@ enum class ItemStyle {
        controller : (MenuViewController *) controller;
 - (void) drawRect : (CGRect)rect;
 
-- (void) layoutText;
+- (void) layoutContent;
 
 - (void) setLabelFontSize : (CGFloat) size;
 

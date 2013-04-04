@@ -85,7 +85,7 @@ CGFloat DefaultGUIFontSize()
 
    hint.size.height = CernAPP::childMenuItemHeight;
    itemView.frame = hint;   
-   [itemView layoutText];
+   [itemView layoutContent];
 
    return CernAPP::childMenuItemHeight;
 }
@@ -209,7 +209,7 @@ CGFloat DefaultGUIFontSize()
       hint.size.height = CernAPP::childMenuItemHeight;
    
    titleView.frame = hint;
-   [titleView layoutText];
+   [titleView layoutContent];
    
    totalHeight += hint.size.height;
    hint.origin.y += hint.size.height;

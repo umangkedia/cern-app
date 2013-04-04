@@ -78,6 +78,7 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    __weak MenuViewController *controller;
 
    UILabel *itemLabel;
+   UIImageView *iconView;
 }
 
 @synthesize isSelected, itemStyle, indent, imageHint;
@@ -118,6 +119,13 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
          itemLabel.textColor = [UIColor colorWithRed : childTextColor[0] green : childTextColor[1] blue : childTextColor[2] alpha : 1.f];
 
          [self addSubview : itemLabel];
+         
+         iconView = [[UIImageView alloc] initWithFrame : CGRect()];
+         
+         iconView.image = menuItem.itemImage;
+         iconView.contentMode = UIViewContentModeScaleAspectFill;
+         iconView.clipsToBounds = YES;
+         [self addSubview : iconView];
       }
       
       isSelected = NO;
@@ -143,26 +151,11 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
          DrawFrame(ctx, rect, 0.f);
       } else
          CernAPP::GradientFillRect(ctx, rect, CernAPP::menuItemHighlightColor[0]);
-      
-      if (UIImage * const im = menuItem.itemImage) {
-         assert(imageHint.width > 0.f && imageHint.height > 0.f &&
-                "drawRect:, invalid image hint");
-         
-         const CGSize imageSize = im.size;
-         assert(imageSize.width > 0.f && imageSize.height > 0.f &&
-                "drawRect:, invalid image size");
-         const CGFloat whRatio = imageSize.width / imageSize.height;
-
-         CGRect imageRect = {0.f, self.frame.size.height / 2.f - imageHint.height / 2.f,
-                             imageHint.height * whRatio, imageHint.height};
-         imageRect.origin.x = indent + (imageHint.width + 2 * itemImageMargin) / 2.f - imageRect.size.width / 2.f;
-         [im drawInRect : imageRect];
-      }
    }
 }
 
 //________________________________________________________________________________________
-- (void) layoutText
+- (void) layoutContent
 {
    if (itemStyle == ItemStyle::separator)
       return;
@@ -187,6 +180,20 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    frame.size.height = metrics.first;
 
    itemLabel.frame = frame;
+   
+   //Icon view:
+   if (iconView.image) {
+      assert(imageHint.width > 0.f && imageHint.height > 0.f && "layoutContent, invalid image hint");
+      const CGSize imageSize = iconView.image.size;
+      assert(imageSize.width > 0.f && imageSize.height > 0.f &&
+             "layoutContent, invalid image size");
+      const CGFloat whRatio = imageSize.width / imageSize.height;
+
+      CGRect imageRect = {0.f, self.frame.size.height / 2.f - imageHint.height / 2.f,
+                          imageHint.height * whRatio, imageHint.height};
+      imageRect.origin.x = indent + (imageHint.width + 2 * itemImageMargin) / 2.f - imageRect.size.width / 2.f;
+      iconView.frame = imageRect;
+   }
 }
 
 //________________________________________________________________________________________
@@ -213,6 +220,7 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    
    UILabel *itemLabel;
    UIImageView *discloseImageView;
+   UIImageView *iconView;
 }
 
 @synthesize indent, imageHint;
@@ -261,17 +269,20 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose_child.png"]];
       else {
          //Unfortunately, these nice smooth shadows are very expensive, even
-         //if rasterized (unfortunately, we want our interface
-         //to rotate and this rotation is terribly jerky because of
-         //shadows).
-         /*
-         itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
-         itemLabel.layer.shadowOffset = menuTextShadowOffset;
-         itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
+         //if rasterized (we want our interface to rotate and this
+         //rotation is jerky because of shadows).
          
-         //Many thanks to tc: http://stackoverflow.com/questions/6395139/i-have-bad-performance-on-using-shadow-effect
-         itemLabel.layer.shouldRasterize = YES;
-         itemLabel.layer.rasterizationScale = 2.f;
+         /*
+         //Seems to be expensive even on iPad.
+         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            itemLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+            itemLabel.layer.shadowOffset = menuTextShadowOffset;
+            itemLabel.layer.shadowOpacity = menuTextShadowAlpha;
+            
+            //Many thanks to tc: http://stackoverflow.com/questions/6395139/i-have-bad-performance-on-using-shadow-effect
+            itemLabel.layer.shouldRasterize = YES;
+            itemLabel.layer.rasterizationScale = 2.f;
+         }
          */
 
          discloseImageView = [[UIImageView alloc] initWithImage : [UIImage imageNamed : @"disclose.png"]];
@@ -281,6 +292,12 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       discloseImageView.contentMode = UIViewContentModeScaleAspectFill;
       
       [self addSubview : discloseImageView];
+      
+      iconView = [[UIImageView alloc] initWithFrame : CGRect()];
+      iconView.image = groupItem.itemImage;
+      iconView.contentMode = UIViewContentModeScaleAspectFill;
+      iconView.clipsToBounds = YES;
+      [self addSubview : iconView];
    }
    
    return self;
@@ -307,24 +324,10 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
       CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height);
       CGContextStrokePath(ctx);
    }
-
-   if (groupItem.itemImage) {
-      assert(imageHint.width > 0.f && imageHint.height &&
-             "drawRect:, invalid image size hint");
-      const CGSize imageSize = groupItem.itemImage.size;
-      assert(imageSize.width > 0.f && imageSize.height > 0.f &&
-             "drawRect:, invalid image size");
-      const CGFloat whRatio = imageSize.width / imageSize.height;
-      
-      CGRect imageRect = {0.f, self.frame.size.height / 2.f - imageHint.height / 2.f,
-                          imageHint.height * whRatio, imageHint.height};
-      imageRect.origin.x = indent + (imageHint.width + 2 * itemImageMargin) / 2.f - imageRect.size.width / 2.f;
-      [groupItem.itemImage drawInRect : imageRect];
-   }
 }
 
 //________________________________________________________________________________________
-- (void) layoutText
+- (void) layoutContent
 {
    CGRect frame = self.frame;
    
@@ -345,7 +348,21 @@ void DrawFrame(CGContextRef ctx, const CGRect &rect, CGFloat rgbShift)
    itemLabel.frame = frame;
    discloseImageView.frame = CGRectMake(frame.origin.x + frame.size.width,
                                         self.frame.size.height / 2 - discloseTriangleSize / 2,
-                                        discloseTriangleSize, discloseTriangleSize);   
+                                        discloseTriangleSize, discloseTriangleSize);
+   
+   if (iconView.image) {
+      assert(imageHint.width > 0.f && imageHint.height &&
+             "layoutContent, invalid image size hint");
+      const CGSize imageSize = groupItem.itemImage.size;
+      assert(imageSize.width > 0.f && imageSize.height > 0.f &&
+             "layoutContent, invalid image size");
+      const CGFloat whRatio = imageSize.width / imageSize.height;
+      
+      CGRect imageRect = {0.f, self.frame.size.height / 2.f - imageHint.height / 2.f,
+                          imageHint.height * whRatio, imageHint.height};
+      imageRect.origin.x = indent + (imageHint.width + 2 * itemImageMargin) / 2.f - imageRect.size.width / 2.f;
+      iconView.frame = imageRect;
+   }
 }
 
 //________________________________________________________________________________________
