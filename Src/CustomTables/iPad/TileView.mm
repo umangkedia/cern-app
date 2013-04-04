@@ -196,6 +196,11 @@ bool IsWideImage(UIImage *image)
 - (void) setTileThumbnail : (UIImage *) image
 {
    assert(image != nil && "setTileThumbnail, parameter 'image' is nil");
+   //CERN Courie's items have an image of size 1x1.
+   const CGFloat minImageSize = 50.f;//??
+   if (image.size.width < minImageSize || image.size.height < minImageSize)
+      return;
+
    thumbnailView.image = image;
    [self layoutTile];
 }

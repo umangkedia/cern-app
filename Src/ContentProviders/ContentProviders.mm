@@ -9,6 +9,7 @@
 #import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
 #import "ECSlidingViewController.h"
+#import "NewsTileViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "AppSettingsController.h"
 #import "ConnectionController.h"
@@ -92,21 +93,27 @@ void CancelConnections(UIViewController *controller)
    using namespace CernAPP;
 
    assert(controller != nil && "loadControllerTo:, parameter controller is nil");
-   
+
    MenuNavigationController * const navController =
          (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
  
-   assert([navController.topViewController isKindOfClass : [NewsTableViewController class]] &&
-          "loadControllerTo:, top view controller is either nil or has a wrong type");
- 
-   NewsTableViewController * const nt = (NewsTableViewController *)navController.topViewController;
-   nt.navigationItem.title = feedName;
-   //
-   nt.feedStoreID = feedName;
-   //
-   [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
-   
-   nt.isTwitterFeed = isTwitterFeed;
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+      assert([navController.topViewController isKindOfClass : [NewsTableViewController class]] &&
+             "loadControllerTo:, top view controller is either nil or has a wrong type");
+    
+      NewsTableViewController * const nt = (NewsTableViewController *)navController.topViewController;
+      nt.navigationItem.title = feedName;
+      nt.feedStoreID = feedName;
+      [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
+      nt.isTwitterFeed = isTwitterFeed;
+   } else {
+      assert([navController.topViewController isKindOfClass : [NewsTileViewController class]] &&
+             "loadControllerTo:, top view controller is either nil or has a wrong type");
+    
+      NewsTileViewController * const nt = (NewsTileViewController *)navController.topViewController;
+      nt.navigationItem.title = feedName;
+      [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
+   }
 
    if (controller.slidingViewController.topViewController)
       CancelConnections(controller.slidingViewController.topViewController);

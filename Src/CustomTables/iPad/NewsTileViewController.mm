@@ -221,7 +221,6 @@
    
    //At the moment, I'm using simple layout - 6 items per page.
    if ((nPages = (allArticles.count + 5) / 6)) {
-      //nPages = 3;
       //Let's create tiled view now.
       TiledPageView * pages[3] = {};
       if (nPages <= 3)
@@ -229,7 +228,7 @@
       else
          pages[0] = currPage, pages[1] = rightPage, pages[2] = leftPage;
 
-      for (NSUInteger pageIndex = 0; pageIndex < 3; ++pageIndex) {
+      for (NSUInteger pageIndex = 0, e = std::min((int)nPages, 3); pageIndex < e; ++pageIndex) {
          TiledPageView * const page = pages[pageIndex];
          page.pageNumber = pageIndex;
          [page setPageItems : allArticles startingFrom : pageIndex * 6];
@@ -315,7 +314,7 @@
 {
    assert(indexPath != nil && "imageDidLoad, parameter 'indexPath' is nil");
    const NSInteger page = indexPath.row;
-   assert(page >= 0 && page < allArticles.count / 6 + 1 && "imageDidLoad:, index is out of bounds");
+   assert(page >= 0 && page < nPages && "imageDidLoad:, index is out of bounds");
    
    MWFeedItem * const article = (MWFeedItem *)allArticles[indexPath.section];
 
@@ -356,7 +355,7 @@
 
    const NSInteger page = indexPath.row;
    //Even if download failed, index still must be valid.
-   assert(page >= 0 && page < allArticles.count / 6 &&
+   assert(page >= 0 && page < nPages &&
           "imageDownloadFailed:, index is out of bounds");
    assert(imageDownloaders[indexPath] != nil &&
           "imageDownloadFailed:, no downloader for the given path");

@@ -21,9 +21,9 @@
 @implementation InitialSlidingViewController
 
 //________________________________________________________________________________________
-- (void) loadFirstNewsFeed : (NewsTableViewController *) tableController
+- (void) loadFirstNewsFeed : (UIViewController *) aController
 {
-   assert(tableController != nil && "loadFirstNewsFeed:, parameter 'tableController' is nil");
+   assert(aController != nil && "loadFirstNewsFeed:, parameter 'tableController' is nil");
 
    NSString * const path = [[NSBundle mainBundle] pathForResource : @"MENU" ofType : @"plist"];
    NSDictionary * const plistDict = [NSDictionary dictionaryWithContentsOfFile : path];
@@ -84,10 +84,22 @@
           "loadFirstNewsFeed:, 'Name' not found or has a wrong type");
    assert([feedDict[@"Url"] isKindOfClass : [NSString class]] &&
           "loadFirstNewsFeed:, 'Url' not found or has a wrong type");
-               
-   tableController.navigationItem.title = (NSString *)feedDict[@"Name"];
-   tableController.feedStoreID = (NSString *)feedDict[@"Name"];
-   [tableController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedDict[@"Url"]]];
+
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+      assert([aController isKindOfClass : [NewsTileViewController class]] &&
+             "loadFirstNewsFeed:, controller has a wrong type");
+      NewsTileViewController * const tileController = (NewsTileViewController *)aController;
+      tileController.navigationItem.title = (NSString *)feedDict[@"Name"];
+      //TODO: Cache ID for a feed.
+      [tileController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedDict[@"Url"]]];
+   } else {
+      assert([aController isKindOfClass : [NewsTableViewController class]] &&
+             "loadFirstNewsFeed:, controller has a wrong type");
+      NewsTableViewController * const tableController = (NewsTableViewController *)aController;
+      tableController.navigationItem.title = (NSString *)feedDict[@"Name"];
+      tableController.feedStoreID = (NSString *)feedDict[@"Name"];
+      [tableController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedDict[@"Url"]]];
+   }
 }
 
 //________________________________________________________________________________________
@@ -114,22 +126,13 @@
    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
       assert([top.topViewController isKindOfClass : [NewsTableViewController class]] &&
              "viewDidLoad:, top view controller is either nil or has a wrong type");
-
       //The very first view a user see - is a news table. We create a navigation controller
       //with such a table here, also, we have to add a news feed here.
       [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
    } else {
-      //Special case, unfortunately: we do not have any interesting feeds with images and articles,
-      //only CMS or ATLAS feeds or the CERN's bulletin. To be more neutral, let's use the Bulletin.
-      
-      assert([top.topViewController isKindOfClass:[NewsTileViewController class]] &&
+      assert([top.topViewController isKindOfClass : [NewsTileViewController class]] &&
              "viewDidLoad:, top view controller is either nil or has a wrong type");
-      
-      NewsTileViewController *tileController = (NewsTileViewController *)top.topViewController;
-      tileController.navigationItem.title = @"Bulletin";
-      //TODO: ID for cache!!!
-      //[tileController.aggregator addFeedForURL : [NSURL URLWithString : @"http://cdsweb.cern.ch/rss?p=980__a%3ABULLETINNEWS%20or%20980__a%3ABULLETINNEWSDRAFT&ln=en"]];
-      [tileController.aggregator addFeedForURL : [NSURL URLWithString : @"http://home.web.cern.ch/about/updates/feed"]];
+      [self loadFirstNewsFeed : top.topViewController];
    }
 
    self.topViewController = top;
