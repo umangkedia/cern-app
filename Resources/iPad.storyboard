@@ -16,10 +16,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="Sv8-VN-csD" firstAttribute="bottom" secondItem="BHu-kp-tpC" secondAttribute="bottom" type="default" id="6OB-Uv-2fU"/>
                             <constraint firstItem="Sv8-VN-csD" firstAttribute="leading" secondItem="BHu-kp-tpC" secondAttribute="leading" type="default" id="OD3-hv-BU1"/>
                             <constraint firstItem="Sv8-VN-csD" firstAttribute="trailing" secondItem="BHu-kp-tpC" secondAttribute="trailing" type="default" id="Qh3-rv-T8E"/>
-                            <constraint firstItem="Sv8-VN-csD" firstAttribute="top" secondItem="BHu-kp-tpC" secondAttribute="top" constant="-12" id="RSk-wp-pmW"/>
-                            <constraint firstAttribute="bottom" secondItem="Sv8-VN-csD" secondAttribute="bottom" constant="-6" id="XhF-g1-LIh"/>
+                            <constraint firstItem="Sv8-VN-csD" firstAttribute="top" secondItem="BHu-kp-tpC" secondAttribute="top" type="user" id="RSk-wp-pmW"/>
                         </constraints>
                     </view>
                     <connections>
@@ -131,7 +131,7 @@
             <relationships>
                 <relationship kind="action" name="reloadPageFromRefreshControl"/>
                 <relationship kind="action" name="revealMenu:"/>
-                <relationship kind="outlet" name="scrollView" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="scrollView" candidateClass="SlideScrollView"/>
             </relationships>
         </class>
         <class className="SlideScrollView" superclassName="UIScrollView">
