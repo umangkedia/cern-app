@@ -1,7 +1,6 @@
 body {
     font-family: PTSans-Caption;
-    font-size:18px;
-    padding:20px;
+    font-size:20px;
     text-align:left;
 }
 
@@ -20,24 +19,10 @@ h2 {
     border-bottom:3px solid #ccc;
 }
 
-img {
-    max-width:100%;
-    height:auto;
-    float:middle
-}
-
-p.read {
-    text-align:justify;
-}
-
 p.read img {
     border:0px;
     width:125px;
     height:30px;
-}
-
-p.main {
-    text-align:justify;
 }
 
 div.field-image {
@@ -45,3 +30,4 @@ div.field-image {
    margin-left: auto;
    margin-right: auto;
 }
+

@@ -463,9 +463,9 @@ const NSUInteger fontIncreaseStep = 4;
    NSMutableString *htmlString = [NSMutableString stringWithFormat :
                                                 @"<html><head><link rel='stylesheet' type='text/css' "
                                                 "href='file://%@'></head><body></p></body></html><h1>%@</h1>%@<p class='read'>",
-                                  cssPath, title, rdbCache];
+                                                cssPath, title, rdbCache];
 
-   [rdbView loadHTMLString : htmlString baseURL : nil];
+   [rdbView loadHTMLString:htmlString baseURL : nil];
 }
 
 //________________________________________________________________________________________
@@ -648,7 +648,9 @@ const NSUInteger fontIncreaseStep = 4;
 //________________________________________________________________________________________
 - (void) changeTextSize
 {
-   const int fontSize = 44 + fontIncreaseStep * zoomLevel;
+   const int add = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 44 : 20;
+
+   const int fontSize = add + fontIncreaseStep * zoomLevel;
    NSString * const jsString = [[NSString alloc] initWithFormat : @"document.getElementsByTagName('body')[0].style.fontSize=%d", fontSize];
    [rdbView stringByEvaluatingJavaScriptFromString : jsString];
 }
