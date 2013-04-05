@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong) RSSAggregator *aggregator;
 
+@property (nonatomic, copy) NSString *feedStoreID;//Cache ID.
+
 //ECSlidingViewController:
 - (IBAction) revealMenu : (id) sender;
 

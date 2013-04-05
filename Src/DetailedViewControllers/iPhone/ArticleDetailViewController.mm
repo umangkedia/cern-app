@@ -1288,7 +1288,6 @@ const NSUInteger fontIncreaseStep = 4;
 {
    assert(articleID != nil && "getReadabilityCache:, parameter 'articleID' is nil");
    
-
    AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
 
    if (NSManagedObjectContext * const context = appDelegate.managedObjectContext) {

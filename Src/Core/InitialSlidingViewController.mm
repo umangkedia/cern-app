@@ -91,6 +91,7 @@
              "loadFirstNewsFeed:, controller has a wrong type");
       NewsTileViewController * const tileController = (NewsTileViewController *)aController;
       tileController.navigationItem.title = (NSString *)feedDict[@"Name"];
+      tileController.feedStoreID = (NSString *)feedDict[@"Name"];
       //TODO: Cache ID for a feed.
       [tileController.aggregator addFeedForURL : [NSURL URLWithString : (NSString *)feedDict[@"Url"]]];
    } else {

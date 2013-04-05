@@ -29,7 +29,7 @@
    BOOL pageAdjustment;
 }
 
-@synthesize aggregator, noConnectionHUD, spinner;
+@synthesize aggregator, feedStoreID, noConnectionHUD, spinner;
 
 //________________________________________________________________________________________
 - (void) doInitController
@@ -550,6 +550,10 @@
    ArticleDetailViewController * const viewController = [self.storyboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
    [viewController setContentForArticle : feedItem];
    viewController.navigationItem.title = @"";
+
+   if (feedItem.title && feedStoreID)
+      viewController.articleID = [feedStoreID stringByAppendingString : feedItem.title];
+
    viewController.canUseReadability = YES;
    [self.navigationController pushViewController : viewController animated : YES];
 }

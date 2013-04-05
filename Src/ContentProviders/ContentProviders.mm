@@ -94,10 +94,11 @@ void CancelConnections(UIViewController *controller)
 
    assert(controller != nil && "loadControllerTo:, parameter controller is nil");
 
-   MenuNavigationController * const navController =
-         (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : TableNavigationControllerNewsID];
+   MenuNavigationController *navController = nil;
  
    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+      navController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
+                                                                         TableNavigationControllerNewsID];
       assert([navController.topViewController isKindOfClass : [NewsTableViewController class]] &&
              "loadControllerTo:, top view controller is either nil or has a wrong type");
     
@@ -106,13 +107,18 @@ void CancelConnections(UIViewController *controller)
       nt.feedStoreID = feedName;
       [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
       nt.isTwitterFeed = isTwitterFeed;
-   } else {
+   } else if (!isTwitterFeed) {
+      navController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
+                                                                                   TableNavigationControllerNewsID];
       assert([navController.topViewController isKindOfClass : [NewsTileViewController class]] &&
              "loadControllerTo:, top view controller is either nil or has a wrong type");
-    
       NewsTileViewController * const nt = (NewsTileViewController *)navController.topViewController;
       nt.navigationItem.title = feedName;
+      nt.feedStoreID = feedName;
       [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
+   } else {
+      //twitter feed on iPad.
+      return;//TODO: need a new view/controller for this.
    }
 
    if (controller.slidingViewController.topViewController)

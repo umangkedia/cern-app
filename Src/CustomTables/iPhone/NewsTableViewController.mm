@@ -413,7 +413,7 @@
       [viewController setContentForArticle : feedItem];
       viewController.navigationItem.title = @"";
 
-      if (feedItem.title)
+      if (feedItem.title && feedStoreID)
          viewController.articleID = [feedStoreID stringByAppendingString : feedItem.title];
 
       viewController.canUseReadability = !isTwitterFeed;
