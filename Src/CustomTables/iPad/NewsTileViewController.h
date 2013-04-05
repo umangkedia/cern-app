@@ -15,7 +15,7 @@
 }
 
 @property (nonatomic, strong) RSSAggregator *aggregator;
-
+@property (nonatomic) BOOL canUseCache;//NO for the bulletin.
 @property (nonatomic, copy) NSString *feedStoreID;//Cache ID.
 
 //ECSlidingViewController:
