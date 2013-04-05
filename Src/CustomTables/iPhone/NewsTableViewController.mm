@@ -13,6 +13,7 @@
 #import "ApplicationErrors.h"
 #import "AppDelegate.h"
 #import "GUIHelpers.h"
+#import "FeedCache.h"
 
 @implementation NewsTableViewController {
    NSMutableArray *allArticles;
@@ -121,8 +122,10 @@
    if (firstViewDidAppear) {
       firstViewDidAppear = NO;
       //read a cache?
-      if (canUseCache && feedStoreID)
-         usingCache = [self readCache];
+      if (canUseCache && feedStoreID) {
+         feedCache = CernAPP::ReadFeedCache(feedStoreID);
+         usingCache = feedCache != nil;
+      }
       //May be, we have a cache already.
       [self.tableView reloadData];
       [self reloadPage];
@@ -332,7 +335,8 @@
 
    [self copyArticlesFromAggregator];
    //
-   [self writeCache];
+   CernAPP::WriteFeedCache(feedStoreID, feedCache, allArticles);
+   feedCache = nil;
 
    [self hideActivityIndicators];
 
@@ -619,129 +623,6 @@
 {
    //We never rotate news table view.
    return NO;
-}
-
-#pragma mark - Persistent storage for a feed data.
-
-//________________________________________________________________________________________
-- (BOOL) readCache
-{
-   assert(feedStoreID != nil && "readCache, feedStoreID is nil");
-
-   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-   NSManagedObjectContext * const context = appDelegate.managedObjectContext;
-   
-   feedCache = nil;
-
-   if (context) {
-      NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"FeedItem"
-                                                            inManagedObjectContext : context];
-      NSFetchRequest * const request = [[NSFetchRequest alloc] init];
-      [request setEntity : entityDesc];
-      
-      NSPredicate * const pred = [NSPredicate predicateWithFormat:@"(feedName = %@)", feedStoreID];
-      [request setPredicate : pred];
-
-      NSError *error = nil;
-      NSArray * const objects = [context executeFetchRequest : request error : &error];
-
-      if (!error) {
-         if (objects.count) {
-            feedCache = [objects sortedArrayUsingComparator : ^ NSComparisonResult(id a, id b)
-                           {
-                              NSManagedObject * const left = (NSManagedObject *)a;
-                              NSManagedObject * const right = (NSManagedObject *)b;
-                              const NSComparisonResult cmp = [(NSDate *)[left valueForKey : @"itemDate"] compare : (NSDate *)[right valueForKey : @"itemDate"]];
-                              if (cmp == NSOrderedAscending)
-                                 return NSOrderedDescending;
-                              else if (cmp == NSOrderedDescending)
-                                 return NSOrderedAscending;
-                              return cmp;
-                           }
-                         ];
-         }
-      }
-   }
-
-   return feedCache && feedCache.count;
-}
-
-//________________________________________________________________________________________
-- (void) writeCache
-{
-   if (!allArticles.count)
-      return;
-
-   assert(feedStoreID != nil && "writeCache, feedStoreID is nil");
-
-   AppDelegate * const appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-   NSManagedObjectContext * const context = appDelegate.managedObjectContext;
-   if (context) {
-      BOOL deleted = NO;
-   
-      if (feedCache && feedCache.count) {
-         for (NSManagedObject *obj in feedCache) {
-            deleted = YES;
-            [context deleteObject : obj];
-         }
-
-         feedCache = nil;//Even if delete operation fails
-                         //still release the cache.
-      } else {
-         //We still have to remove the old data for this feed!
-         NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"FeedItem"
-                                                              inManagedObjectContext : context];
-         NSFetchRequest * const request = [[NSFetchRequest alloc] init];
-         [request setEntity : entityDesc];
-      
-         NSPredicate * const pred = [NSPredicate predicateWithFormat:@"(feedName = %@)", feedStoreID];
-         [request setPredicate : pred];
-         [request setIncludesPropertyValues : NO]; //only fetch the managedObjectID
-
-         NSError * error = nil;
-         NSArray * const feedItems = [context executeFetchRequest : request error : &error];
-         if (!error) {
-            for (NSManagedObject * obj in feedItems) {
-               [context deleteObject : obj];
-               deleted = YES;
-            }
-         }
-      }
-
-      if (deleted) {
-         NSError *saveError = nil;
-         [context save : &saveError];
-         
-         //TODO: handle the possible error somehow?
-         if (saveError)//Actually, this is really bad :)
-            return;
-      }
-
-      BOOL inserted = NO;
-
-      for (MWFeedItem *feedItem in allArticles) {
-         if (!feedItem.title || !feedItem.link)
-            continue;
-      
-         NSManagedObject * const saveFeedItem = [NSEntityDescription insertNewObjectForEntityForName : @"FeedItem"
-                                                                    inManagedObjectContext : context];
-         if (saveFeedItem) {
-            inserted = YES;
-            [saveFeedItem setValue : feedItem.title forKey : @"itemTitle"];
-            [saveFeedItem setValue : feedItem.link forKey : @"itemLink"];
-            [saveFeedItem setValue : feedStoreID forKey : @"feedName"];
-            if (feedItem.date)
-               [saveFeedItem setValue : feedItem.date forKey : @"itemDate"];
-            else
-               [saveFeedItem setValue : [NSDate date] forKey : @"itemDate"];
-         }
-      }
-
-      if (inserted) {
-         NSError *error = nil;
-         [context save : &error];
-      }
-   }
 }
 
 #pragma mark - GUI

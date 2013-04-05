@@ -31,14 +31,14 @@ NSArray *ReadFeedCache(NSString *feedStoreID)
          if (objects.count) {
             NSArray *feedCache = [objects sortedArrayUsingComparator : ^ NSComparisonResult(id a, id b)
                                   {
-                                      NSManagedObject * const left = (NSManagedObject *)a;
-                                      NSManagedObject * const right = (NSManagedObject *)b;
-                                      const NSComparisonResult cmp = [(NSDate *)[left valueForKey : @"itemDate"] compare : (NSDate *)[right valueForKey : @"itemDate"]];
-                                      if (cmp == NSOrderedAscending)
-                                         return NSOrderedDescending;
-                                      else if (cmp == NSOrderedDescending)
-                                         return NSOrderedAscending;
-                                      return cmp;
+                                     NSManagedObject * const left = (NSManagedObject *)a;
+                                     NSManagedObject * const right = (NSManagedObject *)b;
+                                     const NSComparisonResult cmp = [(NSDate *)[left valueForKey : @"itemDate"] compare : (NSDate *)[right valueForKey : @"itemDate"]];
+                                     if (cmp == NSOrderedAscending)
+                                        return NSOrderedDescending;
+                                     else if (cmp == NSOrderedDescending)
+                                        return NSOrderedAscending;
+                                     return cmp;
                                   }
                                  ];
             return feedCache;
