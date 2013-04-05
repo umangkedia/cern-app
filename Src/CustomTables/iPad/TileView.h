@@ -18,3 +18,9 @@
 - (void) layoutTile;
 
 @end
+
+namespace CernAPP {
+
+extern NSString * const tileSelectionNotification;
+
+}

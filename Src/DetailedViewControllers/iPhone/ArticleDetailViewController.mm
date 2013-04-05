@@ -169,6 +169,15 @@ const NSUInteger fontIncreaseStep = 4;
 #import "Readability.h"
 
 //________________________________________________________________________________________
++ (NSString *) cssFileName
+{
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      return @"ArticleiPadCSS";
+   
+   return @"ArticleCSS";
+}
+
+//________________________________________________________________________________________
 - (BOOL) isInActiveStage
 {
    return stage != LoadStage::inactive && stage != LoadStage::lostNetworkConnection;
@@ -450,7 +459,7 @@ const NSUInteger fontIncreaseStep = 4;
    
    stage = LoadStage::rdbCacheLoad;
    
-   NSString * const cssPath = [[NSBundle mainBundle] pathForResource : @"ArticleCSS" ofType:@"css"];
+   NSString * const cssPath = [[NSBundle mainBundle] pathForResource : [self.class cssFileName] ofType:@"css"];
    NSMutableString *htmlString = [NSMutableString stringWithFormat :
                                                 @"<html><head><link rel='stylesheet' type='text/css' "
                                                 "href='file://%@'></head><body></p></body></html><h1>%@</h1>%@<p class='read'>",
@@ -1159,6 +1168,9 @@ const NSUInteger fontIncreaseStep = 4;
 - (void) willRotateToInterfaceOrientation : (UIInterfaceOrientation) toInterfaceOrientation duration : (NSTimeInterval) duration
 {
 #pragma unused(duration)
+
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      return;//We do not hide a navigation bar on iPad.
 
    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
       [self.navigationController.view removeGestureRecognizer : self.slidingViewController.panGesture];

@@ -3,12 +3,15 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "ArticleDetailViewController.h"
 #import "ECSlidingViewController.h"
 #import "NewsTableViewController.h"
 #import "NewsTileViewController.h"
+#import "StoryboardIdentifiers.h"
 #import "ApplicationErrors.h"
 #import "TiledPageView.h"
 #import "MWFeedItem.h"
+#import "TileView.h"
 
 @implementation NewsTileViewController {
    NSUInteger nPages;
@@ -51,9 +54,17 @@
 {
    if (self = [super initWithCoder : aDecoder]) {
       [self doInitController];
+      
+      [[NSNotificationCenter defaultCenter] addObserver : self selector : @selector(articleSelected:) name : CernAPP::tileSelectionNotification object : nil];
    }
 
    return self;
+}
+
+//________________________________________________________________________________________
+- (void) dealloc
+{
+   [[NSNotificationCenter defaultCenter] removeObserver : self];
 }
 
 //________________________________________________________________________________________
@@ -84,6 +95,22 @@
       viewDidAppear = YES;
       //TODO: cache!
       [self reloadPage];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) viewWillAppear : (BOOL) animated
+{
+   //TODO: find a better ("idiomatic") solution for this problem.
+   if (nPages) {
+      //it can happen, that we have a wrong geometry: detail view
+      //controller was pushed on a stack, we rotate a device and press
+      //a 'back' button. geometry is wrong now.
+      if (currPage && currPage.frame.size.width) {
+         const CGRect currentFrame = self.view.frame;
+         if (currentFrame.size.width != currPage.frame.size.width)
+            [self layoutPages : YES];
+      }
    }
 }
 
@@ -509,6 +536,22 @@
          [currPage setThumbnail : article.image forTile : i % 6];
       }
    }
+}
+
+#pragma mark - Interactions.
+//________________________________________________________________________________________
+- (void) articleSelected : (NSNotification *) notification
+{
+   assert(notification != nil && "articleSelected:, parameter 'notification' is nil");
+   assert([notification.object isKindOfClass : [MWFeedItem class]] &&
+          "articleSelected:, an object in a notification has a wrong type");
+   
+   MWFeedItem * const feedItem = (MWFeedItem *)notification.object;
+   ArticleDetailViewController * const viewController = [self.storyboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+   [viewController setContentForArticle : feedItem];
+   viewController.navigationItem.title = @"";
+   viewController.canUseReadability = YES;
+   [self.navigationController pushViewController : viewController animated : YES];
 }
 
 @end

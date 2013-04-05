@@ -11,10 +11,18 @@
 
 #import <CoreText/CoreText.h>
 
+#import "ArticleDetailViewController.h"
+#import "StoryboardIdentifiers.h"
 #import "PictureButtonView.h"
 #import "NewsTableViewCell.h"
 #import "NSString+HTML.h"
 #import "TileView.h"
+
+namespace CernAPP {
+
+NSString * const tileSelectionNotification = @"CernAPP_TileSelectionNotification";
+
+}
 
 namespace {
 
@@ -47,26 +55,25 @@ bool IsWideImage(UIImage *image)
 }
 
 @implementation TileView {
+   __weak MWFeedItem *feedItem;
+
    UIImageView *thumbnailView;
    NSMutableAttributedString * title;
    
+   //Text in a tile:
    NSString *summary;
-   NSMutableAttributedString * text;
+   NSMutableAttributedString * text;//TODO: better name
    CGFloat textLineHeight;
-   
-   CTFrameRef titleFrame;
+   NSString *softHyphen;
    CTFrameRef textFrame;
-   
+   CFStringTokenizerRef tokenizer;
+   CTFrameRef titleFrame;
+
    bool wideImageOnTop;
    int imageCut;
    
    UILabel *infoLabel;//Article's date and author.
-
    PictureButtonView *actionButton;
-   
-   CFStringTokenizerRef tokenizer;
-   
-   NSString *softHyphen;
 }
 
 //________________________________________________________________________________________
@@ -89,8 +96,11 @@ bool IsWideImage(UIImage *image)
       summary = nullptr;
       text = nullptr;
       textLineHeight = 0.f;
-      titleFrame = nullptr;
+      softHyphen = [NSString stringWithCString : "\u00AD" encoding : NSUTF8StringEncoding];
       textFrame = nullptr;
+      tokenizer = nullptr;
+      titleFrame = nullptr;
+
       
       //To be set from MWFeedItem later.
       wideImageOnTop = false;
@@ -107,9 +117,9 @@ bool IsWideImage(UIImage *image)
       [actionButton addTarget : self selector : @selector(sendArticle)];
       [self addSubview : actionButton];
 
-      tokenizer = nullptr;
-
-      softHyphen = [NSString stringWithCString : "\u00AD" encoding : NSUTF8StringEncoding];
+      //
+      UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget : self action : @selector(showArticle)];
+      [self addGestureRecognizer : tapRecognizer];
    }
 
    return self;
@@ -129,9 +139,11 @@ bool IsWideImage(UIImage *image)
 }
 
 //________________________________________________________________________________________
-- (void) setTileData : (MWFeedItem *) feedItem
+- (void) setTileData : (MWFeedItem *) aFeedItem
 {
-   assert(feedItem != nil && "setTileData:, parameter 'feedItem' is nil");
+   assert(aFeedItem != nil && "setTileData:, parameter 'feedItem' is nil");
+   
+   feedItem = aFeedItem;
    
    title = [[NSMutableAttributedString alloc] initWithString : feedItem.title ? [feedItem.title stringByConvertingHTMLToPlainText] : @"No title ... "];
 
@@ -384,9 +396,24 @@ bool IsWideImage(UIImage *image)
    [self setNeedsDisplay];
 }
 
+#pragma mark - Interactions.
+
 //________________________________________________________________________________________
 - (void) sendArticle
 {
+}
+
+//________________________________________________________________________________________
+- (void) showArticle
+{
+   [[NSNotificationCenter defaultCenter] postNotificationName : CernAPP::tileSelectionNotification object : feedItem];
+/*   UIStoryboard * const mainStoryboard = [UIStoryboard storyboardWithName : @"iPad" bundle : nil];
+   ArticleDetailViewController * const viewController = [mainStoryboard instantiateViewControllerWithIdentifier : CernAPP::ArticleDetailViewControllerID];
+   [viewController setContentForArticle : feedItem];
+   viewController.navigationItem.title = @"";
+[      [self.navigationController pushViewController : viewController animated : YES];
+   }
+  */
 }
 
 #pragma mark - text rendering.
