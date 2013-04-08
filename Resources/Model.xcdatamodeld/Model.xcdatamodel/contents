@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2057" systemVersion="12C60" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2057" systemVersion="12D78" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="FeedItem" syncable="YES">
         <attribute name="feedName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="itemDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="itemLink" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="itemSummary" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="itemTitle" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="RDBArticle" syncable="YES">
@@ -11,7 +12,7 @@
         <attribute name="articleID" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FeedItem" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="FeedItem" positionX="160" positionY="192" width="128" height="120"/>
         <element name="RDBArticle" positionX="160" positionY="192" width="128" height="75"/>
     </elements>
 </model>

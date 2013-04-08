@@ -19,6 +19,7 @@
    NSMutableArray *allArticles;
    
    NSArray *feedCache;
+   //TODO: do I really need the boolean value? Can I use feedCache in tests?
    BOOL usingCache;
    
    UIActivityIndicatorView *navBarSpinner;
@@ -398,7 +399,7 @@
       if (row >= feedCache.count)
          return;
 
-      NSManagedObject * const feedItem = feedCache[row];
+      NSManagedObject * const feedItem = (NSManagedObject *)feedCache[row];
       [viewController setLink : (NSString *)[feedItem valueForKey : @"itemLink"]
                       title : (NSString *)[feedItem valueForKey : @"itemTitle"]];
       viewController.navigationItem.title = @"";

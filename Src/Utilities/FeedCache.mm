@@ -1,6 +1,7 @@
 #import <cassert>
 
 #import <CoreData/CoreData.h>
+#import <UIKit/UIKit.h>
 
 #import "AppDelegate.h"
 #import "MWFeedItem.h"
@@ -69,6 +70,8 @@ void WriteFeedCache(NSString *feedStoreID, NSArray *feedCache, NSArray *allArtic
          }
       } else {
          //We still have to remove the old data for this feed!
+         //We're here if controller does no use the cache at the moment,
+         //but some data is in db.
          NSEntityDescription * const entityDesc = [NSEntityDescription entityForName : @"FeedItem"
                                                               inManagedObjectContext : context];
          NSFetchRequest * const request = [[NSFetchRequest alloc] init];
@@ -114,6 +117,12 @@ void WriteFeedCache(NSString *feedStoreID, NSArray *feedCache, NSArray *allArtic
                [saveFeedItem setValue : feedItem.date forKey : @"itemDate"];
             else
                [saveFeedItem setValue : [NSDate date] forKey : @"itemDate"];
+            
+            NSString *summary = @"";
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && feedItem.summary)
+               summary = feedItem.summary;
+
+            [saveFeedItem setValue : summary forKey : @"itemSummary"];
          }
       }
 

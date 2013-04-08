@@ -10,6 +10,7 @@
 #import <cassert>
 
 #import <QuartzCore/QuartzCore.h>
+#import <CoreData/CoreData.h>
 
 #import "TiledPageView.h"
 #import "TileView.h"
@@ -55,6 +56,34 @@ const NSUInteger shiftPart = 2;
    }
 }
 
+//________________________________________________________________________________________
+- (void) setPageItemsFromCache : (NSArray *) feedCache startingFrom : (NSUInteger) index
+{
+   assert(feedCache != nil && "setPageItemsFromCache:startingFrom:, parameter 'cache' is nil");
+   assert(index < feedCache.count && "setPageItemsFromCache:startingFrom:, parameter 'index' is out of bounds");
+   
+   //A bit of ugly copy paste here :)
+   if (tiles) {
+      for (TileView *v in tiles)
+         [v removeFromSuperview];
+      [tiles removeAllObjects];
+   } else
+      tiles = [[NSMutableArray alloc] init];
+
+   const NSUInteger endOfRange = std::min(feedCache.count, index + 6);
+
+   for (NSUInteger i = index; i < endOfRange; ++i) {
+      TileView *newTile = [[TileView alloc] initWithFrame : CGRect()];
+      NSManagedObject * const feedItem = (NSManagedObject *)feedCache[i];
+      
+      [newTile setTileTitle : (NSString *)[feedItem valueForKey : @"itemTitle"]
+               summary : (NSString *)[feedItem valueForKey : @"itemSummary"]
+               date : (NSDate *)[feedItem valueForKey : @"itemDate"]
+               link : (NSString *)[feedItem valueForKey : @"itemLink"]];
+      [tiles addObject : newTile];
+      [self addSubview : newTile];
+   }
+}
 
 //________________________________________________________________________________________
 - (void) setThumbnail : (UIImage *) thumbnailImage forTile : (NSUInteger) tileIndex

@@ -13,6 +13,7 @@
 @property (nonatomic) NSUInteger pageNumber;
 
 - (void) setPageItems : (NSArray *) feedItems startingFrom : (NSUInteger) index;
+- (void) setPageItemsFromCache : (NSArray *) cache startingFrom : (NSUInteger) index;
 - (void) setThumbnail : (UIImage *) thumbnailImage forTile : (NSUInteger) tileIndex;
 - (BOOL) tileHasThumbnail : (NSUInteger) tileIndex;
 

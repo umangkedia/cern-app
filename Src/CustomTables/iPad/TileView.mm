@@ -55,8 +55,8 @@ bool IsWideImage(UIImage *image)
 }
 
 @implementation TileView {
-   __weak MWFeedItem *feedItem;
-
+   MWFeedItem *feedItem;
+   
    UIImageView *thumbnailView;
    NSMutableAttributedString * title;
    
@@ -145,25 +145,57 @@ bool IsWideImage(UIImage *image)
    
    feedItem = aFeedItem;
    
-   title = [[NSMutableAttributedString alloc] initWithString : feedItem.title ? [feedItem.title stringByConvertingHTMLToPlainText] : @"No title ... "];
+   title = [[NSMutableAttributedString alloc] initWithString : aFeedItem.title ? [aFeedItem.title stringByConvertingHTMLToPlainText] : @"No title ... "];
 
    NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
    [dateFormatter setDateFormat:@"d MMM. yyyy"];
-   infoLabel.text = [dateFormatter stringFromDate : feedItem.date ? feedItem.date : [NSDate date]];
+   infoLabel.text = [dateFormatter stringFromDate : aFeedItem.date ? aFeedItem.date : [NSDate date]];
 
-   //Let's now set attributes:   
-   //1. Font.
-   UIFont * const titleFont = [UIFont fontWithName : @"PTSans-Bold" size : 20.f];
-   assert(titleFont != nil && "setTileData:, titles' font is nil");
-   const NSRange titleRange = NSMakeRange(0, title.length);
-   [title addAttribute : NSFontAttributeName value : titleFont range : titleRange];
+   summary = aFeedItem.summary ? [aFeedItem.summary stringByConvertingHTMLToPlainText] : @"";
+
+   [self setAttributedTextFromSummary];
+   [self setStringAttributes];
    
-   //2. Text alignment.
-   NSMutableParagraphStyle * const style = [[NSMutableParagraphStyle alloc] init];
-   [style setAlignment : NSTextAlignmentCenter];
-   [title addAttribute : NSParagraphStyleAttributeName value : style range : titleRange];
+   thumbnailView.image = aFeedItem.image;
+   imageCut = aFeedItem.imageCut;
+   wideImageOnTop = aFeedItem.wideImageOnTop;
+}
+
+//________________________________________________________________________________________
+- (void) setTileTitle : (NSString *) aTitle summary : (NSString *) aSummary date : (NSDate *) date link : (NSString *) aLink
+{
+   assert(aLink != nil && "setTileTitle:summary:date:link:, parameter 'link' is nil");
+
+   title = [[NSMutableAttributedString alloc] initWithString : aTitle ? [aTitle stringByConvertingHTMLToPlainText] : @"No title ... "];
+
+   NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+   [dateFormatter setDateFormat:@"d MMM. yyyy"];
+   infoLabel.text = [dateFormatter stringFromDate : date ? date : [NSDate date]];
    
-   summary = feedItem.summary ? [feedItem.summary stringByConvertingHTMLToPlainText] : @"";
+   summary = aSummary ? [aSummary stringByConvertingHTMLToPlainText] : @"";
+
+   [self setAttributedTextFromSummary];
+   [self setStringAttributes];
+
+   //create a fake feed item.
+   feedItem = [[MWFeedItem alloc] init];
+   feedItem.link = aLink;
+   feedItem.title = aTitle ? aTitle : @"No title ...";
+   feedItem.summary = summary;
+   feedItem.image = nil;//TODO: cache images.
+   feedItem.imageCut = 0;
+   feedItem.wideImageOnTop = false;
+   //
+
+   thumbnailView.image = nil;//TODO: cache images also.
+   imageCut = 0;
+   wideImageOnTop = false;
+}
+
+//________________________________________________________________________________________
+- (void) setAttributedTextFromSummary
+{
+   //Modify summary:
    if (summary.length) {
       NSCharacterSet * const whitespaces = [NSCharacterSet whitespaceCharacterSet];
       NSPredicate * const noEmptyStrings = [NSPredicate predicateWithFormat : @"SELF != ''"];
@@ -183,7 +215,22 @@ bool IsWideImage(UIImage *image)
    
    [self hypenize];   
    text = [[NSMutableAttributedString alloc] initWithString : summary];
+}
 
+//________________________________________________________________________________________
+- (void) setStringAttributes
+{
+   //Let's now set attributes:   
+   //1. Font.
+   UIFont * const titleFont = [UIFont fontWithName : @"PTSans-Bold" size : 20.f];
+   assert(titleFont != nil && "setTileData:, titles' font is nil");
+   const NSRange titleRange = NSMakeRange(0, title.length);
+   [title addAttribute : NSFontAttributeName value : titleFont range : titleRange];
+   
+   //2. Text alignment.
+   NSMutableParagraphStyle * const style = [[NSMutableParagraphStyle alloc] init];
+   [style setAlignment : NSTextAlignmentCenter];
+   [title addAttribute : NSParagraphStyleAttributeName value : style range : titleRange];
 
    //Let's set text attributes:   
    //1. Font.
@@ -198,10 +245,6 @@ bool IsWideImage(UIImage *image)
    NSMutableParagraphStyle * const textStyle = [[NSMutableParagraphStyle alloc] init];
    [textStyle setAlignment : NSTextAlignmentNatural];//NSTextAlignmentJustified];
    [text addAttribute : NSParagraphStyleAttributeName value : textStyle range : textRange];
-   
-   thumbnailView.image = feedItem.image;
-   imageCut = feedItem.imageCut;
-   wideImageOnTop = feedItem.wideImageOnTop;
 }
 
 //________________________________________________________________________________________
