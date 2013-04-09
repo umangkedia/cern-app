@@ -7,15 +7,27 @@
 #import "ImageDownloader.h"
 #import "RSSAggregator.h"
 
-@interface NewsTileViewController : UIViewController<HUDRefreshProtocol, RSSAggregatorDelegate, PageController,
+
+
+namespace CernAPP {
+
+enum class ControllerMode : unsigned char {
+   feedView,
+   bulletinView,
+   bulletinIssueView
+};
+
+}
+
+@interface FeedTileViewController : UIViewController<HUDRefreshProtocol, RSSAggregatorDelegate, PageController,
                                                      ImageDownloaderDelegate, ConnectionController,
                                                      UIScrollViewDelegate>
 {
    IBOutlet SlideScrollView *scrollView;
 }
 
+@property (nonatomic) CernAPP::ControllerMode mode;
 @property (nonatomic, strong) RSSAggregator *aggregator;
-@property (nonatomic) BOOL canUseCache;//NO for the bulletin.
 @property (nonatomic, copy) NSString *feedStoreID;//Cache ID.
 
 //ECSlidingViewController:

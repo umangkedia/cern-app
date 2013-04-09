@@ -6,20 +6,23 @@
 #import "ArticleDetailViewController.h"
 #import "ECSlidingViewController.h"
 #import "NewsTableViewController.h"
-#import "NewsTileViewController.h"
+#import "FeedTileViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "ApplicationErrors.h"
-#import "TiledPageView.h"
+#import "FeedItemTileView.h"
+#import "FeedPageView.h"
 #import "MWFeedItem.h"
 #import "FeedCache.h"
-#import "TileView.h"
 
-@implementation NewsTileViewController {
+
+using CernAPP::ControllerMode;
+
+@implementation FeedTileViewController {
    NSUInteger nPages;
-   TiledPageView *leftPage;
-   TiledPageView *currPage;
-   TiledPageView *rightPage;
-   
+   UIView<TiledPage> *leftPage;
+   UIView<TiledPage> *currPage;
+   UIView<TiledPage> *rightPage;
+
    NSUInteger pageBeforeRotation;
    
    NSMutableDictionary *imageDownloaders;
@@ -32,13 +35,13 @@
    UIActivityIndicatorView *navBarSpinner;
 }
 
-@synthesize aggregator, canUseCache, feedStoreID, noConnectionHUD, spinner;
+@synthesize mode, aggregator, feedStoreID, noConnectionHUD, spinner;
 
 //________________________________________________________________________________________
 - (void) doInitController
 {
    //Shared method for different "ctors".
-   canUseCache = YES;
+   mode = ControllerMode::feedView;
    
    nPages = 0;
    leftPage = nil;
@@ -82,9 +85,9 @@
    CernAPP::AddSpinner(self);
    CernAPP::HideSpinner(self);
    
-   leftPage = [[TiledPageView alloc] initWithFrame : CGRect()];
-   currPage = [[TiledPageView alloc] initWithFrame : CGRect()];
-   rightPage = [[TiledPageView alloc] initWithFrame : CGRect()];
+   leftPage = [[FeedPageView alloc] initWithFrame : CGRect()];
+   currPage = [[FeedPageView alloc] initWithFrame : CGRect()];
+   rightPage = [[FeedPageView alloc] initWithFrame : CGRect()];
    
    scrollView.checkDragging = YES;
 }
@@ -101,10 +104,10 @@
    if (!viewDidAppear) {
       viewDidAppear = YES;
 
-      if (canUseCache) {
+      if (mode != ControllerMode::bulletinIssueView) {
          if ((feedCache = CernAPP::ReadFeedCache(feedStoreID))) {
             //Set the data from the cache at the beginning!
-            [self setPagesFromCache];
+            [self setPagesDataFromCache];
          }
       }
 
@@ -126,6 +129,10 @@
             [self layoutPages : YES];
       }
    }
+   
+   if (mode == ControllerMode::bulletinIssueView)
+      //No "refresh" button, it's one level up in a navigation hierarchy.
+      self.navigationItem.rightBarButtonItem = nil;
 }
 
 #pragma mark - Layout.
@@ -140,7 +147,7 @@
    currentFrame.origin = CGPoint();
 
    if (nPages <= 3) {
-      TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
+      UIView<TiledPage> * const pages[3] = {leftPage, currPage, rightPage};
       //Do not do any magic, we have only <= 3 pages.
       for (NSUInteger i = 0; i < nPages; ++i) {
          pages[i].frame = currentFrame;
@@ -196,7 +203,7 @@
    [scrollView setContentOffset : CGPointMake(pageBeforeRotation * self.view.frame.size.width, 0.f) animated : NO];
 
    if (nPages <= 3) {
-      TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
+      UIView<TiledPage> * const pages[3] = {leftPage, currPage, rightPage};
       
       if (pageBeforeRotation)
          pages[pageBeforeRotation - 1].hidden = YES;
@@ -225,7 +232,7 @@
       return;
 
    if (nPages <= 3) {
-      TiledPageView * const pages[3] = {leftPage, currPage, rightPage};
+      UIView<TiledPage> * const pages[3] = {leftPage, currPage, rightPage};
       if (pageBeforeRotation)
          pages[pageBeforeRotation - 1].hidden = NO;
       if (pageBeforeRotation + 1 < nPages)
@@ -249,56 +256,32 @@
 {
 #pragma unused(anAggregator)
 
+   assert(mode != ControllerMode::bulletinIssueView &&
+          "allFeedsDidLoadForAggregator:, wrong controller's mode");
+
    allArticles = [aggregator.allArticles mutableCopy];
    
-   if (canUseCache) {
-      assert(feedStoreID.length && "allFeedDidLoadForAggregator:, feedStoreID is invalid");
-      //In case of a bulletin, we do not use feed cache (it's one level up).
-      CernAPP::WriteFeedCache(feedStoreID, feedCache, allArticles);
+   
+   //In this mode we always write a cache into the storage.
+   assert(feedStoreID.length && "allFeedDidLoadForAggregator:, feedStoreID is invalid");
+   CernAPP::WriteFeedCache(feedStoreID, feedCache, allArticles);
 
-      if (feedCache) {
-         feedCache = nil;
-         [self hideNavBarSpinner];
-      }
-   }
+   if (feedCache) {
+      feedCache = nil;
+      //We were using cache and had a spinner in a nav bar (while loading a new data).
+      [self hideNavBarSpinner];
+   } else
+      CernAPP::HideSpinner(self);
    
-   CernAPP::HideSpinner(self);
+   self.navigationItem.rightBarButtonItem.enabled = YES;
    
+   //Let's define an image layout for a tile.
    for (MWFeedItem *item in allArticles) {
       item.wideImageOnTop = std::rand() % 2;
       item.imageCut = std::rand() % 4;
    }
    
-   //At the moment, I'm using a simple layout - 6 items per page.
-   if ((nPages = (allArticles.count + 5) / 6)) {
-      //Let's create tiled view now.
-      TiledPageView * pages[3] = {};
-      if (nPages <= 3)
-         pages[0] = leftPage, pages[1] = currPage, pages[2] = rightPage;
-      else
-         pages[0] = currPage, pages[1] = rightPage, pages[2] = leftPage;
-
-      for (NSUInteger pageIndex = 0, e = std::min((int)nPages, 3); pageIndex < e; ++pageIndex) {
-         TiledPageView * const page = pages[pageIndex];
-         page.pageNumber = pageIndex;
-         [page setPageItems : allArticles startingFrom : pageIndex * 6];
-         if (!page.superview)
-            [scrollView addSubview : page];
-      }
-      
-      [self layoutPages : YES];
-      [scrollView setContentOffset : CGPointMake(0.f, 0.f)];
-      
-      //The first page is visible now, let's download ... IMAGES NOW!!! :)
-      [self loadImagesForVisiblePage];
-   } else {
-      if (leftPage.superview)
-         [leftPage removeFromSuperview];
-      if (currPage.superview)
-         [currPage removeFromSuperview];
-      if (rightPage.superview)
-         [rightPage removeFromSuperview];
-   }
+   [self setPagesData];
 }
 
 //________________________________________________________________________________________
@@ -319,6 +302,7 @@
 {
    if (aggregator.isLoadingData)
       return;
+
    //Stop any image download if we have any.
    [self cancelAllImageDownloaders];
 
@@ -333,16 +317,13 @@
 
    [noConnectionHUD hide : YES];
 
-   //TODO: Cache will also affect the logic here!
    if (!feedCache) {
-      [spinner setHidden : NO];
-      [spinner startAnimating];
+      self.navigationItem.rightBarButtonItem.enabled = NO;
+      CernAPP::ShowSpinner(self);
    } else {
       [self addNavBarSpinner];
       [self layoutPages : YES];
    }
-   
-   CernAPP::ShowSpinner(self);
 
    [self.aggregator clearAllFeeds];
    //It will re-parse feed and (probably) re-fill the tiled view.
@@ -376,7 +357,6 @@
    assert(page >= 0 && page < nPages && "imageDidLoad:, index is out of bounds");
    
    MWFeedItem * const article = (MWFeedItem *)allArticles[indexPath.section];
-
    //We should not load any image more when once.
    assert(article.image == nil && "imageDidLoad:, image was loaded already");
    
@@ -387,7 +367,7 @@
       article.image = downloader.image;
       //
       if (nPages <= 3) {
-         TiledPageView * pageToUpdate = nil;
+         UIView<TiledPage> * pageToUpdate = nil;
          if (!page)
             pageToUpdate = leftPage;
          else if (page == 1)
@@ -448,7 +428,8 @@
       if (nPages > 3)
          [self adjustPages];
 
-      [self loadImagesForVisiblePage];
+      if (!feedCache)
+         [self loadImagesForVisiblePage];
    }
 }
 
@@ -459,30 +440,83 @@
    if (nPages > 3)
       [self adjustPages];
    
-   [self loadImagesForVisiblePage];
+   if (!feedCache)
+      [self loadImagesForVisiblePage];
 }
 
 #pragma mark - Aux.
 
 //________________________________________________________________________________________
-- (void) setPagesFromCache
+- (void) removeAllPages
 {
-   assert(canUseCache == YES && "setPagesFromCache, canUseCache is 'NO'");
+   if (leftPage.superview)
+      [leftPage removeFromSuperview];
+   if (currPage.superview)
+      [currPage removeFromSuperview];
+   if (rightPage.superview)
+      [rightPage removeFromSuperview];
+}
+
+//________________________________________________________________________________________
+- (void) setPagesData
+{
+   assert(feedCache == nil && "setPagesData, feedCache is not nil");
+
+   //Let's define an image layout for a tile.
+   for (MWFeedItem *item in allArticles) {
+      item.wideImageOnTop = std::rand() % 2;
+      item.imageCut = std::rand() % 4;
+   }
+   
+   if (mode == CernAPP::ControllerMode::bulletinView) {
+   
+   } else {
+      if ((nPages = [self numberOfPages])) {
+         //Let's create tiled view now.
+         UIView<TiledPage> * pages[3] = {};
+         if (nPages <= 3)
+            pages[0] = leftPage, pages[1] = currPage, pages[2] = rightPage;
+         else
+            pages[0] = currPage, pages[1] = rightPage, pages[2] = leftPage;
+
+         for (NSUInteger pageIndex = 0, currentItem = 0, e = std::min((int)nPages, 3); pageIndex < e; ++pageIndex) {
+            UIView<TiledPage> * const page = pages[pageIndex];
+            page.pageNumber = pageIndex;
+            currentItem += [page setPageItems : allArticles startingFrom : currentItem];
+            if (!page.superview)
+               [scrollView addSubview : page];
+         }
+         
+         [self layoutPages : YES];
+         [scrollView setContentOffset : CGPointMake(0.f, 0.f)];
+         
+         //The first page is visible now, let's download ... IMAGES NOW!!! :)
+         [self loadImagesForVisiblePage];
+      } else
+         [self removeAllPages];
+   }
+}
+
+//________________________________________________________________________________________
+- (void) setPagesDataFromCache
+{
+   assert(mode != ControllerMode::bulletinIssueView &&
+          "setPagesFromCache, can not use cache in this mode");
    assert(feedCache != nil && "setPagesFromCache, feedCache is nil");
 
    //At the moment, I'm using simple layout - 6 items per page.
-   if ((nPages = (feedCache.count + 5) / 6)) {
+   if ((nPages = [self numberOfPages])) {
       //Let's create tiled view now.
-      TiledPageView * pages[3] = {};
+      UIView<TiledPage> *pages[3] = {};
       if (nPages <= 3)
          pages[0] = leftPage, pages[1] = currPage, pages[2] = rightPage;
       else
          pages[0] = currPage, pages[1] = rightPage, pages[2] = leftPage;
 
-      for (NSUInteger pageIndex = 0, e = std::min((int)nPages, 3); pageIndex < e; ++pageIndex) {
-         TiledPageView * const page = pages[pageIndex];
+      for (NSUInteger pageIndex = 0, e = std::min((int)nPages, 3), currItem = 0; pageIndex < e; ++pageIndex) {
+         UIView<TiledPage> * const page = pages[pageIndex];
          page.pageNumber = pageIndex;
-         [page setPageItemsFromCache : feedCache startingFrom : pageIndex * 6];
+         currItem += [page setPageItemsFromCache : feedCache startingFrom : currItem];
          if (!page.superview)
             [scrollView addSubview : page];
       }
@@ -493,13 +527,9 @@
       //I do not load images for cached feed items,
       //later I'll cache images.
    } else {
-      if (leftPage.superview)
-         [leftPage removeFromSuperview];
-      if (currPage.superview)
-         [currPage removeFromSuperview];
-      if (rightPage.superview)
-         [rightPage removeFromSuperview];
-   }  
+      //Impossible - cache read returns nil if no data was found.
+      assert(0 && "setPagesDataFromCache, empty cache");
+   }
 }
 
 //________________________________________________________________________________________
@@ -518,7 +548,7 @@
       //The old 'left' becomes the new 'right' and we either have to set this the page or not.
 
       const bool leftEdge = !currPage.pageNumber;
-      TiledPageView * const oldLeft = leftPage;
+      UIView<TiledPage> * const oldLeft = leftPage;
       leftPage = currPage;
       currPage = rightPage;
       rightPage = oldLeft;
@@ -529,10 +559,10 @@
          frame.origin.x = currPage.frame.origin.x + frame.size.width;
          rightPage.frame = frame;
          //Set the data now.
-         if (!feedCache)
-            [rightPage setPageItems : allArticles startingFrom : (newCurrentPageIndex + 1) * 6];
-         else
-            [rightPage setPageItemsFromCache:feedCache startingFrom : (newCurrentPageIndex + 1) * 6];
+         if (!feedCache) {
+            [rightPage setPageItems : allArticles startingFrom : currPage.pageRange.location + currPage.pageRange.length];
+         } else
+            [rightPage setPageItemsFromCache:feedCache startingFrom : currPage.pageRange.location + currPage.pageRange.length];
          
          [rightPage layoutTiles];
       } 
@@ -543,7 +573,7 @@
       //The old 'right' becomes the new 'left' and we either have to set this page or not.
       
       const bool rightEdge = currPage.pageNumber + 1 == nPages;
-      TiledPageView * const oldRight = rightPage;
+      UIView<TiledPage> * const oldRight = rightPage;
       rightPage = currPage;
       currPage = leftPage;
       leftPage = oldRight;
@@ -553,10 +583,13 @@
          frame.origin.x = currPage.frame.origin.x - frame.size.width;
          leftPage.frame = frame;
          //Set the data now.
-         if (!feedCache)
-            [leftPage setPageItems : allArticles startingFrom : (newCurrentPageIndex - 1) * 6];
-         else
-            [leftPage setPageItemsFromCache : feedCache startingFrom : (newCurrentPageIndex - 1) * 6];
+         if (!feedCache) {
+            const NSRange range = [leftPage.class suggestRangeBackward : allArticles endingWith : currPage.pageRange.location];
+            [leftPage setPageItems : allArticles startingFrom : range.location];
+         } else {
+            const NSRange range = [leftPage.class suggestRangeBackward : feedCache endingWith : currPage.pageRange.location];
+            [leftPage setPageItemsFromCache : feedCache startingFrom : range.location];
+         }
 
          [leftPage layoutTiles];
       }
@@ -580,15 +613,70 @@
 }
 
 //________________________________________________________________________________________
+- (NSUInteger) numberOfPagesForData : (NSArray *) items
+{
+   assert(items != nil && "numberOfPagesForData:, parameter 'items' is nil");
+   assert(leftPage != nil && "numberOfpagesForData:, none of the pre-loaded pages exists");
+
+   NSUInteger pages = 0;
+   NSRange range = {};
+   while (range.location + range.length < items.count) {
+      ++pages;
+      range = [leftPage.class suggestRangeForward : items startingFrom : range.location + range.length];
+   }
+
+   return pages;
+}
+
+//________________________________________________________________________________________
+- (NSUInteger) numberOfPages
+{
+   if (feedCache) {
+      //Cache can be used only by feed tile view or bulletin view (issues as tiles).
+      assert(mode != ControllerMode::bulletinIssueView && "numberOfPages, wrong controller mode");
+
+      if (mode == ControllerMode::feedView) {
+         return [self numberOfPagesForData : feedCache];
+      } else {
+         //Bulletin issues as tiles.
+         return 0;//TODO!
+      }
+   } else {
+      if (mode == ControllerMode::feedView) {
+         return [self numberOfPagesForData : allArticles];
+      } else {
+         return 0;//TODO!
+      }
+   }
+}
+
+//________________________________________________________________________________________
+- (NSRange) findItemRangeForPage : (NSUInteger) page
+{
+   assert(page < nPages && "findItemRangeForPage:, parameter 'page' is out of bounds");
+   
+   //Ugly, inefficient, but .. we never have a huge number of pages :)
+   NSRange range = {};
+   if (feedCache) {
+      for (NSUInteger i = 0; i <= page; ++i)
+         range = [leftPage.class suggestRangeForward : feedCache startingFrom : range.location + range.length];
+   } else {
+      for (NSUInteger i = 0; i <= page; ++i)
+         range = [leftPage.class suggestRangeForward : allArticles startingFrom : range.location + range.length];
+   }
+   
+   return range;
+}
+
+//________________________________________________________________________________________
 - (void) loadImagesForVisiblePage
 {
    assert(feedCache == nil && "loadImagesForVisiblePage, images loaded while cache is in use");
 
    const NSUInteger visiblePage = NSUInteger(scrollView.contentOffset.x / scrollView.frame.size.width);
-   
-   //At the moment I have a very simple layout - up to 6 tiles on a page.
-   const NSUInteger endOfRange = std::min(visiblePage * 6 + 6, allArticles.count);
-   for (NSUInteger i = visiblePage * 6; i < endOfRange; ++i) {
+
+   const NSRange range = [self findItemRangeForPage : visiblePage];
+   for (NSUInteger i = range.location, e = range.location + range.length; i < e; ++i) {
       MWFeedItem * const article = (MWFeedItem *)allArticles[i];
       if (!article.image) {
          if (!imageDownloaders)
@@ -612,10 +700,10 @@
                [downloader startDownload];//Power on.
             }
          }
-      } else if (nPages > 3 && ![currPage tileHasThumbnail : i % 6]) {
+      } else if (nPages > 3 && ![currPage tileHasThumbnail : i - range.location]) {
          //Image was loaded already, but not tile's thumbnailView and
          //tile's layout has to be corrected yet.
-         [currPage setThumbnail : article.image forTile : i % 6];
+         [currPage setThumbnail : article.image forTile : i - range.location];
       }
    }
 }

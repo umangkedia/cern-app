@@ -10,11 +10,13 @@
 
 #import "MWFeedItem.h"
 
-@interface TileView : UIView
+@interface FeedItemTileView : UIView
 
 - (void) setTileData : (MWFeedItem *) feedItem;
+
 - (void) setTileTitle : (NSString *) title summary : (NSString *) summary
          date : (NSDate *) date link : (NSString *) link;
+
 - (void) setTileThumbnail : (UIImage *) image;
 - (BOOL) hasThumbnail;
 - (void) layoutTile;

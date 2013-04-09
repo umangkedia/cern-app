@@ -9,10 +9,11 @@
 #import "LiveEventTableController.h"
 #import "NewsTableViewController.h"
 #import "ECSlidingViewController.h"
-#import "NewsTileViewController.h"
+#import "FeedTileViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "AppSettingsController.h"
 #import "ConnectionController.h"
+
 #import "ContentProviders.h"
 #import "KeyVal.h"
 
@@ -26,6 +27,8 @@ void CancelConnections(UIViewController *controller)
    if ([controller respondsToSelector : @selector(cancelAnyConnections)])
       [controller performSelector : @selector(cancelAnyConnections)];
 }
+
+using CernAPP::ControllerMode;
 
 }
 
@@ -110,11 +113,12 @@ void CancelConnections(UIViewController *controller)
    } else if (!isTwitterFeed) {
       navController = (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier :
                                                                                    TableNavigationControllerNewsID];
-      assert([navController.topViewController isKindOfClass : [NewsTileViewController class]] &&
+      assert([navController.topViewController isKindOfClass : [FeedTileViewController class]] &&
              "loadControllerTo:, top view controller is either nil or has a wrong type");
-      NewsTileViewController * const nt = (NewsTileViewController *)navController.topViewController;
+      FeedTileViewController * const nt = (FeedTileViewController *)navController.topViewController;
       nt.navigationItem.title = feedName;
       nt.feedStoreID = feedName;
+      nt.mode = ControllerMode::feedView;
       [nt.aggregator addFeedForURL : [NSURL URLWithString : feed]];
    } else {
       //twitter feed on iPad.
@@ -535,6 +539,11 @@ void CancelConnections(UIViewController *controller)
    assert(controller != nil && "loadControllerTo:, parameter 'controller' is nil");
 
    using namespace CernAPP;
+   
+   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+      //TODO!!!
+      return;
+   }
    
    MenuNavigationController * const navController =
          (MenuNavigationController *)[controller.storyboard instantiateViewControllerWithIdentifier : BulletinTableViewControllerID];

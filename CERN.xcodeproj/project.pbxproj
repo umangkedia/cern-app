@@ -145,6 +145,7 @@
 		7069F33116C11517006BC78B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7069F33016C11517006BC78B /* Settings.bundle */; };
 		7069F76516C14D6D006BC78B /* OverlayView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7069F76216C14D6D006BC78B /* OverlayView.mm */; };
 		7069F76616C14D6D006BC78B /* PictureButtonView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7069F76416C14D6D006BC78B /* PictureButtonView.mm */; };
+		7072B32A1714699700515DA8 /* BulletinIssueTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7072B3291714699700515DA8 /* BulletinIssueTileView.m */; };
 		70767DC716CE8F4D00164516 /* MWFeedParserLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 70767DC616CE8F4D00164516 /* MWFeedParserLicense.txt */; };
 		70767DC916CE922D00164516 /* MWPhotoBrowserLicense.txt in Resources */ = {isa = PBXBuildFile; fileRef = 70767DC816CE922D00164516 /* MWPhotoBrowserLicense.txt */; };
 		707B137C169AEB6300180E02 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 707B137A169AEB6300180E02 /* AppDelegate.mm */; };
@@ -208,9 +209,9 @@
 		70D98B0B16F73ABA003C42E7 /* EventDisplayViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B0316F73ABA003C42E7 /* EventDisplayViewController.mm */; };
 		70D98B0C16F73ABA003C42E7 /* StaticInfoItemViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B0516F73ABA003C42E7 /* StaticInfoItemViewController.mm */; };
 		70D98B0D16F73ABA003C42E7 /* StaticInfoScrollViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B0716F73ABA003C42E7 /* StaticInfoScrollViewController.mm */; };
-		70D98B1116F7561E003C42E7 /* NewsTileViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1016F7561E003C42E7 /* NewsTileViewController.mm */; };
-		70D98B1416F76430003C42E7 /* TiledPageView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1316F76430003C42E7 /* TiledPageView.mm */; };
-		70D98B1716F76565003C42E7 /* TileView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1616F76565003C42E7 /* TileView.mm */; };
+		70D98B1116F7561E003C42E7 /* FeedTileViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1016F7561E003C42E7 /* FeedTileViewController.mm */; };
+		70D98B1416F76430003C42E7 /* FeedPageView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1316F76430003C42E7 /* FeedPageView.mm */; };
+		70D98B1716F76565003C42E7 /* FeedItemTileView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B1616F76565003C42E7 /* FeedItemTileView.mm */; };
 		70D98B2B16F786D8003C42E7 /* SlideScrollView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D98B2A16F786D8003C42E7 /* SlideScrollView.mm */; };
 		70E69AC1170EC2D700384523 /* ArticleiPadCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = 70E69AC0170EC2D700384523 /* ArticleiPadCSS.css */; };
 		70E69AC4170EE81F00384523 /* FeedCache.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E69AC2170EE81F00384523 /* FeedCache.mm */; };
@@ -409,6 +410,9 @@
 		7069F76216C14D6D006BC78B /* OverlayView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OverlayView.mm; sourceTree = "<group>"; };
 		7069F76316C14D6D006BC78B /* PictureButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PictureButtonView.h; sourceTree = "<group>"; };
 		7069F76416C14D6D006BC78B /* PictureButtonView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PictureButtonView.mm; sourceTree = "<group>"; };
+		7072B3271713F72F00515DA8 /* TiledPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledPage.h; sourceTree = "<group>"; };
+		7072B3281714699700515DA8 /* BulletinIssueTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinIssueTileView.h; sourceTree = "<group>"; };
+		7072B3291714699700515DA8 /* BulletinIssueTileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BulletinIssueTileView.m; sourceTree = "<group>"; };
 		70767DC616CE8F4D00164516 /* MWFeedParserLicense.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWFeedParserLicense.txt; sourceTree = "<group>"; };
 		70767DC816CE922D00164516 /* MWPhotoBrowserLicense.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MWPhotoBrowserLicense.txt; sourceTree = "<group>"; };
 		707B1379169AEB6300180E02 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -515,12 +519,12 @@
 		70D98B0516F73ABA003C42E7 /* StaticInfoItemViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoItemViewController.mm; sourceTree = "<group>"; };
 		70D98B0616F73ABA003C42E7 /* StaticInfoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticInfoScrollViewController.h; sourceTree = "<group>"; };
 		70D98B0716F73ABA003C42E7 /* StaticInfoScrollViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StaticInfoScrollViewController.mm; sourceTree = "<group>"; };
-		70D98B0F16F7561E003C42E7 /* NewsTileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTileViewController.h; sourceTree = "<group>"; };
-		70D98B1016F7561E003C42E7 /* NewsTileViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewsTileViewController.mm; sourceTree = "<group>"; };
-		70D98B1216F76430003C42E7 /* TiledPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledPageView.h; sourceTree = "<group>"; };
-		70D98B1316F76430003C42E7 /* TiledPageView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TiledPageView.mm; sourceTree = "<group>"; };
-		70D98B1516F76564003C42E7 /* TileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TileView.h; sourceTree = "<group>"; };
-		70D98B1616F76565003C42E7 /* TileView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TileView.mm; sourceTree = "<group>"; };
+		70D98B0F16F7561E003C42E7 /* FeedTileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedTileViewController.h; sourceTree = "<group>"; };
+		70D98B1016F7561E003C42E7 /* FeedTileViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FeedTileViewController.mm; sourceTree = "<group>"; };
+		70D98B1216F76430003C42E7 /* FeedPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedPageView.h; sourceTree = "<group>"; };
+		70D98B1316F76430003C42E7 /* FeedPageView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FeedPageView.mm; sourceTree = "<group>"; };
+		70D98B1516F76564003C42E7 /* FeedItemTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedItemTileView.h; sourceTree = "<group>"; };
+		70D98B1616F76565003C42E7 /* FeedItemTileView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FeedItemTileView.mm; sourceTree = "<group>"; };
 		70D98B2916F786D8003C42E7 /* SlideScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideScrollView.h; sourceTree = "<group>"; };
 		70D98B2A16F786D8003C42E7 /* SlideScrollView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SlideScrollView.mm; sourceTree = "<group>"; };
 		70E69AC0170EC2D700384523 /* ArticleiPadCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ArticleiPadCSS.css; sourceTree = "<group>"; };
@@ -1031,6 +1035,7 @@
 		70B2A74F16DBBD5200BC8657 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				7072B3271713F72F00515DA8 /* TiledPage.h */,
 				70B2A75016DBBD5200BC8657 /* ConnectionController.h */,
 				70B2A75116DBBD5200BC8657 /* PageControllerProtocol.h */,
 				70B2A75216DBBE5E00BC8657 /* HUDRefreshProtocol.h */,
@@ -1088,12 +1093,14 @@
 		70D98B0E16F7561E003C42E7 /* iPad */ = {
 			isa = PBXGroup;
 			children = (
-				70D98B0F16F7561E003C42E7 /* NewsTileViewController.h */,
-				70D98B1016F7561E003C42E7 /* NewsTileViewController.mm */,
-				70D98B1216F76430003C42E7 /* TiledPageView.h */,
-				70D98B1316F76430003C42E7 /* TiledPageView.mm */,
-				70D98B1516F76564003C42E7 /* TileView.h */,
-				70D98B1616F76565003C42E7 /* TileView.mm */,
+				70D98B0F16F7561E003C42E7 /* FeedTileViewController.h */,
+				70D98B1016F7561E003C42E7 /* FeedTileViewController.mm */,
+				70D98B1216F76430003C42E7 /* FeedPageView.h */,
+				70D98B1316F76430003C42E7 /* FeedPageView.mm */,
+				70D98B1516F76564003C42E7 /* FeedItemTileView.h */,
+				70D98B1616F76565003C42E7 /* FeedItemTileView.mm */,
+				7072B3281714699700515DA8 /* BulletinIssueTileView.h */,
+				7072B3291714699700515DA8 /* BulletinIssueTileView.m */,
 			);
 			path = iPad;
 			sourceTree = "<group>";
@@ -1418,11 +1425,12 @@
 				70D98B0B16F73ABA003C42E7 /* EventDisplayViewController.mm in Sources */,
 				70D98B0C16F73ABA003C42E7 /* StaticInfoItemViewController.mm in Sources */,
 				70D98B0D16F73ABA003C42E7 /* StaticInfoScrollViewController.mm in Sources */,
-				70D98B1116F7561E003C42E7 /* NewsTileViewController.mm in Sources */,
-				70D98B1416F76430003C42E7 /* TiledPageView.mm in Sources */,
-				70D98B1716F76565003C42E7 /* TileView.mm in Sources */,
+				70D98B1116F7561E003C42E7 /* FeedTileViewController.mm in Sources */,
+				70D98B1416F76430003C42E7 /* FeedPageView.mm in Sources */,
+				70D98B1716F76565003C42E7 /* FeedItemTileView.mm in Sources */,
 				70D98B2B16F786D8003C42E7 /* SlideScrollView.mm in Sources */,
 				70E69AC4170EE81F00384523 /* FeedCache.mm in Sources */,
+				7072B32A1714699700515DA8 /* BulletinIssueTileView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

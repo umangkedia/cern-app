@@ -15,7 +15,7 @@
 #import "InitialSlidingViewController.h"
 #import "MenuNavigationController.h"
 #import "NewsTableViewController.h"
-#import "NewsTileViewController.h"
+#import "FeedTileViewController.h"
 #import "StoryboardIdentifiers.h"
 #import "GUIHelpers.h"
 
@@ -87,9 +87,9 @@
           "loadFirstNewsFeed:, 'Url' not found or has a wrong type");
 
    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      assert([aController isKindOfClass : [NewsTileViewController class]] &&
+      assert([aController isKindOfClass : [FeedTileViewController class]] &&
              "loadFirstNewsFeed:, controller has a wrong type");
-      NewsTileViewController * const tileController = (NewsTileViewController *)aController;
+      FeedTileViewController * const tileController = (FeedTileViewController *)aController;
       tileController.navigationItem.title = (NSString *)feedDict[@"Name"];
       tileController.feedStoreID = (NSString *)feedDict[@"Name"];
       //TODO: Cache ID for a feed.
@@ -132,7 +132,7 @@
       //with such a table here, also, we have to add a news feed here.
       [self loadFirstNewsFeed : (NewsTableViewController *)top.topViewController];
    } else {
-      assert([top.topViewController isKindOfClass : [NewsTileViewController class]] &&
+      assert([top.topViewController isKindOfClass : [FeedTileViewController class]] &&
              "viewDidLoad:, top view controller is either nil or has a wrong type");
       [self loadFirstNewsFeed : top.topViewController];
    }

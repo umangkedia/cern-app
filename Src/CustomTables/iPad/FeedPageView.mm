@@ -1,27 +1,20 @@
-//
-//  TiledPageView.m
-//  CERN
-//
-//  Created by Timur Pocheptsov on 3/18/13.
-//  Copyright (c) 2013 CERN. All rights reserved.
-//
-
 #import <algorithm>
 #import <cassert>
 
 #import <QuartzCore/QuartzCore.h>
 #import <CoreData/CoreData.h>
 
-#import "TiledPageView.h"
-#import "TileView.h"
+#import "FeedItemTileView.h"
+#import "FeedPageView.h"
 
 const NSUInteger shiftPart = 2;
+const NSUInteger tilesOnPage = 6;
 
-@implementation TiledPageView {
+@implementation FeedPageView {
    NSMutableArray *tiles;
 }
 
-@synthesize pageNumber;
+@synthesize pageNumber, pageRange;
 
 //________________________________________________________________________________________
 - (id) initWithFrame : (CGRect) frame
@@ -34,46 +27,88 @@ const NSUInteger shiftPart = 2;
 }
 
 //________________________________________________________________________________________
-- (void) setPageItems : (NSArray *) feedItems startingFrom : (NSUInteger) index
++ (NSRange) suggestRangeForward : (NSArray *) items startingFrom : (NSUInteger) index
+{
+   //Actually, there is no need in this function, since setPageItems:... setPageItemsFromCache:.. will
+   //find this range. Anyway, this function does not create any tile, it just defines the range.
+   //For the given '[begin', find the 'end)'
+
+   assert(items != nil && "suggestRangeForward:startingFrom:, parameter 'items' is nil");
+   assert(index < items.count && "suggestRangeForward:startingFrom:, parameter 'index' is out of bounds");
+   
+   const NSUInteger endOfRange = std::min(items.count, index + tilesOnPage);
+   
+   return NSMakeRange(index, endOfRange - index);
+}
+
+//________________________________________________________________________________________
++ (NSRange) suggestRangeBackward : (NSArray *) items endingWith : (NSUInteger) index
+{
+   //We have the 'end)', find the '[begin'.
+   
+   assert(items != nil && "suggestRangeBackward:endingWith:, parameter 'items' is nil");
+   assert(index <= items.count && "suggestRangeBackward:endingWith:, parameter 'index' is out of bounds");
+   
+   NSRange range = {};
+   
+   if (index >= tilesOnPage) {
+      range.location = index - tilesOnPage;
+      range.length = tilesOnPage;
+   } else {
+      range.location = 0;
+      range.length = index;
+   }
+   
+   return range;
+}
+
+
+//________________________________________________________________________________________
+- (NSUInteger) setPageItems : (NSArray *) feedItems startingFrom : (NSUInteger) index
 {
    assert(feedItems != nil && "setPageItems:startingFrom:, parameter 'feedItems' is nil");
    assert(index < feedItems.count && "setPageItems:startingFrom:, parameter 'index' is out of range");
 
    if (tiles) {
-      for (TileView *v in tiles)
+      for (FeedItemTileView *v in tiles)
          [v removeFromSuperview];
       [tiles removeAllObjects];
    } else
       tiles = [[NSMutableArray alloc] init];
 
-   const NSUInteger endOfRange = std::min(feedItems.count, index + 6);
+   const NSUInteger endOfRange = std::min(feedItems.count, index + tilesOnPage);
 
    for (NSUInteger i = index; i < endOfRange; ++i) {
-      TileView *newTile = [[TileView alloc] initWithFrame : CGRect()];
+      FeedItemTileView *newTile = [[FeedItemTileView alloc] initWithFrame : CGRect()];
       [newTile setTileData : (MWFeedItem *)feedItems[i]];
       [tiles addObject : newTile];
       [self addSubview : newTile];
    }
+   
+   pageRange.location = index;
+   pageRange.length = endOfRange - index;
+
+   return tilesOnPage;
 }
 
 //________________________________________________________________________________________
-- (void) setPageItemsFromCache : (NSArray *) feedCache startingFrom : (NSUInteger) index
+- (NSUInteger) setPageItemsFromCache : (NSArray *) feedCache startingFrom : (NSUInteger) index
 {
    assert(feedCache != nil && "setPageItemsFromCache:startingFrom:, parameter 'cache' is nil");
    assert(index < feedCache.count && "setPageItemsFromCache:startingFrom:, parameter 'index' is out of bounds");
    
    //A bit of ugly copy paste here :)
    if (tiles) {
-      for (TileView *v in tiles)
+      for (FeedItemTileView *v in tiles)
          [v removeFromSuperview];
       [tiles removeAllObjects];
    } else
       tiles = [[NSMutableArray alloc] init];
 
-   const NSUInteger endOfRange = std::min(feedCache.count, index + 6);
+   const NSUInteger endOfRange = std::min(feedCache.count, index + tilesOnPage);
 
    for (NSUInteger i = index; i < endOfRange; ++i) {
-      TileView *newTile = [[TileView alloc] initWithFrame : CGRect()];
+      FeedItemTileView *newTile = [[FeedItemTileView alloc] initWithFrame : CGRect()];
       NSManagedObject * const feedItem = (NSManagedObject *)feedCache[i];
       
       [newTile setTileTitle : (NSString *)[feedItem valueForKey : @"itemTitle"]
@@ -83,6 +118,17 @@ const NSUInteger shiftPart = 2;
       [tiles addObject : newTile];
       [self addSubview : newTile];
    }
+
+   pageRange.location = index;
+   pageRange.length = endOfRange - index;
+
+   return tilesOnPage;
+}
+
+//________________________________________________________________________________________
+- (NSRange) pageRange
+{
+   return pageRange;
 }
 
 //________________________________________________________________________________________
@@ -91,7 +137,7 @@ const NSUInteger shiftPart = 2;
    assert(thumbnailImage != nil && "setThumbnail:forTile, parameter 'thumbnailImage' is nil");
    assert(tileIndex < tiles.count && "setThumbnail:forTile, parameter 'tileIndex' is out of range");
    
-   TileView * const tile = (TileView *)tiles[tileIndex];
+   FeedItemTileView * const tile = (FeedItemTileView *)tiles[tileIndex];
    [tile setTileThumbnail : thumbnailImage];
 }
 
@@ -100,7 +146,7 @@ const NSUInteger shiftPart = 2;
 {
    assert(tileIndex < tiles.count && "tileHasThumbnail, parameter 'tileIndex' is out of bounds");
    
-   return [(TileView *)tiles[tileIndex] hasThumbnail];
+   return [(FeedItemTileView *)tiles[tileIndex] hasThumbnail];
 }
 
 //________________________________________________________________________________________
@@ -120,7 +166,7 @@ const NSUInteger shiftPart = 2;
    const CGFloat height = frame.size.height / nRows;
    
    NSUInteger index = 0;
-   for (TileView *tile in tiles) {
+   for (FeedItemTileView *tile in tiles) {
       const CGFloat x = (index % nItemsPerRow) * width + 2.f;
       const CGFloat y = (index / nItemsPerRow) * height + 2.f;
       const CGRect frame = CGRectMake(x, y, width - 4.f, height - 4.f);
@@ -142,7 +188,7 @@ const NSUInteger shiftPart = 2;
    const CGFloat height = self.frame.size.height / nRows;
 
    NSUInteger index = 0;
-   for (TileView *tile in tiles) {
+   for (FeedItemTileView *tile in tiles) {
       const NSUInteger col = index % nItemsPerRow;
       const NSUInteger row = index / nItemsPerRow;
       CGFloat x = col * width;
@@ -179,7 +225,7 @@ const NSUInteger shiftPart = 2;
    const CGFloat height = self.frame.size.height / nRows;
 
    NSUInteger index = 0;
-   for (TileView *tile in tiles) {   
+   for (FeedItemTileView *tile in tiles) {
       const NSUInteger col = index % nItemsPerRow;
       const NSUInteger row = index / nItemsPerRow;
 

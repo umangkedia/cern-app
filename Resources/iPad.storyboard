@@ -80,10 +80,10 @@
             </objects>
             <point key="canvasLocation" x="2001" y="-910"/>
         </scene>
-        <!--News Tile View Controller-->
+        <!--Feed Tile View Controller-->
         <scene sceneID="Wzb-Ro-CJz">
             <objects>
-                <viewController id="lV2-nJ-7jY" customClass="NewsTileViewController" sceneMemberID="viewController">
+                <viewController id="lV2-nJ-7jY" customClass="FeedTileViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zv5-z5-Gmm">
                         <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -152,6 +152,14 @@
         <class className="ECSlidingViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ECSlidingViewController.h"/>
         </class>
+        <class className="FeedTileViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedTileViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="reloadPageFromRefreshControl"/>
+                <relationship kind="action" name="revealMenu:"/>
+                <relationship kind="outlet" name="scrollView" candidateClass="SlideScrollView"/>
+            </relationships>
+        </class>
         <class className="InitialSlidingViewController" superclassName="ECSlidingViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/InitialSlidingViewController.h"/>
         </class>
@@ -166,14 +174,6 @@
         </class>
         <class className="NSLayoutConstraint" superclassName="NSObject">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-        <class className="NewsTileViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NewsTileViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="reloadPageFromRefreshControl"/>
-                <relationship kind="action" name="revealMenu:"/>
-                <relationship kind="outlet" name="scrollView" candidateClass="SlideScrollView"/>
-            </relationships>
         </class>
         <class className="SlideScrollView" superclassName="UIScrollView">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/SlideScrollView.h"/>

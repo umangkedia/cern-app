@@ -15,8 +15,9 @@
 #import "StoryboardIdentifiers.h"
 #import "PictureButtonView.h"
 #import "NewsTableViewCell.h"
+#import "FeedItemTileView.h"
 #import "NSString+HTML.h"
-#import "TileView.h"
+
 
 namespace CernAPP {
 
@@ -54,7 +55,7 @@ bool IsWideImage(UIImage *image)
 
 }
 
-@implementation TileView {
+@implementation FeedItemTileView {
    MWFeedItem *feedItem;
    
    UIImageView *thumbnailView;
